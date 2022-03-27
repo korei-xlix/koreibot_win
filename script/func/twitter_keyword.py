@@ -92,6 +92,9 @@ class CLS_TwitterKeyword():
 					continue
 			
 			wWord = str( wARR_Trend[wIndex]['name'] )
+			### タグがなければ追加する
+			if wWord.find("#")!=0 :
+				wWord = "#" + wWord
 			wLine = str(wJuni) + " : " + wWord
 			wStr = wStr + wLine
 			if ( len( wTrendTweet ) + len( wLine ) )<140 :
