@@ -62,9 +62,17 @@ class CLS_TwitterFavo():
 			return wRes
 		wARR_TwData = wFavoRes['Responce']
 		
+		wARR_Tw_ID = list( wARR_TwData.keys() )
+		#############################
+		# いいねがない場合、処理を終わる
+		if len(wARR_Tw_ID)==0 :
+			wStr = "いいねがないため、処理を終わります。"
+			CLS_OSIF.sPrn( wStr )
+			wRes['Result'] = True	#正常終了
+			return wRes
+		
 		#############################
 		# 最古のいいねIDを算出
-		wARR_Tw_ID = list( wARR_TwData.keys() )
 		wARR_Tw_ID_LastKey = wARR_Tw_ID[-1]
 		
 		###ウェイト初期化
