@@ -140,7 +140,7 @@ class CLS_Main_Console() :
 	#####################################################
 		#############################
 		# いいね解除
-		elif inCommand=="\\ic" :
+		if inCommand=="\\ic" :
 			cls.OBJ_TwitterMain.RemFavo()
 		
 		#############################

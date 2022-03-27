@@ -39,11 +39,9 @@ class CLS_BotCtrl():
 		elif len(wArg)==2 :	#モード
 			###セットアップモード
 			###全初期化モード
-###			###データ追加モード
 			###データクリアモード
 			if wArg[1]!="setup" and \
 			   wArg[1]!="init" and \
-###			   wArg[1]!="add" and \
 			   wArg[1]!="clear" :
 				wRes['Reason'] = "存在しないモードです"
 				CLS_OSIF.sErr( wRes )

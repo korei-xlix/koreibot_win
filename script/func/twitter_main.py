@@ -7,9 +7,7 @@
 # ::Class    : Twitter監視 メインモジュール
 #####################################################
 from twitter_favo import CLS_TwitterFavo
-from twitter_follower import CLS_TwitterFollower
 from twitter_keyword import CLS_TwitterKeyword
-from twitter_admin import CLS_TwitterAdmin
 
 from osif import CLS_OSIF
 from traffic import CLS_Traffic
