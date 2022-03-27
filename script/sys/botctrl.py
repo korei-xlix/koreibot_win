@@ -39,11 +39,11 @@ class CLS_BotCtrl():
 		elif len(wArg)==2 :	#モード
 			###セットアップモード
 			###全初期化モード
-			###データ追加モード
+###			###データ追加モード
 			###データクリアモード
 			if wArg[1]!="setup" and \
 			   wArg[1]!="init" and \
-			   wArg[1]!="add" and \
+###			   wArg[1]!="add" and \
 			   wArg[1]!="clear" :
 				wRes['Reason'] = "存在しないモードです"
 				CLS_OSIF.sErr( wRes )
@@ -161,7 +161,7 @@ class CLS_BotCtrl():
 		gVal.STR_SystemInfo['APIrect'] = str(wTD['TimeDate'])
 		
 		#############################
-		# るしぼっとVersion
+		# Version情報
 		wReadme = []
 		if CLS_File.sReadFile( gVal.DEF_STR_FILE['Readme'], outLine=wReadme )!=True :
 			wRes['Reason'] = "Readme.mdファイルが見つかりません: path=" + gVal.DEF_STR_FILE['Readme']

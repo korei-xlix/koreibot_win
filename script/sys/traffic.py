@@ -108,12 +108,8 @@ class CLS_Traffic():
 					"false," + \
 					"0," + \
 					"0, 0," + \
-					"0, 0, 0, 0, 0, 0," + \
 					"0, 0," + \
-					"0, 0, 0, 0," + \
-					"0, 0, 0," + \
-					"0, 0, 0," + \
-					"0, 0," + \
+					"0," + \
 					"0, 0, 0, 0 " + \
 					") ;"
 		
@@ -170,26 +166,9 @@ class CLS_Traffic():
 					"timeline = " + str( gVal.STR_TrafficInfo['timeline'] ) + "," + \
 					"runbot = "   + str( gVal.STR_TrafficInfo['runbot'] ) + "," + \
 					"runapi = "   + str( gVal.STR_TrafficInfo['runapi'] ) + "," + \
-					"now_myfollow = " + str( gVal.STR_TrafficInfo['now_myfollow'] ) + "," + \
-					"now_follower = " + str( gVal.STR_TrafficInfo['now_follower'] ) + "," + \
-					"get_myfollow = " + str( gVal.STR_TrafficInfo['get_myfollow'] ) + "," + \
-					"get_follower = " + str( gVal.STR_TrafficInfo['get_follower'] ) + "," + \
-					"rem_myfollow = " + str( gVal.STR_TrafficInfo['rem_myfollow'] ) + "," + \
-					"rem_follower = " + str( gVal.STR_TrafficInfo['rem_follower'] ) + "," + \
-					"now_unfollow = "    + str( gVal.STR_TrafficInfo['now_unfollow'] ) + "," + \
-					"now_remove = "      + str( gVal.STR_TrafficInfo['now_remove'] ) + "," + \
-					"run_unfollow = "      + str( gVal.STR_TrafficInfo['run_unfollow'] ) + "," + \
-					"run_unfollowrem = "   + str( gVal.STR_TrafficInfo['run_unfollowrem'] ) + "," + \
-					"run_autoremove = "    + str( gVal.STR_TrafficInfo['run_autoremove'] ) + "," + \
-					"run_muteremove = "    + str( gVal.STR_TrafficInfo['run_muteremove'] ) + "," + \
-					"now_agent = "    + str( gVal.STR_TrafficInfo['now_agent'] ) + "," + \
-					"now_vipuser = "  + str( gVal.STR_TrafficInfo['now_vipuser'] ) + "," + \
-					"get_reaction = " + str( gVal.STR_TrafficInfo['get_reaction'] ) + "," + \
 					"now_favo = " + str( gVal.STR_TrafficInfo['now_favo'] ) + "," + \
-					"get_favo = " + str( gVal.STR_TrafficInfo['get_favo'] ) + "," + \
 					"rem_favo = " + str( gVal.STR_TrafficInfo['rem_favo'] ) + "," + \
 					"send_tweet = "   + str( gVal.STR_TrafficInfo['send_tweet'] ) + "," + \
-					"send_retweet = " + str( gVal.STR_TrafficInfo['send_retweet'] ) + "," + \
 					"db_req = " + str( gVal.STR_TrafficInfo['db_req'] ) + "," + \
 					"db_ins = " + str( gVal.STR_TrafficInfo['db_ins'] ) + "," + \
 					"db_up = "  + str( gVal.STR_TrafficInfo['db_up'] ) + "," + \
@@ -309,14 +288,6 @@ class CLS_Traffic():
 			wIndex += 1
 			
 			#############################
-			# Twitterに送信する
-			wResTwitter = cls.__send_Twitter( wARR_RateTraffic[wIndex] )
-			if wResTwitter['Result']!=True :
-				##失敗
-				wResTwitter['Reason'] = "__send_Twitter is failed(Traffic=True): " + CLS_OSIF.sCatErr( wResTwitter )
-				gVal.OBJ_L.Log( "B", wResTwitter )
-			
-			#############################
 			# 1回だけならループ終了
 			if inAll==False :
 				break
@@ -343,42 +314,15 @@ class CLS_Traffic():
 		#############################
 		# 情報の作成
 		wStr = wStr + '\n'
-		wStr = wStr + "フォロワー情報" + '\n'
-		wStr = wStr + "--------------------" + '\n'
-		wStr = wStr + "現フォロー者数       : " + str( inTraffic['now_myfollow'] ) + '\n'
-		wStr = wStr + "現フォロワー数       : " + str( inTraffic['now_follower'] ) + '\n'
-		wStr = wStr + '\n'
-		wStr = wStr + "フォロー者獲得数     : " + str( inTraffic['get_myfollow'] ) + '\n'
-		wStr = wStr + "フォロワー獲得数     : " + str( inTraffic['get_follower'] ) + '\n'
-		wStr = wStr + "リムーブフォロー者数 : " + str( inTraffic['rem_myfollow'] ) + '\n'
-		wStr = wStr + "リムーブフォロワー数 : " + str( inTraffic['rem_follower'] ) + '\n'
-
-		wStr = wStr + '\n'
-		wStr = wStr + "内部監視情報" + '\n'
-		wStr = wStr + "--------------------" + '\n'
-		wStr = wStr + "現非フォロワー数     : " + str( inTraffic['now_unfollow'] ) + '\n'
-		wStr = wStr + "現疑似リムーブ数     : " + str( inTraffic['now_remove'] ) + '\n'
-		wStr = wStr + "現監視ユーザ数       : " + str( inTraffic['now_agent'] ) + '\n'
-		wStr = wStr + "現VIPユーザ数数      : " + str( inTraffic['now_vipuser'] ) + '\n'
-		wStr = wStr + '\n'
-		wStr = wStr + "非フォロー化実行数   : " + str( inTraffic['run_unfollow'] ) + '\n'
-		wStr = wStr + "非フォロー化解除数   : " + str( inTraffic['run_unfollowrem'] ) + '\n'
-		wStr = wStr + "自動リムーブ実行数   : " + str( inTraffic['run_autoremove'] ) + '\n'
-		wStr = wStr + "ミュート解除数       : " + str( inTraffic['run_muteremove'] ) + '\n'
-		wStr = wStr + "リアクション獲得数   : " + str( inTraffic['get_reaction'] ) + '\n'
-		
-		wStr = wStr + '\n'
 		wStr = wStr + "いいね情報" + '\n'
 		wStr = wStr + "--------------------" + '\n'
 		wStr = wStr + "現いいね数           : " + str( inTraffic['now_favo'] ) + '\n'
-		wStr = wStr + "いいね実施数         : " + str( inTraffic['get_favo'] ) + '\n'
 		wStr = wStr + "いいね解除数         : " + str( inTraffic['rem_favo'] ) + '\n'
 		
 		wStr = wStr + '\n'
 		wStr = wStr + "ツイート情報" + '\n'
 		wStr = wStr + "--------------------" + '\n'
 		wStr = wStr + "ツイート送信数       : " + str( inTraffic['send_tweet'] ) + '\n'
-		wStr = wStr + "リツイート実施数     : " + str( inTraffic['send_retweet'] ) + '\n'
 		
 		wStr = wStr + '\n'
 		wStr = wStr + "データベース情報" + '\n'
@@ -402,37 +346,6 @@ class CLS_Traffic():
 		
 		CLS_OSIF.sInp( "確認したらリターンキーを押してください。[RT]" )
 		return
-
-	#####################################################
-	@classmethod
-	def __send_Twitter( cls, inTraffic ):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_Traffic"
-		wRes['Func']  = "__send_Twitter"
-		
-		#############################
-		# 文の組み立て
-		wTweet = "Traffic: " + str(gVal.STR_TrafficInfo['update']) + '\n'
-		wTweet = "get follower " + str(gVal.STR_TrafficInfo['get_follower']) + '\n'
-		wTweet = "rem follower " + str(gVal.STR_TrafficInfo['rem_follower']) + '\n'
-		wTweet = "reaction " + str(gVal.STR_TrafficInfo['get_reaction']) + '\n'
-		wTweet = "runapi "   + str(gVal.STR_TrafficInfo['runapi']) + '\n'
-		
-		#############################
-		# Twitterに送信
-		wTwitterRes = gVal.OBJ_Tw_IF.SendDM( gVal.STR_UserInfo['id'], wTweet )
-		if wTwitterRes['Result']!=True :
-			wRes['Reason'] = "SendDM is failed"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# 正常終了
-		wRes['Result'] = True
-		return wRes
 
 
 
