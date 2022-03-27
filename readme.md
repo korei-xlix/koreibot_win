@@ -151,7 +151,7 @@ pythonのデフォルトエンコードを確認したり、utf-8に設定する
 	2. githubの自分のアカウントに本家リポジトリをFork（コピー）する。  
 		　　[botリポジトリ](https://github.com/korei-xlix/koreibot_win)  
 		の右上あたりの[Fork]ボタンを押してください。  
-		すると、自分のアカウントに[自垢名 / lucibot_win]というリポジトリができます。  
+		すると、自分のアカウントに[自垢名 / koreibot_win]というリポジトリができます。  
 
 	3. githubデスクトップで1項でForkしたリポジトリから自PCにクローンをダウンロードします。  
 		githubデスクトップのCurrent repository→Add→Cloneを選択します。  
@@ -164,14 +164,14 @@ pythonのデフォルトエンコードを確認したり、utf-8に設定する
 
 6. 以下を入力します。  
 	```
-	# cd [Lucibotのインストールフォルダ]
+	# cd [Koreibotのインストールフォルダ]
 	# python run.py init
 	```
 
 7. データベースの全初期化と、ユーザ登録を実施します。画面に従って入力します。  
 	以下の情報が必要となります。
 	
-	* lucibotのデータベースパスワード
+	* koreibotのデータベースパスワード
 	* Twitterアカウント名
 	* Twitter Devで取ったAPI key
 	* Twitter Devで取ったAPI secret key
@@ -271,7 +271,7 @@ botリポジトリのmasterから最新版をpullする方法です。
 
 1. githubデスクトップを起動します。  
 
-2. 自分のLucibotリポジトリを選択し、Current branchをクリックします。  
+2. 自分のKoreibotリポジトリを選択し、Current branchをクリックします。  
 
 3. New branchをクリックし、バックアップ用のブランチを作成します。  
 	名前はわかりやすいように。
