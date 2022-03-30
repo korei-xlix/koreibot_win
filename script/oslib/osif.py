@@ -180,6 +180,7 @@ class CLS_OSIF() :
 # (twitter時間)
 #####################################################
 	@classmethod
+
 	def sGetTimeformat_Twitter( cls, inTimedate, inTimezone=__DEF_LAG_TIMEZONE ):
 		wRes = {
 			"Result"	: False,
@@ -199,31 +200,30 @@ class CLS_OSIF() :
 				wTD = wTD[0:wIfind]
 				wTD = wTD.split('T')
 				
-
-				print(str( wTD ))
-
 				wIfind = wTD[1].find('.')
 				if wIfind>=0 :
 					wTD[1] = wTD[1][0:wIfind]
 				wTD = wTD[0] + " " + wTD[1]
 				
-
-				print(str( wTD ))
-
-
 				wTD = datetime.strptime( wTD, "%Y-%m-%d %H:%M:%S") + timedelta( hours=inTimezone )
 				wTD = str( wTD )
 				
 				wRes['Format'] = "TrendType"
 			else :
 				### Twitter形式
-				wTD = datetime.strptime( wTD, "%a %b %d %H:%M:%S %z %Y" ) + timedelta( hours=inTimezone )
-				wTD = str( wTD )
 				wIfind = wTD.find('+')
-				if wIfind>=0 :
-					wTD = wTD[0:wIfind]
+				if wIfind<0 :
+					###変換対象ではない
+					wRes['Format'] = "TwitterType(Not Change)"
 				
-				wRes['Format'] = "TwitterType"
+				else:
+					wTD = datetime.strptime( wTD, "%a %b %d %H:%M:%S %z %Y" ) + timedelta( hours=inTimezone )
+					wTD = str( wTD )
+					wIfind = wTD.find('+')
+					if wIfind>=0 :
+						wTD = wTD[0:wIfind]
+					
+					wRes['Format'] = "TwitterType"
 			
 			wRes['TimeDate'] = wTD
 		except:

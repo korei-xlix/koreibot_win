@@ -76,7 +76,7 @@ class CLS_TwitterFavo():
 		wARR_Tw_ID_LastKey = wARR_Tw_ID[-1]
 		
 		###ウェイト初期化
-		self.OBJ_Parent.Wait_Init( inZanNum=len( wARR_DBData ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
+		self.OBJ_Parent.Wait_Init( inZanNum=len( wARR_Tw_ID ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
 		
 		wRemTweet = 0
 		#############################
@@ -91,7 +91,7 @@ class CLS_TwitterFavo():
 			###日時の変換
 			wTime = CLS_OSIF.sGetTimeformat_Twitter( wARR_TwData[wID]['created_at'] )
 			if wTime['Result']!=True :
-				wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wTweet['created_at'])
+				wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wARR_TwData[wID]['created_at'])
 				gVal.OBJ_L.Log( "B", wRes )
 				continue
 			wARR_TwData[wID]['created_at'] = wTime['TimeDate']
@@ -105,6 +105,8 @@ class CLS_TwitterFavo():
 			if wGetLag['Beyond']==False :
 				###期間内
 				###  次へ
+				wStr = "○解除対象外: " + str(wARR_TwData[wID]['created_at'])
+				CLS_OSIF.sPrn( wStr )
 				continue
 			
 			###  いいねを外す
@@ -115,7 +117,7 @@ class CLS_TwitterFavo():
 			
 			#############################
 			# 解除表示
-			wStr = "解除いいね日時: " + str(wARR_TwData[wID]['created_at'])
+			wStr = "●解除いいね日時: " + str(wARR_TwData[wID]['created_at'])
 			CLS_OSIF.sPrn( wStr )
 			wRemTweet += 1
 			
