@@ -157,6 +157,11 @@ class CLS_Main_Console() :
 				wRes['Reason'] = "Set Twitter API failed: " + wResAPI['Reason']
 				gVal.OBJ_L.Log( "D", wRes )
 		
+		#############################
+		# トレンドタグ設定
+		elif inCommand=="\\tc" :
+			cls.OBJ_TwitterMain.SetTrendTag()
+		
 	#####################################################
 		#############################
 		# ログの表示(異常ログ)

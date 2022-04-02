@@ -77,6 +77,12 @@ class CLS_TwitterKeyword():
 		wStr = wStr + "------------------------"
 		CLS_OSIF.sPrn( wStr )
 		
+		### トレンドタグの設定
+		wTrendTag = ""
+		if gVal.STR_UserInfo['TrendTag']!="" and \
+		   gVal.STR_UserInfo['TrendTag']!=None :
+			wTrendTag = '\n' + "#" + gVal.STR_UserInfo['TrendTag']
+		
 		wARR_Trend = wTrendRes['Responce']['trends']
 		wStr  = ""
 		wJuni = 0
@@ -97,12 +103,14 @@ class CLS_TwitterKeyword():
 				wWord = "#" + wWord
 			wLine = str(wJuni) + " : " + wWord
 			wStr = wStr + wLine
-			if ( len( wTrendTweet ) + len( wLine ) )<140 :
+###			if ( len( wTrendTweet ) + len( wLine ) )<140 :
+			if ( len( wTrendTweet ) + len( wLine ) + len( wTrendTag ) )<140 :
 				wTrendTweet = wTrendTweet + wLine + '\n'
 			if wARR_Trend[wIndex]['tweet_volume']!=None :
 				wStr = wStr + " [" + str(wARR_Trend[wIndex]['tweet_volume']) + "]"
 			wStr = wStr + '\n'
 		
+		wTrendTweet = wTrendTweet + wTrendTag
 		if wStr!="" :
 			CLS_OSIF.sPrn( wStr )
 		

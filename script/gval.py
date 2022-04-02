@@ -55,7 +55,8 @@ class gVal() :
 	STR_UserInfo = {
 		"Account"	: "",			#Twitterアカウント名
 		"id"		: "",			#Twitter ID(番号)
-		"Traffic"	: False			#Twitterにトラヒックを報告するか
+		"Traffic"	: False,		#Twitterにトラヒックを報告するか
+		"TrendTag"	: ""			#トレンドタグ設定
 	}
 
 #############################

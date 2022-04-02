@@ -279,3 +279,26 @@ class CLS_TwitterMain():
 
 
 
+#####################################################
+# トレンドタグ設定
+#####################################################
+	def SetTrendTag(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "SetTrendTag"
+		
+		wSubRes = gVal.OBJ_DB_IF.SetTrendTag()
+		if wSubRes['Result']!=True :
+			gVal.OBJ_DB_IF.Close()
+			return False
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
+		return wRes
+
+
+

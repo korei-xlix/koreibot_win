@@ -239,6 +239,7 @@ class CLS_Setup():
 					"bearer      TEXT  NOT NULL," + \
 					"locked      BOOL  DEFAULT false," + \
 					"lupdate     TIMESTAMP," + \
+					"trendtag    TEXT," + \
 					" PRIMARY KEY ( twitterid ) ) ;"
 
 ##					"twitterid   記録したユーザ(Twitter ID)

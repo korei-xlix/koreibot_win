@@ -192,6 +192,10 @@ class CLS_BotCtrl():
 			gVal.STR_SystemInfo[wGetLine[0]] = wGetLine[1]
 		
 		#############################
+		# トレンドタグの取得
+		gVal.STR_UserInfo['TrendTag'] = wChgDict[0]['trendtag']
+		
+		#############################
 		# システム情報の取得
 		wCLS_work = CLS_OSIF()
 		gVal.STR_SystemInfo['PythonVer'] = wCLS_work.Get_PythonVer()
