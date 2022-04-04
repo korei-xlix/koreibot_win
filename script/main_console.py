@@ -139,10 +139,16 @@ class CLS_Main_Console() :
 		
 	#####################################################
 		#############################
-		# いいね解除
-		if inCommand=="\\ic" :
-			cls.OBJ_TwitterMain.RemFavo()
+		# 自動監視
+		if inCommand=="\\a" :
+			cls.OBJ_TwitterMain.AllRun()
 		
+	#####################################################
+###		#############################
+###		# いいね解除
+###		if inCommand=="\\ic" :
+###			cls.OBJ_TwitterMain.RemFavo()
+###		
 		#############################
 		# トレンドツイート
 		elif inCommand=="\\tt" :

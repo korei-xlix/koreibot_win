@@ -6,6 +6,7 @@
 # ::github   : https://github.com/korei-xlix/koreibot_win/
 # ::Class    : Twitter監視 メインモジュール
 #####################################################
+from twitter_follower import CLS_TwitterFollower
 from twitter_favo import CLS_TwitterFavo
 from twitter_keyword import CLS_TwitterKeyword
 
@@ -15,6 +16,7 @@ from gval import gVal
 #####################################################
 class CLS_TwitterMain():
 #####################################################
+	OBJ_TwitterFollower = None
 	OBJ_TwitterFavo     = None
 	OBJ_TwitterKeyword  = None
 
@@ -57,6 +59,7 @@ class CLS_TwitterMain():
 # Init
 #####################################################
 	def __init__(self):
+		self.OBJ_TwitterFollower = CLS_TwitterFollower( parentObj=self )
 		self.OBJ_TwitterFavo     = CLS_TwitterFavo( parentObj=self )
 		self.OBJ_TwitterKeyword  = CLS_TwitterKeyword( parentObj=self )
 		return
@@ -262,13 +265,55 @@ class CLS_TwitterMain():
 
 
 #####################################################
-# いいね解除
+# 自動監視
 #####################################################
-	def RemFavo(self):
-		wRes = self.OBJ_TwitterFavo.RemFavo()
+	def AllRun(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "AllRun"
+		
+		#############################
+		# いいね解除
+		wSubRes = self.OBJ_TwitterFavo.RemFavo()
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "RemFavo"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# リアクションチェック
+		wSubRes = self.OBJ_TwitterFollower.ReactionCheck()
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "ReactionCheck"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# いいね情報送信
+		wSubRes = self.OBJ_TwitterFollower.SendFavoDate()
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "SendFavoDate"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
 		return wRes
 
 
+
+#####################################################
+# いいね解除
+#####################################################
+###	def RemFavo(self):
+###		wRes = self.OBJ_TwitterFavo.RemFavo()
+###		return wRes
+###
+###
 
 #####################################################
 # トレンドツイート

@@ -446,3 +446,224 @@ class CLS_DB_IF() :
 
 
 
+#####################################################
+# いいね者送信日時 更新
+#####################################################
+	def UpdateFavoDate( self, inDate ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "UpdateFavoDate"
+		
+		#############################
+		# DBに登録する
+		wQuery = "update tbl_user_data set " + \
+				"favodate = '" + str(inDate) + "' " + \
+				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			CLS_OSIF.sErr( wRes )
+			return False
+		
+		#############################
+		# いいね者送信日時(直近)の更新
+		gVal.STR_UserInfo['FavoDate'] = inDate
+		
+		wStr = "いいね者送信日時(直近)を更新しました。" + '\n'
+		CLS_OSIF.sPrn( wStr )
+		
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# いいね情報
+#####################################################
+	def InsertFavoData( self, inData ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "InsertFavoData"
+		
+		#############################
+		# ユーザ情報の加工
+		wID = str( inData['user']['id'] )
+###		wUserName = str( inData['name'] ).replace( "'", "''" )
+		wScreenName = str( inData['user']['screen_name'] )
+		wFavoID = str( inData['id'] )
+		
+		#############################
+		# 時間の取得
+		wTimeDate = str( gVal.STR_SystemInfo['TimeDate'] )
+		wDefTimeDate = "1901-01-01 00:00:00"
+		
+		#############################
+		# SQLの作成
+		wQuery = "insert into tbl_favouser_data values ("
+		wQuery = wQuery + "'" + gVal.STR_UserInfo['Account'] + "', "
+		wQuery = wQuery + "'" + wTimeDate + "', "
+		
+		wQuery = wQuery + "'" + wID + "', "
+		wQuery = wQuery + "'" + wScreenName + "', "
+		
+		wQuery = wQuery + "False, "
+		wQuery = wQuery + "0, "
+		wQuery = wQuery + "0, "
+		wQuery = wQuery + "0, "
+		wQuery = wQuery + "'" + wFavoID + "', "
+		
+		wQuery = wQuery + ") ;"
+		
+		#############################
+		# SQLの実行
+		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		gVal.STR_TrafficInfo['db_ins'] += 1
+		
+		self.ARR_FollowerDataID.append( wID )
+		#############################
+		# 正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def GetFavoDataOne( self, inID ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "GetFavoDataOne"
+		
+		wRes['Responce'] = None
+		#############################
+		# DBのいいね情報取得
+		wQuery = "select * from tbl_favouser_data where " + \
+					"twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
+					"id = '" + str( inID ) + "' " + \
+					";"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed: RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		gVal.STR_TrafficInfo['db_req'] += 1
+		
+		#############################
+		# 1個取得できたか
+		if len(wResDB['Responce']['Data'])==0 :
+			## ないのは正常で返す(ResponceはNoneのまま)
+			wRes['Result'] = True
+			return wRes
+		if len(wResDB['Responce']['Data'])!=1 :
+			## 1個ではない
+			wRes['Reason'] = "Get data is failed : id=" + str(inID)
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
+		# 辞書型に整形
+		wARR_RateFavoData = {}
+		self.OBJ_DB.ChgDict( wResDB['Responce']['Collum'], wResDB['Responce']['Data'], outDict=wARR_RateFavoData )
+		
+		wRes['Responce'] = wARR_RateFavoData[0]
+		#############################
+		# 正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def CountupFavoData( self, inData, inFavoData ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "CountupFavoData"
+		
+		wID = inFavoData['id']
+		wScreenName = str( inData['user']['screen_name'] )
+		wFavoID   = str( inData['id'] )
+		wFavoDate = str( inData['created_at'] )
+		wCnt    = inFavoData['favo_cnt'] + 1
+		wNowCnt = inFavoData['now_favo_cnt'] + 1
+		#############################
+		# 更新
+		wQuery = "update tbl_favouser_data set " + \
+					"sended = False, " + \
+					"screen_name = '" + wScreenName + "', " + \
+					"favo_cnt = " + str( wCnt ) + ", " + \
+					"now_favo_cnt = " + str( wNowCnt ) + ", " + \
+					"favo_id = '" + wFavoID + "', " + \
+					"favo_date = '" + wFavoDate + "' " + \
+					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
+					" and id = '" + str(wID) + "' ;"
+		
+		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+		if wResDB['Result']!=True :
+			wRes['Reason'] = "Run Query is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def SendedFavoData( self, inID, inCnt=-1 ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "CountupFavoData"
+		
+		#############################
+		# 更新
+		if inCnt>=0 :
+			wCnt = inCnt + 1
+			wQuery = "update tbl_favouser_data set " + \
+						"senddate = '" + str( gVal.STR_SystemInfo['TimeDate'] ) + "', " + \
+						"sended = True, " + \
+						"send_cnt = " + str( wCnt ) + ", " + \
+						"now_favo_cnt = 0 " + \
+						"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
+						" and id = '" + str(inID) + "' ;"
+		else:
+			wQuery = "update tbl_favouser_data set " + \
+						"sended = True, " + \
+						"now_favo_cnt = 0 " + \
+						"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
+						" and id = '" + str(inID) + "' ;"
+		
+		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+		if wResDB['Result']!=True :
+			wRes['Reason'] = "Run Query is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 正常
+		wRes['Result'] = True
+		return wRes
+
+
+

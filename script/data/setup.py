@@ -203,6 +203,7 @@ class CLS_Setup():
 #####################################################
 	def __initDB( self, inDBobj ):
 		self.__create_TBL_USER_DATA( inDBobj )
+		self.__create_TBL_FAVOUSER_DATA( inDBobj )
 		self.__create_TBL_LOG_DATA( inDBobj )
 		self.__create_TBL_TRAFFIC_DATA( inDBobj )
 		return True
@@ -210,6 +211,8 @@ class CLS_Setup():
 	#####################################################
 	def __allDrop( self, inDBobj ):
 		wQuery = "drop table if exists tbl_user_data ;"
+		inOBJ_DB.RunQuery( wQuery )
+		wQuery = "drop table if exists tbl_favouser_data ;"
 		inOBJ_DB.RunQuery( wQuery )
 		wQuery = "drop table if exists tbl_log_data ;"
 		inOBJ_DB.RunQuery( wQuery )
@@ -240,6 +243,7 @@ class CLS_Setup():
 					"locked      BOOL  DEFAULT false," + \
 					"lupdate     TIMESTAMP," + \
 					"trendtag    TEXT," + \
+					"favodate    TIMESTAMP," + \
 					" PRIMARY KEY ( twitterid ) ) ;"
 
 ##					"twitterid   記録したユーザ(Twitter ID)
@@ -286,6 +290,46 @@ class CLS_Setup():
 
 
 #####################################################
+# テーブル作成: TBL_FAVOUSER_DATA
+#####################################################
+	def __create_TBL_FAVOUSER_DATA( self, inOBJ_DB, inTBLname="tbl_favouser_data" ):
+		#############################
+		# テーブルのドロップ
+		wQuery = "drop table if exists " + inTBLname + ";"
+		inOBJ_DB.RunQuery( wQuery )
+		
+		#############################
+		# テーブル枠の作成
+		wQuery = "create table " + inTBLname + "(" + \
+					"twitterid   TEXT  NOT NULL," + \
+					"regdate     TIMESTAMP," + \
+					"id          TEXT  NOT NULL," + \
+					"screen_name TEXT  NOT NULL," + \
+					"senddate    TIMESTAMP," + \
+					"sended      BOOL  DEFAULT false," + \
+					"send_cnt      INTEGER DEFAULT 0," + \
+					"favo_cnt      INTEGER DEFAULT 0," + \
+					"now_favo_cnt  INTEGER DEFAULT 0," + \
+					"favo_id       TEXT  NOT NULL," + \
+					"favo_date     TIMESTAMP " + \
+					" ) ;"
+		
+##					"twitterid   記録したユーザ(Twitter ID)
+###					"regdate     登録日
+###					"id          Twitter ID
+###					"screen_name Twitter ユーザ名(英語)
+###					"senddate    最終送信日
+###					"sended      送信済か (False=送信対象)
+###					"send_cnt      送信回数(累計)
+###					"favo_cnt      いいね回数(累計)
+###					"now_favo_cnt  いいね回数(前回記録～現在まで)
+###
+		inOBJ_DB.RunQuery( wQuery )
+		return
+
+
+
+#####################################################
 # テーブル作成: TBL_TRAFFIC_DATA
 #####################################################
 	def __create_TBL_TRAFFIC_DATA( self, inOBJ_DB, inTBLname="tbl_traffic_data" ):
@@ -307,6 +351,7 @@ class CLS_Setup():
 					"runapi      INTEGER DEFAULT 0," + \
 					"now_favo  INTEGER DEFAULT 0," + \
 					"rem_favo  INTEGER DEFAULT 0," + \
+					"get_reaction  INTEGER DEFAULT 0," + \
 					"send_tweet    INTEGER DEFAULT 0," + \
 					"db_req      INTEGER DEFAULT 0," + \
 					"db_ins      INTEGER DEFAULT 0," + \

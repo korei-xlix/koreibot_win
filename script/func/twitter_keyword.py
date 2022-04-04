@@ -103,7 +103,6 @@ class CLS_TwitterKeyword():
 				wWord = "#" + wWord
 			wLine = str(wJuni) + " : " + wWord
 			wStr = wStr + wLine
-###			if ( len( wTrendTweet ) + len( wLine ) )<140 :
 			if ( len( wTrendTweet ) + len( wLine ) + len( wTrendTag ) )<140 :
 				wTrendTweet = wTrendTweet + wLine + '\n'
 			if wARR_Trend[wIndex]['tweet_volume']!=None :

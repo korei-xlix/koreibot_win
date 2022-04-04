@@ -109,7 +109,7 @@ class CLS_Traffic():
 					"0," + \
 					"0, 0," + \
 					"0, 0," + \
-					"0," + \
+					"0, 0," + \
 					"0, 0, 0, 0 " + \
 					") ;"
 		
@@ -168,6 +168,7 @@ class CLS_Traffic():
 					"runapi = "   + str( gVal.STR_TrafficInfo['runapi'] ) + "," + \
 					"now_favo = " + str( gVal.STR_TrafficInfo['now_favo'] ) + "," + \
 					"rem_favo = " + str( gVal.STR_TrafficInfo['rem_favo'] ) + "," + \
+					"get_reaction = " + str( gVal.STR_TrafficInfo['get_reaction'] ) + "," + \
 					"send_tweet = "   + str( gVal.STR_TrafficInfo['send_tweet'] ) + "," + \
 					"db_req = " + str( gVal.STR_TrafficInfo['db_req'] ) + "," + \
 					"db_ins = " + str( gVal.STR_TrafficInfo['db_ins'] ) + "," + \
@@ -318,6 +319,11 @@ class CLS_Traffic():
 		wStr = wStr + "--------------------" + '\n'
 		wStr = wStr + "現いいね数           : " + str( inTraffic['now_favo'] ) + '\n'
 		wStr = wStr + "いいね解除数         : " + str( inTraffic['rem_favo'] ) + '\n'
+		
+		wStr = wStr + '\n'
+		wStr = wStr + "リアクション情報" + '\n'
+		wStr = wStr + "--------------------" + '\n'
+		wStr = wStr + "リアクション受信数   : " + str( inTraffic['get_reaction'] ) + '\n'
 		
 		wStr = wStr + '\n'
 		wStr = wStr + "ツイート情報" + '\n'

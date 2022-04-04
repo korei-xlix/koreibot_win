@@ -196,6 +196,16 @@ class CLS_BotCtrl():
 		gVal.STR_UserInfo['TrendTag'] = wChgDict[0]['trendtag']
 		
 		#############################
+		# いいね者送信日時(直近)
+		if wChgDict[0]['favodate']=="" or \
+		   wChgDict[0]['favodate']==None :
+			wChgDict[0]['favodate'] = str(wTD['TimeDate'])
+			wResDB = gVal.OBJ_DB_IF.UpdateFavoDate( str(wTD['TimeDate']) )
+			wRes['Reason'] = "いいね日時を初期化しました"
+			gVal.OBJ_L.Log( "R", wRes )
+		gVal.STR_UserInfo['FavoDate'] = wChgDict[0]['favodate']
+		
+		#############################
 		# システム情報の取得
 		wCLS_work = CLS_OSIF()
 		gVal.STR_SystemInfo['PythonVer'] = wCLS_work.Get_PythonVer()

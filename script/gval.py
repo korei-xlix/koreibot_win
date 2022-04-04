@@ -56,7 +56,8 @@ class gVal() :
 		"Account"	: "",			#Twitterアカウント名
 		"id"		: "",			#Twitter ID(番号)
 		"Traffic"	: False,		#Twitterにトラヒックを報告するか
-		"TrendTag"	: ""			#トレンドタグ設定
+		"TrendTag"	: "",			#トレンドタグ設定
+		"FavoDate"	: None			#いいね者送信日時(直近)
 	}
 
 #############################
@@ -69,6 +70,9 @@ class gVal() :
 									#いいね情報
 		"now_favo"			: 0,	#現いいね数
 		"rem_favo"			: 0,	#いいね解除数
+		
+									#リアクション
+		"get_reaction"		: 0,	#リアクション受信数
 		
 									#ツイート情報
 		"send_tweet"		: 0,	#ツイート送信数
@@ -108,6 +112,14 @@ class gVal() :
 		"defWaitSec"		: 5,						#   デフォルト待ち時間(秒)
 		"defWaitSkip"		: 10,						#   デフォルトスキップ時間(秒)
 		"defLongWaitSec"	: 60,						#   デフォルト 長い待ち時間(秒)
+		
+														# リアクションチェック
+		"reactionTweetLine"	: 40,						#   リアクションチェック時の自ツイート取得ライン数
+		"forReactionSec"	: 10800,					#   リアクションまでの期間   3時間  60x60x3
+		
+														# いいね送信
+		"favoSendsSec"		: 604800,					# いいね送信までの期間      7日 (60x60x24)x7
+		"favoDataDelSec"	: 7776000,					# いいね情報削除までの期間  90日 (60x60x24)x90
 		
 		"resetAPISec"		: 900,						# APIリセット周期 15分 60x15
 		"forLockLimSec"		: 120,						# 排他保持時間     2分 60x2 
