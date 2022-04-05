@@ -127,6 +127,22 @@ class CLS_TwitterKeyword():
 				wID = str(wTweet['id'])
 				
 				if wTweet['text'].find( wTrendHeader )==0 :
+					###日時の変換
+					wTime = CLS_OSIF.sGetTimeformat_Twitter( wTweet['created_at'] )
+					if wTime['Result']!=True :
+						wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wTweet['created_at'])
+						gVal.OBJ_L.Log( "B", wRes )
+						continue
+					wTweet['created_at'] = wTime['TimeDate']
+					
+					#############################
+					# ツイートチェック
+					wSubRes = self.OBJ_Parent.ReactionTweetCheck( wTweet )
+					if wSubRes['Result']!=True :
+						wRes['Reason'] = "ReactionTweetCheck"
+						gVal.OBJ_L.Log( "B", wRes )
+						continue
+					
 					wTweetRes = gVal.OBJ_Tw_IF.DelTweet( wID )
 					if wTweetRes['Result']!=True :
 						wRes['Reason'] = "Twitter API Error(2): " + wTweetRes['Reason'] + " id=" + str(wID)

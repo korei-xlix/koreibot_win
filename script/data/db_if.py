@@ -673,5 +673,99 @@ class CLS_DB_IF() :
 		wRes['Result'] = True
 		return wRes
 
+	#####################################################
+	def DeleteFavoData(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "DeleteFavoData"
+		
+		#############################
+		# DBのいいね情報取得(IDのみ)
+		wQuery = "select id from tbl_favouser_data where " + \
+					"twitterid = '" + gVal.STR_UserInfo['Account'] + "' " + \
+					";"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed: RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		gVal.STR_TrafficInfo['db_req'] += 1
+		
+		#############################
+		# リスト型に整形
+		wARR_DBDataID = gVal.OBJ_DB_IF.ChgList( wResDB['Responce'] )
+		
+		for wID in wARR_DBDataID :
+			wID = str(wID)
+			
+			#############################
+			# DBのいいね情報取得(IDのみ)
+			wQuery = "select * from tbl_favouser_data where " + \
+						"twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
+						"id = '" + wID + "' " + \
+						";"
+			
+			wResDB = self.OBJ_DB.RunQuery( wQuery )
+			wResDB = self.OBJ_DB.GetQueryStat()
+			if wResDB['Result']!=True :
+				##失敗
+				wRes['Reason'] = "Run Query is failed: RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			gVal.STR_TrafficInfo['db_req'] += 1
+			
+			#############################
+			# 1個取得できたか
+			if len(wResDB['Responce']['Data'])==0 :
+				## ないのは正常で返す(ResponceはNoneのまま)
+				wRes['Result'] = True
+				return wRes
+			if len(wResDB['Responce']['Data'])!=1 :
+				## 1個ではない
+				wRes['Reason'] = "Get data is failed : id=" + str(inID)
+				gVal.OBJ_L.Log( "C", wRes )
+				return wRes
+			
+			#############################
+			# 削除対象か
+			wGetLag = CLS_OSIF.sTimeLag( str( wResDB['Responce']['Data']['favo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['favoDataDelSec'] )
+			if wGetLag['Result']!=True :
+				wRes['Reason'] = "sTimeLag failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if wGetLag['Beyond']==False :
+				### 規定以内は除外
+				continue
+			
+			#############################
+			# DBから削除
+			wQuery = "delete from tbl_favouser_data where " + \
+						"twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
+						"id = '" + wID + "' " + \
+						";"
+			
+			wResDB = self.OBJ_DB.RunQuery( wQuery )
+			wResDB = self.OBJ_DB.GetQueryStat()
+			if wResDB['Result']!=True :
+				##失敗
+				wRes['Reason'] = "Run Query is failed: RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			gVal.STR_TrafficInfo['db_del'] += 1
+			
+			wRes['Reason'] = "Delete FavoData : " + wResDB['Responce']['Data']['screen_name']
+			gVal.OBJ_L.Log( "D", wRes )
+		
+		#############################
+		# 正常
+		wRes['Result'] = True
+		return wRes
+
 
 

@@ -303,6 +303,15 @@ class CLS_TwitterMain():
 			return wRes
 		
 		#############################
+		# 古いいいね情報の削除
+		wSubRes = gVal.OBJ_DB_IF.DeleteFavoData()
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "DeleteFavoData is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
 		# 完了
 		wRes['Result'] = True
 		return wRes
