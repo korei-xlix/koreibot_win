@@ -118,8 +118,10 @@ class gVal() :
 		"forReactionSec"	: 10800,					#   リアクションまでの期間   3時間  60x60x3
 		
 														# いいね送信
+###		"favoSendsSec"		: 10,						# いいね送信までの期間      7日 (60x60x24)x7
 		"favoSendsSec"		: 604800,					# いいね送信までの期間      7日 (60x60x24)x7
 		"favoDataDelSec"	: 7776000,					# いいね情報削除までの期間  90日 (60x60x24)x90
+		"favoSendsCnt"		: 1,						# いいね送信対象 いいね回数
 		
 		"resetAPISec"		: 900,						# APIリセット周期 15分 60x15
 		"forLockLimSec"		: 120,						# 排他保持時間     2分 60x2 
@@ -127,6 +129,16 @@ class gVal() :
 		
 		"(dummy)"			: ""
 	}
+
+#############################
+# リアクション禁止
+	DEF_STR_NOT_REACTION = [
+		"korei_xlix",
+		"korei_dev",
+		"korei_comm",
+		"korei_send",
+		"galaxy_fleet"
+	]
 
 #############################
 # ファイルパス

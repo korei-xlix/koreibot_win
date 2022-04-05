@@ -201,11 +201,11 @@ class CLS_Main_Console() :
 			if wResTraffic['Result']!=True :
 				gVal.OBJ_L.Log( "B", wResTraffic )
 		
-#		#############################
-#		# テスト
-#		elif inCommand=="\\test" :
-#			
-###			wSubRes = cls.OBJ_TwitterMain.TestRun()
+		#############################
+		# テスト
+		elif inCommand=="\\test" :
+			
+			wSubRes = cls.OBJ_TwitterMain.TestRun()
 ###			wTime = CLS_OSIF.sGetTimeformat_Twitter( "2021-10-06T12:23:44.000Z" )
 ###			print( str(wTime['TimeDate']) )
 #

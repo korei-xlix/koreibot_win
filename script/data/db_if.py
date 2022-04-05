@@ -486,7 +486,7 @@ class CLS_DB_IF() :
 #####################################################
 # いいね情報
 #####################################################
-	def InsertFavoData( self, inData ):
+	def InsertFavoData( self, inUser ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -496,10 +496,8 @@ class CLS_DB_IF() :
 		
 		#############################
 		# ユーザ情報の加工
-		wID = str( inData['user']['id'] )
-###		wUserName = str( inData['name'] ).replace( "'", "''" )
-		wScreenName = str( inData['user']['screen_name'] )
-		wFavoID = str( inData['id'] )
+		wID = str(inUser['id'])
+		wScreenName = inUser['screen_name']
 		
 		#############################
 		# 時間の取得
@@ -515,11 +513,13 @@ class CLS_DB_IF() :
 		wQuery = wQuery + "'" + wID + "', "
 		wQuery = wQuery + "'" + wScreenName + "', "
 		
+		wQuery = wQuery + "'" + wDefTimeDate + "', "
 		wQuery = wQuery + "False, "
 		wQuery = wQuery + "0, "
 		wQuery = wQuery + "0, "
 		wQuery = wQuery + "0, "
-		wQuery = wQuery + "'" + wFavoID + "', "
+		wQuery = wQuery + "'(none)', "
+		wQuery = wQuery + "'" + wDefTimeDate + "' "
 		
 		wQuery = wQuery + ") ;"
 		
@@ -590,24 +590,32 @@ class CLS_DB_IF() :
 		return wRes
 
 	#####################################################
-	def CountupFavoData( self, inData, inFavoData ):
+	def UpdateFavoData( self, inUser, inData, inFavoData, inCountUp=True ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
 		wRes = CLS_OSIF.sGet_Resp()
 		wRes['Class'] = "CLS_DB_IF"
-		wRes['Func']  = "CountupFavoData"
+		wRes['Func']  = "UpdateFavoData"
 		
-		wID = inFavoData['id']
-		wScreenName = str( inData['user']['screen_name'] )
+		wID = inUser['id']
+		wScreenName = inUser['screen_name']
+		
 		wFavoID   = str( inData['id'] )
 		wFavoDate = str( inData['created_at'] )
-		wCnt    = inFavoData['favo_cnt'] + 1
-		wNowCnt = inFavoData['now_favo_cnt'] + 1
+		if inCountUp==True :
+			wCnt    = inFavoData['favo_cnt'] + 1
+			wNowCnt = inFavoData['now_favo_cnt'] + 1
+			wSended = False
+		else:
+			wCnt    = inFavoData['favo_cnt']
+			wNowCnt = inFavoData['now_favo_cnt']
+			wSended = True
+		
 		#############################
 		# 更新
 		wQuery = "update tbl_favouser_data set " + \
-					"sended = False, " + \
+					"sended = " + str(wSended) + ", " + \
 					"screen_name = '" + wScreenName + "', " + \
 					"favo_cnt = " + str( wCnt ) + ", " + \
 					"now_favo_cnt = " + str( wNowCnt ) + ", " + \
@@ -634,7 +642,7 @@ class CLS_DB_IF() :
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
 		wRes = CLS_OSIF.sGet_Resp()
 		wRes['Class'] = "CLS_DB_IF"
-		wRes['Func']  = "CountupFavoData"
+		wRes['Func']  = "SendedFavoData"
 		
 		#############################
 		# 更新

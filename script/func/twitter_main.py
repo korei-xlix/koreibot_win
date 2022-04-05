@@ -12,6 +12,7 @@ from twitter_keyword import CLS_TwitterKeyword
 
 from osif import CLS_OSIF
 from traffic import CLS_Traffic
+from mydisp import CLS_MyDisp
 from gval import gVal
 #####################################################
 class CLS_TwitterMain():
@@ -20,7 +21,8 @@ class CLS_TwitterMain():
 	OBJ_TwitterFavo     = None
 	OBJ_TwitterKeyword  = None
 
-
+	CHR_GetReactionDate = None
+	ARR_ReacrionUserID = []
 
 #####################################################
 # TEST
@@ -33,18 +35,19 @@ class CLS_TwitterMain():
 		wRes['Class'] = "CLS_TwitterMain"
 		wRes['Func']  = "TestRun"
 		
-		#############################
-		# いいね情報の取得
-		wResSub = self.OBJ_TwitterFavo.Get()
-		if wResSub['Result']!=True :
-			wRes['Reason'] = "OBJ_TwitterFavo.Get failed: " + CLS_OSIF.sCatErr( wResSub )
-			return wRes
+#		#############################
+#		# リアクションチェック
+#		wSubRes = self.OBJ_TwitterFollower.ReactionCheck()
+#		if wSubRes['Result']!=True :
+#			wRes['Reason'] = "ReactionCheck"
+#			gVal.OBJ_L.Log( "B", wRes )
+#			return wRes
 		
 		#############################
-		# いいね監視の実行
-		wResSub = self.OBJ_TwitterFavo.Run()
-		if wResSub['Result']!=True :
-			wRes['Reason'] = "OBJ_TwitterFavo.Run failed"
+		# いいね情報送信
+		wSubRes = self.OBJ_TwitterFollower.SendFavoDate()
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "SendFavoDate"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
@@ -342,6 +345,218 @@ class CLS_TwitterMain():
 		
 		#############################
 		# 完了
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# リアクションツイートチェック
+#####################################################
+###	def ReactionCheck(self):
+	def ReactionTweetCheck( self, inTweet ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "ReactionTweetCheck"
+		
+		wTweet = inTweet
+		
+		wTweet['id'] = str(wTweet['id'])
+		wTweetID = wTweet['id']
+		
+		#############################
+		# チェック対象のツイート表示
+		wStr = '\n' + "--------------------" + '\n' ;
+		wStr = wStr + "チェック中: " + str(wTweet['created_at']) + '\n' ;
+		wStr = wStr + wTweet['text'] + '\n' ;
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# いいねチェック
+		wSubRes = gVal.OBJ_Tw_IF.GetLikesLookup( wTweetID )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "Twitter Error(GetLikesLookup): Tweet ID: " + wTweetID
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		wKeylist = list( wSubRes['Responce'] )
+		for wID in wKeylist :
+			wID = str(wID)
+			###ユーザ単位のリアクションチェック
+			wReactionRes = self.ReactionUserCheck( wSubRes['Responce'][wID], wTweet )
+			if wReactionRes['Result']!=True :
+				wRes['Reason'] = "Twitter Error(ReactionUserCheck): Tweet ID: " + wTweetID
+				gVal.OBJ_L.Log( "B", wRes )
+				continue
+			if wReactionRes['Responce']==True :
+				wStr = "〇いいね検出: " + wSubRes['Responce'][wID]['screen_name'] ;
+				CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# リツイートチェック
+		wSubRes = gVal.OBJ_Tw_IF.GetRetweetLookup( wTweetID )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "Twitter Error(GetRetweetLookup): Tweet ID: " + wTweetID
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		wKeylist = list( wSubRes['Responce'] )
+		for wID in wKeylist :
+			wID = str(wID)
+			###ユーザ単位のリアクションチェック
+			wReactionRes = self.ReactionUserCheck( wSubRes['Responce'][wID], wTweet )
+			if wReactionRes['Result']!=True :
+				wRes['Reason'] = "Twitter Error(ReactionUserCheck 2): Tweet ID: " + wTweetID
+				gVal.OBJ_L.Log( "B", wRes )
+				continue
+			if wReactionRes['Responce']==True :
+				wStr = "〇リツイート検出: " + wSubRes['Responce'][wID]['screen_name'] ;
+				CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# 引用リツイートチェック
+		wSubRes = gVal.OBJ_Tw_IF.GetRefRetweetLookup( wTweetID )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "Twitter Error(GetRefRetweetLookup): Tweet ID: " + wTweetID
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		wKeylist = list( wSubRes['Responce'] )
+		for wID in wKeylist :
+			wID = str(wID)
+			###ユーザ単位のリアクションチェック
+			wReactionRes = self.ReactionUserCheck( wSubRes['Responce'][wID], wTweet )
+			if wReactionRes['Result']!=True :
+				wRes['Reason'] = "Twitter Error(ReactionUserCheck 3): Tweet ID: " + wTweetID
+				gVal.OBJ_L.Log( "B", wRes )
+				continue
+			if wReactionRes['Responce']==True :
+				wStr = "〇引用リツイート検出: " + wSubRes['Responce'][wID]['screen_name'] ;
+				CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# 正常終了
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# リアクションユーザチェック
+#####################################################
+	def ReactionUserCheck( self, inUser, inTweet ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "ReactionUserCheck"
+		
+		wRes['Responce'] = False
+		
+		wUserID = str(inUser['id'])
+		
+		wFLG_Action = True
+		#############################
+		# リアクション済みのユーザは除外
+		if wUserID in self.ARR_ReacrionUserID :
+			wFLG_Action = False	#除外
+		
+		#############################
+		# DBからいいね情報を取得する(1個)
+		wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "GetFavoDataOne is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		### DB未登録
+		if wSubRes['Responce']==None :
+			###DBに登録する
+			wSetRes = gVal.OBJ_DB_IF.InsertFavoData( inUser )
+			if wSetRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "InsertFavoData is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "GetFavoDataOne(2) is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			### DB未登録（ありえない）
+			if wSubRes['Responce']==None :
+				wRes['Reason'] = "GetFavoDataOne(3) is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+		
+		wARR_DBData = wSubRes['Responce']
+		
+		wTweetID = str( inTweet['id'] )
+		#############################
+		# 同じアクションはノーリアクション
+		if wARR_DBData['favo_id']==wTweetID :
+			wFLG_Action = False	#除外
+		
+		#############################
+		# 前のリアクションより最新なら新アクション
+		wSubRes = CLS_OSIF.sCmpTime( inTweet['created_at'], inDstTD=wARR_DBData['favo_date'] )
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "sCmpTime is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		if wSubRes['Future']==False :
+			wFLG_Action = False	#除外
+		
+		#############################
+		# リアクション禁止ユーザか
+		if wARR_DBData['screen_name'] in gVal.DEF_STR_NOT_REACTION :
+			if wFLG_Action==True :
+				### 除外してない場合
+				
+				### いいね情報を更新する
+				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData( inUser, inTweet, wARR_DBData, False )
+				if wSubRes['Result']!=True :
+					###失敗
+					wRes['Reason'] = "UpdateFavoData is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				wStr = "●リアクション禁止: " + wARR_DBData['screen_name'] + '\n'
+				CLS_OSIF.sPrn( wStr )
+			
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# アクションが有効なら、リアクション済みにする
+		if wFLG_Action==True :
+			#############################
+			# いいね情報を更新する
+			wSubRes = gVal.OBJ_DB_IF.UpdateFavoData( inUser, inTweet, wARR_DBData )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "UpdateFavoData is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			
+			#############################
+			# リアクション済みID
+			self.ARR_ReacrionUserID.append( inUser['id'] )
+			
+			#############################
+			# トラヒック計測：リアクション獲得数
+			gVal.STR_TrafficInfo['get_reaction'] += 1
+			
+			#############################
+			# リアクション済み
+			wRes['Responce'] = True
+		
 		wRes['Result'] = True
 		return wRes
 
