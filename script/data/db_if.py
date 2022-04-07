@@ -733,8 +733,14 @@ class CLS_DB_IF() :
 				return wRes
 			
 			#############################
+			# 辞書型に整形
+			wARR_RateFavoData = {}
+			self.OBJ_DB.ChgDict( wResDB['Responce']['Collum'], wResDB['Responce']['Data'], outDict=wARR_RateFavoData )
+			wARR_RateFavoData = wARR_RateFavoData[0]
+			
+			#############################
 			# 削除対象か
-			wGetLag = CLS_OSIF.sTimeLag( str( wResDB['Responce']['Data']['favo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['favoDataDelSec'] )
+			wGetLag = CLS_OSIF.sTimeLag( str( wARR_RateFavoData['favo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['favoDataDelSec'] )
 			if wGetLag['Result']!=True :
 				wRes['Reason'] = "sTimeLag failed"
 				gVal.OBJ_L.Log( "B", wRes )
