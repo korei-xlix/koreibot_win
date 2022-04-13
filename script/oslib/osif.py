@@ -392,6 +392,9 @@ class CLS_OSIF() :
 			wRes['RateDay'] = wRateTime.days
 			wRes['RateSec'] = wRateTime.total_seconds()
 			
+			### 現在から差までの日時
+			wRes['RateTime'] = wTD + timedelta( seconds=inThreshold )
+			
 			if wRes['RateSec'] > inThreshold :
 				wRes['Beyond'] = True	#差あり
 			

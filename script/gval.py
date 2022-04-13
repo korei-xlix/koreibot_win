@@ -121,7 +121,9 @@ class gVal() :
 ###		"favoSendsSec"		: 10,						# いいね送信までの期間      7日 (60x60x24)x7
 		"favoSendsSec"		: 604800,					# いいね送信までの期間      7日 (60x60x24)x7
 		"favoDataDelSec"	: 7776000,					# いいね情報削除までの期間  90日 (60x60x24)x90
-		"favoSendsCnt"		: 1,						# いいね送信対象 いいね回数
+###		"favoSendsCnt"		: 1,						# いいね送信対象 いいね回数
+###		"favoSendsCnt"		: 2,						# いいね送信対象 いいね回数
+		"favoSendsCnt"		: 3,						# いいね送信対象 いいね回数
 		
 		"resetAPISec"		: 900,						# APIリセット周期 15分 60x15
 		"forLockLimSec"		: 120,						# 排他保持時間     2分 60x2 

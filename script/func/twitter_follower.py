@@ -196,7 +196,8 @@ class CLS_TwitterFollower():
 		if wGetLag['Beyond']==False :
 			###期間内
 			###  次へ
-			wStr = "●いいね送信期間外 処理スキップ" + '\n'
+###			wStr = "●いいね送信期間外 処理スキップ" + '\n'
+			wStr = "●いいね送信期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
 			CLS_OSIF.sPrn( wStr )
 			wRes['Result'] = True
 			return wRes
@@ -235,8 +236,13 @@ class CLS_TwitterFollower():
 			wRes['Result'] = True
 			return wRes
 		
+		### 計測開始日付
+		wNowTD = str(wGetLag['InputTime']).split(" ")
+		wNowTD = wNowTD[0]
+		
 		### ヘッダの設定
-		wTrendHeader = "いいね情報(回数)送信"
+		wTrendHeader_Pattern = "いいね情報(回数)送信"
+		wTrendHeader = wTrendHeader_Pattern + " (" + wNowTD + " から" + str(gVal.DEF_STR_TLNUM['favoSendsCnt']) + "回以上)"
 		
 		wSendUserNum = 0
 		wSendTweet = []
@@ -256,7 +262,7 @@ class CLS_TwitterFollower():
 			wID = str( wID )
 			
 			#############################
-			# リアクション 2回以上は送信
+			# リアクション 規定回以上は送信
 			if wARR_RateFavoDate[wID]['now_favo_cnt']>=gVal.DEF_STR_TLNUM['favoSendsCnt'] :
 				
 				wSendCnt += 1
@@ -314,7 +320,8 @@ class CLS_TwitterFollower():
 			for wTweet in wTweetRes['Responce'] :
 				wID = str(wTweet['id'])
 				
-				if wTweet['text'].find( wTrendHeader )==0 :
+###				if wTweet['text'].find( wTrendHeader )==0 :
+				if wTweet['text'].find( wTrendHeader_Pattern )==0 :
 					###日時の変換
 					wTime = CLS_OSIF.sGetTimeformat_Twitter( wTweet['created_at'] )
 					if wTime['Result']!=True :
