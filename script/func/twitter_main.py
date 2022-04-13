@@ -288,6 +288,14 @@ class CLS_TwitterMain():
 			return wRes
 		
 		#############################
+		# リスト通知 リストとユーザの更新
+		wSubRes = self.UpdateListIndUser()
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "UpdateListIndUser error"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
 		# リアクションチェック
 		wSubRes = self.OBJ_TwitterFollower.ReactionCheck()
 		if wSubRes['Result']!=True :
@@ -409,11 +417,18 @@ class CLS_TwitterMain():
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
+###		#############################
+###		# リスト通知の更新
+###		wSubRes = gVal.OBJ_Tw_IF.GetListInd( inUpdate=True )
+###		if wSubRes['Result']!=True :
+###			wRes['Reason'] = "GetListInd error"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
 		#############################
-		# リスト通知の更新
-		wSubRes = gVal.OBJ_Tw_IF.GetListInd( inUpdate=True )
+		# リスト通知 リストとユーザの更新
+		wSubRes = self.UpdateListIndUser()
 		if wSubRes['Result']!=True :
-			wRes['Reason'] = "GetListInd error"
+			wRes['Reason'] = "UpdateListIndUser error"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
@@ -676,7 +691,7 @@ class CLS_TwitterMain():
 		wNowDate = str(gVal.STR_SystemInfo['TimeDate'])
 		wNowDate = wNowDate.split(" ")
 		wNowDate = wNowDate[0]
-		wRateDate = str(inDstTD=inData['list_date'])
+		wRateDate = str(inData['list_date'])
 		wRateDate = wRateDate.split(" ")
 		wRateDate = wRateDate[0]
 		if wNowDate==wRateDate :
@@ -702,6 +717,66 @@ class CLS_TwitterMain():
 		
 		wStr = wStr + "○リスト通知の発行: " + inData['screen_name'] + '\n' ;
 		CLS_OSIF.sPrn( wStr )
+		
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# リスト通知ユーザ更新
+#####################################################
+	def UpdateListIndUser(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "UpdateListIndUser"
+		
+		#############################
+		# 処理時間の更新
+		wSubRes = gVal.OBJ_DB_IF.UpdateListIndDate()
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "UpdateListIndDate Error"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# リスト通知の更新
+		wSubRes = gVal.OBJ_Tw_IF.GetListInd( inUpdate=True )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "GetListInd error"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# まだ今日の場合
+		if wSubRes['Responce']==True :
+###			#############################
+###			# リスト通知の更新
+###			wSubRes = gVal.OBJ_Tw_IF.GetListInd( inUpdate=True )
+###			if wSubRes['Result']!=True :
+###				wRes['Reason'] = "GetListInd error"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			
+			#############################
+			# リスト通知 ユーザの更新
+			wSubRes = gVal.OBJ_Tw_IF.GetListIndUser( inUpdate=True )
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "GetListIndUser error"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+		
+		#############################
+		# 翌日
+		else:
+			wSubRes = gVal.OBJ_Tw_IF.AllClearListInd()
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "AllClearListInd error"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
 		
 		wRes['Result'] = True
 		return wRes

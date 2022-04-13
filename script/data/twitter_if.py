@@ -1456,20 +1456,20 @@ class CLS_Twitter_IF() :
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
 		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Class'] = "CLS_Twitter_IF"
 		wRes['Func']  = "GetListInd"
 		
 		wRes['Responce'] = False
-		#############################
-		# リスト通知が未設定の場合は
-		#   処理を抜ける
-		if gVal.STR_UserInfo['ListName']=="" :
-			wStr = "リスト通知は未設定です" + '\n' ;
-			CLS_OSIF.sPrn( wStr )
-			
-			wRes['Result'] = True
-			return wRes
-		
+###		#############################
+###		# リスト通知が未設定の場合は
+###		#   処理を抜ける
+###		if gVal.STR_UserInfo['ListName']=="" :
+###			wStr = "リスト通知は未設定です" + '\n' ;
+###			CLS_OSIF.sPrn( wStr )
+###			
+###			wRes['Result'] = True
+###			return wRes
+###		
 		#############################
 		# リスト一覧が空なら
 		#   Twitterリスト一覧を取得する
@@ -1493,9 +1493,9 @@ class CLS_Twitter_IF() :
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		if wSubRes['Responce']==False :
-			wStr = "Twitterに存在しないリストです: " + gVal.STR_UserInfo['ListName'] + '\n' ;
-			CLS_OSIF.sPrn( wStr )
-			
+###			wStr = "Twitterに存在しないリストです: " + gVal.STR_UserInfo['ListName'] + '\n' ;
+###			CLS_OSIF.sPrn( wStr )
+###			
 			gVal.STR_UserInfo['ListName'] = ""
 			wRes['Result'] = True
 			return wRes
@@ -1512,7 +1512,7 @@ class CLS_Twitter_IF() :
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
 		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Class'] = "CLS_Twitter_IF"
 		wRes['Func']  = "GetListIndUser"
 		
 		#############################
@@ -1556,7 +1556,7 @@ class CLS_Twitter_IF() :
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
 		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Class'] = "CLS_Twitter_IF"
 		wRes['Func']  = "CheckListInd"
 		
 		wFLG_Detect = False
@@ -1564,7 +1564,8 @@ class CLS_Twitter_IF() :
 		# リストがTwitterにあるか確認
 		wKeylist = list( self.ARR_Lists )
 		for wIndex in wKeylist :
-			if self.ARR_Lists[wIndex]['name']==gVal.STR_UserInfo['ListName'] :
+###			if self.ARR_Lists[wIndex]['name']==gVal.STR_UserInfo['ListName'] :
+			if self.ARR_Lists[wIndex]['name']==inListName :
 				wFLG_Detect = True
 				break
 		
@@ -1630,10 +1631,10 @@ class CLS_Twitter_IF() :
 		wRes['Func']  = "ClearListInd"
 		
 		#############################
-		# リスト通知の更新
-		wSubRes = self.GetListInd( inUpdate=True )
+		# リスト通知 ユーザの更新
+		wSubRes = self.GetListIndUser( inUpdate=True )
 		if wSubRes['Result']!=True :
-			wRes['Reason'] = "GetListInd error"
+			wRes['Reason'] = "GetListIndUser error"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		

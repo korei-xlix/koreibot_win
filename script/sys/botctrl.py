@@ -207,7 +207,10 @@ class CLS_BotCtrl():
 		
 		#############################
 		# リスト通知
+		if wChgDict[0]['listname']==None :
+			wChgDict[0]['listname'] = ""
 		gVal.STR_UserInfo['ListName'] = wChgDict[0]['listname']
+		
 		if wChgDict[0]['listdate']=="" or \
 		   wChgDict[0]['listdate']==None :
 			### 初期化

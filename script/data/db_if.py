@@ -501,13 +501,13 @@ class CLS_DB_IF() :
 			##失敗
 			wRes['Reason'] = "同じリスト名"
 			gVal.OBJ_L.Log( "D", wRes )
-			return False
+			return wRes
 		
 		if inListName=="" or inListName==None :
 			##失敗
 			wRes['Reason'] = "登録不可の文字列: " + inListName
 			gVal.OBJ_L.Log( "D", wRes )
-			return False
+			return wRes
 		
 		wQuery = "update tbl_user_data set " + \
 				"listname = '" + inListName + "' " + \
@@ -519,7 +519,7 @@ class CLS_DB_IF() :
 			##失敗
 			wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
 			gVal.OBJ_L.Log( "B", wRes )
-			return False
+			return wRes
 		
 		gVal.STR_UserInfo['ListName'] = inListName
 		
@@ -538,6 +538,8 @@ class CLS_DB_IF() :
 		wRes['Class'] = "CLS_DB_IF"
 		wRes['Func']  = "UpdateListInd"
 		
+		wRes['Responce'] = False
+		
 		wQuery = "update tbl_user_data set " + \
 				"listdate = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
 				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
@@ -549,6 +551,19 @@ class CLS_DB_IF() :
 			wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
 			gVal.OBJ_L.Log( "B", wRes )
 			return False
+		
+		#############################
+		# 日付を跨いだか
+		wNowDate = str(gVal.STR_SystemInfo['TimeDate'])
+		wNowDate = wNowDate.split(" ")
+		wNowDate = wNowDate[0]
+		wRateDate = str(gVal.STR_UserInfo['ListDate'])
+		wRateDate = wRateDate.split(" ")
+		wRateDate = wRateDate[0]
+		if wNowDate!=wRateDate :
+			### 翌日
+			wRes['Responce'] = True
+		gVal.STR_UserInfo['ListDate'] = str(gVal.STR_SystemInfo['TimeDate'])
 		
 		wStr = "リスト通知日時を更新しました。" + '\n'
 		CLS_OSIF.sPrn( wStr )
@@ -594,6 +609,7 @@ class CLS_DB_IF() :
 		wQuery = wQuery + "0, "
 		wQuery = wQuery + "0, "
 		wQuery = wQuery + "'(none)', "
+		wQuery = wQuery + "'" + wDefTimeDate + "', "
 		wQuery = wQuery + "'" + wDefTimeDate + "' "
 		
 		wQuery = wQuery + ") ;"
