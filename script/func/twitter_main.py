@@ -648,8 +648,60 @@ class CLS_TwitterMain():
 			gVal.STR_TrafficInfo['get_reaction'] += 1
 			
 			#############################
+			# リスト通知をおこなう
+			if gVal.STR_UserInfo['ListName']!="" :
+				wSubRes = self.__ReactionUserCheck_ListInd( wUserID, wARR_DBData )
+				if wSubRes['Result']!=True :
+					###失敗
+					wRes['Reason'] = "__ReactionUserCheck_ListInd is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+			
+			#############################
 			# リアクション済み
 			wRes['Responce'] = True
+		
+		wRes['Result'] = True
+		return wRes
+
+	def __ReactionUserCheck_ListInd( self, inID, inData ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "__ReactionUserCheck_ListInd"
+		
+		#############################
+		# 今日以外なら通知する
+		wNowDate = str(gVal.STR_SystemInfo['TimeDate'])
+		wNowDate = wNowDate.split(" ")
+		wNowDate = wNowDate[0]
+		wRateDate = str(inDstTD=inData['list_date'])
+		wRateDate = wRateDate.split(" ")
+		wRateDate = wRateDate[0]
+		if wNowDate==wRateDate :
+			### 今日なので通知しない
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# リストがTwitterにあるか確認
+		wSubRes = gVal.OBJ_Tw_IF.InserttListIndUser( inID )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error(InserttListIndUser): " + wSubRes['Reason']
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# DBに登録する
+		wSubRes = gVal.OBJ_DB_IF.UpdateListIndData( inData )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "UpdateListIndData Error"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		wStr = wStr + "○リスト通知の発行: " + inData['screen_name'] + '\n' ;
+		CLS_OSIF.sPrn( wStr )
 		
 		wRes['Result'] = True
 		return wRes

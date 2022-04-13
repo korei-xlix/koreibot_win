@@ -711,6 +711,34 @@ class CLS_DB_IF() :
 		return wRes
 
 	#####################################################
+	def UpdateListIndData( self, inUser ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "UpdateListIndData"
+		
+		wID = inUser['id']
+		#############################
+		# 更新
+		wQuery = "update tbl_favouser_data set " + \
+					"list_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
+					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
+					" and id = '" + str(wID) + "' ;"
+		
+		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+		if wResDB['Result']!=True :
+			wRes['Reason'] = "Run Query is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
 	def SendedFavoData( self, inID, inCnt=-1 ):
 		#############################
 		# 応答形式の取得

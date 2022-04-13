@@ -1585,9 +1585,18 @@ class CLS_Twitter_IF() :
 		
 		wID = str( inID )
 		
-
-
-
+		#############################
+		# リストがTwitterにあるか確認
+		wSubRes = self.CheckListInd( gVal.STR_UserInfo['ListName'] )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		if wSubRes['Responce']==False :
+			wRes['Reason'] = "Twitter List not found: " + gVal.STR_UserInfo['ListName']
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
 		#############################
 		# リスト通知に存在するか？
 		if wID in self.ARR_ListIndUserID :
