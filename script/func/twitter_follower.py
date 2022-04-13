@@ -270,7 +270,7 @@ class CLS_TwitterFollower():
 				# 1行設定
 				wLine = "@" + wARR_RateFavoDate[wID]['screen_name'] + " : " + \
 				        str(wARR_RateFavoDate[wID]['now_favo_cnt']) + \
-				        "(" + str(wARR_RateFavoDate[wID]['now_favo_cnt']) + ")" + '\n'
+				        "(" + str(wARR_RateFavoDate[wID]['favo_cnt']) + ")" + '\n'
 				
 				wFLG_Header = False
 				if ( len( wSendTweet[wSendTweetIndex] ) + len( wLine ) + len( wTrendTag ) )<140 :
@@ -279,9 +279,6 @@ class CLS_TwitterFollower():
 					### タグの付加
 					wSendTweet[wSendTweetIndex] = wSendTweet[wSendTweetIndex] + wTrendTag
 					
-
-					print( "xxx2: " + str(wSendTweet[wSendTweetIndex]) )
-
 					### 次のリストにヘッダの設定
 					wSendTweet.append( wTrendHeader + '\n' + wLine )
 					wSendTweetIndex += 1

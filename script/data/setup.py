@@ -323,6 +323,8 @@ class CLS_Setup():
 ###					"send_cnt      送信回数(累計)
 ###					"favo_cnt      いいね回数(累計)
 ###					"now_favo_cnt  いいね回数(前回記録～現在まで)
+###					"favo_id       最終いいねツイートID
+###					"favo_date     最終いいねツイート日時
 ###
 		inOBJ_DB.RunQuery( wQuery )
 		return
