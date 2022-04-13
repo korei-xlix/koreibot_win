@@ -319,7 +319,10 @@ class CLS_DB_IF() :
 						"'" + inUserData['Bearer'] + "'," + \
 						"False," + \
 						"'" + str(wTD['TimeDate']) + "'," + \
-						"'' " + \
+						"''," + \
+						"'" + str(wTD['TimeDate']) + "'," + \
+						"''," + \
+						"'" + str(wTD['TimeDate']) + "' " + \
 						") ;"
 			
 			wResDB = self.OBJ_DB.RunQuery( wQuery )

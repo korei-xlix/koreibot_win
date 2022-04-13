@@ -244,6 +244,8 @@ class CLS_Setup():
 					"lupdate     TIMESTAMP," + \
 					"trendtag    TEXT," + \
 					"favodate    TIMESTAMP," + \
+					"listname    TEXT," + \
+					"listdate    TIMESTAMP," + \
 					" PRIMARY KEY ( twitterid ) ) ;"
 
 ##					"twitterid   記録したユーザ(Twitter ID)
@@ -253,6 +255,11 @@ class CLS_Setup():
 ##					"accsecret   Twitter Devで取ったAccess Token secret
 ##					"locked      
 ##					"lupdate     
+##					"trendtag    トレンド送信タグ
+##					"favodate    いいね送信日時
+##					"listname    リスト通知 リスト名
+##					"listdate    リスト通知日時
+##
 		inOBJ_DB.RunQuery( wQuery )
 		return
 
@@ -311,7 +318,8 @@ class CLS_Setup():
 					"favo_cnt      INTEGER DEFAULT 0," + \
 					"now_favo_cnt  INTEGER DEFAULT 0," + \
 					"favo_id       TEXT  NOT NULL," + \
-					"favo_date     TIMESTAMP " + \
+					"favo_date     TIMESTAMP," + \
+					"list_date     TIMESTAMP " + \
 					" ) ;"
 		
 ##					"twitterid   記録したユーザ(Twitter ID)
@@ -325,6 +333,7 @@ class CLS_Setup():
 ###					"now_favo_cnt  いいね回数(前回記録～現在まで)
 ###					"favo_id       最終いいねツイートID
 ###					"favo_date     最終いいねツイート日時
+###					"list_date     リスト通知日時
 ###
 		inOBJ_DB.RunQuery( wQuery )
 		return
