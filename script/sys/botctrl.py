@@ -206,6 +206,15 @@ class CLS_BotCtrl():
 		gVal.STR_UserInfo['FavoDate'] = wChgDict[0]['favodate']
 		
 		#############################
+		# リスト通知
+		gVal.STR_UserInfo['ListName'] = wChgDict[0]['listname']
+		if wChgDict[0]['listdate']=="" or \
+		   wChgDict[0]['listdate']==None :
+			### 初期化
+			wChgDict[0]['listdate'] = str(wTD['TimeDate'])
+		gVal.STR_UserInfo['ListDate'] = wChgDict[0]['listdate']
+		
+		#############################
 		# システム情報の取得
 		wCLS_work = CLS_OSIF()
 		gVal.STR_SystemInfo['PythonVer'] = wCLS_work.Get_PythonVer()

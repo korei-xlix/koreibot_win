@@ -57,7 +57,10 @@ class gVal() :
 		"id"		: "",			#Twitter ID(番号)
 		"Traffic"	: False,		#Twitterにトラヒックを報告するか
 		"TrendTag"	: "",			#トレンドタグ設定
-		"FavoDate"	: None			#いいね者送信日時(直近)
+		"FavoDate"	: None,			#いいね者送信日時(直近)
+		
+		"ListName"	: "",			#リスト通知 リスト名
+		"ListDate"	: None			#リスト通知日時
 	}
 
 #############################

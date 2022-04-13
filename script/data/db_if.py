@@ -487,6 +487,78 @@ class CLS_DB_IF() :
 
 
 #####################################################
+# リスト通知設定
+#####################################################
+	def SetListInd( self, inListName ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "SetListInd"
+		
+		if gVal.STR_UserInfo['ListName']==inListName :
+			##失敗
+			wRes['Reason'] = "同じリスト名"
+			gVal.OBJ_L.Log( "D", wRes )
+			return False
+		
+		if inListName=="" or inListName==None :
+			##失敗
+			wRes['Reason'] = "登録不可の文字列: " + inListName
+			gVal.OBJ_L.Log( "D", wRes )
+			return False
+		
+		wQuery = "update tbl_user_data set " + \
+				"listname = '" + inListName + "' " + \
+				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "B", wRes )
+			return False
+		
+		gVal.STR_UserInfo['ListName'] = inListName
+		
+		wStr = "リスト通知設定を更新しました。" + '\n'
+		CLS_OSIF.sPrn( wStr )
+		
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def UpdateListIndDate(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "UpdateListInd"
+		
+		wQuery = "update tbl_user_data set " + \
+				"listdate = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
+				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "B", wRes )
+			return False
+		
+		wStr = "リスト通知日時を更新しました。" + '\n'
+		CLS_OSIF.sPrn( wStr )
+		
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
 # いいね情報
 #####################################################
 	def InsertFavoData( self, inUser ):

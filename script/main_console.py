@@ -168,6 +168,11 @@ class CLS_Main_Console() :
 		elif inCommand=="\\tc" :
 			cls.OBJ_TwitterMain.SetTrendTag()
 		
+		#############################
+		# リスト通知設定
+		elif inCommand=="\\lc" :
+			cls.OBJ_TwitterMain.SetListInd()
+		
 	#####################################################
 		#############################
 		# ログの表示(異常ログ)
