@@ -737,7 +737,7 @@ class CLS_TwitterMain():
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-		wStr = wStr + "○リスト通知の発行: " + inData['screen_name'] + '\n' ;
+		wStr = "○リスト通知の発行: " + inData['screen_name'] + '\n' ;
 		CLS_OSIF.sPrn( wStr )
 		
 		wRes['Result'] = True
