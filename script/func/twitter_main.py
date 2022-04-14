@@ -289,7 +289,7 @@ class CLS_TwitterMain():
 		
 		#############################
 		# リスト通知 リストとユーザの更新
-		wSubRes = self.UpdateListIndUser()
+		wSubRes = self.UpdateListIndUser( inUpdate=True )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "UpdateListIndUser error"
 			gVal.OBJ_L.Log( "B", wRes )
@@ -445,7 +445,7 @@ class CLS_TwitterMain():
 ###			return wRes
 		#############################
 		# リスト通知 リストとユーザの更新
-		wSubRes = self.UpdateListIndUser()
+		wSubRes = self.UpdateListIndUser( inUpdate=True )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "UpdateListIndUser error"
 			gVal.OBJ_L.Log( "B", wRes )
@@ -684,7 +684,8 @@ class CLS_TwitterMain():
 			#############################
 			# リスト通知をおこなう
 			if gVal.STR_UserInfo['ListName']!="" :
-				wSubRes = self.__ReactionUserCheck_ListInd( wUserID, wARR_DBData )
+###				wSubRes = self.__ReactionUserCheck_ListInd( wUserID, wARR_DBData )
+				wSubRes = self.__ReactionUserCheck_ListInd( wARR_DBData )
 				if wSubRes['Result']!=True :
 					###失敗
 					wRes['Reason'] = "__ReactionUserCheck_ListInd is failed"
@@ -697,7 +698,8 @@ class CLS_TwitterMain():
 		wRes['Result'] = True
 		return wRes
 
-	def __ReactionUserCheck_ListInd( self, inID, inData ):
+###	def __ReactionUserCheck_ListInd( self, inID, inData ):
+	def __ReactionUserCheck_ListInd( self, inData ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -720,7 +722,8 @@ class CLS_TwitterMain():
 		
 		#############################
 		# リストがTwitterにあるか確認
-		wSubRes = gVal.OBJ_Tw_IF.InserttListIndUser( inID )
+###		wSubRes = gVal.OBJ_Tw_IF.InserttListIndUser( inID )
+		wSubRes = gVal.OBJ_Tw_IF.InserttListIndUser( inData )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "Twitter API Error(InserttListIndUser): " + wSubRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
@@ -745,7 +748,8 @@ class CLS_TwitterMain():
 #####################################################
 # リスト通知ユーザ更新
 #####################################################
-	def UpdateListIndUser(self):
+###	def UpdateListIndUser(self):
+	def UpdateListIndUser( self, inUpdate=False ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -763,7 +767,8 @@ class CLS_TwitterMain():
 		
 		#############################
 		# リスト通知の更新
-		wSubRes = gVal.OBJ_Tw_IF.GetListInd( inUpdate=True )
+###		wSubRes = gVal.OBJ_Tw_IF.GetListInd( inUpdate=True )
+		wSubRes = gVal.OBJ_Tw_IF.GetListInd( inUpdate=inUpdate )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "GetListInd error"
 			gVal.OBJ_L.Log( "B", wRes )
@@ -782,7 +787,8 @@ class CLS_TwitterMain():
 ###			
 			#############################
 			# リスト通知 ユーザの更新
-			wSubRes = gVal.OBJ_Tw_IF.GetListIndUser( inUpdate=True )
+###			wSubRes = gVal.OBJ_Tw_IF.GetListIndUser( inUpdate=True )
+			wSubRes = gVal.OBJ_Tw_IF.GetListIndUser( inUpdate=inUpdate )
 			if wSubRes['Result']!=True :
 				wRes['Reason'] = "GetListIndUser error"
 				gVal.OBJ_L.Log( "B", wRes )
@@ -796,6 +802,27 @@ class CLS_TwitterMain():
 				wRes['Reason'] = "AllClearListInd error"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
+		
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	# リスト通知ユーザ表示
+	def ViewListIndUser(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "ViewListIndUser"
+		
+		#############################
+		# リスト通知の表示
+		wSubRes = gVal.OBJ_Tw_IF.ViewListIndUser()
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "ViewListIndUser error"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
 		
 		wRes['Result'] = True
 		return wRes

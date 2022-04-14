@@ -26,7 +26,8 @@ class CLS_Twitter_IF() :
 	DEF_VAL_SLEEP = 10			#Twitter処理遅延（秒）
 
 	ARR_Lists = {}			#リスト一覧
-	ARR_ListIndUserID = []	#リスト通知のユーザID
+###	ARR_ListIndUserID = []	#リスト通知のユーザID(screen_name
+	ARR_ListIndUser = {}	#リスト通知のユーザ
 
 #####################################################
 # Init
@@ -1530,8 +1531,10 @@ class CLS_Twitter_IF() :
 		#############################
 		# リスト通知のユーザIDが空なら
 		#   ユーザ一覧を取得する
-		if len(self.ARR_ListIndUserID)==0 or inUpdate==True :
-			self.ARR_ListIndUserID = []
+###		if len(self.ARR_ListIndUserID)==0 or inUpdate==True :
+###			self.ARR_ListIndUserID = []
+		if len(self.ARR_ListIndUser)==0 or inUpdate==True :
+			self.ARR_ListIndUser = {}
 			
 			wSubRes = self.OBJ_Twitter.GetListMember( gVal.STR_UserInfo['ListName'] )
 			if wSubRes['Result']!=True :
@@ -1539,10 +1542,19 @@ class CLS_Twitter_IF() :
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			
+###			wIndex = 0
 			for wLine in wSubRes['Responce'] :
-				self.ARR_ListIndUserID.append( str( wLine['id'] ) )
+###				self.ARR_ListIndUserID.append( str( wLine['id'] ) )
+###				self.ARR_ListIndUserID.append( str( wLine['screen_name'] ) )
+				wCell = {
+					"id"          : str( wLine['id'] ),
+					"screen_name" : wLine['screen_name']
+				}
+				self.ARR_ListIndUser.update({ str(wLine['id']) : wCell })
+###				wIndex += 1
 			
-			wStr = "リスト通知ユーザIDを取得しました: " + str( len(self.ARR_ListIndUserID) ) + ".件" + '\n' ;
+###			wStr = "リスト通知ユーザIDを取得しました: " + str( len(self.ARR_ListIndUserID) ) + ".件" + '\n' ;
+			wStr = "リスト通知ユーザIDを取得しました: " + str( len(self.ARR_ListIndUser) ) + ".件" + '\n' ;
 			CLS_OSIF.sPrn( wStr )
 		
 		wRes['Result'] = True
@@ -1576,7 +1588,8 @@ class CLS_Twitter_IF() :
 #####################################################
 # リスト通知 追加
 #####################################################
-	def InserttListIndUser( self, inID ):
+###	def InserttListIndUser( self, inID ):
+	def InserttListIndUser( self, inUser ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -1584,7 +1597,9 @@ class CLS_Twitter_IF() :
 		wRes['Class'] = "CLS_Twitter_IF"
 		wRes['Func']  = "InserttListIndUser"
 		
-		wID = str( inID )
+###		wID = str( inID )
+		wID = str( inUser['id'] )
+###		wScreenName = str( inUser['screen_name'] )
 		
 		#############################
 		# リストがTwitterにあるか確認
@@ -1600,8 +1615,13 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# リスト通知に存在するか？
-		if wID in self.ARR_ListIndUserID :
-			wRes['Reason'] = "ARR_ListIndUserID in exist User ID: " + wID
+###		if wID in self.ARR_ListIndUserID :
+###			wRes['Reason'] = "ARR_ListIndUserID in exist User ID: " + wID
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+		wKeylist = list( self.ARR_ListIndUser )
+		if wID in wKeylist :
+			wRes['Reason'] = "ARR_ListIndUser in exist User ID: " + inUser['screen_name']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
@@ -1614,7 +1634,12 @@ class CLS_Twitter_IF() :
 			return wRes
 		
 		### 追加
-		self.ARR_ListIndUserID.append( wID )
+###		self.ARR_ListIndUserID.append( wID )
+		wCell = {
+			"id"          : wID,
+			"screen_name" : inUser['screen_name']
+		}
+		self.ARR_ListIndUser.update({ wID : wCell })
 		
 		wRes['Result'] = True
 		return wRes
@@ -1640,19 +1665,72 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# 全クリア
-		for wID in self.ARR_ListIndUserID :
+###		for wID in self.ARR_ListIndUserID :
+		wKeylist = list( self.ARR_ListIndUser )
+		for wID in wKeylist :
 			wSubRes = self.OBJ_Twitter.RemoveUserList( gVal.STR_UserInfo['ListName'], wID )
 			if wSubRes['Result']!=True :
-				wRes['Reason'] = "Twitter API Error(RemoveUserList): " + wSubRes['Reason'] + " : List Name=" + gVal.STR_UserInfo['ListName'] + " id=" + wID
+				wRes['Reason'] = "Twitter API Error(RemoveUserList): " + wSubRes['Reason'] + " : List Name=" + gVal.STR_UserInfo['ListName'] + " user id=" + self.ARR_ListIndUser[wID]['screen_name']
 				gVal.OBJ_L.Log( "B", wRes )
 				continue
 		
 		wStr = "リスト通知を全クリアしました" + '\n' ;
 		CLS_OSIF.sPrn( wStr )
 		
-		self.ARR_ListIndUserID = []
+###		self.ARR_ListIndUserID = []
+		self.ARR_ListIndUser = {}
 		wRes['Result'] = True
 		return wRes
 
+#####################################################
+# リスト通知 表示
+#####################################################
+	def ViewListIndUser(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_Twitter_IF"
+		wRes['Func']  = "ViewListIndUser"
+		
+		#############################
+		# リスト通知が未設定の場合は
+		#   処理を抜ける
+		if gVal.STR_UserInfo['ListName']=="" :
+			wStr = "リスト通知は未設定です" + '\n' ;
+			CLS_OSIF.sPrn( wStr )
+			
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# リスト一覧
+		wStr = '\n' + "--------------------" + '\n' ;
+		wStr = wStr + "Twitterリスト一覧" + '\n' + '\n' ;
+		CLS_OSIF.sPrn( wStr )
+		
+		wKeylist = list( self.ARR_Lists )
+		wStr = ""
+		for wIndex in wKeylist :
+			wStr = wStr + str(self.ARR_Lists[wIndex]['id']) + " : "
+			wStr = wStr + str(self.ARR_Lists[wIndex]['name']) + '\n'
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# ユーザ一覧
+		wStr = '\n' + "--------------------" + '\n' ;
+		wStr = wStr + "リスト通知ユーザ一覧" + '\n' + '\n' ;
+		CLS_OSIF.sPrn( wStr )
+		
+		wStr = ""
+###		for wID in self.ARR_ListIndUserID :
+		wKeylist = list( self.ARR_ListIndUser )
+		for wID in wKeylist :
+###			wStr = wStr + wID + '\n'
+			wStr = wStr + self.ARR_ListIndUser[wID]['screen_name'] + '\n'
+		CLS_OSIF.sPrn( wStr )
+		
+		wRes['Result'] = True
+		return wRes
 
 
