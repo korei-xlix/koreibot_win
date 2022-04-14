@@ -1646,7 +1646,7 @@ class CLS_Twitter_IF() :
 ###			wRes['Reason'] = "ARR_ListIndUser in exist User ID: " + inUser['screen_name']
 ###			gVal.OBJ_L.Log( "B", wRes )
 ###			return wRes
-		wSubRes = CheckListIndUser( inID=wID )
+		wSubRes = self.CheckListIndUser( inID=wID )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )

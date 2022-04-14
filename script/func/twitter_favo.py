@@ -79,6 +79,7 @@ class CLS_TwitterFavo():
 		self.OBJ_Parent.Wait_Init( inZanNum=len( wARR_Tw_ID ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
 		
 		wRemTweet = 0
+		wCancelNum = 0
 		#############################
 		# 期間を過ぎたいいねを解除していく
 		for wID in wARR_Tw_ID :
@@ -107,8 +108,14 @@ class CLS_TwitterFavo():
 				###  次へ
 				wStr = "○解除対象外: " + str(wARR_TwData[wID]['created_at'])
 				CLS_OSIF.sPrn( wStr )
+###				continue
+				wCancelNum += 1
+				if gVal.DEF_STR_TLNUM['favoCancelNum']<=wCancelNum :
+					### 規定回数のスキップなので処理停止
+					break
 				continue
 			
+			wCancelNum = 0
 			###  いいねを外す
 			wRemoveRes = gVal.OBJ_Tw_IF.FavoRemove( wID )
 			if wRemoveRes['Result']!=True :

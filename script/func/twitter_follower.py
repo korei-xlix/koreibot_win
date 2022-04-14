@@ -52,7 +52,7 @@ class CLS_TwitterFollower():
 		# 取得可能時間か？
 		if self.OBJ_Parent.CHR_GetReactionDate!=None :
 			### 範囲時間内のツイートか
-			wGetLag = CLS_OSIF.sTimeLag( str( self.CHR_GetReactionDate ), inThreshold=gVal.DEF_STR_TLNUM['forReactionSec'] )
+			wGetLag = CLS_OSIF.sTimeLag( str( self.OBJ_Parent.CHR_GetReactionDate ), inThreshold=gVal.DEF_STR_TLNUM['forReactionSec'] )
 			if wGetLag['Result']!=True :
 				wRes['Reason'] = "sTimeLag failed"
 				gVal.OBJ_L.Log( "B", wRes )
