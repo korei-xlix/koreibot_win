@@ -1586,6 +1586,27 @@ class CLS_Twitter_IF() :
 		return wRes
 
 #####################################################
+# リスト通知 ユーザチェック
+#####################################################
+	def CheckListIndUser( self, inID ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_Twitter_IF"
+		wRes['Func']  = "CheckListIndUser"
+		
+		wFLG_Detect = False
+		#############################
+		# リスト通知ユーザがTwitterにあるか確認
+		if inID in self.ARR_ListIndUser :
+			wFLG_Detect = True
+		
+		wRes['Responce'] = wFLG_Detect
+		wRes['Result'] = True
+		return wRes
+
+#####################################################
 # リスト通知 追加
 #####################################################
 ###	def InserttListIndUser( self, inID ):
@@ -1601,6 +1622,7 @@ class CLS_Twitter_IF() :
 		wID = str( inUser['id'] )
 ###		wScreenName = str( inUser['screen_name'] )
 		
+		wRes['Responce'] = False
 		#############################
 		# リストがTwitterにあるか確認
 		wSubRes = self.CheckListInd( gVal.STR_UserInfo['ListName'] )
@@ -1619,10 +1641,22 @@ class CLS_Twitter_IF() :
 ###			wRes['Reason'] = "ARR_ListIndUserID in exist User ID: " + wID
 ###			gVal.OBJ_L.Log( "B", wRes )
 ###			return wRes
-		wKeylist = list( self.ARR_ListIndUser )
-		if wID in wKeylist :
-			wRes['Reason'] = "ARR_ListIndUser in exist User ID: " + inUser['screen_name']
+###		wKeylist = list( self.ARR_ListIndUser )
+###		if wID in wKeylist :
+###			wRes['Reason'] = "ARR_ListIndUser in exist User ID: " + inUser['screen_name']
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+		wSubRes = CheckListIndUser( inID=wID )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		if wSubRes['Responce']==False :
+###			wStr = "●リスト通知登録済み: " + self.ARR_ListIndUser[wID]['screen_name'] + '\n' ;
+###			CLS_OSIF.sPrn( wStr )
+###			
+			### リスト通知済み
+			wRes['Result'] = True
 			return wRes
 		
 		#############################
@@ -1641,6 +1675,7 @@ class CLS_Twitter_IF() :
 		}
 		self.ARR_ListIndUser.update({ wID : wCell })
 		
+		wRes['Responce'] = True
 		wRes['Result'] = True
 		return wRes
 
