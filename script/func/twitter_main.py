@@ -340,7 +340,26 @@ class CLS_TwitterMain():
 # トレンドツイート
 #####################################################
 	def TrendTweet(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "TrendTweet"
+		
+		#############################
+		# リスト通知 リストとユーザの更新
+		wSubRes = self.UpdateListIndUser()
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "UpdateListIndUser error"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
 		wRes = self.OBJ_TwitterKeyword.TrendTweet()
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
 		return wRes
 
 
