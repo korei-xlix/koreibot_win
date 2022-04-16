@@ -86,7 +86,8 @@ class CLS_TwitterKeyword():
 		wARR_Trend = wTrendRes['Responce']['trends']
 		wStr  = ""
 		wJuni = 0
-		wKeylist = list( wARR_Trend )
+###		wKeylist = list( wARR_Trend )
+		wKeylist = list( wARR_Trend.keys() )
 		for wIndex in wKeylist :
 			if wARR_Trend[wIndex]['promoted_content']!=None :
 				# プロモは除外

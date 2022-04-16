@@ -510,7 +510,8 @@ class CLS_TwitterMain():
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-		wKeylist = list( wSubRes['Responce'] )
+###		wKeylist = list( wSubRes['Responce'] )
+		wKeylist = list( wSubRes['Responce'].keys() )
 		for wID in wKeylist :
 			wID = str(wID)
 			###ユーザ単位のリアクションチェック
@@ -531,7 +532,8 @@ class CLS_TwitterMain():
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-		wKeylist = list( wSubRes['Responce'] )
+###		wKeylist = list( wSubRes['Responce'] )
+		wKeylist = list( wSubRes['Responce'].keys() )
 		for wID in wKeylist :
 			wID = str(wID)
 			###ユーザ単位のリアクションチェック
@@ -552,7 +554,8 @@ class CLS_TwitterMain():
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-		wKeylist = list( wSubRes['Responce'] )
+###		wKeylist = list( wSubRes['Responce'] )
+		wKeylist = list( wSubRes['Responce'].keys() )
 		for wID in wKeylist :
 			wID = str(wID)
 			###ユーザ単位のリアクションチェック
@@ -717,6 +720,9 @@ class CLS_TwitterMain():
 		wRateDate = wRateDate[0]
 		if wNowDate==wRateDate :
 			### 今日なので通知しない
+			wStr = "●今日は通知済み: " + inData['screen_name'] + '\n' ;
+			CLS_OSIF.sPrn( wStr )
+			
 			wRes['Result'] = True
 			return wRes
 		
@@ -728,7 +734,8 @@ class CLS_TwitterMain():
 			wRes['Reason'] = "Twitter API Error(InserttListIndUser): " + wSubRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		if wSubRes['Responce']==False :
+###		if wSubRes['Responce']==False :
+		if wSubRes['Responce']==True :
 			### 既に登録済み
 			wStr = "●リスト通知済み: " + inData['screen_name'] + '\n' ;
 			CLS_OSIF.sPrn( wStr )
@@ -771,6 +778,7 @@ class CLS_TwitterMain():
 			wRes['Reason'] = "UpdateListIndDate Error"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
+		wFLG_NextDay = wSubRes['Responce']
 		
 		#############################
 		# リスト通知の更新
@@ -783,7 +791,8 @@ class CLS_TwitterMain():
 		
 		#############################
 		# まだ今日の場合
-		if wSubRes['Responce']==True :
+###		if wSubRes['Responce']==True :
+		if wFLG_NextDay==False :
 ###			#############################
 ###			# リスト通知の更新
 ###			wSubRes = gVal.OBJ_Tw_IF.GetListInd( inUpdate=True )

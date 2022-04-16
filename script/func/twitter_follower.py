@@ -123,7 +123,8 @@ class CLS_TwitterFollower():
 		###ウェイト初期化
 		self.OBJ_Parent.Wait_Init( inZanNum=len( wSubRes['Responce'] ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
 		
-		wKeylist = list( wSubRes['Responce'] )
+###		wKeylist = list( wSubRes['Responce'] )
+		wKeylist = list( wSubRes['Responce'].keys() )
 		for wReplyID in wKeylist :
 			###ウェイトカウントダウン
 			if self.OBJ_Parent.Wait_Next()==False :
@@ -257,7 +258,8 @@ class CLS_TwitterFollower():
 			wTrendTag = '\n' + "#" + gVal.STR_UserInfo['TrendTag']
 		
 		wFLG_Header = False
-		wKeylist = list( wARR_RateFavoDate )
+###		wKeylist = list( wARR_RateFavoDate )
+		wKeylist = list( wARR_RateFavoDate.keys() )
 		for wID in wKeylist :
 			wID = str( wID )
 			

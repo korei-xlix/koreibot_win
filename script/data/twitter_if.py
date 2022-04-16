@@ -1574,7 +1574,8 @@ class CLS_Twitter_IF() :
 		wFLG_Detect = False
 		#############################
 		# リストがTwitterにあるか確認
-		wKeylist = list( self.ARR_Lists )
+###		wKeylist = list( self.ARR_Lists )
+		wKeylist = list( self.ARR_Lists.keys() )
 		for wIndex in wKeylist :
 ###			if self.ARR_Lists[wIndex]['name']==gVal.STR_UserInfo['ListName'] :
 			if self.ARR_Lists[wIndex]['name']==inListName :
@@ -1651,7 +1652,8 @@ class CLS_Twitter_IF() :
 			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		if wSubRes['Responce']==False :
+###		if wSubRes['Responce']==False :
+		if wSubRes['Responce']==True :
 ###			wStr = "●リスト通知登録済み: " + self.ARR_ListIndUser[wID]['screen_name'] + '\n' ;
 ###			CLS_OSIF.sPrn( wStr )
 ###			
@@ -1701,7 +1703,8 @@ class CLS_Twitter_IF() :
 		#############################
 		# 全クリア
 ###		for wID in self.ARR_ListIndUserID :
-		wKeylist = list( self.ARR_ListIndUser )
+###		wKeylist = list( self.ARR_ListIndUser )
+		wKeylist = list( self.ARR_ListIndUser.keys() )
 		for wID in wKeylist :
 			wSubRes = self.OBJ_Twitter.RemoveUserList( gVal.STR_UserInfo['ListName'], wID )
 			if wSubRes['Result']!=True :
@@ -1744,7 +1747,8 @@ class CLS_Twitter_IF() :
 		wStr = wStr + "Twitterリスト一覧" + '\n' + '\n' ;
 		CLS_OSIF.sPrn( wStr )
 		
-		wKeylist = list( self.ARR_Lists )
+###		wKeylist = list( self.ARR_Lists )
+		wKeylist = list( self.ARR_Lists.keys() )
 		wStr = ""
 		for wIndex in wKeylist :
 			wStr = wStr + str(self.ARR_Lists[wIndex]['id']) + " : "
@@ -1759,7 +1763,8 @@ class CLS_Twitter_IF() :
 		
 		wStr = ""
 ###		for wID in self.ARR_ListIndUserID :
-		wKeylist = list( self.ARR_ListIndUser )
+###		wKeylist = list( self.ARR_ListIndUser )
+		wKeylist = list( self.ARR_ListIndUser.keys() )
 		for wID in wKeylist :
 ###			wStr = wStr + wID + '\n'
 			wStr = wStr + self.ARR_ListIndUser[wID]['screen_name'] + '\n'
