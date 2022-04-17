@@ -796,8 +796,11 @@ class CLS_TwitterMain():
 			wRes['Reason'] = "Twitter API Error(Favo): user=" + inData['screen_name'] + " id=" + str(wFavoID)
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		
-		wStr = "○お返しいいね済み: " + inData['screen_name'] + '\n' ;
+###		wStr = "○お返しいいね済み: " + inData['screen_name'] + '\n' ;
+		if wSubRes['Responce']==True :
+			wStr = "○お返しいいね済み: " + inData['screen_name'] + '\n' ;
+		else :
+			wStr = "●お返しいいね中止: " + inData['screen_name'] + '\n' ;
 		CLS_OSIF.sPrn( wStr )
 		
 		wRes['Result'] = True

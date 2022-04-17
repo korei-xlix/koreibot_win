@@ -1059,6 +1059,7 @@ class CLS_Twitter_IF() :
 		wRes['Class'] = "CLS_Twitter_IF"
 		wRes['Func']  = "Favo"
 		
+		wRes['Responce'] = False
 		#############################
 		# いいね済みなら抜ける
 		wID = str( inID )
@@ -1089,6 +1090,7 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# 完了
+		wRes['Responce'] = True
 		wRes['Result'] = True
 		return wRes
 
@@ -1105,6 +1107,7 @@ class CLS_Twitter_IF() :
 		wRes['Class'] = "CLS_Twitter_IF"
 		wRes['Func']  = "FavoRemove"
 		
+		wRes['Responce'] = False
 		#############################
 		# いいねがないなら抜ける
 		wID = str( inID )
@@ -1135,6 +1138,7 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# 完了
+		wRes['Responce'] = True
 		wRes['Result'] = True
 		return wRes
 

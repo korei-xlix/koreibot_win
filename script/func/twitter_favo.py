@@ -122,11 +122,19 @@ class CLS_TwitterFavo():
 				wRes['Reason'] = "Twitter Error"
 				gVal.OBJ_L.Log( "B", wRes )
 			
-			#############################
-			# 解除表示
-			wStr = "●解除いいね日時: " + str(wARR_TwData[wID]['created_at'])
-			CLS_OSIF.sPrn( wStr )
-			wRemTweet += 1
+###			#############################
+###			# 解除表示
+###			wStr = "●解除いいね日時: " + str(wARR_TwData[wID]['created_at'])
+###			CLS_OSIF.sPrn( wStr )
+###			wRemTweet += 1
+			if wRemoveRes['Responce']==True :
+				wStr = "●解除いいね日時: " + str(wARR_TwData[wID]['created_at'])
+				CLS_OSIF.sPrn( wStr )
+				wRemTweet += 1
+			else:
+				wRes['Reason'] = "FavoRemove failed: id=" + str(wID)
+				gVal.OBJ_L.Log( "D", wRes )
+				return wRes
 			
 			#############################
 			# 正常
