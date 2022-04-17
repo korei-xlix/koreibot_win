@@ -23,6 +23,8 @@ class CLS_Twitter_IF() :
 	CHR_GetFollowDate = None
 	ARR_FollowData = []		#退避用
 
+	ARR_FavoID = []			#  いいねID
+	
 	DEF_VAL_SLEEP = 10			#Twitter処理遅延（秒）
 
 	ARR_Lists = {}			#リスト一覧
@@ -193,6 +195,11 @@ class CLS_Twitter_IF() :
 				"created_at"	: wTime['TimeDate']
 			}
 			wARR_TwitterData.update({ wID : wCell })
+		
+		#############################
+		# IDだけ保存しておく
+		self.ARR_FavoID = []
+		self.ARR_FavoID = list( wARR_TwitterData.keys() )
 		
 		#############################
 		# トラヒック計測：いいね情報
@@ -1053,6 +1060,14 @@ class CLS_Twitter_IF() :
 		wRes['Func']  = "Favo"
 		
 		#############################
+		# いいね済みなら抜ける
+		wID = str( inID )
+		if wID in self.ARR_FavoID :
+			### いいね済み
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
 		# いいねする
 		wTwitterRes = self.OBJ_Twitter.CreateFavo( inID )
 		gVal.STR_TrafficInfo['runapi'] += wTwitterRes['RunAPI']
@@ -1063,6 +1078,10 @@ class CLS_Twitter_IF() :
 			wRes['Reason'] = "Twitter API Error: " + wTwitterRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
+		
+		#############################
+		# IDを記録する
+		self.ARR_FavoID.append( wID )
 		
 		#############################
 		# トラヒック計測：いいね実施数
@@ -1087,6 +1106,14 @@ class CLS_Twitter_IF() :
 		wRes['Func']  = "FavoRemove"
 		
 		#############################
+		# いいねがないなら抜ける
+		wID = str( inID )
+		if wID not in self.ARR_FavoID :
+			### いいね済み
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
 		# いいね解除する
 		wTwitterRes = self.OBJ_Twitter.RemoveFavo( inID )
 		gVal.STR_TrafficInfo['runapi'] += wTwitterRes['RunAPI']
@@ -1097,6 +1124,10 @@ class CLS_Twitter_IF() :
 			wRes['Reason'] = "Twitter API Error: " + wTwitterRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
+		
+		#############################
+		# IDを削除する
+		self.ARR_FavoID.remove( wID )
 		
 		#############################
 		# トラヒック計測：いいね解除数
@@ -1516,6 +1547,7 @@ class CLS_Twitter_IF() :
 		wRes['Class'] = "CLS_Twitter_IF"
 		wRes['Func']  = "GetListIndUser"
 		
+		wRes['Responce'] = 0
 		#############################
 		# リストがTwitterにあるか確認
 		wSubRes = self.CheckListInd( gVal.STR_UserInfo['ListName'] )
@@ -1531,8 +1563,6 @@ class CLS_Twitter_IF() :
 		#############################
 		# リスト通知のユーザIDが空なら
 		#   ユーザ一覧を取得する
-###		if len(self.ARR_ListIndUserID)==0 or inUpdate==True :
-###			self.ARR_ListIndUserID = []
 		if len(self.ARR_ListIndUser)==0 or inUpdate==True :
 			self.ARR_ListIndUser = {}
 			
@@ -1542,20 +1572,17 @@ class CLS_Twitter_IF() :
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			
-###			wIndex = 0
 			for wLine in wSubRes['Responce'] :
-###				self.ARR_ListIndUserID.append( str( wLine['id'] ) )
-###				self.ARR_ListIndUserID.append( str( wLine['screen_name'] ) )
 				wCell = {
 					"id"          : str( wLine['id'] ),
 					"screen_name" : wLine['screen_name']
 				}
 				self.ARR_ListIndUser.update({ str(wLine['id']) : wCell })
-###				wIndex += 1
 			
 ###			wStr = "リスト通知ユーザIDを取得しました: " + str( len(self.ARR_ListIndUserID) ) + ".件" + '\n' ;
-			wStr = "リスト通知ユーザIDを取得しました: " + str( len(self.ARR_ListIndUser) ) + ".件" + '\n' ;
-			CLS_OSIF.sPrn( wStr )
+###			wStr = "リスト通知ユーザIDを取得しました: " + str( len(self.ARR_ListIndUser) ) + ".件" + '\n' ;
+###			CLS_OSIF.sPrn( wStr )
+			wRes['Responce'] = len( self.ARR_ListIndUser )	#数を返す
 		
 		wRes['Result'] = True
 		return wRes
@@ -1712,9 +1739,9 @@ class CLS_Twitter_IF() :
 				gVal.OBJ_L.Log( "B", wRes )
 				continue
 		
-		wStr = "リスト通知を全クリアしました" + '\n' ;
-		CLS_OSIF.sPrn( wStr )
-		
+###		wStr = "リスト通知を全クリアしました" + '\n' ;
+###		CLS_OSIF.sPrn( wStr )
+###		
 ###		self.ARR_ListIndUserID = []
 		self.ARR_ListIndUser = {}
 		wRes['Result'] = True

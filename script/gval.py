@@ -110,6 +110,9 @@ class gVal() :
 		"forFavoRemSec"		: 172800,					#   いいね解除時間 2日 (60x60x24)x2
 		"favoTweetLine"		: 40,						#   いいね時 対象ユーザツイート取得ライン数
 		"favoCancelNum"		: 20,						#   いいね時 連続スキップでキャンセル
+		"autoRepFavoSec"	: 172800,					#   自動おかえしいいね時間 2日 (60x60x24)x2
+		"autoRepFavo"		: True,						#   自動おかえしいいね True=有効
+		"getUserTimeLine"	: 40,						#   相手ユーザ取得タイムライン数
 		
 														# 周回待ち要
 		"defWaitCount"		: 16,						#   デフォルト待ち回数
