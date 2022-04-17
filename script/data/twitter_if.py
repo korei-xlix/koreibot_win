@@ -1654,7 +1654,7 @@ class CLS_Twitter_IF() :
 		wID = str( inUser['id'] )
 ###		wScreenName = str( inUser['screen_name'] )
 		
-		wRes['Responce'] = False
+		wRes['Responce'] = False	#通知済み
 		#############################
 		# リストがTwitterにあるか確認
 		wSubRes = self.CheckListInd( gVal.STR_UserInfo['ListName'] )
@@ -1708,7 +1708,7 @@ class CLS_Twitter_IF() :
 		}
 		self.ARR_ListIndUser.update({ wID : wCell })
 		
-		wRes['Responce'] = True
+		wRes['Responce'] = True		#新規通知
 		wRes['Result'] = True
 		return wRes
 

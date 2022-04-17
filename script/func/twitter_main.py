@@ -837,7 +837,8 @@ class CLS_TwitterMain():
 			wRes['Reason'] = "Twitter API Error(InserttListIndUser): " + wSubRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		if wSubRes['Responce']==True :
+###		if wSubRes['Responce']==True :
+		if wSubRes['Responce']==False :
 			### 既に登録済み
 			wStr = "●リスト通知済み: " + inData['screen_name'] + '\n' ;
 			CLS_OSIF.sPrn( wStr )
