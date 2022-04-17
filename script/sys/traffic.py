@@ -108,7 +108,7 @@ class CLS_Traffic():
 					"false," + \
 					"0," + \
 					"0, 0," + \
-					"0, 0," + \
+					"0, 0, 0," + \
 					"0, 0," + \
 					"0, 0, 0, 0 " + \
 					") ;"
@@ -167,6 +167,7 @@ class CLS_Traffic():
 					"runbot = "   + str( gVal.STR_TrafficInfo['runbot'] ) + "," + \
 					"runapi = "   + str( gVal.STR_TrafficInfo['runapi'] ) + "," + \
 					"now_favo = " + str( gVal.STR_TrafficInfo['now_favo'] ) + "," + \
+					"get_favo = " + str( gVal.STR_TrafficInfo['get_favo'] ) + "," + \
 					"rem_favo = " + str( gVal.STR_TrafficInfo['rem_favo'] ) + "," + \
 					"get_reaction = " + str( gVal.STR_TrafficInfo['get_reaction'] ) + "," + \
 					"send_tweet = "   + str( gVal.STR_TrafficInfo['send_tweet'] ) + "," + \
@@ -318,6 +319,7 @@ class CLS_Traffic():
 		wStr = wStr + "いいね情報" + '\n'
 		wStr = wStr + "--------------------" + '\n'
 		wStr = wStr + "現いいね数           : " + str( inTraffic['now_favo'] ) + '\n'
+		wStr = wStr + "いいね実施数         : " + str( inTraffic['get_favo'] ) + '\n'
 		wStr = wStr + "いいね解除数         : " + str( inTraffic['rem_favo'] ) + '\n'
 		
 		wStr = wStr + '\n'

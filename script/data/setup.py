@@ -360,8 +360,9 @@ class CLS_Setup():
 					"timeline  INTEGER DEFAULT 0," + \
 					"runbot      INTEGER DEFAULT 0," + \
 					"runapi      INTEGER DEFAULT 0," + \
-					"now_favo  INTEGER DEFAULT 0," + \
-					"rem_favo  INTEGER DEFAULT 0," + \
+					"now_favo    INTEGER DEFAULT 0," + \
+					"get_favo    INTEGER DEFAULT 0," + \
+					"rem_favo    INTEGER DEFAULT 0," + \
 					"get_reaction  INTEGER DEFAULT 0," + \
 					"send_tweet    INTEGER DEFAULT 0," + \
 					"db_req      INTEGER DEFAULT 0," + \
