@@ -108,10 +108,10 @@ class gVal() :
 # Timeline調整数
 	DEF_STR_TLNUM = {
 														# いいね管理
-		"forFavoRemSec"		: 172800,					#   いいね解除時間 2日 (60x60x24)x2
+###		"forFavoRemSec"		: 172800,					#   いいね解除時間 2日 (60x60x24)x2
 		"favoTweetLine"		: 40,						#   いいね時 対象ユーザツイート取得ライン数
 		"favoCancelNum"		: 20,						#   いいね時 連続スキップでキャンセル
-		"autoRepFavoSec"	: 172800,					#   自動おかえしいいね時間 2日 (60x60x24)x2
+###		"autoRepFavoSec"	: 172800,					#   自動おかえしいいね時間 2日 (60x60x24)x2
 		"autoRepFavo"		: True,						#   自動おかえしいいね True=有効
 		"getUserTimeLine"	: 40,						#   相手ユーザ取得タイムライン数
 		
@@ -124,6 +124,7 @@ class gVal() :
 														# リアクションチェック
 		"reactionTweetLine"	: 40,						#   リアクションチェック時の自ツイート取得ライン数
 		"forReactionSec"	: 10800,					#   リアクションまでの期間   3時間  60x60x3
+		"forReactionTweetSec"	: 172800,				#   リアクションに反応するツイート期間 2日 (60x60x24)x2
 		
 														# いいね送信
 ###		"favoSendsSec"		: 10,						# いいね送信までの期間      7日 (60x60x24)x7

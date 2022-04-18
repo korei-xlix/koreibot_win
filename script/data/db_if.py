@@ -693,7 +693,8 @@ class CLS_DB_IF() :
 		wScreenName = inUser['screen_name']
 		
 		wFavoID   = str( inData['id'] )
-		wFavoDate = str( inData['created_at'] )
+###		wFavoDate = str( inData['created_at'] )
+		wFavoDate = str( gVal.STR_SystemInfo['TimeDate'] )
 		if inCountUp==True :
 			wCnt    = inFavoData['favo_cnt'] + 1
 			wNowCnt = inFavoData['now_favo_cnt'] + 1

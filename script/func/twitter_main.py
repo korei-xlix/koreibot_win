@@ -491,6 +491,18 @@ class CLS_TwitterMain():
 		
 		wTweet = inTweet
 		
+###		#############################
+###		# 期間内のTweetか
+###		wGetLag = CLS_OSIF.sTimeLag( str( wTweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forReactionTweetSec'] )
+###		if wGetLag['Result']!=True :
+###			wRes['Reason'] = "sTimeLag failed(1)"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		if wGetLag['Beyond']==True :
+###			###期間外= 古いツイートなので処理しない
+###			wRes['Result'] = True
+###			return wRes
+###		
 		wUserID = str( wTweet['user']['id'] )
 		#############################
 		# 自分のツイート以外は処理を抜ける
@@ -600,6 +612,7 @@ class CLS_TwitterMain():
 		if wUserID in self.ARR_ReacrionUserID :
 			wFLG_Action = False	#除外
 		
+		wNewUser = False
 		#############################
 		# DBからいいね情報を取得する(1個)
 		wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
@@ -628,6 +641,8 @@ class CLS_TwitterMain():
 				wRes['Reason'] = "GetFavoDataOne(3) is failed"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
+			
+			wNewUser = True	#新規登録
 		
 		wARR_DBData = wSubRes['Responce']
 		
@@ -639,15 +654,15 @@ class CLS_TwitterMain():
 		
 		#############################
 		# 前のリアクションより最新なら新アクション
-		wSubRes = CLS_OSIF.sCmpTime( inTweet['created_at'], inDstTD=wARR_DBData['favo_date'] )
-		if wSubRes['Result']!=True :
-			###失敗
-			wRes['Reason'] = "sCmpTime is failed"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		if wSubRes['Future']==False :
-			wFLG_Action = False	#除外
+		if wFLG_Action==True :
+			wSubRes = CLS_OSIF.sCmpTime( inTweet['created_at'], inDstTD=wARR_DBData['favo_date'] )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "sCmpTime is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if wSubRes['Future']==False :
+				wFLG_Action = False	#除外
 		
 		#############################
 		# リアクション禁止ユーザか
@@ -688,23 +703,31 @@ class CLS_TwitterMain():
 			# トラヒック計測：リアクション獲得数
 			gVal.STR_TrafficInfo['get_reaction'] += 1
 			
+###			#############################
+###			# 自動おかえしいいねする
+###			if gVal.DEF_STR_TLNUM['autoRepFavo']==True :
+###				wSubRes = self.__ReactionUserCheck_RepFavo( wARR_DBData )
+###				if wSubRes['Result']!=True :
+###					###失敗
+###					wRes['Reason'] = "__ReactionUserCheck_RepFavo is failed"
+###					gVal.OBJ_L.Log( "B", wRes )
+###			
+###			#############################
+###			# リスト通知をおこなう
+###			if gVal.STR_UserInfo['ListName']!="" :
+###				wSubRes = self.__ReactionUserCheck_ListInd( wARR_DBData )
+###				if wSubRes['Result']!=True :
+###					###失敗
+###					wRes['Reason'] = "__ReactionUserCheck_ListInd is failed"
+###					gVal.OBJ_L.Log( "B", wRes )
+###			
 			#############################
-			# 自動おかえしいいねする
-			if gVal.DEF_STR_TLNUM['autoRepFavo']==True :
-				wSubRes = self.__ReactionUserCheck_RepFavo( wARR_DBData )
-				if wSubRes['Result']!=True :
-					###失敗
-					wRes['Reason'] = "__ReactionUserCheck_RepFavo is failed"
-					gVal.OBJ_L.Log( "B", wRes )
-			
-			#############################
-			# リスト通知をおこなう
-			if gVal.STR_UserInfo['ListName']!="" :
-				wSubRes = self.__ReactionUserCheck_ListInd( wARR_DBData )
-				if wSubRes['Result']!=True :
-					###失敗
-					wRes['Reason'] = "__ReactionUserCheck_ListInd is failed"
-					gVal.OBJ_L.Log( "B", wRes )
+			# リアクションへのリアクション
+			wSubRes = self.__ReactionUserCheck_PutReaction( wARR_DBData, inTweet, wNewUser )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "__ReactionUserCheck_ListInd is failed"
+				gVal.OBJ_L.Log( "B", wRes )
 			
 			#############################
 			# リアクション済み
@@ -713,6 +736,60 @@ class CLS_TwitterMain():
 		wRes['Result'] = True
 		return wRes
 
+	#####################################################
+	# リアクションユーザへのリアクション
+	#####################################################
+	def __ReactionUserCheck_PutReaction( self, inData, inTweet, inNewUser=False ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "__ReactionUserCheck_PutReaction"
+		
+		#############################
+		# 期間外のTweetで 新規ユーザに対しては
+		# リアクションを返さない(仕様)
+		if inNewUser==True :
+			wGetLag = CLS_OSIF.sTimeLag( str( wTweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forReactionTweetSec'] )
+			if wGetLag['Result']!=True :
+				wRes['Reason'] = "sTimeLag failed(1)"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if wGetLag['Beyond']==True :
+				###期間外= とりま通知しない
+				wStr = "●新規ユーザのため非通知: " + inData['screen_name'] + '\n' ;
+				CLS_OSIF.sPrn( wStr )
+				
+				wRes['Result'] = True
+				return wRes
+		
+		#############################
+		# 自動おかえしいいねする
+		if gVal.DEF_STR_TLNUM['autoRepFavo']==True :
+			wSubRes = self.__ReactionUserCheck_RepFavo( inData )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "__ReactionUserCheck_RepFavo is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+		
+		#############################
+		# リスト通知をおこなう
+		if gVal.STR_UserInfo['ListName']!="" :
+			wSubRes = self.__ReactionUserCheck_ListInd( inData )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "__ReactionUserCheck_ListInd is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+		
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	# 自動おかえしいいねする
+	#####################################################
 	def __ReactionUserCheck_RepFavo( self, inData ):
 		#############################
 		# 応答形式の取得
@@ -768,7 +845,8 @@ class CLS_TwitterMain():
 			wTweet['created_at'] = wTime['TimeDate']
 			
 			### 範囲時間内のツイートか
-			wGetLag = CLS_OSIF.sTimeLag( str( wTweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['autoRepFavoSec'] )
+###			wGetLag = CLS_OSIF.sTimeLag( str( wTweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['autoRepFavoSec'] )
+			wGetLag = CLS_OSIF.sTimeLag( str( wTweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forReactionTweetSec'] )
 			if wGetLag['Result']!=True :
 				wRes['Reason'] = "sTimeLag failed"
 				gVal.OBJ_L.Log( "B", wRes )
@@ -806,6 +884,9 @@ class CLS_TwitterMain():
 		wRes['Result'] = True
 		return wRes
 
+	#####################################################
+	# リスト通知をおこなう
+	#####################################################
 	def __ReactionUserCheck_ListInd( self, inData ):
 		#############################
 		# 応答形式の取得
@@ -815,7 +896,7 @@ class CLS_TwitterMain():
 		wRes['Func']  = "__ReactionUserCheck_ListInd"
 		
 		#############################
-		# 今日以外なら通知する
+		# 前回が今日以外なら通知する
 		wNowDate = str(gVal.STR_SystemInfo['TimeDate'])
 		wNowDate = wNowDate.split(" ")
 		wNowDate = wNowDate[0]
@@ -901,7 +982,12 @@ class CLS_TwitterMain():
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			
-			wStr = "〇リスト通知ユーザ取: " + str( wSubRes['Responce'] ) + ".件" + '\n' ;
+###			wStr = "〇リスト通知ユーザ取: " + str( wSubRes['Responce'] ) + ".件" + '\n' ;
+###			CLS_OSIF.sPrn( wStr )
+			if wSubRes['Responce']['Update']==True :
+				wStr = "〇リスト通知: " + str( wSubRes['Responce']['Num'] ) + ".件" + '\n' ;
+			else:
+				wStr = "●リスト通知 未更新: " + str( wSubRes['Responce']['Num'] ) + ".件" + '\n' ;
 			CLS_OSIF.sPrn( wStr )
 		
 		#############################

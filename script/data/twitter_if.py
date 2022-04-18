@@ -1551,7 +1551,12 @@ class CLS_Twitter_IF() :
 		wRes['Class'] = "CLS_Twitter_IF"
 		wRes['Func']  = "GetListIndUser"
 		
-		wRes['Responce'] = 0
+###		wRes['Responce'] = 0
+		wRes['Responce'] = {
+			"Num"		: 0,
+			"Update"	: False
+		}
+		
 		#############################
 		# リストがTwitterにあるか確認
 		wSubRes = self.CheckListInd( gVal.STR_UserInfo['ListName'] )
@@ -1586,8 +1591,10 @@ class CLS_Twitter_IF() :
 ###			wStr = "リスト通知ユーザIDを取得しました: " + str( len(self.ARR_ListIndUserID) ) + ".件" + '\n' ;
 ###			wStr = "リスト通知ユーザIDを取得しました: " + str( len(self.ARR_ListIndUser) ) + ".件" + '\n' ;
 ###			CLS_OSIF.sPrn( wStr )
-			wRes['Responce'] = len( self.ARR_ListIndUser )	#数を返す
+###			wRes['Responce'] = len( self.ARR_ListIndUser )	#数を返す
+			wRes['Responce']['Update'] = True
 		
+		wRes['Responce']['Num'] = len( self.ARR_ListIndUser )	#数を返す
 		wRes['Result'] = True
 		return wRes
 

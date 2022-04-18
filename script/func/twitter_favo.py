@@ -98,7 +98,8 @@ class CLS_TwitterFavo():
 			wARR_TwData[wID]['created_at'] = wTime['TimeDate']
 			
 			###期間を過ぎているか
-			wGetLag = CLS_OSIF.sTimeLag( str(wARR_TwData[wID]['created_at']), inThreshold=gVal.DEF_STR_TLNUM['forFavoRemSec'] )
+###			wGetLag = CLS_OSIF.sTimeLag( str(wARR_TwData[wID]['created_at']), inThreshold=gVal.DEF_STR_TLNUM['forFavoRemSec'] )
+			wGetLag = CLS_OSIF.sTimeLag( str(wARR_TwData[wID]['created_at']), inThreshold=gVal.DEF_STR_TLNUM['forReactionTweetSec'] )
 			if wGetLag['Result']!=True :
 				wRes['Reason'] = "sTimeLag failed(1)"
 				gVal.OBJ_L.Log( "B", wRes )

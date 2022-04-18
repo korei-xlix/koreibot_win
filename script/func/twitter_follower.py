@@ -148,6 +148,19 @@ class CLS_TwitterFollower():
 			wSubRes['Responce'][wReplyID]['created_at'] = wTime['TimeDate']
 			
 			#############################
+			# 期間内のTweetか
+			wGetLag = CLS_OSIF.sTimeLag( str( wSubRes['Responce'][wReplyID]['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forReactionTweetSec'] )
+			if wGetLag['Result']!=True :
+				wRes['Reason'] = "sTimeLag failed(1)"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if wGetLag['Beyond']==True :
+				###期間外= 古いツイートなので処理しない
+				wStr = "●古いリプライのためスキップします"
+				CLS_OSIF.sPrn( wStr )
+				continue
+			
+			#############################
 			# ユーザ情報を取得する
 			wUserInfoRes = gVal.OBJ_Tw_IF.GetUserinfo( inID=wID )
 			if wUserInfoRes['Result']!=True :
