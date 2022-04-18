@@ -751,7 +751,7 @@ class CLS_TwitterMain():
 		# 期間外のTweetで 新規ユーザに対しては
 		# リアクションを返さない(仕様)
 		if inNewUser==True :
-			wGetLag = CLS_OSIF.sTimeLag( str( wTweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forReactionTweetSec'] )
+			wGetLag = CLS_OSIF.sTimeLag( str( inTweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forReactionTweetSec'] )
 			if wGetLag['Result']!=True :
 				wRes['Reason'] = "sTimeLag failed(1)"
 				gVal.OBJ_L.Log( "B", wRes )
