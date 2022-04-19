@@ -40,7 +40,8 @@ class CLS_TwitterFavo():
 #####################################################
 # いいね解除
 #####################################################
-	def RemFavo( self, inFLG_FirstDisp=True ):
+###	def RemFavo( self, inFLG_FirstDisp=True ):
+	def RemFavo( self, inFLG_FirstDisp=True, inARR_Favo={} ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -55,21 +56,25 @@ class CLS_TwitterFavo():
 		
 		#############################
 		# ふぁぼ一覧 取得
-		wFavoRes = gVal.OBJ_Tw_IF.GetFavo()
-		if wFavoRes['Result']!=True :
-			wRes['Reason'] = "GetFavoData is failed"
-			gVal.OBJ_L.Log( "C", wRes )
-			return wRes
-		wARR_TwData = wFavoRes['Responce']
+###		wFavoRes = gVal.OBJ_Tw_IF.GetFavo()
+###		if wFavoRes['Result']!=True :
+###			wRes['Reason'] = "GetFavoData is failed"
+###			gVal.OBJ_L.Log( "C", wRes )
+###			return wRes
+###		wARR_TwData = wFavoRes['Responce']
+###		wARR_Tw_ID = list( wARR_TwData.keys() )
 		
-		wARR_Tw_ID = list( wARR_TwData.keys() )
 		#############################
 		# いいねがない場合、処理を終わる
-		if len(wARR_Tw_ID)==0 :
+###		if len(wARR_Tw_ID)==0 :
+		if len(inARR_Favo)==0 :
 			wStr = "いいねがないため、処理を終わります。"
 			CLS_OSIF.sPrn( wStr )
 			wRes['Result'] = True	#正常終了
 			return wRes
+		
+		wARR_TwData = inARR_Favo
+		wARR_Tw_ID = list( wARR_TwData.keys() )
 		
 		#############################
 		# 最古のいいねIDを算出

@@ -281,9 +281,17 @@ class CLS_TwitterMain():
 		wRes['Func']  = "AllRun"
 		
 		#############################
+		# ふぁぼ一覧 取得
+		wFavoRes = gVal.OBJ_Tw_IF.GetFavo()
+		if wFavoRes['Result']!=True :
+			wRes['Reason'] = "GetFavoData is failed"
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
 		# いいね解除
 		if inFLG_Short==False :
-			wSubRes = self.OBJ_TwitterFavo.RemFavo()
+			wSubRes = self.OBJ_TwitterFavo.RemFavo( inARR_Favo=wFavoRes['Responce'] )
 			if wSubRes['Result']!=True :
 				wRes['Reason'] = "RemFavo"
 				gVal.OBJ_L.Log( "B", wRes )
