@@ -143,6 +143,11 @@ class CLS_Main_Console() :
 		if inCommand=="\\a" :
 			cls.OBJ_TwitterMain.AllRun()
 		
+		#############################
+		# ショート自動監視
+		if inCommand=="\\as" :
+			cls.OBJ_TwitterMain.AllRun( inFLG_Short=True )
+		
 	#####################################################
 ###		#############################
 ###		# いいね解除

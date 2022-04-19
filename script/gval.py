@@ -122,7 +122,8 @@ class gVal() :
 		"defLongWaitSec"	: 60,						#   デフォルト 長い待ち時間(秒)
 		
 														# リアクションチェック
-		"reactionTweetLine"	: 40,						#   リアクションチェック時の自ツイート取得ライン数
+		"reactionTweetLine"			: 40,				#   リアクションチェック時の自ツイート取得ライン数
+		"reactionTweetLine_Short"	: 8,				#   リアクションチェック時の自ツイート取得ライン数(ショート時)
 		"forReactionSec"	: 10800,					#   リアクションまでの期間   3時間  60x60x3
 		"forReactionTweetSec"	: 172800,				#   リアクションに反応するツイート期間 2日 (60x60x24)x2
 		

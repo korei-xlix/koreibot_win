@@ -40,7 +40,8 @@ class CLS_TwitterFollower():
 #####################################################
 # リアクションチェック
 #####################################################
-	def ReactionCheck(self):
+###	def ReactionCheck(self):
+	def ReactionCheck( self, inFLG_Short=False ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -65,12 +66,20 @@ class CLS_TwitterFollower():
 		self.OBJ_Parent.CHR_GetReactionDate = None	#一度クリアしておく(異常時再取得するため)
 		#############################
 		# 取得開始の表示
-		wResDisp = CLS_MyDisp.sViewHeaderDisp( "リアクションチェック中" )
+###		wResDisp = CLS_MyDisp.sViewHeaderDisp( "リアクションチェック中" )
+		if inFLG_Short==False :
+			wResDisp = CLS_MyDisp.sViewHeaderDisp( "リアクションチェック中（通常）" )
+			wCount = gVal.DEF_STR_TLNUM['reactionTweetLine']
+		else :
+			wResDisp = CLS_MyDisp.sViewHeaderDisp( "リアクションチェック中（ショート）" )
+			wCount = gVal.DEF_STR_TLNUM['reactionTweetLine_Short']
 		
 		#############################
 		# 自分の直近のツイートを取得
+###		wTweetRes = gVal.OBJ_Tw_IF.GetTL( inTLmode="user", inFLG_Rep=False, inFLG_Rts=False,
+###			 inID=gVal.STR_UserInfo['id'], inCount=gVal.DEF_STR_TLNUM['reactionTweetLine'] )
 		wTweetRes = gVal.OBJ_Tw_IF.GetTL( inTLmode="user", inFLG_Rep=False, inFLG_Rts=False,
-			 inID=gVal.STR_UserInfo['id'], inCount=gVal.DEF_STR_TLNUM['reactionTweetLine'] )
+			 inID=gVal.STR_UserInfo['id'], inCount=wCount )
 		if wTweetRes['Result']!=True :
 			wRes['Reason'] = "Twitter Error: GetTL"
 			gVal.OBJ_L.Log( "B", wRes )

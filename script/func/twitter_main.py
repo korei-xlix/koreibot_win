@@ -271,7 +271,8 @@ class CLS_TwitterMain():
 #####################################################
 # 自動監視
 #####################################################
-	def AllRun(self):
+###	def AllRun(self):
+	def AllRun( self, inFLG_Short=False ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -281,11 +282,12 @@ class CLS_TwitterMain():
 		
 		#############################
 		# いいね解除
-		wSubRes = self.OBJ_TwitterFavo.RemFavo()
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "RemFavo"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
+		if inFLG_Short==False :
+			wSubRes = self.OBJ_TwitterFavo.RemFavo()
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "RemFavo"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
 		
 		#############################
 		# リスト通知 リストとユーザの更新
@@ -297,7 +299,7 @@ class CLS_TwitterMain():
 		
 		#############################
 		# リアクションチェック
-		wSubRes = self.OBJ_TwitterFollower.ReactionCheck()
+		wSubRes = self.OBJ_TwitterFollower.ReactionCheck( inFLG_Short=inFLG_Short )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "ReactionCheck"
 			gVal.OBJ_L.Log( "B", wRes )
@@ -313,12 +315,13 @@ class CLS_TwitterMain():
 		
 		#############################
 		# 古いいいね情報の削除
-		wSubRes = gVal.OBJ_DB_IF.DeleteFavoData()
-		if wSubRes['Result']!=True :
-			###失敗
-			wRes['Reason'] = "DeleteFavoData is failed"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
+		if inFLG_Short==False :
+			wSubRes = gVal.OBJ_DB_IF.DeleteFavoData()
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "DeleteFavoData is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
 		
 		#############################
 		# 完了
