@@ -23,6 +23,7 @@ class CLS_TwitterMain():
 
 	CHR_GetReactionDate = None
 	ARR_ReacrionUserID = []
+	ARR_FavoUserID = []
 
 
 #####################################################
@@ -288,10 +289,12 @@ class CLS_TwitterMain():
 			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
 		
+		self.ARR_FavoUserID = wFavoRes['Responce']['FavoUserID']
 		#############################
 		# いいね解除
 		if inFLG_Short==False :
-			wSubRes = self.OBJ_TwitterFavo.RemFavo( inARR_Favo=wFavoRes['Responce'] )
+###			wSubRes = self.OBJ_TwitterFavo.RemFavo( inARR_Favo=wFavoRes['Responce'] )
+			wSubRes = self.OBJ_TwitterFavo.RemFavo( inARR_Favo=wFavoRes['Responce']['FavoData'] )
 			if wSubRes['Result']!=True :
 				wRes['Reason'] = "RemFavo"
 				gVal.OBJ_L.Log( "B", wRes )
@@ -810,6 +813,13 @@ class CLS_TwitterMain():
 		wRes['Func']  = "__ReactionUserCheck_RepFavo"
 		
 		wUserID = str( inData['id'] )
+		#############################
+		# いいね一覧にあるユーザへは
+		# おかえししない
+		if wUserID in self.ARR_FavoUserID :
+			wRes['Result'] = True
+			return wRes
+		
 		#############################
 		# タイムラインを取得する
 		wTweetRes = gVal.OBJ_Tw_IF.GetTL( inTLmode="user", inFLG_Rep=False, inFLG_Rts=False,

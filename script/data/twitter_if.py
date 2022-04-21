@@ -166,6 +166,11 @@ class CLS_Twitter_IF() :
 		wRes['Class'] = "CLS_Twitter_IF"
 		wRes['Func']  = "GetFavo"
 		
+		wRes['Responce'] = {
+			"FavoData"		: {},
+			"FavoUserID"	: []
+		}
+		
 		#############################
 		# フォロー一覧 取得
 		wTwitterRes = self.OBJ_Twitter.GetFavolist()
@@ -176,6 +181,7 @@ class CLS_Twitter_IF() :
 			return wRes
 		
 		wARR_TwitterData = {}
+		wARR_UserID = []
 		for wROW in wTwitterRes['Responce'] :
 			###時間の変換
 			wTime = CLS_OSIF.sGetTimeformat_Twitter( wROW['created_at'] )
@@ -187,14 +193,19 @@ class CLS_Twitter_IF() :
 			
 			wID = str( wROW['id'] )
 			wText = str(wROW['text']).replace( "'", "''" )
+			wUserID = str( wROW['user']['id'] )
 			###情報の詰め込み
 			wCell = {
 				"id"			: wID,
-				"user_id"		: str( wROW['user']['id'] ),
+				"user_id"		: wUserID,
 				"text"			: wText,
 				"created_at"	: wTime['TimeDate']
 			}
+###				"user_id"		: str( wROW['user']['id'] ),
 			wARR_TwitterData.update({ wID : wCell })
+			
+			if wUserID not in wARR_UserID :
+				wARR_UserID.append( wUserID )
 		
 		#############################
 		# IDだけ保存しておく
@@ -207,7 +218,10 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# 正常
-		wRes['Responce'] = wARR_TwitterData
+###		wRes['Responce'] = wARR_TwitterData
+		wRes['Responce']['FavoData']   = wARR_TwitterData
+		wRes['Responce']['FavoUserID'] = wARR_UserID
+		
 		wRes['Result'] = True
 		return wRes
 
