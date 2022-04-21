@@ -1158,8 +1158,8 @@ class CLS_Twitter_IF() :
 		}
 		self.ARR_Favo.update({ wID : wCell })
 		
-		if wUserID not in self.ARR_FavoUserID :
-			self.ARR_FavoUserID.append( wUserID )
+		if wTweetInfoRes['Responce']['user_id'] not in self.ARR_FavoUserID :
+			self.ARR_FavoUserID.append( wTweetInfoRes['Responce']['user_id'] )
 		
 ###		#############################
 ###		# IDを記録する
