@@ -229,8 +229,22 @@ class CLS_Main_Console() :
 #
 #			wSubRes = gVal.OBJ_Tw_IF.GetTweetLookup( "1473387112351559680" )
 #			print( str(wSubRes) )
-#
-#			
+			wTwitterRes = gVal.OBJ_Tw_IF.GetTweetLookup( "1516980757394190337" )
+			if wTwitterRes['Result']!=True :
+				wRes['Reason'] = "Twitter API Error: " + wTwitterRes['Reason']
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+###			print( wTwitterRes['Responce'] )
+###
+###			print( "zzz: " + str(wTwitterRes['Responce']) )
+
+			d = {'k1': 1, 'k2': 2, 'k3': 3}
+			print( str(d) )
+			removed_value = d.pop('k1')
+			print( str(d) )
+
+
+		
 	#####################################################
 		#############################
 		# ないコマンド

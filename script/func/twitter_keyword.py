@@ -65,8 +65,13 @@ class CLS_TwitterKeyword():
 		
 		#############################
 		# ヘッダの設定
+		wCHR_TimeDate = str(wTrendRes['Responce']['as_of']).split(" ")
+		wCHR_Time     = wCHR_TimeDate[1].split(":")
+		wCHR_TimeDate = wCHR_TimeDate[0] + " " + wCHR_Time[0] + "時台"
+		
 		wTrendHeader = "Twitterトレンド"
-		wTrendTweet  = wTrendHeader + ": " + str(wTrendRes['Responce']['as_of']) + '\n'
+###		wTrendTweet  = wTrendHeader + ": " + str(wTrendRes['Responce']['as_of']) + '\n'
+		wTrendTweet  = wTrendHeader + ": " + wCHR_TimeDate + '\n'
 		
 		#############################
 		# トレンドの表示

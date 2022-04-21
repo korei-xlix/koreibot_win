@@ -748,12 +748,25 @@ class CLS_Twitter_Use():
 						]
 		)
 		wTWEET_FIELDS = ",".join(
+###						[
+###							"entities",
+###							"in_reply_to_user_id",
+###							"referenced_tweets",
+###							"reply_settings",
+####						"promoted_metrics"
+###						]
 						[
 							"entities",
 							"in_reply_to_user_id",
 							"referenced_tweets",
 							"reply_settings",
-#							"promoted_metrics"
+							"author_id",
+							"context_annotations",
+							"conversation_id",
+							"created_at",
+							"id",
+							"public_metrics",
+							"text",
 						]
 		)
 		wMEDIA_FIELDS = ",".join(

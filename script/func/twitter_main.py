@@ -23,7 +23,7 @@ class CLS_TwitterMain():
 
 	CHR_GetReactionDate = None
 	ARR_ReacrionUserID = []
-	ARR_FavoUserID = []
+###	ARR_FavoUserID = []
 
 
 #####################################################
@@ -44,14 +44,14 @@ class CLS_TwitterMain():
 #			wRes['Reason'] = "ReactionCheck"
 #			gVal.OBJ_L.Log( "B", wRes )
 #			return wRes
-		
-		#############################
-		# いいね情報送信
-		wSubRes = self.OBJ_TwitterFollower.SendFavoDate()
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "SendFavoDate"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
+#		
+#		#############################
+#		# いいね情報送信
+#		wSubRes = self.OBJ_TwitterFollower.SendFavoDate()
+#		if wSubRes['Result']!=True :
+#			wRes['Reason'] = "SendFavoDate"
+#			gVal.OBJ_L.Log( "B", wRes )
+#			return wRes
 		
 		#############################
 		# 完了
@@ -289,12 +289,13 @@ class CLS_TwitterMain():
 			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
 		
-		self.ARR_FavoUserID = wFavoRes['Responce']['FavoUserID']
+###		self.ARR_FavoUserID = wFavoRes['Responce']['FavoUserID']
 		#############################
 		# いいね解除
 		if inFLG_Short==False :
 ###			wSubRes = self.OBJ_TwitterFavo.RemFavo( inARR_Favo=wFavoRes['Responce'] )
-			wSubRes = self.OBJ_TwitterFavo.RemFavo( inARR_Favo=wFavoRes['Responce']['FavoData'] )
+###			wSubRes = self.OBJ_TwitterFavo.RemFavo( inARR_Favo=wFavoRes['Responce']['FavoData'] )
+			wSubRes = self.OBJ_TwitterFavo.RemFavo()
 			if wSubRes['Result']!=True :
 				wRes['Reason'] = "RemFavo"
 				gVal.OBJ_L.Log( "B", wRes )
@@ -816,7 +817,17 @@ class CLS_TwitterMain():
 		#############################
 		# いいね一覧にあるユーザへは
 		# おかえししない
-		if wUserID in self.ARR_FavoUserID :
+###		if wUserID in self.ARR_FavoUserID :
+		wTweetRes = gVal.OBJ_Tw_IF.CheckFavoUser( wUserID )
+		if wTweetRes['Result']!=True :
+			wRes['Reason'] = "Twitter Error: CheckFavoUser"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		if wTweetRes['Responce']==True :
+			### いいね済み
+			wStr = "●お返しいいね中止(いいね済ユーザ): " + inData['screen_name'] + '\n' ;
+			CLS_OSIF.sPrn( wStr )
+			
 			wRes['Result'] = True
 			return wRes
 		
@@ -897,9 +908,9 @@ class CLS_TwitterMain():
 			return wRes
 ###		wStr = "○お返しいいね済み: " + inData['screen_name'] + '\n' ;
 		if wSubRes['Responce']==True :
-			wStr = "○お返しいいね済み: " + inData['screen_name'] + '\n' ;
+			wStr = "○お返しいいね 実施: " + inData['screen_name'] + '\n' ;
 		else :
-			wStr = "●お返しいいね中止: " + inData['screen_name'] + '\n' ;
+			wStr = "●お返しいいね中止(いいね被り): " + inData['screen_name'] + '\n' ;
 		CLS_OSIF.sPrn( wStr )
 		
 		wRes['Result'] = True
