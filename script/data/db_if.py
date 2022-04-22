@@ -413,10 +413,10 @@ class CLS_DB_IF() :
 		# 除外文字データを登録する
 		wKeylist = list( wARR_DBData.keys() )
 		for wIndex in wKeylist :
-			wKey = wARR_RateWord[wIndex]['word']
+			wKey = wARR_DBData[wIndex]['word']
 			wCell = {
 				"word"		: wKey,
-				"report"	: wARR_RateWord[wIndex]['report']
+				"report"	: wARR_DBData[wIndex]['report']
 			}
 			wARR_ExeWord.update({ wKey : wCell })
 		
