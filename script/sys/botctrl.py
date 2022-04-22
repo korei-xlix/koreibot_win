@@ -36,6 +36,16 @@ class CLS_BotCtrl():
 			if wArg[3]==gVal.DEF_TEST_MODE :
 				gVal.FLG_Test_Mode = True
 		
+		elif wArg[1]=="add" :	#データ追加モードの場合
+			if len(wArg)!=3 :
+				wRes['Reason'] = "データ追加モード: 引数が足りません"
+				CLS_OSIF.sErr( wRes )
+				return False
+			
+			gVal.STR_SystemInfo['RunMode'] = wArg[1]
+			gVal.STR_SystemInfo['EXT_FilePath'] = wArg[2]
+			return True
+		
 		elif len(wArg)==2 :	#モード
 			###セットアップモード
 			###全初期化モード

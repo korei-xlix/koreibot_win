@@ -377,6 +377,210 @@ class CLS_DB_IF() :
 
 
 #####################################################
+# 除外文字
+#####################################################
+	def GetExeWord(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "GetExeWord"
+		
+		#############################
+		# データベースから除外文字を取得
+		wQuery = "select * from tbl_exc_word " + \
+					";"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "B", wRes )
+			return False
+		
+		#############################
+		# 辞書型に整形
+		wARR_DBData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
+		
+###		#############################
+###		# 添え字をIDに差し替える
+###		wARR_RateWord = gVal.OBJ_DB_IF.ChgDataID( wARR_DBData )
+		
+		wARR_ExeWord = {}
+		#############################
+		# 除外文字データを登録する
+		wKeylist = list( wARR_DBData.keys() )
+		for wIndex in wKeylist :
+			wKey = wARR_RateWord[wIndex]['word']
+			wCell = {
+				"word"		: wKey,
+				"report"	: wARR_RateWord[wIndex]['report']
+			}
+			wARR_ExeWord.update({ wKey : wCell })
+		
+		gVal.ARR_ExeWord = wARR_ExeWord
+		
+		#############################
+		# =正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def SetExeWord( self, inARRData ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "SetExeWord"
+		
+		#############################
+		# 時間を取得
+		wTD = CLS_OSIF.sGetTime()
+		if wTD['Result']!=True :
+			###時間取得失敗  時計壊れた？
+			wStr = "PC時間取得失敗" + '\n'
+			CLS_OSIF.sPrn( wStr )
+			wTD['TimeDate'] = "1901-01-01 00:00:00"
+		### wTD['TimeDate']
+		
+		#############################
+		# データベースから除外文字を取得
+		wQuery = "select word from tbl_exc_word " + \
+					";"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "B", wRes )
+			return False
+		
+		### リスト型に整形
+		wARR_RateWord = []
+		self.OBJ_DB.ChgList( wResDB['Responce']['Data'], outList=wARR_RateWord )
+		
+		#############################
+		# 登録データを作成する
+		wARR_Word = {}
+		for wLine in inARRData :
+			
+			### 通報設定ありか
+			#      先頭が @@@ の場合
+			wReport = False
+			wIfind = wLine.find("@@@")
+			if wIfind==0 :
+				wLine = wLine.replace( "@@@", "" )
+				wReport = True
+			
+			### ダブり登録は除外
+			if wLine in wARR_Word :
+				continue
+			if wLine=="" or wLine==None :
+				continue
+			
+			### データ登録
+			wCell = {
+				"word"		: wLine,
+				"report"	: wReport
+			}
+			wARR_Word.update({ wLine : wCell })
+		
+		#############################
+		# データベースに登録する
+		wKeylist = list( wARR_Word.keys() )
+		for wKey in wKeylist :
+			#############################
+			# 登録済みの場合
+			#   通報情報を更新する
+			if wKey in wARR_RateWord :
+				wQuery = "update tbl_exc_word set " + \
+						"report = " + str(wARR_Word[wKey]['report']) + " " + \
+						" ;"
+			
+			#############################
+			# 登録なしの場合
+			#   新規登録する
+			else :
+				wQuery = "insert into tbl_exc_word values (" + \
+						"'" + str(wTD['TimeDate']) + "', " + \
+						"'" + wKey + "', " + \
+						str(wARR_Word[wKey]['report']) + " " + \
+						") ;"
+			
+			#############################
+			# クエリの実行
+			wResDB = self.OBJ_DB.RunQuery( wQuery )
+			wResDB = self.OBJ_DB.GetQueryStat()
+			if wResDB['Result']!=True :
+				##失敗
+				wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+				CLS_OSIF.sErr( wRes )
+				return False
+			
+			#############################
+			# 実行結果の表示
+			if wKey in wARR_RateWord :
+				### 更新
+				wStr = "除外文字 更新: "
+			else:
+				### 新規
+				wStr = "除外文字 追加: "
+			
+			### 通報有無
+			if wARR_Word[wKey]['report']==True :
+				wStr = wStr + " [〇有] "
+			else:
+				wStr = wStr + " [  無] "
+			
+			### 文字
+			wStr = wStr + wKey
+			
+			CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# データベースから削除
+		#   登録データにないデータをデータベースから抹消する
+		for wRateKey in wARR_RateWord :
+			#############################
+			# 登録データにある場合
+			#   スキップする
+			if wRateKey in wARR_Word :
+				continue
+			
+			# ※登録なし：削除確定
+			wQuery = "delete from tbl_exc_word " + \
+					"where word = '" + wRateKey + "' " + \
+					" ;"
+			
+			#############################
+			# クエリの実行
+			wResDB = self.OBJ_DB.RunQuery( wQuery )
+			wResDB = self.OBJ_DB.GetQueryStat()
+			if wResDB['Result']!=True :
+				##失敗
+				wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+				CLS_OSIF.sErr( wRes )
+				return False
+			
+			#############################
+			# 実行結果の表示
+			wStr = "除外文字 ×削除×: " + wRateKey
+			CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# グローバルを更新する
+		gVal.ARR_ExeWord = wARR_Word
+		
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
 # トレンドタグ設定
 #####################################################
 	def SetTrendTag( self ):

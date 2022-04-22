@@ -43,6 +43,9 @@ class gVal() :
 		"RateLockTD"	: None,
 			# 前回ロック日時
 		"APIrect"		: "",
+		
+		"EXT_FilePath"	: None,
+		
 		"RunMode"		: "normal"
 			# normal= 通常モード
 			# setup = セットアップモード
@@ -157,10 +160,19 @@ class gVal() :
 #############################
 # ファイルパス
 #   ファイルは語尾なし、フォルダは_path
-	DEF_DATAPATH = "data/"
-
+###	DEF_DATAPATH = "data/"
+###
 	DEF_STR_FILE = {
+									# readme.md ファイルパス
 		"Readme"				: "readme.md",
+		
+									# 除外データアーカイブ ファイル名
+		"ExcWordArc"			: "/DEF_ExcWordArc.zip",
+									# 除外データアーカイブ 解凍先フォルダパス
+		"Melt_ExcWordArc_path"	: "/DEF_ExcWordArc",
+									# 除外データ 文字列ファイルパス(フォルダ付き)
+		"Melt_ExcWord"			: "/DEF_ExcWordArc/DEF_ExcWord.txt",
+		
 		"(dummy)"				: 0
 	}
 
@@ -187,6 +199,8 @@ class gVal() :
 	OBJ_Tw_IF = ""											#Twitter I/F
 	OBJ_DB_IF = ""											#DB I/F
 	OBJ_L     = ""											#ログ用
+	
+	ARR_ExeWord = {}										# 除外文字データ
 
 
 

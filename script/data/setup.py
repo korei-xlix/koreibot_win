@@ -117,15 +117,15 @@ class CLS_Setup():
 			##キャンセル
 			return True
 		
-		#############################
-		# ユーザフォルダの存在チェック
-		if CLS_File.sExist( gVal.DEF_USERDATA_PATH )!=True :
-			## フォルダがなければ作成する
-			if CLS_File.sMkdir( gVal.DEF_USERDATA_PATH )!=True :
-				wRes['Reason'] = "フォルダの作成に失敗しました: path=" + gVal.DEF_USERDATA_PATH
-				CLS_OSIF.sErr( wRes )
-				return False
-		
+###		#############################
+###		# ユーザフォルダの存在チェック
+###		if CLS_File.sExist( gVal.DEF_USERDATA_PATH )!=True :
+###			## フォルダがなければ作成する
+###			if CLS_File.sMkdir( gVal.DEF_USERDATA_PATH )!=True :
+###				wRes['Reason'] = "フォルダの作成に失敗しました: path=" + gVal.DEF_USERDATA_PATH
+###				CLS_OSIF.sErr( wRes )
+###				return False
+###		
 		#############################
 		# DBに接続 (接続情報の作成)
 		gVal.OBJ_DB_IF = CLS_DB_IF()
@@ -154,6 +154,94 @@ class CLS_Setup():
 		
 		###入力の手間を省くため、パスワードを引き継ぐ
 		self.Setup()
+		return True
+
+
+
+#####################################################
+# データ追加モード
+#####################################################
+	def Add( self, inPassWD=None, inDBInit=False ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_Setup"
+		wRes['Func']  = "Add"
+		
+		CLS_OSIF.sPrn( "追加データをデータベースに追加します" + '\n' )
+		
+		#############################
+		# データアーカイブのあるフォルダの存在チェック
+		if CLS_File.sExist( gVal.STR_SystemInfo['EXT_FilePath'] )!=True :
+			## フォルダがないと失敗扱い
+			wRes['Reason'] = "アーカイブのフォルダがありません: path=" + str( gVal.STR_SystemInfo['EXT_FilePath'] )
+			CLS_OSIF.sErr( wRes )
+			return False
+		
+		#############################
+		# デフォルトの除外ユーザ・文字の読み出し
+		# ・除外ファイルの解凍
+		# ・読み出し
+		# ・解凍の削除
+		
+		###デフォルト除外文字ファイルの解凍
+		#    アーカイブのフォルダパス
+		#    アーカイブ解凍先
+		wExcWordArc_Path      = str( gVal.STR_SystemInfo['EXT_FilePath'] ) + gVal.DEF_STR_FILE['ExcWordArc']
+		wMelt_ExcWordArc_Path = str( gVal.STR_SystemInfo['EXT_FilePath'] ) + gVal.DEF_STR_FILE['Melt_ExcWordArc_path']
+		if CLS_File.sArciveMelt( inSrcPath=wExcWordArc_Path, inDstPath=wMelt_ExcWordArc_Path )!=True :
+			wRes['Reason'] = "デフォルト除外文字ファイルの解凍に失敗しました: srcpath=" + wExcWordArc_Path + " dstpath=" + wMelt_ExcWordArc_Path
+			CLS_OSIF.sErr( wRes )
+			return False
+		
+		###ローカルに読み出し
+		#    除外データ 文字列ファイル
+		wFilePath = str( gVal.STR_SystemInfo['EXT_FilePath'] ) + gVal.DEF_STR_FILE['Melt_ExcWordArc_path'] + gVal.DEF_STR_FILE['Melt_ExcWord']
+		wARR_ExcWord = []
+		if CLS_File.sReadFile( wFilePath, outLine=wARR_ExcWord )!=True :
+			wRes['Reason'] = "解凍ファイルが見つかりません: path=" + wFilePath
+			CLS_OSIF.sErr( wRes )
+			return False
+		
+		###解凍したフォルダ削除
+		if CLS_File.sRmtree( wMelt_ExcWordArc_Path )!=True :
+			wRes['Reason'] = "解凍フォルダの削除に失敗しました: path=" + wMelt_ExcWordArc_Path
+			CLS_OSIF.sErr( wRes )
+			return False
+		
+		#############################
+		# DBに接続 (接続情報の作成)
+		gVal.OBJ_DB_IF = CLS_DB_IF()
+		wSubRes = gVal.OBJ_DB_IF.Connect()
+		if wSubRes['Result']!=True or wSubRes['Responce']!=True :
+			return False
+		
+		#############################
+		# データベースを初期化する
+		# ※初期化しないほうが便利
+		if inDBInit==True :
+			self.__create_TBL_EXC_WORD( gVal.OBJ_DB_IF.OBJ_DB )
+		
+
+
+
+		#############################
+		# 除外ユーザ名、文字、プロファイルの設定
+		wSubRes = gVal.OBJ_DB_IF.SetExeWord( wARR_ExcWord )
+		if wSubRes['Result']!=True :
+			return False
+
+
+
+		
+		#############################
+		# DBを閉じる
+		gVal.OBJ_DB_IF.Close()
+		
+		#############################
+		# 正常終了
+		CLS_OSIF.sPrn( "データの追加が正常終了しました。" )
 		return True
 
 
@@ -206,6 +294,7 @@ class CLS_Setup():
 		self.__create_TBL_FAVOUSER_DATA( inDBobj )
 		self.__create_TBL_LOG_DATA( inDBobj )
 		self.__create_TBL_TRAFFIC_DATA( inDBobj )
+		self.__create_TBL_EXC_WORD( inDBobj )
 		return True
 
 	#####################################################
@@ -217,6 +306,8 @@ class CLS_Setup():
 		wQuery = "drop table if exists tbl_log_data ;"
 		inOBJ_DB.RunQuery( wQuery )
 		wQuery = "drop table if exists tbl_traffic_data ;"
+		inOBJ_DB.RunQuery( wQuery )
+		wQuery = "drop table if exists tbl_exc_word ;"
 		inOBJ_DB.RunQuery( wQuery )
 		return True
 
@@ -335,6 +426,32 @@ class CLS_Setup():
 ###					"favo_date     最終いいねツイート日時
 ###					"list_date     リスト通知日時
 ###
+		inOBJ_DB.RunQuery( wQuery )
+		return
+
+
+
+#####################################################
+# テーブル作成: TBL_EXC_WORD
+#####################################################
+	def __create_TBL_EXC_WORD( self, inOBJ_DB, inTBLname="tbl_exc_word" ):
+		#############################
+		# テーブルのドロップ
+		wQuery = "drop table if exists " + inTBLname + ";"
+		inOBJ_DB.RunQuery( wQuery )
+		
+		#############################
+		# テーブル枠の作成
+		wQuery = "create table " + inTBLname + "(" + \
+					"regdate     TIMESTAMP," + \
+					"word        TEXT  NOT NULL, " + \
+					"report      BOOL  DEFAULT false," + \
+					" PRIMARY KEY ( word ) ) ;"
+		
+##					"regdate     DB登録日時
+##					"word        禁止ワード
+##					"report      true= 通報対象
+		
 		inOBJ_DB.RunQuery( wQuery )
 		return
 

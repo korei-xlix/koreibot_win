@@ -109,6 +109,14 @@ class CLS_TwitterMain():
 			return wRes
 		
 		#############################
+		# 除外文字読み込み
+		wResSub = gVal.OBJ_DB_IF.GetExeWord()
+		if wResSub['Result']!=True :
+			wRes['Reason'] = "GetExcWord failed"
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
 		# 完了
 		wRes['Result'] = True
 		return wRes

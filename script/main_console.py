@@ -291,6 +291,12 @@ class CLS_Main_Console() :
 			return False	###問題あり
 		
 		#############################
+		# データ追加モードで実行
+		elif gVal.STR_SystemInfo['RunMode']=="add" :
+			wCLS_Setup.Add()
+			return False	###問題あり
+		
+		#############################
 		# データクリアモードで実行
 		elif gVal.STR_SystemInfo['RunMode']=="clear" :
 			wCLS_Setup.Clear()
