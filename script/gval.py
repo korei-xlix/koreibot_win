@@ -201,6 +201,7 @@ class gVal() :
 	OBJ_L     = ""											#ログ用
 	
 	ARR_ExeWord = {}										# 除外文字データ
+###	ARR_ExeWordKey = []
 
 
 

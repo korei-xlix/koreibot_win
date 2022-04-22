@@ -897,6 +897,16 @@ class CLS_TwitterMain():
 				### 規定外は1つでもあれば いいねしない(これが最新だけど規定時間外)
 				break
 			
+			### ツイートチェック
+			wWordRes = self.CheckExtWord( inData, wTweet['text'] )
+			if wWordRes['Result']!=True :
+				wRes['Reason'] = "CheckExtWord failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if wWordRes['Responce']==False :
+				### 除外
+				continue
+			
 			### ※いいねツイート確定
 			wFavoID = wTweet['id']
 			break
@@ -1063,6 +1073,38 @@ class CLS_TwitterMain():
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# 除外文字チェック
+#####################################################
+	def CheckExtWord( self, inData, inWord ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "CheckExtWord"
+		
+		wRes['Responce'] = False
+		#############################
+		# 除外文字があるかチェック
+		if inWord in gVal.ARR_ExeWord :
+			if gVal.ARR_ExeWord[inWord]['report']==True :
+				wStr = "●報告対象の文字除外: id=" + inData['screen_name'] + '\n'
+				wStr = wStr + inWord + '\n'
+				CLS_OSIF.sPrn( wStr )
+			
+			### 除外
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# 正常終了
+		wRes['Responce'] = True
 		wRes['Result'] = True
 		return wRes
 

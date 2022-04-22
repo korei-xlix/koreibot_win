@@ -421,6 +421,7 @@ class CLS_DB_IF() :
 			wARR_ExeWord.update({ wKey : wCell })
 		
 		gVal.ARR_ExeWord = wARR_ExeWord
+###		gVal.ARR_ExeWordKey = list( wARR_ExeWord.keys() )
 		
 		#############################
 		# =正常
