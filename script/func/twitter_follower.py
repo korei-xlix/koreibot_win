@@ -60,6 +60,8 @@ class CLS_TwitterFollower():
 				return wRes
 			if wGetLag['Beyond']==False :
 				### 規定以内は除外
+				wStr = "●リアクション期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
+				CLS_OSIF.sPrn( wStr )
 				wRes['Result'] = True
 				return wRes
 		
