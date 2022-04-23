@@ -180,6 +180,7 @@ class gVal() :
 
 	DEF_STR_DISPFILE = {
 		"MainConsole"			: DEF_DISPPATH + "main_console.disp",
+		"UserAdminConsole"		: DEF_DISPPATH + "useradmin_console.disp",
 		"(dummy)"				: 0
 	}
 

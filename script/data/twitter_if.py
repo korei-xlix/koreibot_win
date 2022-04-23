@@ -233,6 +233,12 @@ class CLS_Twitter_IF() :
 		wRes['Result'] = True
 		return wRes
 
+	#####################################################
+	# いいねデータ取得
+	#####################################################
+	def GetFavoData(self):
+		return self.ARR_Favo
+
 
 
 #####################################################
@@ -1118,7 +1124,11 @@ class CLS_Twitter_IF() :
 		wRes['Class'] = "CLS_Twitter_IF"
 		wRes['Func']  = "Favo"
 		
-		wRes['Responce'] = False
+###		wRes['Responce'] = False
+		wRes['Responce'] = {
+			"Run"	: False,
+			"Data"	: None
+		}
 		#############################
 		# いいね済みなら抜ける
 		wID = str( inID )
@@ -1136,6 +1146,7 @@ class CLS_Twitter_IF() :
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
+
 		#############################
 		# いいねする
 		wTwitterRes = self.OBJ_Twitter.CreateFavo( inID )
@@ -1157,6 +1168,7 @@ class CLS_Twitter_IF() :
 			"created_at"	: wTweetInfoRes['Responce']['created_at']
 		}
 		self.ARR_Favo.update({ wID : wCell })
+		wRes['Responce']['Data'] = self.ARR_Favo[wID]
 		
 		if wTweetInfoRes['Responce']['user_id'] not in self.ARR_FavoUserID :
 			self.ARR_FavoUserID.append( wTweetInfoRes['Responce']['user_id'] )
@@ -1171,7 +1183,8 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# 完了
-		wRes['Responce'] = True
+###		wRes['Responce'] = True
+		wRes['Responce']['Run']  = True
 		wRes['Result'] = True
 		return wRes
 
@@ -1188,7 +1201,11 @@ class CLS_Twitter_IF() :
 		wRes['Class'] = "CLS_Twitter_IF"
 		wRes['Func']  = "FavoRemove"
 		
-		wRes['Responce'] = False
+###		wRes['Responce'] = False
+		wRes['Responce'] = {
+			"Run"	: False,
+			"Data"	: None
+		}
 		#############################
 		# いいねがないなら抜ける
 		wID = str( inID )
@@ -1198,6 +1215,7 @@ class CLS_Twitter_IF() :
 			wRes['Result'] = True
 			return wRes
 		
+		wRes['Responce']['Data'] = self.ARR_Favo[wID]
 		#############################
 		# いいね解除する
 		wTwitterRes = self.OBJ_Twitter.RemoveFavo( inID )
@@ -1224,7 +1242,8 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# 完了
-		wRes['Responce'] = True
+###		wRes['Responce'] = True
+		wRes['Responce']['Run']  = True
 		wRes['Result'] = True
 		return wRes
 

@@ -937,7 +937,8 @@ class CLS_TwitterMain():
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 ###		wStr = "○お返しいいね済み: " + inData['screen_name'] + '\n' ;
-		if wSubRes['Responce']==True :
+###		if wSubRes['Responce']==True :
+		if wSubRes['Responce']['Run']==True :
 			wStr = "○お返しいいね 実施: " + inData['screen_name'] + '\n' ;
 		else :
 			wStr = "●お返しいいね中止(いいね被り): " + inData['screen_name'] + '\n' ;

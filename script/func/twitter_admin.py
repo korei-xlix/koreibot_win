@@ -15,7 +15,9 @@ from gval import gVal
 class CLS_TwitterAdmin():
 #####################################################
 	OBJ_Parent = ""				#親クラス実体
-
+	
+	STR_UserAdminInfo = None
+	
 	DEF_VAL_SLEEP = 10			#Twitter処理遅延（秒）
 
 #####################################################
@@ -36,7 +38,8 @@ class CLS_TwitterAdmin():
 			return
 		
 		self.OBJ_Parent = parentObj
-		gVal.STR_UserAdminInfo = self.GetUserAdminInfo()
+		self.GetUserAdminInfo()
+###		gVal.STR_UserAdminInfo = self.GetUserAdminInfo()
 		return
 
 
@@ -44,39 +47,37 @@ class CLS_TwitterAdmin():
 #####################################################
 # ユーザ管理情報 枠取得
 #####################################################
-	def GetUserAdminInfo( self, inScreenName=None ):
+	def GetUserAdminInfo(self):
 		
-		wSTR_UserAdminInfo = {
-			"name"				: None,				#Twitterユーザ名(日本語)
-			"screen_name"		: inScreenName,		#Twitterアカウント名(英語)
-			"id"        		: -1,
+		self.STR_UserAdminInfo = {
+			"flg_set"			: False,		# 設定 True=設定済
+			
+			"id"        		: -1,			# ユーザID
+			"name"				: None,			# Twitterユーザ名(日本語)
+			"screen_name"		: None,			# Twitterアカウント名(英語)
 			"statuses_count"	: -1,
 			
-			"DB_exist"			: False,
+			"myfollow"			: False,		# フォロー者
+			"follower"			: False,		# フォロワー
 			
-			"DB_r_myfollow"		: False,
-			"DB_r_remove"		: False,
+			"protected"			: False,		# 鍵付き
+			"blocking"			: False,		# ブロック
+			"blocked_by"		: False,		# 被ブロック
 			
-			"DB_limited"		: False,
-			"DB_removed"		: False,
-			"DB_unfollow"		: False,
-			"DB_unfollock"		: False,
-			"DB_vipuser"		: False,
-			"DB_admagent"		: False,
+			"flg_db_set"		: False,		# DB設定 True=DBあり
+			"regdate"			: None,
+			"senddate"			: None,
+			"sended"			: False,
+			"send_cnt"			: 0,
+			"favo_cnt"			: 0,
+			"now_favo_cnt"		: 0,
+###			"favo_id"			: None,
+			"favo_date"			: None,
+			"list_date"			: None,
 			
-			"DB_favo_date"		: None,
-			"DB_favo_cnt"		: 0,
-			"DB_r_favo_date"	: None,
-			"DB_r_favo_cnt"		: 0,
-			
-			"Protect"			: False,
-			"MyFollow"			: False,
-			"Follower"			: False,
-			
-			"MyBlock"			: False,
-			"Blocked"			: False
+			"report"			: False			# 通報 True=通報あり
 		}
-		return wSTR_UserAdminInfo
+		return
 
 
 
@@ -386,7 +387,8 @@ class CLS_TwitterAdmin():
 		wRes['Responce'] = False
 		#############################
 		# 退避枠初期化
-		gVal.STR_UserAdminInfo = self.GetUserAdminInfo()
+###		gVal.STR_UserAdminInfo = self.GetUserAdminInfo()
+		self.GetUserAdminInfo()
 		
 		#############################
 		# Twitterからユーザ情報を取得する

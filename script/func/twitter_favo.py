@@ -41,7 +41,8 @@ class CLS_TwitterFavo():
 # いいね解除
 #####################################################
 ###	def RemFavo( self, inFLG_FirstDisp=True ):
-	def RemFavo( self, inFLG_FirstDisp=True, inARR_Favo={} ):
+###	def RemFavo( self, inFLG_FirstDisp=True, inARR_Favo={} ):
+	def RemFavo( self, inFLG_FirstDisp=True ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -63,18 +64,21 @@ class CLS_TwitterFavo():
 ###			return wRes
 ###		wARR_TwData = wFavoRes['Responce']
 ###		wARR_Tw_ID = list( wARR_TwData.keys() )
+		wARR_TwData = gVal.OBJ_Tw_IF.GetFavoData()
 		
 		#############################
 		# いいねがない場合、処理を終わる
 ###		if len(wARR_Tw_ID)==0 :
-		if len(inARR_Favo)==0 :
+###		if len(inARR_Favo)==0 :
+		if len(wARR_TwData)==0 :
 			wStr = "いいねがないため、処理を終わります。"
 			CLS_OSIF.sPrn( wStr )
 			wRes['Result'] = True	#正常終了
 			return wRes
 		
-		wARR_TwData = inARR_Favo
+###		wARR_TwData = inARR_Favo
 		wARR_Tw_ID = list( wARR_TwData.keys() )
+		wARR_Tw_ID.reverse()	#逆ソート
 		
 		#############################
 		# 最古のいいねIDを算出
@@ -133,8 +137,10 @@ class CLS_TwitterFavo():
 ###			wStr = "●解除いいね日時: " + str(wARR_TwData[wID]['created_at'])
 ###			CLS_OSIF.sPrn( wStr )
 ###			wRemTweet += 1
-			if wRemoveRes['Responce']==True :
-				wStr = "●解除いいね日時: " + str(wARR_TwData[wID]['created_at'])
+###			if wRemoveRes['Responce']==True :
+			if wRemoveRes['Responce']['Run']==True :
+###				wStr = "●解除いいね日時: " + str(wARR_TwData[wID]['created_at'])
+				wStr = "●解除いいね日時: " + str(wRemoveRes['Responce']['Data']['created_at'])
 				CLS_OSIF.sPrn( wStr )
 				wRemTweet += 1
 			else:
