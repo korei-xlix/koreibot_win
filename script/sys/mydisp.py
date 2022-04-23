@@ -35,9 +35,9 @@ class CLS_MyDisp():
 ###		###キーユーザ変更画面
 ###		elif inDisp=="KeyuserConsole" :
 ###			cls.__dispInp_Keyuser( inLine, wRes )
-###		###ユーザ管理画面
-###		elif inDisp=="UserAdminConsole" :
-###			cls.__dispInp_UserAdmin( inLine, wRes )
+		###ユーザ管理画面
+		elif inDisp=="UserAdminConsole" :
+			cls.__dispInp_UserAdmin( inLine, wRes )
 ###		###自動いいね設定画面
 ###		elif inDisp=="AutoFavoConsole" :
 ###			cls.__dispInp_AutoFavo( inLine, wRes )
@@ -179,159 +179,159 @@ class CLS_MyDisp():
 ###		pRes['Result'] = True
 ###		return
 
-###	#####################################################
-###	# ユーザ管理画面
-###	@classmethod
-###	def __dispInp_UserAdmin( cls, inLine, outRes ):
-###		pRes = outRes
-###		#############################
-###		# インプリメント処理
-###		
-###		###インプリ：対象ユーザ
-###		if "[@USERADMIN-TWITTER@]"==inLine :
-###			pRes['Responce'] = "対象ユーザ  @" + gVal.STR_UserAdminInfo['screen_name']
-###		
-###		###インプリ：フォロー者
-###		elif "[@USERADMIN-MYFOLLOW@]"==inLine :
-###			if gVal.STR_UserAdminInfo['MyFollow']==True :
-###				wStr = "〇はい"
-###			else:
-###				wStr = "▼いいえ"
-###			pRes['Responce'] = "    フォロー中                  : " + wStr
-###		
-###		###インプリ：フォロワー
-###		elif "[@USERADMIN-FOLLOWER@]"==inLine :
-###			if gVal.STR_UserAdminInfo['Follower']==True :
-###				wStr = "〇はい"
-###			else:
-###				wStr = "▼いいえ"
-###			pRes['Responce'] = "    フォロワー                  : " + wStr
-###		
-###		###インプリ：一度フォローしたことがある
-###		elif "[@USERADMIN-R_MYFOLLOW@]"==inLine :
-###			if gVal.STR_UserAdminInfo['DB_r_myfollow']==True :
-###				wStr = "  はい"
-###			else:
-###				if gVal.STR_UserAdminInfo['DB_exist']==True :
-###					wStr = "  いいえ"
-###				else:
-###					wStr = "  －－－"
-###			pRes['Responce'] = "    １度フォローしたことがある  : " + wStr
-###		
-###		###インプリ：一度リムーブされたことがある
-###		elif "[@USERADMIN-R_REMOVE@]"==inLine :
-###			if gVal.STR_UserAdminInfo['DB_r_remove']==True :
-###				wStr = "  はい"
-###			else:
-###				wStr = "  いいえ"
-###			pRes['Responce'] = "    １度リムーブされたことがある: " + wStr
-###		
-###		###インプリ：フォロー解除候補
-###		elif "[@USERADMIN-LIMITED@]"==inLine :
-###			if gVal.STR_UserAdminInfo['DB_limited']==True :
-###				wStr = "●はい"
-###			else:
-###				if gVal.STR_UserAdminInfo['DB_exist']==True :
-###					wStr = "  いいえ"
-###				else:
-###					wStr = "  －－－"
-###			pRes['Responce'] = "    フォロー解除候補            : " + wStr
-###		
-###		###インプリ：鍵アカウント
-###		elif "[@USERADMIN-PROTECT@]"==inLine :
-###			if gVal.STR_UserAdminInfo['Protect']==True :
-###				wStr = "●はい"
-###			else:
-###				wStr = "  いいえ"
-###			pRes['Responce'] = "    鍵アカウント                : " + wStr
-###		
-###		###インプリ：ブロック中
-###		elif "[@USERADMIN-MYBLOCK@]"==inLine :
-###			if gVal.STR_UserAdminInfo['MyBlock']==True :
-###				wStr = "●はい"
-###			else:
-###				wStr = "  いいえ"
-###			pRes['Responce'] = "    ブロック中                  : " + wStr
-###		
-###		###インプリ：被ブロック
-###		elif "[@USERADMIN-BLOCKED@]"==inLine :
-###			if gVal.STR_UserAdminInfo['Blocked']==True :
-###				wStr = "●はい"
-###			else:
-###				wStr = "  いいえ"
-###			pRes['Responce'] = "    被ブロック                  : " + wStr
-###		
-###		###インプリ：疑似リムーブ
-###		elif "[@USERADMIN-REMOVED@]"==inLine :
-###			if gVal.STR_UserAdminInfo['DB_removed']==True :
-###				wStr = "●リムーブON"
-###			else:
-###				wStr = "  解除"
-###			pRes['Responce'] = "    疑似リムーブー              : " + wStr
-###		
-###		
-###		###インプリ：非フォロー化
-###		elif "[@USERADMIN-UNFOLLOW@]"==inLine :
-###			if gVal.STR_UserAdminInfo['DB_unfollow']==True :
-###				wStr = "●非フォローON"
-###			else:
-###				wStr = "  解除"
-###			pRes['Responce'] = "    非フォロー化                : " + wStr
-###		
-###		###インプリ：非フォローロック
-###		elif "[@USERADMIN-UNFOLLOCK@]"==inLine :
-###			if gVal.STR_UserAdminInfo['DB_unfollock']==True :
-###				wStr = "●ロックON"
-###			else:
-###				wStr = "  解除"
-###			pRes['Responce'] = "    非フォローロック            : " + wStr
-###		
-###		###インプリ：VIP設定
-###		elif "[@USERADMIN-VIPSET@]"==inLine :
-###			if gVal.STR_UserAdminInfo['DB_vipuser']==True :
-###				wStr = "〇VIP"
-###			else:
-###				wStr = "  一般"
-###			pRes['Responce'] = "    VIP設定                     : " + wStr
-###		
-###		###インプリ：監視設定
-###		elif "[@USERADMIN-ADMAGENT@]"==inLine :
-###			if gVal.STR_UserAdminInfo['DB_admagent']==True :
-###				wStr = "〇監視ユーザ"
-###			else:
-###				wStr = "  監視外"
-###			pRes['Responce'] = "    監視設定                    : " + wStr
-###		
-###		###インプリ：ファボった日
-###		elif "[@USERADMIN-FAVO_DATE@]"==inLine :
-###			if gVal.STR_UserAdminInfo['DB_favo_cnt']>0 :
-###				wStr = str(gVal.STR_UserAdminInfo['DB_favo_date'])
-###			else:
-###				wStr = "  なし"
-###			pRes['Responce'] = "    ファボった日                : " + wStr
-###		
-###		###インプリ：ファボられた日
-###		elif "[@USERADMIN-FAVO_R_DATE@]"==inLine :
-###			if gVal.STR_UserAdminInfo['DB_r_favo_cnt']>0 :
-###				wStr = str(gVal.STR_UserAdminInfo['DB_r_favo_date'])
-###			else:
-###				wStr = "  なし"
-###			pRes['Responce'] = "    ファボられた日              : " + wStr
-###		
-###		###インプリ：DB情報あり
-###		elif "[@USERADMIN-EXIST@]"==inLine :
-###			if gVal.STR_UserAdminInfo['DB_exist']==True :
-###				wStr = "〇はい"
-###			else:
-###				wStr = "▼いいえ"
-###			pRes['Responce'] = "    DB情報あり                  : " + wStr
-###		
-###		#############################
-###		# 正常
-###		pRes['Result'] = True
-###		return
-###
-###
+	#####################################################
+	# ユーザ管理画面
+	@classmethod
+	def __dispInp_UserAdmin( cls, inLine, outRes ):
+		pRes = outRes
+		#############################
+		# インプリメント処理
+		
+		###インプリ：対象ユーザ
+		if "[@USERADMIN-TWITTER@]"==inLine :
+			pRes['Responce'] = "対象ユーザ  @" + gVal.STR_UserAdminInfo['screen_name']
+		
+		###インプリ：フォロー者
+		elif "[@USERADMIN-MYFOLLOW@]"==inLine :
+			if gVal.STR_UserAdminInfo['MyFollow']==True :
+				wStr = "〇はい"
+			else:
+				wStr = "▼いいえ"
+			pRes['Responce'] = "    フォロー中                  : " + wStr
+		
+		###インプリ：フォロワー
+		elif "[@USERADMIN-FOLLOWER@]"==inLine :
+			if gVal.STR_UserAdminInfo['Follower']==True :
+				wStr = "〇はい"
+			else:
+				wStr = "▼いいえ"
+			pRes['Responce'] = "    フォロワー                  : " + wStr
+		
+		###インプリ：一度フォローしたことがある
+		elif "[@USERADMIN-R_MYFOLLOW@]"==inLine :
+			if gVal.STR_UserAdminInfo['DB_r_myfollow']==True :
+				wStr = "  はい"
+			else:
+				if gVal.STR_UserAdminInfo['DB_exist']==True :
+					wStr = "  いいえ"
+				else:
+					wStr = "  －－－"
+			pRes['Responce'] = "    １度フォローしたことがある  : " + wStr
+		
+		###インプリ：一度リムーブされたことがある
+		elif "[@USERADMIN-R_REMOVE@]"==inLine :
+			if gVal.STR_UserAdminInfo['DB_r_remove']==True :
+				wStr = "  はい"
+			else:
+				wStr = "  いいえ"
+			pRes['Responce'] = "    １度リムーブされたことがある: " + wStr
+		
+		###インプリ：フォロー解除候補
+		elif "[@USERADMIN-LIMITED@]"==inLine :
+			if gVal.STR_UserAdminInfo['DB_limited']==True :
+				wStr = "●はい"
+			else:
+				if gVal.STR_UserAdminInfo['DB_exist']==True :
+					wStr = "  いいえ"
+				else:
+					wStr = "  －－－"
+			pRes['Responce'] = "    フォロー解除候補            : " + wStr
+		
+		###インプリ：鍵アカウント
+		elif "[@USERADMIN-PROTECT@]"==inLine :
+			if gVal.STR_UserAdminInfo['Protect']==True :
+				wStr = "●はい"
+			else:
+				wStr = "  いいえ"
+			pRes['Responce'] = "    鍵アカウント                : " + wStr
+		
+		###インプリ：ブロック中
+		elif "[@USERADMIN-MYBLOCK@]"==inLine :
+			if gVal.STR_UserAdminInfo['MyBlock']==True :
+				wStr = "●はい"
+			else:
+				wStr = "  いいえ"
+			pRes['Responce'] = "    ブロック中                  : " + wStr
+		
+		###インプリ：被ブロック
+		elif "[@USERADMIN-BLOCKED@]"==inLine :
+			if gVal.STR_UserAdminInfo['Blocked']==True :
+				wStr = "●はい"
+			else:
+				wStr = "  いいえ"
+			pRes['Responce'] = "    被ブロック                  : " + wStr
+		
+		###インプリ：疑似リムーブ
+		elif "[@USERADMIN-REMOVED@]"==inLine :
+			if gVal.STR_UserAdminInfo['DB_removed']==True :
+				wStr = "●リムーブON"
+			else:
+				wStr = "  解除"
+			pRes['Responce'] = "    疑似リムーブー              : " + wStr
+		
+		
+		###インプリ：非フォロー化
+		elif "[@USERADMIN-UNFOLLOW@]"==inLine :
+			if gVal.STR_UserAdminInfo['DB_unfollow']==True :
+				wStr = "●非フォローON"
+			else:
+				wStr = "  解除"
+			pRes['Responce'] = "    非フォロー化                : " + wStr
+		
+		###インプリ：非フォローロック
+		elif "[@USERADMIN-UNFOLLOCK@]"==inLine :
+			if gVal.STR_UserAdminInfo['DB_unfollock']==True :
+				wStr = "●ロックON"
+			else:
+				wStr = "  解除"
+			pRes['Responce'] = "    非フォローロック            : " + wStr
+		
+		###インプリ：VIP設定
+		elif "[@USERADMIN-VIPSET@]"==inLine :
+			if gVal.STR_UserAdminInfo['DB_vipuser']==True :
+				wStr = "〇VIP"
+			else:
+				wStr = "  一般"
+			pRes['Responce'] = "    VIP設定                     : " + wStr
+		
+		###インプリ：監視設定
+		elif "[@USERADMIN-ADMAGENT@]"==inLine :
+			if gVal.STR_UserAdminInfo['DB_admagent']==True :
+				wStr = "〇監視ユーザ"
+			else:
+				wStr = "  監視外"
+			pRes['Responce'] = "    監視設定                    : " + wStr
+		
+		###インプリ：ファボった日
+		elif "[@USERADMIN-FAVO_DATE@]"==inLine :
+			if gVal.STR_UserAdminInfo['DB_favo_cnt']>0 :
+				wStr = str(gVal.STR_UserAdminInfo['DB_favo_date'])
+			else:
+				wStr = "  なし"
+			pRes['Responce'] = "    ファボった日                : " + wStr
+		
+		###インプリ：ファボられた日
+		elif "[@USERADMIN-FAVO_R_DATE@]"==inLine :
+			if gVal.STR_UserAdminInfo['DB_r_favo_cnt']>0 :
+				wStr = str(gVal.STR_UserAdminInfo['DB_r_favo_date'])
+			else:
+				wStr = "  なし"
+			pRes['Responce'] = "    ファボられた日              : " + wStr
+		
+		###インプリ：DB情報あり
+		elif "[@USERADMIN-EXIST@]"==inLine :
+			if gVal.STR_UserAdminInfo['DB_exist']==True :
+				wStr = "〇はい"
+			else:
+				wStr = "▼いいえ"
+			pRes['Responce'] = "    DB情報あり                  : " + wStr
+		
+		#############################
+		# 正常
+		pRes['Result'] = True
+		return
+
+
 
 ###	#####################################################
 ###	# 自動いいね設定画面
