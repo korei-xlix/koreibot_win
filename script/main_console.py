@@ -180,6 +180,11 @@ class CLS_Main_Console() :
 		
 	#####################################################
 		#############################
+		# ユーザ管理
+		elif inCommand=="\\u" :
+			cls.OBJ_TwitterMain.UserAdmin()
+		
+		#############################
 		# リスト通知ユーザ表示
 		elif inCommand=="\\lv" :
 			cls.OBJ_TwitterMain.ViewListIndUser()

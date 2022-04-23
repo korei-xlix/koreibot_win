@@ -1,0 +1,38 @@
+--------------------
+ ユーザ管理
+--------------------
+[@USERADMIN-TWITTER@]
+
+--------------------
+[@USERADMIN-MYFOLLOW@]
+[@USERADMIN-R_MYFOLLOW@]
+
+[@USERADMIN-FOLLOWER@]
+[@USERADMIN-R_REMOVE@]
+[@USERADMIN-REMOVED@]
+
+[@USERADMIN-LIMITED@]
+[@USERADMIN-UNFOLLOW@]
+[@USERADMIN-UNFOLLOCK@]
+
+[@USERADMIN-PROTECT@]
+[@USERADMIN-MYBLOCK@]
+[@USERADMIN-BLOCKED@]
+[@USERADMIN-VIPSET@]
+[@USERADMIN-ADMAGENT@]
+
+[@USERADMIN-FAVO_DATE@]
+[@USERADMIN-FAVO_R_DATE@]
+
+[@USERADMIN-EXIST@]
+--------------------
+
+コマンドを入力してください。
+
+    [\rm]       リムーブする
+    [\rma]      関係をリセットする（リムーブもする）
+
+    [\v]        ブラウザでプロフィールを表示する
+
+    [\q]        １つ前に戻る
+

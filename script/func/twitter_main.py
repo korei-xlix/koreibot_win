@@ -9,6 +9,7 @@
 from twitter_follower import CLS_TwitterFollower
 from twitter_favo import CLS_TwitterFavo
 from twitter_keyword import CLS_TwitterKeyword
+from twitter_admin import CLS_TwitterAdmin
 
 from osif import CLS_OSIF
 from traffic import CLS_Traffic
@@ -20,6 +21,7 @@ class CLS_TwitterMain():
 	OBJ_TwitterFollower = None
 	OBJ_TwitterFavo     = None
 	OBJ_TwitterKeyword  = None
+	OBJ_TwitterAdmin    = None
 
 	CHR_GetReactionDate = None
 	ARR_ReacrionUserID = []
@@ -67,6 +69,7 @@ class CLS_TwitterMain():
 		self.OBJ_TwitterFollower = CLS_TwitterFollower( parentObj=self )
 		self.OBJ_TwitterFavo     = CLS_TwitterFavo( parentObj=self )
 		self.OBJ_TwitterKeyword  = CLS_TwitterKeyword( parentObj=self )
+		self.OBJ_TwitterAdmin    = CLS_TwitterAdmin( parentObj=self )
 		return
 
 
@@ -346,6 +349,15 @@ class CLS_TwitterMain():
 		#############################
 		# 完了
 		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# ユーザ管理
+#####################################################
+	def UserAdmin(self):
+		wRes = self.OBJ_TwitterAdmin.UserAdmin()
 		return wRes
 
 
