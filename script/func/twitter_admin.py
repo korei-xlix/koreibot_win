@@ -96,9 +96,10 @@ class CLS_TwitterAdmin():
 		# コンソールを表示
 		while True :
 			
-			gVal.STR_UserAdminInfo['screen_name'] = None
-			gVal.STR_UserAdminInfo['id']          = -1
-			
+###			gVal.STR_UserAdminInfo['screen_name'] = None
+###			gVal.STR_UserAdminInfo['id']          = -1
+###			
+			self.STR_UserAdminInfo['flg_set'] = False
 			#############################
 			# 画面クリア
 			CLS_OSIF.sDispClr()
@@ -126,16 +127,13 @@ class CLS_TwitterAdmin():
 			
 			#############################
 			# ユーザ情報を取得する
-			wUserinfoRes = self.GetUserInfo( wTwitterID )
+###			wUserinfoRes = self.GetUserInfo( wTwitterID )
+			wUserinfoRes = self.__get_UserAdmin( wTwitterID )
 			if wUserinfoRes['Result']!=True :
-				wRes['Reason'] = "GetUserInfo is failed: " + wUserinfoRes['Reason']
+				wRes['Reason'] = "__get_UserAdmin is failed: " + wUserinfoRes['Reason']
 				gVal.OBJ_L.Log( "B", wRes )
-				break
-			
+				return wRes
 			if wUserinfoRes['Responce']==False :
-				wStr = "そのユーザは存在しません。: " + wUserinfoRes['Reason'] + '\n'
-				CLS_OSIF.sPrn( wStr )
-				CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
 				continue
 			
 			#############################
@@ -162,7 +160,8 @@ class CLS_TwitterAdmin():
 	# ユーザ管理 画面表示
 	#####################################################
 	def __view_UserAdmin(self):
-		wResDisp = CLS_MyDisp.sViewDisp( "UserAdminConsole", -1 )
+###		wResDisp = CLS_MyDisp.sViewDisp( "UserAdminConsole", -1 )
+		wResDisp = CLS_MyDisp.sViewDisp( inDisp="UserAdminConsole", inIndex=-1, inData=self.STR_UserAdminInfo )
 		if wResDisp['Result']==False :
 			gVal.OBJ_L.Log( "D", wResDisp )
 			return "\\q"	#失敗=強制終了
@@ -182,21 +181,8 @@ class CLS_TwitterAdmin():
 		wRes['Func']  = "__run_UserAdmin"
 		
 		#############################
-		# コマンド：フォローする
-		if inWord=="\\f" :
-			wRes = self.__run_Follow()
-			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
-		
-		#############################
-		# コマンド：疑似リムーブ
-		elif inWord=="\\r" :
-#		if inWord=="\\r" :
-			wRes = self.__run_SoftRemove()
-			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
-		
-		#############################
 		# コマンド：リムーブする
-		elif inWord=="\\rm" :
+		if inWord=="\\rm" :
 			wRes = self.__run_Remove()
 			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
 		
@@ -204,42 +190,6 @@ class CLS_TwitterAdmin():
 		# コマンド：関係リセット
 		elif inWord=="\\rma" :
 			wRes = self.__run_Reset()
-			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
-		
-		#############################
-		# コマンド：非フォロー化
-		elif inWord=="\\uf" :
-			wRes = self.__run_Unfollow()
-			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
-		
-		#############################
-		# コマンド：非フォローロック
-		elif inWord=="\\ufl" :
-			wRes = self.__run_UnfollowLock()
-			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
-		
-		#############################
-		# コマンド：解除候補の解除
-		elif inWord=="\\ram" :
-			wRes = self.__run_RemoveAgentRemove()
-			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
-		
-		#############################
-		# コマンド：VIP設定
-		elif inWord=="\\vp" :
-			wRes = self.__run_Vipset()
-			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
-		
-		#############################
-		# コマンド：監視設定
-		elif inWord=="\\ag" :
-			wRes = self.__run_AdmAgent()
-			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
-		
-		#############################
-		# コマンド：SP設定
-		elif inWord=="\\sp" :
-			wRes = self.__run_Superset()
 			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
 		
 		#############################
@@ -270,14 +220,15 @@ class CLS_TwitterAdmin():
 		
 		#############################
 		# フォロー中か
-		if gVal.STR_UserAdminInfo['MyFollow']!=True :
+		if self.STR_UserAdminInfo['myfollow']!=True :
 			CLS_OSIF.sPrn( "そのユーザはフォローしてません" + '\n' )
 			return wRes
 		
 		CLS_OSIF.sPrn( "リムーブ処理をおこなってます。しばらくお待ちください......" )
 		#############################
 		# リムーブする
-		wSubRes = self.OBJ_Parent.RelRemove( gVal.STR_UserAdminInfo )
+###		wSubRes = self.OBJ_Parent.RelRemove( self.STR_UserAdminInfo )
+		wSubRes = gVal.OBJ_Tw_IF.Remove( self.STR_UserAdminInfo['id'] )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "RelRemove is failed: " + wSubRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
@@ -287,9 +238,11 @@ class CLS_TwitterAdmin():
 		
 		#############################
 		# 情報反映
-		wSubRes = self.GetUserInfo( inScreenName=gVal.STR_UserAdminInfo['screen_name'] )
+###		wSubRes = self.GetUserInfo( inScreenName=gVal.STR_UserAdminInfo['screen_name'] )
+		wSubRes = self.__get_UserAdmin( inScreenName=gVal.STR_UserAdminInfo['screen_name'] )
 		if wSubRes['Result']!=True :
-			wRes['Reason'] = "GetUserInfo is failed"
+###			wRes['Reason'] = "GetUserInfo is failed"
+			wRes['Reason'] = "__get_UserAdmin is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
@@ -315,7 +268,8 @@ class CLS_TwitterAdmin():
 		CLS_OSIF.sPrn( "リムーブ処理をおこなってます。しばらくお待ちください......" )
 		#############################
 		# ブロック＆リムーブする
-		wSubRes = self.OBJ_Parent.BlockRemove( gVal.STR_UserAdminInfo )
+###		wSubRes = self.OBJ_Parent.BlockRemove( gVal.STR_UserAdminInfo )
+		wSubRes = gVal.OBJ_Tw_IF.BlockRemove( self.STR_UserAdminInfo['id'] )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "BlockRemove is failed: " + wSubRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
@@ -325,10 +279,10 @@ class CLS_TwitterAdmin():
 		
 		#############################
 		# 関係解除= DB削除
-		if gVal.STR_UserAdminInfo['DB_exist']==True :
+		if self.STR_UserAdminInfo['flg_db_set']==True :
 			wQuery = "delete from tbl_follower_data " + \
 						"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
-						" and id = '" + str(gVal.STR_UserAdminInfo['id']) + "' ;"
+						" and id = '" + str(self.STR_UserAdminInfo['id']) + "' ;"
 			
 			wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
 			if wResDB['Result']!=True :
@@ -337,7 +291,8 @@ class CLS_TwitterAdmin():
 		
 		#############################
 		# 情報反映
-		gVal.STR_UserAdminInfo = self.GetUserAdminInfo( inScreenName=gVal.STR_UserAdminInfo['screen_name'] )
+###		gVal.STR_UserAdminInfo = self.GetUserAdminInfo( inScreenName=gVal.STR_UserAdminInfo['screen_name'] )
+		self.GetUserAdminInfo()
 		
 		#############################
 		# 正常終了
@@ -360,7 +315,7 @@ class CLS_TwitterAdmin():
 		
 		#############################
 		# ブラウザ表示
-		wURL = "https://twitter.com/" + gVal.STR_UserAdminInfo['screen_name']
+		wURL = "https://twitter.com/" + self.STR_UserAdminInfo['screen_name']
 		CLS_HTMLIF.sOpenURL( wURL )
 		
 		### Twitter Wait
@@ -376,13 +331,14 @@ class CLS_TwitterAdmin():
 #####################################################
 # ユーザ情報取得
 #####################################################
-	def GetUserInfo( self, inScreenName ):
+###	def GetUserInfo( self, inScreenName ):
+	def __get_UserAdmin( self, inScreenName ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
 		wRes = CLS_OSIF.sGet_Resp()
 		wRes['Class'] = "CLS_TwitterAdmin"
-		wRes['Func']  = "GetUserInfo"
+		wRes['Func']  = "__get_UserAdmin"
 		
 		wRes['Responce'] = False
 		#############################
@@ -411,33 +367,20 @@ class CLS_TwitterAdmin():
 		### IDの取得
 		wID = str( wUserInfoRes['Responce']['id'] )
 		
+		wFLG_DB = False
+		wARR_DBData = None
 		#############################
 		# DBからユーザ情報を取得する(1個)
-		wSubRes = gVal.OBJ_DB_IF.GetFollowerDataOne( wID )
+		wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wID )
 		if wSubRes['Result']!=True :
 			###失敗
-			wRes['Reason'] = "GetFollowerDataOne is failed"
+			wRes['Reason'] = "GetFavoDataOne is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		if wSubRes['Responce']==None :
-			### DBにユーザが存在しない=新規登録
-			wSubRes = gVal.OBJ_DB_IF.InsertFollowerData( wUserInfoRes['Responce'] )
-			if wSubRes['Result']!=True :
-				###失敗
-				wRes['Reason'] = "InsertFollowerData is failed: " + CLS_OSIF.sCatErr( wSubRes )
-				return wRes
-			
-			gVal.OBJ_L.Log( "U", wRes, "DBに登録したユーザ: @" + str( wUserInfoRes['Responce']['screen_name'] ) )
-			
-			#############################
-			# DBから情報を取得する(1個)
-			wSubRes = gVal.OBJ_DB_IF.GetFollowerDataOne( wUserInfoRes['Responce']['id'] )
-			if wSubRes['Result']!=True :
-				###失敗
-				wRes['Reason'] = "GetFollowerDataOne is failed: " + CLS_OSIF.sCatErr( wSubRes )
-				return wRes
-		
-		wARR_DBData = wSubRes['Responce']
+		if wSubRes['Responce']!=None :
+			### DBにユーザが存在する
+			wFLG_DB = True
+			wARR_DBData = wSubRes['Responce']
 		
 		#############################
 		# Twitterからフォロー関係を取得する
@@ -447,61 +390,51 @@ class CLS_TwitterAdmin():
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-		#############################
-		# ブロック検知が更新されてたら
-		# DBに反映する
-		if wARR_DBData['rc_blockby']!=wFollowInfoRes['Responce']['blocked_by'] :
-			wQuery = "update tbl_follower_data set " + \
-						"rc_blockby = " + str( wFollowInfoRes['Responce']['blocked_by'] ) + " " + \
-						"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
-						" and id = '" + str(wID) + "' ;"
-			
-			wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
-			if wResDB['Result']!=True :
-				wRes['Reason'] = "Run Query is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-		
+###		#############################
+###		# ブロック検知が更新されてたら
+###		# DBに反映する
+###		if wARR_DBData['rc_blockby']!=wFollowInfoRes['Responce']['blocked_by'] :
+###			wQuery = "update tbl_follower_data set " + \
+###						"rc_blockby = " + str( wFollowInfoRes['Responce']['blocked_by'] ) + " " + \
+###						"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
+###						" and id = '" + str(wID) + "' ;"
+###			
+###			wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+###			if wResDB['Result']!=True :
+###				wRes['Reason'] = "Run Query is failed"
+###				gVal.OBJ_L.Log( "B", wRes )
+###		
 		#############################
 		# 退避に情報を反映する
 		
 		### Twitter UserInfo
-		gVal.STR_UserAdminInfo['screen_name'] = inScreenName
-		gVal.STR_UserAdminInfo['name']    = str( wUserInfoRes['Responce']['name'] )
-		gVal.STR_UserAdminInfo['id']      = wID
-		gVal.STR_UserAdminInfo['statuses_count'] = str(wUserInfoRes['Responce']['statuses_count'])
-		gVal.STR_UserAdminInfo['Protect'] = wUserInfoRes['Responce']['protected']
+		self.STR_UserAdminInfo['screen_name'] = inScreenName
+		self.STR_UserAdminInfo['name']    = str( wUserInfoRes['Responce']['name'] )
+		self.STR_UserAdminInfo['id']      = wID
+		self.STR_UserAdminInfo['statuses_count'] = str(wUserInfoRes['Responce']['statuses_count'])
+		self.STR_UserAdminInfo['protected'] = wUserInfoRes['Responce']['protected']
 		
 		### Twitter Follow
-		gVal.STR_UserAdminInfo['MyFollow'] = wFollowInfoRes['Responce']['following']
-		gVal.STR_UserAdminInfo['Follower'] = wFollowInfoRes['Responce']['followed_by']
-		gVal.STR_UserAdminInfo['MyBlock']  = wFollowInfoRes['Responce']['blocking']
-		gVal.STR_UserAdminInfo['Blocked']  = wFollowInfoRes['Responce']['blocked_by']
+		self.STR_UserAdminInfo['myfollow'] = wFollowInfoRes['Responce']['following']
+		self.STR_UserAdminInfo['follower'] = wFollowInfoRes['Responce']['followed_by']
+		self.STR_UserAdminInfo['blocking'] = wFollowInfoRes['Responce']['blocking']
+		self.STR_UserAdminInfo['blocked_by'] = wFollowInfoRes['Responce']['blocked_by']
 		
 		### DB
-		gVal.STR_UserAdminInfo['DB_r_myfollow'] = wARR_DBData['r_myfollow']
-		gVal.STR_UserAdminInfo['DB_r_remove']   = wARR_DBData['r_remove']
-		gVal.STR_UserAdminInfo['DB_limited']    = wARR_DBData['limited']
-		gVal.STR_UserAdminInfo['DB_removed']    = wARR_DBData['removed']
-		gVal.STR_UserAdminInfo['DB_unfollow']   = wARR_DBData['un_follower']
-		gVal.STR_UserAdminInfo['DB_unfollock']  = wARR_DBData['un_fol_lock']
-		gVal.STR_UserAdminInfo['DB_vipuser']    = wARR_DBData['vipuser']
-		gVal.STR_UserAdminInfo['DB_admagent']   = wARR_DBData['adm_agent']
+		if wFLG_DB==True :
+			self.STR_UserAdminInfo['regdate']  = str( wARR_DBData['regdate'] )
+			self.STR_UserAdminInfo['senddate'] = str( wARR_DBData['senddate'] )
+			self.STR_UserAdminInfo['sended']   = wARR_DBData['sended']
+			self.STR_UserAdminInfo['send_cnt']     = wARR_DBData['send_cnt']
+			self.STR_UserAdminInfo['favo_cnt']     = wARR_DBData['favo_cnt']
+			self.STR_UserAdminInfo['now_favo_cnt'] = wARR_DBData['now_favo_cnt']
+			self.STR_UserAdminInfo['favo_date'] = str( wARR_DBData['favo_date'] )
+			self.STR_UserAdminInfo['list_date'] = str( wARR_DBData['list_date'] )
+			
+			self.STR_UserAdminInfo['flg_db_set'] = True
 		
-		if wARR_DBData['favo_id']!=None :
-			gVal.STR_UserAdminInfo['DB_favo_date'] = wARR_DBData['favo_date']
-			gVal.STR_UserAdminInfo['DB_favo_cnt']  = wARR_DBData['favo_cnt']
-		else:
-			gVal.STR_UserAdminInfo['DB_favo_date'] = None
-			gVal.STR_UserAdminInfo['DB_favo_cnt']  = 0
-		
-		if wARR_DBData['r_favo_id']!=None :
-			gVal.STR_UserAdminInfo['DB_r_favo_date'] = wARR_DBData['r_favo_date']
-			gVal.STR_UserAdminInfo['DB_r_favo_cnt']  = wARR_DBData['r_favo_cnt']
-		else:
-			gVal.STR_UserAdminInfo['DB_r_favo_date'] = None
-			gVal.STR_UserAdminInfo['DB_r_favo_cnt']  = 0
-		
-		gVal.STR_UserAdminInfo['DB_exist'] = True
+		### データセット
+		self.STR_UserAdminInfo['flg_set'] = True
 		
 		#############################
 		# 正常

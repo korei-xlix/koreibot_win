@@ -18,7 +18,8 @@ class CLS_MyDisp():
 # インプリメント処理
 #####################################################
 	@classmethod
-	def sDispInp( cls, inDisp, inLine, inIndex ):
+###	def sDispInp( cls, inDisp, inLine, inIndex ):
+	def sDispInp( cls, inDisp, inLine, inIndex, inData={} ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -37,7 +38,8 @@ class CLS_MyDisp():
 ###			cls.__dispInp_Keyuser( inLine, wRes )
 		###ユーザ管理画面
 		elif inDisp=="UserAdminConsole" :
-			cls.__dispInp_UserAdmin( inLine, wRes )
+###			cls.__dispInp_UserAdmin( inLine, wRes )
+			cls.__dispInp_UserAdmin( inLine, wRes, inData )
 ###		###自動いいね設定画面
 ###		elif inDisp=="AutoFavoConsole" :
 ###			cls.__dispInp_AutoFavo( inLine, wRes )
@@ -182,18 +184,19 @@ class CLS_MyDisp():
 	#####################################################
 	# ユーザ管理画面
 	@classmethod
-	def __dispInp_UserAdmin( cls, inLine, outRes ):
+###	def __dispInp_UserAdmin( cls, inLine, outRes ):
+	def __dispInp_UserAdmin( cls, inLine, outRes, inData={} ):
 		pRes = outRes
 		#############################
 		# インプリメント処理
 		
 		###インプリ：対象ユーザ
 		if "[@USERADMIN-TWITTER@]"==inLine :
-			pRes['Responce'] = "対象ユーザ  @" + gVal.STR_UserAdminInfo['screen_name']
+			pRes['Responce'] = "対象ユーザ  @" + inData['screen_name']
 		
 		###インプリ：フォロー者
 		elif "[@USERADMIN-MYFOLLOW@]"==inLine :
-			if gVal.STR_UserAdminInfo['MyFollow']==True :
+			if inData['myfollow']==True :
 				wStr = "〇はい"
 			else:
 				wStr = "▼いいえ"
@@ -201,45 +204,15 @@ class CLS_MyDisp():
 		
 		###インプリ：フォロワー
 		elif "[@USERADMIN-FOLLOWER@]"==inLine :
-			if gVal.STR_UserAdminInfo['Follower']==True :
+			if inData['follower']==True :
 				wStr = "〇はい"
 			else:
 				wStr = "▼いいえ"
 			pRes['Responce'] = "    フォロワー                  : " + wStr
 		
-		###インプリ：一度フォローしたことがある
-		elif "[@USERADMIN-R_MYFOLLOW@]"==inLine :
-			if gVal.STR_UserAdminInfo['DB_r_myfollow']==True :
-				wStr = "  はい"
-			else:
-				if gVal.STR_UserAdminInfo['DB_exist']==True :
-					wStr = "  いいえ"
-				else:
-					wStr = "  －－－"
-			pRes['Responce'] = "    １度フォローしたことがある  : " + wStr
-		
-		###インプリ：一度リムーブされたことがある
-		elif "[@USERADMIN-R_REMOVE@]"==inLine :
-			if gVal.STR_UserAdminInfo['DB_r_remove']==True :
-				wStr = "  はい"
-			else:
-				wStr = "  いいえ"
-			pRes['Responce'] = "    １度リムーブされたことがある: " + wStr
-		
-		###インプリ：フォロー解除候補
-		elif "[@USERADMIN-LIMITED@]"==inLine :
-			if gVal.STR_UserAdminInfo['DB_limited']==True :
-				wStr = "●はい"
-			else:
-				if gVal.STR_UserAdminInfo['DB_exist']==True :
-					wStr = "  いいえ"
-				else:
-					wStr = "  －－－"
-			pRes['Responce'] = "    フォロー解除候補            : " + wStr
-		
 		###インプリ：鍵アカウント
 		elif "[@USERADMIN-PROTECT@]"==inLine :
-			if gVal.STR_UserAdminInfo['Protect']==True :
+			if inData['protected']==True :
 				wStr = "●はい"
 			else:
 				wStr = "  いいえ"
@@ -247,7 +220,7 @@ class CLS_MyDisp():
 		
 		###インプリ：ブロック中
 		elif "[@USERADMIN-MYBLOCK@]"==inLine :
-			if gVal.STR_UserAdminInfo['MyBlock']==True :
+			if inData['blocking']==True :
 				wStr = "●はい"
 			else:
 				wStr = "  いいえ"
@@ -255,76 +228,76 @@ class CLS_MyDisp():
 		
 		###インプリ：被ブロック
 		elif "[@USERADMIN-BLOCKED@]"==inLine :
-			if gVal.STR_UserAdminInfo['Blocked']==True :
+			if inData['blocked_by']==True :
 				wStr = "●はい"
 			else:
 				wStr = "  いいえ"
 			pRes['Responce'] = "    被ブロック                  : " + wStr
 		
-		###インプリ：疑似リムーブ
-		elif "[@USERADMIN-REMOVED@]"==inLine :
-			if gVal.STR_UserAdminInfo['DB_removed']==True :
-				wStr = "●リムーブON"
+		###インプリ：いいね送信回数
+		elif "[@USERADMIN-SEND_CNT@]"==inLine :
+			if inData['flg_db_set']==False :
+				wStr = "－－－"
+			elif inData['send_cnt']>0 :
+				wStr = str( inData['send_cnt'] )
 			else:
-				wStr = "  解除"
-			pRes['Responce'] = "    疑似リムーブー              : " + wStr
+				wStr = "  なし"
+			pRes['Responce'] = "    いいね送信回数              : " + wStr
 		
-		
-		###インプリ：非フォロー化
-		elif "[@USERADMIN-UNFOLLOW@]"==inLine :
-			if gVal.STR_UserAdminInfo['DB_unfollow']==True :
-				wStr = "●非フォローON"
+		###インプリ：いいね総回数
+		elif "[@USERADMIN-FAVO_CNT@]"==inLine :
+			if inData['flg_db_set']==False :
+				wStr = "－－－"
+			elif inData['favo_cnt']>0 :
+				wStr = str( inData['favo_cnt'] )
 			else:
-				wStr = "  解除"
-			pRes['Responce'] = "    非フォロー化                : " + wStr
+				wStr = "  なし"
+			pRes['Responce'] = "    いいね総回数                : " + wStr
 		
-		###インプリ：非フォローロック
-		elif "[@USERADMIN-UNFOLLOCK@]"==inLine :
-			if gVal.STR_UserAdminInfo['DB_unfollock']==True :
-				wStr = "●ロックON"
+		###インプリ：いいね今週数
+		elif "[@USERADMIN-NOW_FAVO_CNT@]"==inLine :
+			if inData['flg_db_set']==False :
+				wStr = "－－－"
+			elif inData['now_favo_cnt']>0 :
+				wStr = str( inData['now_favo_cnt'] )
 			else:
-				wStr = "  解除"
-			pRes['Responce'] = "    非フォローロック            : " + wStr
+				wStr = "  なし"
+			pRes['Responce'] = "    いいね今週数                : " + wStr
 		
-		###インプリ：VIP設定
-		elif "[@USERADMIN-VIPSET@]"==inLine :
-			if gVal.STR_UserAdminInfo['DB_vipuser']==True :
-				wStr = "〇VIP"
-			else:
-				wStr = "  一般"
-			pRes['Responce'] = "    VIP設定                     : " + wStr
-		
-		###インプリ：監視設定
-		elif "[@USERADMIN-ADMAGENT@]"==inLine :
-			if gVal.STR_UserAdminInfo['DB_admagent']==True :
-				wStr = "〇監視ユーザ"
-			else:
-				wStr = "  監視外"
-			pRes['Responce'] = "    監視設定                    : " + wStr
-		
-		###インプリ：ファボった日
+		###インプリ：最終いいね実施日
 		elif "[@USERADMIN-FAVO_DATE@]"==inLine :
-			if gVal.STR_UserAdminInfo['DB_favo_cnt']>0 :
-				wStr = str(gVal.STR_UserAdminInfo['DB_favo_date'])
+			if inData['flg_db_set']==False or \
+			   inData['favo_date']==None :
+				wStr = "－－－"
 			else:
-				wStr = "  なし"
-			pRes['Responce'] = "    ファボった日                : " + wStr
+				wStr = str( inData['favo_date'] )
+			pRes['Responce'] = "    最終いいね実施日            : " + wStr
 		
-		###インプリ：ファボられた日
-		elif "[@USERADMIN-FAVO_R_DATE@]"==inLine :
-			if gVal.STR_UserAdminInfo['DB_r_favo_cnt']>0 :
-				wStr = str(gVal.STR_UserAdminInfo['DB_r_favo_date'])
+		###インプリ：最終リスト通知日
+		elif "[@USERADMIN-LIST_DATE@]"==inLine :
+			if inData['flg_db_set']==False or \
+			   inData['list_date']==None :
+				wStr = "－－－"
 			else:
-				wStr = "  なし"
-			pRes['Responce'] = "    ファボられた日              : " + wStr
+				wStr = str( inData['list_date'] )
+			pRes['Responce'] = "    最終リスト通知日            : " + wStr
 		
 		###インプリ：DB情報あり
 		elif "[@USERADMIN-EXIST@]"==inLine :
-			if gVal.STR_UserAdminInfo['DB_exist']==True :
+			if inData['flg_db_set']==True :
 				wStr = "〇はい"
 			else:
 				wStr = "▼いいえ"
 			pRes['Responce'] = "    DB情報あり                  : " + wStr
+		
+		###インプリ：DB登録日
+		elif "[@USERADMIN-DB_REGDATE@]"==inLine :
+			if inData['flg_db_set']==False or \
+			   inData['regdate']==None :
+				wStr = "－－－"
+			else:
+				wStr = str( inData['regdate'] )
+			pRes['Responce'] = "    DB登録日                    : " + wStr
 		
 		#############################
 		# 正常
@@ -396,7 +369,8 @@ class CLS_MyDisp():
 # ディスプレイファイル 読み込み→画面表示
 #####################################################
 	@classmethod
-	def sViewDisp( cls, inDisp, inIndex=-1, inClear=True ):
+###	def sViewDisp( cls, inDisp, inIndex=-1, inClear=True ):
+	def sViewDisp( cls, inDisp, inIndex=-1, inClear=True, inData={} ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -441,7 +415,8 @@ class CLS_MyDisp():
 				continue
 			
 			###インプリメント
-			wResInp = cls.sDispInp( inDisp, wLine, inIndex )
+###			wResInp = cls.sDispInp( inDisp, wLine, inIndex )
+			wResInp = cls.sDispInp( inDisp, wLine, inIndex, inData )
 			if wResInp['Result']!=True :
 				wRes['Reason'] = "sDispInp is failed: reasin=" + wResInp['Reason']
 				return wRes

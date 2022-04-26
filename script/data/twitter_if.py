@@ -1013,15 +1013,15 @@ class CLS_Twitter_IF() :
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-		#############################
-		# フォローから削除
-		if self.CheckMyFollow( inID )==True :
-			self.ARR_MyFollowID.remove( inID )
-			#############################
-			# トラヒック情報：リムーブフォロー者数
-			gVal.STR_TrafficInfo['rem_myfollow'] += 1
-			gVal.STR_TrafficInfo['run_autoremove'] += 1
-		
+###		#############################
+###		# フォローから削除
+###		if self.CheckMyFollow( inID )==True :
+###			self.ARR_MyFollowID.remove( inID )
+###			#############################
+###			# トラヒック情報：リムーブフォロー者数
+###			gVal.STR_TrafficInfo['rem_myfollow'] += 1
+###			gVal.STR_TrafficInfo['run_autoremove'] += 1
+###		
 		#############################
 		# 完了
 		wRes['Result'] = True
@@ -1060,21 +1060,21 @@ class CLS_Twitter_IF() :
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-		#############################
-		# フォロー、フォロワーから削除
-		if self.CheckMyFollow( inID )==True :
-			self.ARR_MyFollowID.remove( inID )
-			#############################
-			# トラヒック情報：リムーブフォロー者数
-			gVal.STR_TrafficInfo['rem_myfollow'] += 1
-			gVal.STR_TrafficInfo['run_autoremove'] += 1
-		
-		if self.CheckFollower( inID )==True :
-			self.ARR_FollowerID.remove( inID )
-			#############################
-			# トラヒック情報：リムーブフォロワー数
-			gVal.STR_TrafficInfo['rem_follower'] += 1
-		
+###		#############################
+###		# フォロー、フォロワーから削除
+###		if self.CheckMyFollow( inID )==True :
+###			self.ARR_MyFollowID.remove( inID )
+###			#############################
+###			# トラヒック情報：リムーブフォロー者数
+###			gVal.STR_TrafficInfo['rem_myfollow'] += 1
+###			gVal.STR_TrafficInfo['run_autoremove'] += 1
+###		
+###		if self.CheckFollower( inID )==True :
+###			self.ARR_FollowerID.remove( inID )
+###			#############################
+###			# トラヒック情報：リムーブフォロワー数
+###			gVal.STR_TrafficInfo['rem_follower'] += 1
+###		
 		#############################
 		# 完了
 		wRes['Result'] = True
