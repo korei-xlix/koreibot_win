@@ -280,7 +280,7 @@ class CLS_TwitterAdmin():
 		#############################
 		# 関係解除= DB削除
 		if self.STR_UserAdminInfo['flg_db_set']==True :
-			wQuery = "delete from tbl_follower_data " + \
+			wQuery = "delete from tbl_favouser_data " + \
 						"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
 						" and id = '" + str(self.STR_UserAdminInfo['id']) + "' ;"
 			
@@ -288,6 +288,7 @@ class CLS_TwitterAdmin():
 			if wResDB['Result']!=True :
 				wRes['Reason'] = "Run Query is failed"
 				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
 		
 		#############################
 		# 情報反映
