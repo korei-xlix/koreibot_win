@@ -273,12 +273,19 @@ class CLS_Twitter_IF() :
 		wText = str(inTweet['text']).replace( "'", "''" )
 		wUserID = str( inTweet['user']['id'] )
 		
+		wCellUser = {
+			"id"			: wUserID,
+			"screen_name"	: inTweet['user']['screen_name']
+		}
+		
 		wCell = {
 			"id"			: wID,
-			"user_id"		: wUserID,
+###			"user_id"		: wUserID,
 			"text"			: wText,
 			"created_at"	: wTime['TimeDate'],
-			"1day"			: wFLG_1Day
+###			"1day"			: wFLG_1Day
+			"1day"			: wFLG_1Day,
+			"user"			: wCellUser
 		}
 		self.ARR_Favo.update({ wID : wCell })
 		
@@ -2104,14 +2111,25 @@ class CLS_Twitter_IF() :
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			
+			wKeylist = list( self.ARR_Favo.keys() )
 			for wLine in wSubRes['Responce'] :
+				wID = str( wLine['id'] )
 				wCell = {
-					"id"				: str( wLine['id'] ),
+###					"id"				: str( wLine['id'] ),
+					"id"				: wID,
 					"screen_name"		: wLine['screen_name'],
 					"flg_favo"			: False,
 					"lastTweetDate"		: None
 				}
-				self.ARR_ListFavoUser.update({ str(wLine['id']) : wCell })
+###				self.ARR_ListFavoUser.update({ str(wLine['id']) : wCell })
+				self.ARR_ListFavoUser.update({ wID : wCell })
+				
+				#############################
+				# 既にいいね済みか
+				for wTweetID in wKeylist :
+					if self.ARR_Favo[wTweetID]['user']['id']==wID :
+						self.ARR_ListFavoUser[wID]['flg_favo'] = True
+						break
 			
 			wRes['Responce']['Update'] = True
 		
@@ -2128,11 +2146,11 @@ class CLS_Twitter_IF() :
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
 		wRes = CLS_OSIF.sGet_Resp()
 		wRes['Class'] = "CLS_Twitter_IF"
-		wRes['Func']  = "CheckListIndUser"
+		wRes['Func']  = "UpdateListFavoUser"
 		
 		#############################
 		# リストいいねユーザがあるか確認
-		if inID in self.ARR_ListFavoUser :
+		if inID not in self.ARR_ListFavoUser :
 			wRes['Reason'] = "ARR_ListFavoUser not in ID: " + inID
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
@@ -2140,7 +2158,7 @@ class CLS_Twitter_IF() :
 		#############################
 		# リストいいねの更新
 		self.ARR_ListFavoUser[inID]['flg_favo']      = inFLG_Favo
-		self.ARR_ListFavoUser[inID]['lastTweetDate'] = sttr(inLastTweetDate)
+		self.ARR_ListFavoUser[inID]['lastTweetDate'] = str(inLastTweetDate)
 		
 		wRes['Result'] = True
 		return wRes
@@ -2200,7 +2218,8 @@ class CLS_Twitter_IF() :
 		#############################
 		# ユーザ一覧
 		wStr = '\n' + "--------------------" + '\n' ;
-		wStr = wStr + "リストいいねユーザ一覧" + '\n' + '\n' ;
+###		wStr = wStr + "リストいいねユーザ一覧" + '\n' + '\n'
+		wStr = wStr + "リストいいねユーザ一覧" + '\n'
 		CLS_OSIF.sPrn( wStr )
 		
 ###		wStr = ""
@@ -2221,7 +2240,8 @@ class CLS_Twitter_IF() :
 			wStr = wStr + wLastTweetDate + ": "
 			
 			### screen_name
-			wStr = wStr + self.ARR_ListFavoUser[wID]['screen_name'] + '\n'
+###			wStr = wStr + self.ARR_ListFavoUser[wID]['screen_name'] + '\n'
+			wStr = wStr + self.ARR_ListFavoUser[wID]['screen_name']
 			CLS_OSIF.sPrn( wStr )
 		
 		wRes['Result'] = True

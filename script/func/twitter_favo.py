@@ -182,6 +182,14 @@ class CLS_TwitterFavo():
 			wResDisp = CLS_MyDisp.sViewHeaderDisp( "リストいいね実行中" )
 		
 		#############################
+		# リストいいね リストとユーザの更新
+		wSubRes = self.OBJ_Parent.UpdateListFavoUser( inUpdate=True )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "UpdateListFavoUser error"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
 		# リストいいね一覧 取得
 		wARR_TwListFavoData = gVal.OBJ_Tw_IF.GetListFavoData()
 		
@@ -352,7 +360,7 @@ class CLS_TwitterFavo():
 				break
 			
 			### ツイートチェック
-			wWordRes = self.CheckExtWord( inData, wTweet['text'] )
+			wWordRes = self.OBJ_Parent.CheckExtWord( inData, wTweet['text'] )
 			if wWordRes['Result']!=True :
 				wRes['Reason'] = "CheckExtWord failed"
 				gVal.OBJ_L.Log( "B", wRes )
