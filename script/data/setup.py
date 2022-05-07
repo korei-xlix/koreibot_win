@@ -337,6 +337,8 @@ class CLS_Setup():
 					"favodate    TIMESTAMP," + \
 					"listname    TEXT," + \
 					"listdate    TIMESTAMP," + \
+					"lfavoname   TEXT," + \
+					"lfavdate    TIMESTAMP," + \
 					" PRIMARY KEY ( twitterid ) ) ;"
 
 ##					"twitterid   記録したユーザ(Twitter ID)

@@ -63,7 +63,9 @@ class gVal() :
 		"FavoDate"	: None,			#いいね者送信日時(直近)
 		
 		"ListName"	: "",			#リスト通知 リスト名
-		"ListDate"	: None			#リスト通知日時
+		"ListDate"	: None,			#リスト通知日時
+		"LFavoName"	: "",			#リストいいね リスト名
+		"LFavoDate"	: None			#リストいいね日時
 	}
 
 #############################

@@ -322,6 +322,8 @@ class CLS_DB_IF() :
 						"''," + \
 						"'" + str(wTD['TimeDate']) + "'," + \
 						"''," + \
+						"'" + str(wTD['TimeDate']) + "'," + \
+						"''," + \
 						"'" + str(wTD['TimeDate']) + "' " + \
 						") ;"
 			
@@ -771,6 +773,93 @@ class CLS_DB_IF() :
 		gVal.STR_UserInfo['ListDate'] = str(gVal.STR_SystemInfo['TimeDate'])
 		
 		wStr = "リスト通知日時を更新しました。" + '\n'
+		CLS_OSIF.sPrn( wStr )
+		
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# リストいいね設定
+#####################################################
+	def SetListFavo( self, inListName ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "SetListFavo"
+		
+		if gVal.STR_UserInfo['LFavoName']==inListName :
+			##失敗
+			wRes['Reason'] = "同じリスト名"
+			gVal.OBJ_L.Log( "D", wRes )
+			return wRes
+		
+		if inListName=="" or inListName==None :
+			##失敗
+			wRes['Reason'] = "登録不可の文字列: " + inListName
+			gVal.OBJ_L.Log( "D", wRes )
+			return wRes
+		
+		wQuery = "update tbl_user_data set " + \
+				"lfavoname = '" + inListName + "' " + \
+				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		gVal.STR_UserInfo['LFavoName'] = inListName
+		
+		wStr = "リストいいね設定を更新しました。" + '\n'
+		CLS_OSIF.sPrn( wStr )
+		
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def UpdateListFavoDate(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "UpdateListFavoDate"
+		
+		wRes['Responce'] = False
+		
+		wQuery = "update tbl_user_data set " + \
+				"lfavdate = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
+				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "B", wRes )
+			return False
+		
+		#############################
+		# 日付を跨いだか
+		wNowDate = str(gVal.STR_SystemInfo['TimeDate'])
+		wNowDate = wNowDate.split(" ")
+		wNowDate = wNowDate[0]
+		wRateDate = str(gVal.STR_UserInfo['LFavoDate'])
+		wRateDate = wRateDate.split(" ")
+		wRateDate = wRateDate[0]
+		if wNowDate!=wRateDate :
+			### 翌日
+			wRes['Responce'] = True
+		gVal.STR_UserInfo['LFavoDate'] = str(gVal.STR_SystemInfo['TimeDate'])
+		
+		wStr = "リストいいね日時を更新しました。" + '\n'
 		CLS_OSIF.sPrn( wStr )
 		
 		wRes['Result'] = True

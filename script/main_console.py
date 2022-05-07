@@ -178,6 +178,11 @@ class CLS_Main_Console() :
 		elif inCommand=="\\lc" :
 			cls.OBJ_TwitterMain.SetListInd()
 		
+		#############################
+		# リストいいね設定
+		elif inCommand=="\\fc" :
+			cls.OBJ_TwitterMain.SetListFavo()
+		
 	#####################################################
 		#############################
 		# ユーザ管理
@@ -188,6 +193,11 @@ class CLS_Main_Console() :
 		# リスト通知ユーザ表示
 		elif inCommand=="\\lv" :
 			cls.OBJ_TwitterMain.ViewListIndUser()
+		
+		#############################
+		# リストいいねユーザ表示
+		elif inCommand=="\\fv" :
+			cls.OBJ_TwitterMain.ViewListFavoUser()
 		
 	#####################################################
 		#############################
