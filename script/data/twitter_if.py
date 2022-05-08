@@ -2140,41 +2140,81 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# リスト通知のユーザIDが空なら
-		#   ユーザ一覧を取得する
+###		#   ユーザ一覧を取得する
 ###		if len(self.ARR_ListFavoUser)==0 or inUpdate==True :
 ###			self.ARR_ListFavoUser = {}
+###			
+###			wSubRes = self.OBJ_Twitter.GetListMember( gVal.STR_UserInfo['LFavoName'] )
+###			if wSubRes['Result']!=True :
+###				wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			
+###			wKeylist = list( self.ARR_Favo.keys() )
+###			for wLine in wSubRes['Responce'] :
+###				wID = str( wLine['id'] )
+###				wCell = {
+###					"id"				: wID,
+###					"screen_name"		: wLine['screen_name'],
+###					"flg_favo"			: False,
+###					"lastTweetDate"		: None
+###				}
+####			self.ARR_ListFavoUser.update({ str(wLine['id']) : wCell })
+####			self.ARR_ListFavoUser.update({ wID : wCell })
+###				self.ARR_FavoUser.update({ wID : wCell })
+###				
+###				#############################
+###				# 既にいいね済みか
+###				for wTweetID in wKeylist :
+###					if self.ARR_Favo[wTweetID]['user']['id']==wID :
+####					self.ARR_ListFavoUser[wID]['flg_favo'] = True
+###						self.ARR_FavoUser[wID]['flg_favo'] = True
+###						break
+###			
+###			wRes['Responce']['Update'] = True
+		
+		#############################
+		# リストのクリア
 		if len(self.ARR_FavoUser)==0 or inUpdate==True :
 			self.ARR_FavoUser = {}
+		
+		#############################
+		# Twitterからリストのユーザ一覧を取得
+		wSubRes = self.OBJ_Twitter.GetListMember( gVal.STR_UserInfo['LFavoName'] )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		wKeylist = list( self.ARR_Favo.keys() )
+		wUpdate = False
+		#############################
+		# いいねユーザデータを作成する
+		for wLine in wSubRes['Responce'] :
+			wID = str( wLine['id'] )
 			
-			wSubRes = self.OBJ_Twitter.GetListMember( gVal.STR_UserInfo['LFavoName'] )
-			if wSubRes['Result']!=True :
-				wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			
-			wKeylist = list( self.ARR_Favo.keys() )
-			for wLine in wSubRes['Responce'] :
-				wID = str( wLine['id'] )
+			#############################
+			# 枠がなければ作成する
+			if wID not in self.ARR_FavoUser :
 				wCell = {
 					"id"				: wID,
 					"screen_name"		: wLine['screen_name'],
 					"flg_favo"			: False,
 					"lastTweetDate"		: None
 				}
-###				self.ARR_ListFavoUser.update({ str(wLine['id']) : wCell })
-###				self.ARR_ListFavoUser.update({ wID : wCell })
 				self.ARR_FavoUser.update({ wID : wCell })
-				
-				#############################
-				# 既にいいね済みか
-				for wTweetID in wKeylist :
-					if self.ARR_Favo[wTweetID]['user']['id']==wID :
-###						self.ARR_ListFavoUser[wID]['flg_favo'] = True
-						self.ARR_FavoUser[wID]['flg_favo'] = True
-						break
+				wUpdate = True
 			
-			wRes['Responce']['Update'] = True
+			#############################
+			# 既にいいね済みか
+			for wTweetID in wKeylist :
+				if self.ARR_Favo[wTweetID]['user']['id']==wID :
+					self.ARR_FavoUser[wID]['flg_favo'] = True
+					self.ARR_FavoUser[wID]['lastTweetDate'] = str( self.ARR_Favo[wTweetID]['created_at'] )
+					wUpdate = True
+					break
 		
+		wRes['Responce']['Update'] = wUpdate
 ###		wRes['Responce']['Num'] = len( self.ARR_ListFavoUser )	#数を返す
 		wRes['Responce']['Num'] = len( self.ARR_FavoUser )	#数を返す
 		wRes['Result'] = True
