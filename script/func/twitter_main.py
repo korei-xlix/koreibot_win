@@ -510,7 +510,8 @@ class CLS_TwitterMain():
 		
 		#############################
 		# リストがTwitterにあるか確認
-		wSubRes = gVal.OBJ_Tw_IF.CheckListInd( inListName=wListName )
+###		wSubRes = gVal.OBJ_Tw_IF.CheckListInd( inListName=wListName )
+		wSubRes = gVal.OBJ_Tw_IF.CheckList( inListName=wListName )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
@@ -593,7 +594,8 @@ class CLS_TwitterMain():
 		
 		#############################
 		# リストがTwitterにあるか確認
-		wSubRes = gVal.OBJ_Tw_IF.CheckListInd( inListName=wListName )
+###		wSubRes = gVal.OBJ_Tw_IF.CheckListInd( inListName=wListName )
+		wSubRes = gVal.OBJ_Tw_IF.CheckList( inListName=wListName )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )

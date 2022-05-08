@@ -1725,7 +1725,8 @@ class CLS_Twitter_IF() :
 		#############################
 		# リストがTwitterにあるか確認
 ###		wSubRes = self.CheckListInd( gVal.STR_UserInfo['ListName'] )
-		wSubRes = self.CheckListInd( inListName )
+###		wSubRes = self.CheckListInd( inListName )
+		wSubRes = self.CheckList( inListName )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
@@ -1738,6 +1739,30 @@ class CLS_Twitter_IF() :
 			wRes['Responce'] = True
 		
 ###		wRes['Responce'] = True
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	# リストチェック
+	#####################################################
+	def CheckList( self, inListName ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_Twitter_IF"
+		wRes['Func']  = "CheckList"
+		
+		wFLG_Detect = False
+		#############################
+		# リストがTwitterにあるか確認
+		wKeylist = list( self.ARR_Lists.keys() )
+		for wIndex in wKeylist :
+			if self.ARR_Lists[wIndex]['name']==inListName :
+				wFLG_Detect = True
+				break
+		
+		wRes['Responce'] = wFLG_Detect
 		wRes['Result'] = True
 		return wRes
 
@@ -1766,7 +1791,8 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# リストがTwitterにあるか確認
-		wSubRes = self.CheckListInd( gVal.STR_UserInfo['ListName'] )
+###		wSubRes = self.CheckListInd( gVal.STR_UserInfo['ListName'] )
+		wSubRes = self.CheckList( gVal.STR_UserInfo['ListName'] )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
@@ -1808,28 +1834,28 @@ class CLS_Twitter_IF() :
 #####################################################
 # リスト通知 チェック
 #####################################################
-	def CheckListInd( self, inListName ):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_Twitter_IF"
-		wRes['Func']  = "CheckListInd"
-		
-		wFLG_Detect = False
-		#############################
-		# リストがTwitterにあるか確認
-###		wKeylist = list( self.ARR_Lists )
-		wKeylist = list( self.ARR_Lists.keys() )
-		for wIndex in wKeylist :
-###			if self.ARR_Lists[wIndex]['name']==gVal.STR_UserInfo['ListName'] :
-			if self.ARR_Lists[wIndex]['name']==inListName :
-				wFLG_Detect = True
-				break
-		
-		wRes['Responce'] = wFLG_Detect
-		wRes['Result'] = True
-		return wRes
+###	def CheckListInd( self, inListName ):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_Twitter_IF"
+###		wRes['Func']  = "CheckListInd"
+###		
+###		wFLG_Detect = False
+###		#############################
+###		# リストがTwitterにあるか確認
+####	wKeylist = list( self.ARR_Lists )
+###		wKeylist = list( self.ARR_Lists.keys() )
+###		for wIndex in wKeylist :
+####		if self.ARR_Lists[wIndex]['name']==gVal.STR_UserInfo['ListName'] :
+###			if self.ARR_Lists[wIndex]['name']==inListName :
+###				wFLG_Detect = True
+###				break
+###		
+###		wRes['Responce'] = wFLG_Detect
+###		wRes['Result'] = True
+###		return wRes
 
 #####################################################
 # リスト通知 ユーザチェック
@@ -1871,7 +1897,8 @@ class CLS_Twitter_IF() :
 		wRes['Responce'] = False	#通知済み
 		#############################
 		# リストがTwitterにあるか確認
-		wSubRes = self.CheckListInd( gVal.STR_UserInfo['ListName'] )
+###		wSubRes = self.CheckListInd( gVal.STR_UserInfo['ListName'] )
+		wSubRes = self.CheckList( gVal.STR_UserInfo['ListName'] )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
@@ -2100,7 +2127,8 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# リストがTwitterにあるか確認
-		wSubRes = self.CheckListInd( gVal.STR_UserInfo['LFavoName'] )
+###		wSubRes = self.CheckListInd( gVal.STR_UserInfo['LFavoName'] )
+		wSubRes = self.CheckList( gVal.STR_UserInfo['LFavoName'] )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
