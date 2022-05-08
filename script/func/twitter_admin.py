@@ -239,7 +239,8 @@ class CLS_TwitterAdmin():
 		#############################
 		# 情報反映
 ###		wSubRes = self.GetUserInfo( inScreenName=gVal.STR_UserAdminInfo['screen_name'] )
-		wSubRes = self.__get_UserAdmin( inScreenName=gVal.STR_UserAdminInfo['screen_name'] )
+###		wSubRes = self.__get_UserAdmin( inScreenName=gVal.STR_UserAdminInfo['screen_name'] )
+		wSubRes = self.__get_UserAdmin( inScreenName=self.STR_UserAdminInfo['screen_name'] )
 		if wSubRes['Result']!=True :
 ###			wRes['Reason'] = "GetUserInfo is failed"
 			wRes['Reason'] = "__get_UserAdmin is failed"
@@ -293,7 +294,12 @@ class CLS_TwitterAdmin():
 		#############################
 		# 情報反映
 ###		gVal.STR_UserAdminInfo = self.GetUserAdminInfo( inScreenName=gVal.STR_UserAdminInfo['screen_name'] )
-		self.GetUserAdminInfo()
+###		self.GetUserAdminInfo()
+		wSubRes = self.__get_UserAdmin( inScreenName=self.STR_UserAdminInfo['screen_name'] )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "__get_UserAdmin is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
 		
 		#############################
 		# 正常終了
