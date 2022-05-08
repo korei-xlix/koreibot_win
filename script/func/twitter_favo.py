@@ -191,7 +191,8 @@ class CLS_TwitterFavo():
 		
 		#############################
 		# リストいいね一覧 取得
-		wARR_TwListFavoData = gVal.OBJ_Tw_IF.GetListFavoData()
+###		wARR_TwListFavoData = gVal.OBJ_Tw_IF.GetListFavoData()
+		wARR_TwListFavoData = gVal.OBJ_Tw_IF.GetFavoUser()
 		
 		#############################
 		# いいねがない場合、処理を終わる
@@ -203,9 +204,11 @@ class CLS_TwitterFavo():
 		
 		#############################
 		# リストいいねの初期化
-		wResClear = gVal.OBJ_Tw_IF.ClearListFavoUser()
+###		wResClear = gVal.OBJ_Tw_IF.ClearListFavoUser()
+		wResClear = gVal.OBJ_Tw_IF.ClearFavoUserData()
 		if wResClear['Result']!=True :
-			wRes['Reason'] = "ClearListFavoUser Error"
+###			wRes['Reason'] = "ClearListFavoUser Error"
+			wRes['Reason'] = "ClearFavoUserData Error"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
@@ -237,9 +240,11 @@ class CLS_TwitterFavo():
 			
 			#############################
 			# リストいいねの更新
-			wResUpdate = gVal.OBJ_Tw_IF.UpdateListFavoUser( wID, inFLG_Favo=wResFavo['Responce']['flg_favo'], inLastTweetDate=wResFavo['Responce']['lastTweetDate'] )
+###			wResUpdate = gVal.OBJ_Tw_IF.UpdateListFavoUser( wID, inFLG_Favo=wResFavo['Responce']['flg_favo'], inLastTweetDate=wResFavo['Responce']['lastTweetDate'] )
+			wResUpdate = gVal.OBJ_Tw_IF.UpdateFavoUserData( wID, inFLG_Favo=wResFavo['Responce']['flg_favo'], inLastTweetDate=wResFavo['Responce']['lastTweetDate'] )
 			if wResUpdate['Result']!=True :
-				wRes['Reason'] = "UpdateListFavoUser Error"
+###				wRes['Reason'] = "UpdateListFavoUser Error"
+				wRes['Reason'] = "UpdateFavoUserData Error"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			
