@@ -238,16 +238,16 @@ class CLS_TwitterFavo():
 				### いいね実施をカウント
 				wFavoTweet += 1
 			
-			#############################
-			# リストいいねの更新
-###			wResUpdate = gVal.OBJ_Tw_IF.UpdateListFavoUser( wID, inFLG_Favo=wResFavo['Responce']['flg_favo'], inLastTweetDate=wResFavo['Responce']['lastTweetDate'] )
-			wResUpdate = gVal.OBJ_Tw_IF.UpdateFavoUserData( wID, inFLG_Favo=wResFavo['Responce']['flg_favo'], inLastTweetDate=wResFavo['Responce']['lastTweetDate'] )
-			if wResUpdate['Result']!=True :
-###				wRes['Reason'] = "UpdateListFavoUser Error"
-				wRes['Reason'] = "UpdateFavoUserData Error"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			
+###			#############################
+###			# リストいいねの更新
+####		wResUpdate = gVal.OBJ_Tw_IF.UpdateListFavoUser( wID, inFLG_Favo=wResFavo['Responce']['flg_favo'], inLastTweetDate=wResFavo['Responce']['lastTweetDate'] )
+###			wResUpdate = gVal.OBJ_Tw_IF.UpdateFavoUserData( wID, inFLG_Favo=wResFavo['Responce']['flg_favo'], inLastTweetDate=wResFavo['Responce']['lastTweetDate'] )
+###			if wResUpdate['Result']!=True :
+####			wRes['Reason'] = "UpdateListFavoUser Error"
+###				wRes['Reason'] = "UpdateFavoUserData Error"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			
 			#############################
 			# 正常
 			continue	#次へ
@@ -285,8 +285,8 @@ class CLS_TwitterFavo():
 		
 		wRes['Responce'] = {
 			"flg_favo"			: False,
-			"flg_favo_run"		: False,
-			"lastTweetDate"		: None
+			"flg_favo_run"		: False
+###			"lastTweetDate"		: None
 		}
 		
 		wUserID = str( inData['id'] )
@@ -319,6 +319,7 @@ class CLS_TwitterFavo():
 			wRes['Result'] = True
 			return wRes
 		
+		wCnt = 0
 		wFavoID = None
 		#############################
 		# ツイートチェック
@@ -329,6 +330,24 @@ class CLS_TwitterFavo():
 		# ・規定期間外のツイート
 		# 該当なしは いいねしない
 		for wTweet in wTweetRes['Responce'] :
+			wCnt += 1
+			
+			###日時の変換
+			wTime = CLS_OSIF.sGetTimeformat_Twitter( wTweet['created_at'] )
+			if wTime['Result']!=True :
+				wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wTweet['created_at'])
+				gVal.OBJ_L.Log( "B", wRes )
+				continue
+			wTweet['created_at'] = wTime['TimeDate']
+			
+			if wCnt==1 :
+				#############################
+				# 最初の1ツイート目の日付を設定
+				wResUpdate = gVal.OBJ_Tw_IF.UpdateFavoUserData( wID, inLastTweetDate=wTweet['created_at'] )
+				if wResUpdate['Result']!=True :
+					wRes['Reason'] = "UpdateFavoUserData Error"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
 			
 			### リプライは除外
 			if wTweet['in_reply_to_status_id']!=None :
@@ -343,17 +362,17 @@ class CLS_TwitterFavo():
 			if wTweet['text'].find("@")==0 :
 				continue
 			
-			###日時の変換
-			wTime = CLS_OSIF.sGetTimeformat_Twitter( wTweet['created_at'] )
-			if wTime['Result']!=True :
-				wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wTweet['created_at'])
-				gVal.OBJ_L.Log( "B", wRes )
-				continue
-			wTweet['created_at'] = wTime['TimeDate']
-			
-			###最終ツイート日時
-			wRes['Responce']['lastTweetDate'] = str(wTweet['created_at'])
-			
+###			###日時の変換
+###			wTime = CLS_OSIF.sGetTimeformat_Twitter( wTweet['created_at'] )
+###			if wTime['Result']!=True :
+###				wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wTweet['created_at'])
+###				gVal.OBJ_L.Log( "B", wRes )
+###				continue
+###			wTweet['created_at'] = wTime['TimeDate']
+###			
+###			###最終ツイート日時
+###			wRes['Responce']['lastTweetDate'] = str(wTweet['created_at'])
+###			
 			### 範囲時間内のツイートか
 			wGetLag = CLS_OSIF.sTimeLag( str( wTweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forReactionTweetSec'] )
 			if wGetLag['Result']!=True :
@@ -397,6 +416,14 @@ class CLS_TwitterFavo():
 		else :
 			wStr = "●自動いいね中止(いいね被り): " + inData['screen_name'] + '\n' ;
 		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# いいねあり
+		wResUpdate = gVal.OBJ_Tw_IF.UpdateFavoUserData( wID, inFLG_Favo=True, inLastTweetDate=None )
+		if wResUpdate['Result']!=True :
+			wRes['Reason'] = "UpdateFavoUserData Error"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
 		
 		wRes['Responce']['flg_favo'] = True		#いいね済み
 		wRes['Result'] = True
