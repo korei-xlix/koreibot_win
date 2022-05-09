@@ -2213,6 +2213,25 @@ class CLS_Twitter_IF() :
 ###					self.ARR_FavoUser[wID]['lastTweetDate'] = str( self.ARR_Favo[wTweetID]['created_at'] )
 					if self.ARR_FavoUser[wID]['lastTweetDate']==None :
 						self.ARR_FavoUser[wID]['lastTweetDate'] = str( self.ARR_Favo[wTweetID]['created_at'] )
+					
+					#############################
+					# リストいいね情報の更新
+					wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wID )
+					if wSubRes['Result']!=True :
+						###失敗
+						wRes['Reason'] = "GetFavoDataOne is failed"
+						gVal.OBJ_L.Log( "B", wRes )
+						break
+					### DB登録
+					if wSubRes['Responce']!=None :
+						if wSubRes['Responce']['lfavo_id']!=wTweetID :
+							wSubRes = gVal.OBJ_DB_IF.UpdateListFavoData( self.ARR_Favo[wTweetID]['user'], wTweetID, str(self.ARR_Favo[wTweetID]['created_at']) )
+							if wSubRes['Result']!=True :
+								###失敗
+								wRes['Reason'] = "UpdateListFavoData is failed"
+								gVal.OBJ_L.Log( "B", wRes )
+								break
+					
 					wUpdate = True
 					break
 			
@@ -2225,7 +2244,7 @@ class CLS_Twitter_IF() :
 				if wTweetRes['Result']!=True :
 					wRes['Reason'] = "Twitter Error: GetTL"
 					gVal.OBJ_L.Log( "B", wRes )
-					conttinue
+					continue
 				for wTweet in wTweetRes['Responce'] :
 					###日時の変換
 					wTime = CLS_OSIF.sGetTimeformat_Twitter( wTweet['created_at'] )

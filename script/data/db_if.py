@@ -1041,10 +1041,9 @@ class CLS_DB_IF() :
 		#############################
 		# 更新
 		wQuery = "update tbl_favouser_data set " + \
-					"sended = " + str(wSended) + ", " + \
 					"screen_name = '" + wScreenName + "', " + \
-					"favo_id = '" + wFavoID + "', " + \
-					"favo_date = '" + wFavoDate + "' " + \
+					"lfavo_id = '" + wFavoID + "', " + \
+					"lfavo_date = '" + wFavoDate + "' " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
 					" and id = '" + str(wID) + "' ;"
 		
