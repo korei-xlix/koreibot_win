@@ -309,6 +309,14 @@ class CLS_TwitterMain():
 		wRes['Func']  = "AllRun"
 		
 		#############################
+		# フォロー情報取得
+		wFavoRes = gVal.OBJ_Tw_IF.GetFollow()
+		if wFavoRes['Result']!=True :
+			wRes['Reason'] = "GetFollow is failed"
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
 		# ふぁぼ一覧 取得
 		wFavoRes = gVal.OBJ_Tw_IF.GetFavo()
 		if wFavoRes['Result']!=True :

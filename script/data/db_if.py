@@ -904,6 +904,8 @@ class CLS_DB_IF() :
 		wQuery = wQuery + "0, "
 		wQuery = wQuery + "'(none)', "
 		wQuery = wQuery + "'" + wDefTimeDate + "', "
+		wQuery = wQuery + "'" + wDefTimeDate + "', "
+		wQuery = wQuery + "'(none)', "
 		wQuery = wQuery + "'" + wDefTimeDate + "' "
 		
 		wQuery = wQuery + ") ;"
@@ -1005,6 +1007,42 @@ class CLS_DB_IF() :
 					"screen_name = '" + wScreenName + "', " + \
 					"favo_cnt = " + str( wCnt ) + ", " + \
 					"now_favo_cnt = " + str( wNowCnt ) + ", " + \
+					"favo_id = '" + wFavoID + "', " + \
+					"favo_date = '" + wFavoDate + "' " + \
+					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
+					" and id = '" + str(wID) + "' ;"
+		
+		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+		if wResDB['Result']!=True :
+			wRes['Reason'] = "Run Query is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def UpdateListFavoData( self, inUser, inFavoID, inFavoData ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "UpdateListFavoData"
+		
+		wID = inUser['id']
+		wScreenName = inUser['screen_name']
+		
+		wFavoID   = str( inFavoID )
+		wFavoDate = str( inFavoData )
+		
+		#############################
+		# 更新
+		wQuery = "update tbl_favouser_data set " + \
+					"sended = " + str(wSended) + ", " + \
+					"screen_name = '" + wScreenName + "', " + \
 					"favo_id = '" + wFavoID + "', " + \
 					"favo_date = '" + wFavoDate + "' " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \

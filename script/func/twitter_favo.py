@@ -306,6 +306,61 @@ class CLS_TwitterFavo():
 			wRes['Result'] = True
 			return wRes
 		
+		wNewUser = False
+		#############################
+		# DBからいいね情報を取得する(1個)
+		wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "GetFavoDataOne is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		### DB未登録
+		if wSubRes['Responce']==None :
+			###DBに登録する
+			wSetRes = gVal.OBJ_DB_IF.InsertFavoData( inUser )
+			if wSetRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "InsertFavoData is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "GetFavoDataOne(2) is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			### DB未登録（ありえない）
+			if wSubRes['Responce']==None :
+				wRes['Reason'] = "GetFavoDataOne(3) is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			
+			wNewUser = True	#新規登録
+		
+		wARR_DBData = wSubRes['Responce']
+		
+		#############################
+		# リストいいね期間外
+		if gVal.OBJ_Tw_IF.CheckMyFollow( wUserID)==True :
+			wLFavoDateLen = gVal.DEF_STR_TLNUM['forListFavoMyFollowSec']
+		else:
+			wLFavoDateLen = gVal.DEF_STR_TLNUM['forListFavoNoFollowSec']
+		
+		if wARR_DBData['lfavo_date']!=None and wARR_DBData['lfavo_date']!="" :
+			wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData['lfavo_date'] ), inThreshold=wLFavoDateLen )
+			if wGetLag['Result']!=True :
+				wRes['Reason'] = "sTimeLag failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if wGetLag['Beyond']==False :
+				### 規定内は処理しない
+				wStr = "●お返しいいね中止(いいね期間内): " + inData['screen_name'] + '\n' ;
+				CLS_OSIF.sPrn( wStr )
+				
+				wRes['Result'] = True
+				return wRes
+		
 		#############################
 		# タイムラインを取得する
 		wTweetRes = gVal.OBJ_Tw_IF.GetTL( inTLmode="user", inFLG_Rep=False, inFLG_Rts=False,
@@ -416,6 +471,15 @@ class CLS_TwitterFavo():
 		else :
 			wStr = "●自動いいね中止(いいね被り): " + inData['screen_name'] + '\n' ;
 		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# リストいいね情報の更新
+		wSubRes = gVal.OBJ_DB_IF.UpdateListFavoData( inData, wFavoID, str(gVal.STR_SystemInfo['TimeDate']) )
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "UpdateListFavoData is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
 		
 		#############################
 		# いいねあり

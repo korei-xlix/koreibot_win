@@ -135,7 +135,9 @@ class gVal() :
 		"forReactionTweetSec"		: 172800,			#   リアクションに反応するツイート期間 2日 (60x60x24)x2
 		
 														# リストいいね
-		"forListFavoSec"	: 86400,					#   リストいいねまでの期間   1日  60x60x24
+		"forListFavoSec"			: 86400,			#   リストいいねまでの期間   1日  60x60x24
+		"forListFavoMyFollowSec"	: 86400,			#   リストいいね フォロー者への期間   1日  (60x60x24)x1
+		"forListFavoNoFollowSec"	: 345600,			#   リストいいね フォロー外への期間   4日  (60x60x24)x4
 		
 														# いいね送信
 ###		"favoSendsSec"		: 10,						# いいね送信までの期間      7日 (60x60x24)x7

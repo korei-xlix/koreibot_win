@@ -412,7 +412,9 @@ class CLS_Setup():
 					"now_favo_cnt  INTEGER DEFAULT 0," + \
 					"favo_id       TEXT  NOT NULL," + \
 					"favo_date     TIMESTAMP," + \
-					"list_date     TIMESTAMP " + \
+					"list_date     TIMESTAMP," + \
+					"lfavo_id      TEXT  NOT NULL," + \
+					"lfavo_date    TIMESTAMP " + \
 					" ) ;"
 		
 ##					"twitterid   記録したユーザ(Twitter ID)

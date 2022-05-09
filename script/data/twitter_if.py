@@ -2341,7 +2341,7 @@ class CLS_Twitter_IF() :
 		wStr = '\n' + "--------------------" + '\n' ;
 		wStr = wStr + "リストいいねユーザ一覧" + '\n'
 		wStr = wStr + '\n'
-		wStr = wStr + "FL FV 最終活動日  反応日      ユーザ名"
+		wStr = wStr + "FL FV 最終活動日  反応受信日  自動いいね  ユーザ名"
 		CLS_OSIF.sPrn( wStr )
 		
 ###		wKeylist = list( self.ARR_ListFavoUser.keys() )
@@ -2355,11 +2355,19 @@ class CLS_Twitter_IF() :
 				wRes['Reason'] = "GetFavoDataOne is failed"
 				gVal.OBJ_L.Log( "B", wRes )
 				continue
-			if wSubRes['Responce']==None :
-				wResFavoDate = "----------"
-			else:
-				wResFavoDate = str(wSubRes['Responce']['favo_date']).split(" ")
-				wResFavoDate = wResFavoDate[0]
+			wResFavoDate  = "----------"
+			wListFavoDate = "----------"
+###			if wSubRes['Responce']==None :
+###				wResFavoDate  = "----------"
+###				wListFavoDate = "----------"
+###			else:
+			if wSubRes['Responce']!=None :
+				if wSubRes['Responce']['favo_date']!=None and wSubRes['Responce']['favo_date']!="" :
+					wResFavoDate  = str(wSubRes['Responce']['favo_date']).split(" ")
+					wResFavoDate  = wResFavoDate[0]
+				if wSubRes['Responce']['lfavo_date']!=None and wSubRes['Responce']['lfavo_date']!="" :
+					wListFavoDate = str(wSubRes['Responce']['lfavo_date']).split(" ")
+					wListFavoDate = wListFavoDate[0]
 			
 			wStr = ""
 			### フォロー者
@@ -2390,6 +2398,9 @@ class CLS_Twitter_IF() :
 			
 			### アクション日
 			wStr = wStr + wResFavoDate + ": "
+			
+			### いいね日
+			wStr = wStr + wListFavoDate + ": "
 			
 			### screen_name
 ###			wStr = wStr + self.ARR_ListFavoUser[wID]['screen_name']
