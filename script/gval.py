@@ -147,6 +147,9 @@ class gVal() :
 ###		"favoSendsCnt"		: 2,						# いいね送信対象 いいね回数
 		"favoSendsCnt"		: 3,						# いいね送信対象 いいね回数
 		
+														# ユーザ管理
+		"forGetUserSec"		: 600,						#   ユーザ取得間隔  10分  60x10
+		
 		"resetAPISec"		: 900,						# APIリセット周期 15分 60x15
 		"forLockLimSec"		: 120,						# 排他保持時間     2分 60x2 
 		"logShortLen"		: 100,						# ログ表示 ショートモード

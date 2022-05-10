@@ -318,7 +318,7 @@ class CLS_TwitterFavo():
 		### DB未登録
 		if wSubRes['Responce']==None :
 			###DBに登録する
-			wSetRes = gVal.OBJ_DB_IF.InsertFavoData( inUser )
+			wSetRes = gVal.OBJ_DB_IF.InsertFavoData( inData )
 			if wSetRes['Result']!=True :
 				###失敗
 				wRes['Reason'] = "InsertFavoData is failed"
@@ -395,10 +395,12 @@ class CLS_TwitterFavo():
 				continue
 			wTweet['created_at'] = wTime['TimeDate']
 			
+			wTweetID = str( wTweet['id'] )
 			if wCnt==1 :
 				#############################
 				# 最初の1ツイート目の日付を設定
-				wResUpdate = gVal.OBJ_Tw_IF.UpdateFavoUserData( wID, inLastTweetDate=wTweet['created_at'] )
+###				wResUpdate = gVal.OBJ_Tw_IF.UpdateFavoUserData( wTweetID, inLastTweetDate=wTweet['created_at'] )
+				wResUpdate = gVal.OBJ_Tw_IF.UpdateFavoUserData( wUserID, inLastTweetDate=wTweet['created_at'] )
 				if wResUpdate['Result']!=True :
 					wRes['Reason'] = "UpdateFavoUserData Error"
 					gVal.OBJ_L.Log( "B", wRes )
@@ -449,7 +451,8 @@ class CLS_TwitterFavo():
 				continue
 			
 			### ※いいねツイート確定
-			wFavoID = wTweet['id']
+###			wFavoID = wTweet['id']
+			wFavoID = wTweetID
 			break
 		
 		#############################
@@ -483,7 +486,8 @@ class CLS_TwitterFavo():
 		
 		#############################
 		# いいねあり
-		wResUpdate = gVal.OBJ_Tw_IF.UpdateFavoUserData( wID, inFLG_Favo=True, inLastTweetDate=None )
+###		wResUpdate = gVal.OBJ_Tw_IF.UpdateFavoUserData( wID, inFLG_Favo=True, inLastTweetDate=None )
+		wResUpdate = gVal.OBJ_Tw_IF.UpdateFavoUserData( wUserID, inFLG_Favo=True, inLastTweetDate=None )
 		if wResUpdate['Result']!=True :
 			wRes['Reason'] = "UpdateFavoUserData Error"
 			gVal.OBJ_L.Log( "B", wRes )

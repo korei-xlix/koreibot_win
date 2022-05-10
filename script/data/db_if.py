@@ -1156,7 +1156,7 @@ class CLS_DB_IF() :
 			wID = str(wID)
 			
 			#############################
-			# DBのいいね情報取得(IDのみ)
+			# DBのいいね情報取得
 			wQuery = "select * from tbl_favouser_data where " + \
 						"twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
 						"id = '" + wID + "' " + \
@@ -1187,7 +1187,7 @@ class CLS_DB_IF() :
 			# 辞書型に整形
 			wARR_RateFavoData = {}
 			self.OBJ_DB.ChgDict( wResDB['Responce']['Collum'], wResDB['Responce']['Data'], outDict=wARR_RateFavoData )
-			wARR_RateFavoData = wARR_RateFavoData[0]
+			wARR_RateFavoData = wARR_RateFavoData[0]	#1個しかないので添え字を消す
 			
 			#############################
 			# 削除対象か
@@ -1200,6 +1200,7 @@ class CLS_DB_IF() :
 				### 規定以内は除外
 				continue
 			
+###			wScreenName = str( wARR_RateFavoData[0]['screen_name'] )
 			#############################
 			# DBから削除
 			wQuery = "delete from tbl_favouser_data where " + \
@@ -1216,7 +1217,9 @@ class CLS_DB_IF() :
 				return wRes
 			gVal.STR_TrafficInfo['db_del'] += 1
 			
-			wRes['Reason'] = "Delete FavoData : " + wResDB['Responce']['Data']['screen_name']
+###			wRes['Reason'] = "Delete FavoData : " + str( wResDB['Responce']['Data']['screen_name'] )
+###			wRes['Reason'] = "Delete FavoData : " + wScreenName
+			wRes['Reason'] = "Delete FavoData : " + str( wARR_RateFavoData['screen_name'] )
 			gVal.OBJ_L.Log( "D", wRes )
 		
 		#############################
