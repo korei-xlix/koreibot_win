@@ -1252,14 +1252,6 @@ class CLS_TwitterMain():
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-###		#############################
-###		# リストいいねの更新
-###		wSubRes = gVal.OBJ_Tw_IF.GetListFavo( inUpdate=inUpdate )
-###		if wSubRes['Result']!=True :
-###			wRes['Reason'] = "GetListFavo error"
-###			gVal.OBJ_L.Log( "B", wRes )
-###			return wRes
-###		
 		#############################
 		# リストの取得
 		wSubRes = gVal.OBJ_Tw_IF.GetList( inListName=gVal.STR_UserInfo['LFavoName'], inUpdate=inUpdate )
@@ -1275,7 +1267,6 @@ class CLS_TwitterMain():
 		
 		#############################
 		# リストいいね ユーザの更新
-###		wSubRes = gVal.OBJ_Tw_IF.GetListFavoUser( inUpdate=inUpdate )
 		wSubRes = gVal.OBJ_Tw_IF.GetFavoUserData( inUpdate=inUpdate )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "GetListFavoUser error"
