@@ -159,6 +159,11 @@ class CLS_Main_Console() :
 		elif inCommand=="\\tt" :
 			cls.OBJ_TwitterMain.TrendTweet()
 		
+		#############################
+		# キーワードいいね
+		elif inCommand=="\\kk" :
+			cls.OBJ_TwitterMain.KeywordFavo()
+		
 	#####################################################
 		#############################
 		# Twitter APIの変更

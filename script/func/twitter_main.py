@@ -428,6 +428,29 @@ class CLS_TwitterMain():
 		return wRes
 
 
+#####################################################
+# キーワードいいね
+#####################################################
+	def KeywordFavo(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "KeywordFavo"
+		
+		#############################
+		# ふぁぼ一覧 取得
+		wFavoRes = gVal.OBJ_Tw_IF.GetFavo()
+		if wFavoRes['Result']!=True :
+			wRes['Reason'] = "GetFavoData is failed"
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		wRes = self.OBJ_TwitterKeyword.KeywordFavo()
+		return wRes
+
+
 
 #####################################################
 # トレンドタグ設定

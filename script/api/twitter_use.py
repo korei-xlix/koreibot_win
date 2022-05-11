@@ -1176,6 +1176,21 @@ class CLS_Twitter_Use():
 							"referenced_tweets.id.author_id"
 						]
 		)
+		wTWEET_FIELDS = ",".join(
+						[
+							"entities",
+							"in_reply_to_user_id",
+							"referenced_tweets",
+							"reply_settings",
+							"author_id",
+							"context_annotations",
+							"conversation_id",
+							"created_at",
+							"id",
+							"public_metrics",
+							"text",
+						]
+		)
 		wUSER_FIELDS = ",".join(
 						[
 							"id",
@@ -1186,6 +1201,7 @@ class CLS_Twitter_Use():
 		
 		wParam = {
 					"expansions"    : wEXPANSIONS,
+					"tweet.fields"  : wTWEET_FIELDS,
 					"max_results"   : inMaxResult,
 					"query"         : inQuery,
 					"user.fields"   : wUSER_FIELDS,

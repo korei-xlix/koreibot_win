@@ -150,6 +150,11 @@ class gVal() :
 														# ユーザ管理
 		"forGetUserSec"		: 600,						#   ユーザ取得間隔  10分  60x10
 		
+														# キーワードいいね
+		"KeywordTweetLen"		: 40,					#   キーワードいいねツイート取得数
+		"forKeywordTweetSec"	: 28800,				#   キーワードいいね いいね期間   8時間  60x60x8
+		"forKeywordObjectTweetSec"	: 86400,			#   キーワードいいね 対象いいね期間   1日  (60x60x24)x1
+		
 		"resetAPISec"		: 900,						# APIリセット周期 15分 60x15
 		"forLockLimSec"		: 120,						# 排他保持時間     2分 60x2 
 		"logShortLen"		: 100,						# ログ表示 ショートモード
@@ -191,6 +196,7 @@ class gVal() :
 	DEF_STR_DISPFILE = {
 		"MainConsole"			: DEF_DISPPATH + "main_console.disp",
 		"UserAdminConsole"		: DEF_DISPPATH + "useradmin_console.disp",
+		"KeywordConsole"		: DEF_DISPPATH + "keyword_console.disp",
 		"(dummy)"				: 0
 	}
 

@@ -43,7 +43,10 @@ class CLS_MyDisp():
 ###		###自動いいね設定画面
 ###		elif inDisp=="AutoFavoConsole" :
 ###			cls.__dispInp_AutoFavo( inLine, wRes )
-###		
+		###キーワードいいね画面
+		elif inDisp=="KeywordConsole" :
+			cls.__dispInp_Keyword( inLine, wRes, inData )
+		
 		return wRes
 
 	#####################################################
@@ -298,6 +301,49 @@ class CLS_MyDisp():
 			else:
 				wStr = str( inData['regdate'] )
 			pRes['Responce'] = "    DB登録日                    : " + wStr
+		
+		#############################
+		# 正常
+		pRes['Result'] = True
+		return
+
+
+
+	#####################################################
+	# キーワードいいね画面
+	@classmethod
+	def __dispInp_Keyword( cls, inLine, outRes, inData={} ):
+		pRes = outRes
+		#############################
+		# インプリメント処理
+		
+		###インプリ：キーワードいいね文字列
+		if "[@KEYWORD-STRING@]"==inLine :
+			if inData['str_keyword']!=None :
+				wStr = str( inData['str_keyword'] )
+			else:
+				wStr = "(設定なし)"
+			pRes['Responce'] = "設定文字列: " + wStr
+		
+		###インプリ：最大ツイート取得数
+		elif "[@KEYWORD-MAXSEARCHNUM@]"==inLine :
+			pRes['Responce'] = "    最大ツイート取得数: " + str( inData['max_searchnum'] )
+		
+		###インプリ：抽出ツイート数
+		elif "[@KEYWORD-SEARCHNUM@]"==inLine :
+			pRes['Responce'] = "    抽出ツイート数    : " + str( inData['searchnum'] )
+		
+		###インプリ：記憶ユーザ数
+		elif "[@KEYWORD-USERNUM@]"==inLine :
+			pRes['Responce'] = "    記憶ユーザ数      : " + str( inData['usernum'] )
+		
+		###インプリ：抽出ユーザ数
+		elif "[@KEYWORD-USERNUM@]"==inLine :
+			pRes['Responce'] = "    抽出ユーザ数      : " + str( inData['now_usernum'] )
+		
+		###インプリ：いいね実行数
+		elif "[@KEYWORD-FAVOUSERNUM@]"==inLine :
+			pRes['Responce'] = "    いいね実行数      : " + str( inData['favo_usernum'] )
 		
 		#############################
 		# 正常
