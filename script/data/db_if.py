@@ -1038,6 +1038,28 @@ class CLS_DB_IF() :
 		wFavoID   = str( inFavoID )
 		wFavoDate = str( inFavoData )
 		
+		wRes['Responce'] = False
+		#############################
+		# 1個取り出す
+		wResDBData = gVal.OBJ_DB_IF.GetFavoDataOne( wID )
+		if wResDBData['Result']!=True :
+			###失敗
+			wRes['Reason'] = "GetFavoDataOne is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		### DB登録なし
+		if wResDBData['Responce']==None :
+			### 正常
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# 更新
+		if wResDBData['Responce']['lfavo_id']==wFavoID :
+			### いいねIDが同じなら、更新しない
+			wRes['Result'] = True
+			return wRes
+		
 		#############################
 		# 更新
 		wQuery = "update tbl_favouser_data set " + \
@@ -1055,6 +1077,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# 正常
+		wRes['Responce'] = True
 		wRes['Result'] = True
 		return wRes
 

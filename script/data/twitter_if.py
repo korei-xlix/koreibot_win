@@ -2061,30 +2061,40 @@ class CLS_Twitter_IF() :
 			
 			#############################
 			# 既にいいね済みか
+			# いいね済みがあれば、メモする
+			#   いいね一覧: ARR_Favo
 			for wTweetID in wKeylist :
 				if self.ARR_Favo[wTweetID]['user']['id']==wID :
+					### 既にいいね あり
 					self.ARR_FavoUser[wID]['flg_favo'] = True
 					
-					if self.ARR_FavoUser[wID]['lastTweetDate']==None :
-						self.ARR_FavoUser[wID]['lastTweetDate'] = str( self.ARR_Favo[wTweetID]['created_at'] )
+###					if self.ARR_FavoUser[wID]['lastTweetDate']==None :
+###						self.ARR_FavoUser[wID]['lastTweetDate'] = str( self.ARR_Favo[wTweetID]['created_at'] )
+					self.ARR_FavoUser[wID]['lastTweetDate'] = str( self.ARR_Favo[wTweetID]['created_at'] )
 					
 					#############################
 					# リストいいね情報の更新
-					wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wID )
+###					wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wID )
+###					if wSubRes['Result']!=True :
+###						###失敗
+###						wRes['Reason'] = "GetFavoDataOne is failed"
+###						gVal.OBJ_L.Log( "B", wRes )
+###						break
+###					### DB登録
+###					if wSubRes['Responce']!=None :
+###						if wSubRes['Responce']['lfavo_id']!=wTweetID :
+###							wSubRes = gVal.OBJ_DB_IF.UpdateListFavoData( self.ARR_Favo[wTweetID]['user'], wTweetID, str(self.ARR_Favo[wTweetID]['created_at']) )
+###							if wSubRes['Result']!=True :
+###								###失敗
+###								wRes['Reason'] = "UpdateListFavoData is failed"
+###								gVal.OBJ_L.Log( "B", wRes )
+###								break
+					wSubRes = gVal.OBJ_DB_IF.UpdateListFavoData( self.ARR_Favo[wTweetID]['user'], wTweetID, str(self.ARR_Favo[wTweetID]['created_at']) )
 					if wSubRes['Result']!=True :
 						###失敗
-						wRes['Reason'] = "GetFavoDataOne is failed"
+						wRes['Reason'] = "UpdateListFavoData is failed"
 						gVal.OBJ_L.Log( "B", wRes )
 						break
-					### DB登録
-					if wSubRes['Responce']!=None :
-						if wSubRes['Responce']['lfavo_id']!=wTweetID :
-							wSubRes = gVal.OBJ_DB_IF.UpdateListFavoData( self.ARR_Favo[wTweetID]['user'], wTweetID, str(self.ARR_Favo[wTweetID]['created_at']) )
-							if wSubRes['Result']!=True :
-								###失敗
-								wRes['Reason'] = "UpdateListFavoData is failed"
-								gVal.OBJ_L.Log( "B", wRes )
-								break
 					
 					wUpdate = True
 					break
@@ -2093,7 +2103,9 @@ class CLS_Twitter_IF() :
 			# 最終活動日がなければ
 			# 1ツイート目の日付を入れる
 			if self.ARR_FavoUser[wID]['lastTweetDate']==None :
-				wTweetRes = gVal.OBJ_Tw_IF.GetTL( inTLmode="user", inFLG_Rep=False, inFLG_Rts=False,
+###				wTweetRes = gVal.OBJ_Tw_IF.GetTL( inTLmode="user", inFLG_Rep=False, inFLG_Rts=False,
+###					 inID=wID, inCount=1 )
+				wTweetRes = gVal.OBJ_Tw_IF.GetTL( inTLmode="user", inFLG_Rep=False, inFLG_Rts=True,
 					 inID=wID, inCount=1 )
 				if wTweetRes['Result']!=True :
 					wRes['Reason'] = "Twitter Error: GetTL"
@@ -2235,10 +2247,15 @@ class CLS_Twitter_IF() :
 			wResFavoDate  = "----------"
 			wListFavoDate = "----------"
 			if wSubRes['Responce']!=None :
-				if wSubRes['Responce']['favo_date']!=None and wSubRes['Responce']['favo_date']!="" :
+###				if wSubRes['Responce']['favo_date']!=None and wSubRes['Responce']['favo_date']!="" :
+				if wSubRes['Responce']['favo_date']!=None and wSubRes['Responce']['favo_date']!="" and \
+				   wSubRes['Responce']['favo_id']!="(none)" :
 					wResFavoDate  = str(wSubRes['Responce']['favo_date']).split(" ")
 					wResFavoDate  = wResFavoDate[0]
-				if wSubRes['Responce']['lfavo_date']!=None and wSubRes['Responce']['lfavo_date']!="" :
+				
+###				if wSubRes['Responce']['lfavo_date']!=None and wSubRes['Responce']['lfavo_date']!="" :
+				if wSubRes['Responce']['lfavo_date']!=None and wSubRes['Responce']['lfavo_date']!="" and \
+				   wSubRes['Responce']['lfavo_id']!="(none)" :
 					wListFavoDate = str(wSubRes['Responce']['lfavo_date']).split(" ")
 					wListFavoDate = wListFavoDate[0]
 			
