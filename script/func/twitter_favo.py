@@ -280,7 +280,7 @@ class CLS_TwitterFavo():
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
 		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Class'] = "CLS_TwitterFavo"
 		wRes['Func']  = "AutoFavo"
 		
 		wRes['Responce'] = {
@@ -402,7 +402,7 @@ class CLS_TwitterFavo():
 ###				wResUpdate = gVal.OBJ_Tw_IF.UpdateFavoUserData( wTweetID, inLastTweetDate=wTweet['created_at'] )
 				wResUpdate = gVal.OBJ_Tw_IF.UpdateFavoUserData( wUserID, inLastTweetDate=wTweet['created_at'] )
 				if wResUpdate['Result']!=True :
-					wRes['Reason'] = "UpdateFavoUserData Error"
+					wRes['Reason'] = "UpdateFavoUserData Error(1)"
 					gVal.OBJ_L.Log( "B", wRes )
 					return wRes
 			
@@ -436,9 +436,12 @@ class CLS_TwitterFavo():
 				wRes['Reason'] = "sTimeLag failed"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
-			if wGetLag['Beyond']==True :
-				### 規定外は1つでもあれば いいねしない(これが最新だけど規定時間外)
-				break
+###			if wGetLag['Beyond']==True :
+###				### 規定外は1つでもあれば いいねしない(これが最新だけど規定時間外)
+###				break
+			if wGetLag['Beyond']==False :
+				### 規定以内は除外
+				continue
 			
 			### ツイートチェック
 			wWordRes = self.OBJ_Parent.CheckExtWord( inData, wTweet['text'] )
@@ -489,7 +492,7 @@ class CLS_TwitterFavo():
 ###		wResUpdate = gVal.OBJ_Tw_IF.UpdateFavoUserData( wID, inFLG_Favo=True, inLastTweetDate=None )
 		wResUpdate = gVal.OBJ_Tw_IF.UpdateFavoUserData( wUserID, inFLG_Favo=True, inLastTweetDate=None )
 		if wResUpdate['Result']!=True :
-			wRes['Reason'] = "UpdateFavoUserData Error"
+			wRes['Reason'] = "UpdateFavoUserData Error(2)"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		

@@ -1156,6 +1156,11 @@ class CLS_DB_IF() :
 			wID = str(wID)
 			
 			#############################
+			# リストいいねユーザは除外
+			if gVal.OBJ_Tw_IF.CheckFavoUserData( wID )==True :
+				continue
+			
+			#############################
 			# DBのいいね情報取得
 			wQuery = "select * from tbl_favouser_data where " + \
 						"twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \

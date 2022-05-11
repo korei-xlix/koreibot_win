@@ -2360,39 +2360,47 @@ class CLS_Twitter_IF() :
 		return wRes
 
 #####################################################
+# リストいいね チェック
+#####################################################
+	def CheckFavoUserData( self, inID ):
+		#############################
+		# リストいいねユーザがあるか確認
+		if inID not in self.ARR_FavoUser :
+			return False
+		
+		return True
+
+#####################################################
 # リストいいね 更新
 #####################################################
-###	def UpdateListFavoUser( self, inID, inFLG_Favo=False, inLastTweetDate=None ):
-###	def UpdateFavoUserData( self, inID, inFLG_Favo=False, inLastTweetDate=None ):
 	def UpdateFavoUserData( self, inID, inFLG_Favo=None, inLastTweetDate=None ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
 		wRes = CLS_OSIF.sGet_Resp()
 		wRes['Class'] = "CLS_Twitter_IF"
-###		wRes['Func']  = "UpdateListFavoUser"
 		wRes['Func']  = "UpdateFavoUserData"
 		
+		wRes['Responce'] = False
 		#############################
 		# リストいいねユーザがあるか確認
-###		if inID not in self.ARR_ListFavoUser :
-###			wRes['Reason'] = "ARR_ListFavoUser not in ID: " + inID
-		if inID not in self.ARR_FavoUser :
+###		if inID not in self.ARR_FavoUser :
+####		wRes['Reason'] = "ARR_FavoUser not in ID: " + inID
+####		gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+		if self.CheckFavoUserData( inID )!=True :
 			wRes['Reason'] = "ARR_FavoUser not in ID: " + inID
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
 		#############################
 		# リストいいねの更新
-###		self.ARR_ListFavoUser[inID]['flg_favo']      = inFLG_Favo
-###		self.ARR_ListFavoUser[inID]['lastTweetDate'] = str(inLastTweetDate)
-###		self.ARR_FavoUser[inID]['flg_favo']      = inFLG_Favo
-###		self.ARR_FavoUser[inID]['lastTweetDate'] = str(inLastTweetDate)
 		if inFLG_Favo!=None :
 			self.ARR_FavoUser[inID]['flg_favo'] = inFLG_Favo
 		if inLastTweetDate!=None :
 			self.ARR_FavoUser[inID]['lastTweetDate'] = str(inLastTweetDate)
 		
+		wRes['Responce'] = True	#更新あり
 		wRes['Result'] = True
 		return wRes
 
