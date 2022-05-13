@@ -258,6 +258,7 @@ class CLS_TwitterKeyword():
 			if wSubRes['Responce']['Run']!=True :
 				continue
 			
+			self.STR_KeywordFavoInfo['favo_usernum'] += 1
 			wFavoNum += 1
 			#############################
 			# いいね成功

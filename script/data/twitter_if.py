@@ -2157,8 +2157,9 @@ class CLS_Twitter_IF() :
 		#############################
 		# リストいいねユーザがあるか確認
 		if self.CheckFavoUserData( inID )!=True :
-			wRes['Reason'] = "ARR_FavoUser not in ID: " + inID
-			gVal.OBJ_L.Log( "B", wRes )
+###			wRes['Reason'] = "ARR_FavoUser not in ID: " + inID
+###			gVal.OBJ_L.Log( "B", wRes )
+			wRes['Result'] = True
 			return wRes
 		
 		#############################
