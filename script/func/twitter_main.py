@@ -315,6 +315,8 @@ class CLS_TwitterMain():
 			wRes['Reason'] = "GetFollow is failed"
 			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
+		wStr = "〇フォロー一覧を取得しました" + '\n' ;
+		CLS_OSIF.sPrn( wStr )
 		
 		#############################
 		# ふぁぼ一覧 取得
@@ -323,6 +325,8 @@ class CLS_TwitterMain():
 			wRes['Reason'] = "GetFavoData is failed"
 			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
+		wStr = "〇いいね一覧を取得しました" + '\n' ;
+		CLS_OSIF.sPrn( wStr )
 		
 		#############################
 		# いいね解除
@@ -446,6 +450,8 @@ class CLS_TwitterMain():
 			wRes['Reason'] = "GetFavoData is failed"
 			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
+		wStr = "〇いいね一覧を取得しました" + '\n' ;
+		CLS_OSIF.sPrn( wStr )
 		
 		wRes = self.OBJ_TwitterKeyword.KeywordFavo()
 		return wRes
@@ -1299,6 +1305,8 @@ class CLS_TwitterMain():
 			wRes['Reason'] = "GetFavoData is failed"
 			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
+		wStr = "〇いいね一覧を取得しました" + '\n' ;
+		CLS_OSIF.sPrn( wStr )
 		
 		#############################
 		# リストいいね リストとユーザの更新

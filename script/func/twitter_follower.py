@@ -294,7 +294,10 @@ class CLS_TwitterFollower():
 				wSendCnt += 1
 				#############################
 				# 1行設定
-				wLine = "@" + wARR_RateFavoDate[wID]['screen_name'] + " : " + \
+###				wLine = "@" + wARR_RateFavoDate[wID]['screen_name'] + " : " + \
+###				        str(wARR_RateFavoDate[wID]['now_favo_cnt']) + \
+###				        "(" + str(wARR_RateFavoDate[wID]['favo_cnt']) + ")" + '\n'
+				wLine = wARR_RateFavoDate[wID]['screen_name'] + " : " + \
 				        str(wARR_RateFavoDate[wID]['now_favo_cnt']) + \
 				        "(" + str(wARR_RateFavoDate[wID]['favo_cnt']) + ")" + '\n'
 				

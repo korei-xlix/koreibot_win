@@ -154,11 +154,14 @@ class CLS_Main_Console() :
 ###		if inCommand=="\\ic" :
 ###			cls.OBJ_TwitterMain.RemFavo()
 ###		
-		#############################
-		# トレンドツイート
-		elif inCommand=="\\tt" :
-			cls.OBJ_TwitterMain.TrendTweet()
-		
+###		#############################
+###		# トレンドツイート
+###		elif inCommand=="\\tt" :
+###			cls.OBJ_TwitterMain.TrendTweet()
+###		##注意：この機能はTwitter 自動化ルールに抵触してるため
+###		##      機能削除とします
+###		##		https://help.twitter.com/en/rules-and-policies/twitter-automation
+###		
 		#############################
 		# キーワードいいね
 		elif inCommand=="\\kk" :
