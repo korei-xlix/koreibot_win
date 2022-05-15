@@ -358,6 +358,7 @@ class CLS_TwitterFavo():
 		if len(wTweetRes['Responce'])==0 :
 			### ツイートが取得できないのでスキップ
 			wRes['Result'] = True
+			wStr = "●お返しいいね中止(ツイートなし): " + inData['screen_name'] + '\n' ;
 			return wRes
 		
 		wCnt = 0
@@ -431,6 +432,7 @@ class CLS_TwitterFavo():
 		#############################
 		# いいねツイートなしはおわり
 		if wFavoID==None :
+			wStr = "●お返しいいね中止(対象なし): " + inData['screen_name'] + '\n' ;
 			wRes['Result'] = True
 			return wRes
 		

@@ -355,12 +355,17 @@ class CLS_TwitterMain():
 		
 		#############################
 		# リストいいね
-		if inFLG_Short==False :
-			wSubRes = self.OBJ_TwitterFavo.ListFavo()
-			if wSubRes['Result']!=True :
-				wRes['Reason'] = "ListFavo"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
+###		if inFLG_Short==False :
+###			wSubRes = self.OBJ_TwitterFavo.ListFavo()
+###			if wSubRes['Result']!=True :
+###				wRes['Reason'] = "ListFavo"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+		wSubRes = self.OBJ_TwitterFavo.ListFavo()
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "ListFavo"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
 		
 		#############################
 		# いいね情報送信
