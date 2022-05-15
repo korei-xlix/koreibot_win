@@ -414,8 +414,10 @@ class CLS_TwitterFavo():
 				wRes['Reason'] = "sTimeLag failed"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
-			if wGetLag['Beyond']==False :
-				### 規定以内は除外
+###			if wGetLag['Beyond']==False :
+###				### 規定以内は除外
+			if wGetLag['Beyond']==True :
+				### 規定外 =古いツイートなので除外
 				continue
 			
 			### ツイートチェック
