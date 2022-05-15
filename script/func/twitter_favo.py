@@ -341,7 +341,8 @@ class CLS_TwitterFavo():
 				return wRes
 			if wGetLag['Beyond']==False :
 				### 規定内は処理しない
-				wStr = "●お返しいいね中止(いいね期間内): " + inData['screen_name'] + '\n' ;
+###				wStr = "●お返しいいね中止(いいね期間内): " + inData['screen_name'] + '\n' ;
+				wStr = "●お返しいいね中止(いいね期間内): " + inData['screen_name'] + " timedate=" + str(wARR_DBData['lfavo_date']) + '\n' ;
 				CLS_OSIF.sPrn( wStr )
 				
 				wRes['Result'] = True
