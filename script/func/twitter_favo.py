@@ -547,39 +547,63 @@ class CLS_TwitterFavo():
 		#############################
 		# ツイートj情報を丸めこむ
 		wFavoID = str( inData['id'] )
-		wUserID = str( inData['user']['id'] )
-		wName   = inData['user']['name'].replace( "'", "''" )
-		
+###		wUserID = str( inData['user']['id'] )
+###		wName   = inData['user']['name'].replace( "'", "''" )
+###		wSN     = inData['user']['screen_name']
+###		
+###		wSTR_User = {
+###			"id"				: wUserID,
+###			"name"				: wName,
+###			"screen_name"		: inData['user']['screen_name']
+###		}
 		wSTR_User = {
-			"id"				: wUserID,
-			"name"				: wName,
-			"screen_name"		: inData['user']['screen_name']
+			"id"				: None,
+			"name"				: None,
+			"screen_name"		: None
 		}
 		wSTR_Tweet = {
-			"kind"				: "normal",
+			"kind"				: None,
 			"id"				: wFavoID,
 			"text"				: inData['text'],
 			"user"				: wSTR_User
 		}
-		### wTweet['retweeted_status']['user']['id'] :
-		### wTweet['quoted_status']['user']['id'] :
+###			"kind"				: "normal",
+###		### wTweet['retweeted_status']['user']['id'] :
+###		### wTweet['quoted_status']['user']['id'] :
 		
+		### リツイート
 		if "retweeted_status" in inData :
-			### リツイート
 			wSTR_Tweet['kind'] = "retweet"
+			wUserID = str( inData['retweeted_status']['user']['id'] )
+			wName   = inData['retweeted_status']['user']['name'].replace( "'", "''" )
+			wSN     = inData['retweeted_status']['user']['screen_name']
 		
+		### 引用リツイート
 		elif "quoted_status" in inData :
-			### 引用リツイート
 			wSTR_Tweet['kind'] = "quoted"
+			wUserID = str( inData['quoted_status']['user']['id'] )
+			wName   = inData['quoted_status']['user']['name'].replace( "'", "''" )
+			wSN     = inData['quoted_status']['user']['screen_name']
 		
+		### リプライ
 		elif inData['in_reply_to_status_id']!=None or \
 			 wSTR_Tweet['text'].find("@")==0 :
-			### リプライ
 			wSTR_Tweet['kind'] = "reply"
+			wUserID = str( inData['user']['id'] )
+			wName   = inData['user']['name'].replace( "'", "''" )
+			wSN     = inData['user']['screen_name']
 		
-##		else:
-##			### 通常ツイート
-##			wSTR_Tweet['kind'] = "normal"
+		### 通常ツイート
+		else:
+			wSTR_Tweet['kind'] = "normal"
+			wUserID = str( inData['user']['id'] )
+			wName   = inData['user']['name'].replace( "'", "''" )
+			wSN     = inData['user']['screen_name']
+		
+		### ユーザ情報のセット
+		wSTR_Tweet['user']['id'] = wUserID
+		wSTR_Tweet['user']['name']        = wName
+		wSTR_Tweet['user']['screen_name'] = wSN
 		
 		#############################
 		# リプライの場合は除外
