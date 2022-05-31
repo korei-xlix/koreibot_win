@@ -561,7 +561,14 @@ class CLS_Twitter_Use():
 		elif inTLmode=="user" :
 			wAPI = "https://api.twitter.com/1.1/statuses/user_timeline.json"
 			wAPIname = "user_timeline"
-		elif inTLmode=="list" and isinstance(inListID, int)==True :
+###		elif inTLmode=="list" and isinstance(inListID, int)==True :
+		elif inTLmode=="list" :
+			try:
+				wListID = int(inListID)
+			except ValueError:
+				wRes['Reason'] = "inListID is invalid: " + str(inListID)
+				return wRes
+			
 			wAPI = "https://api.twitter.com/1.1/lists/statuses.json"
 			wAPIname = "lists_status"
 		else :
@@ -606,8 +613,9 @@ class CLS_Twitter_Use():
 				"user_id"         : wID,
 				"exclude_replies" : inFLG_Rep,
 				"include_rts"     : inFLG_Rts,
-				"list_id"         : inListID
+				"list_id"         : wListID
 			}
+###				"list_id"         : inListID
 		else :
 			wParams = {
 				"count"           : wCount,
