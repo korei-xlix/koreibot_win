@@ -136,8 +136,10 @@ class gVal() :
 		
 														# リストいいね
 		"forListFavoSec"			: 86400,			#   リストいいねまでの期間   1日  60x60x24
-		"forListFavoMyFollowSec"	: 86400,			#   リストいいね フォロー者への期間   1日  (60x60x24)x1
-		"forListFavoNoFollowSec"	: 345600,			#   リストいいね フォロー外への期間   4日  (60x60x24)x4
+###		"forListFavoMyFollowSec"	: 86400,			#   リストいいね フォロー者への期間   1日  (60x60x24)x1
+###		"forListFavoNoFollowSec"	: 345600,			#   リストいいね フォロー外への期間   4日  (60x60x24)x4
+		"forListFavoMyFollowSec"	: 14400,			#   リストいいね フォロー者への期間   4時間  60x60x4
+		"forListFavoNoFollowSec"	: 259200,			#   リストいいね フォロー外への期間   3日  (60x60x24)x3
 		
 														# いいね送信
 ###		"favoSendsSec"		: 10,						# いいね送信までの期間      7日 (60x60x24)x7

@@ -2707,7 +2707,8 @@ class CLS_Twitter_Use():
 #####################################################
 # リスト一覧の取得
 #####################################################
-	def GetLists(self):
+###	def GetLists(self):
+	def GetLists( self, inScreenName=None ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -2733,8 +2734,16 @@ class CLS_Twitter_Use():
 		
 		#############################
 		# パラメータの生成
+		if inScreenName==None :
+			wScreenName = self.STR_TWITTERdata['TwitterID']
+		else :
+			wScreenName = inScreenName
+		
+###		wParams = {
+###			"screen_name" : self.STR_TWITTERdata['TwitterID']
+###		}
 		wParams = {
-			"screen_name" : self.STR_TWITTERdata['TwitterID']
+			"screen_name" : wScreenName
 		}
 		
 		#############################

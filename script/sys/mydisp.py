@@ -197,6 +197,9 @@ class CLS_MyDisp():
 		if "[@USERADMIN-TWITTER@]"==inLine :
 			pRes['Responce'] = "対象ユーザ  @" + inData['screen_name']
 		
+		elif "[@USERADMIN-TWITTER-ID@]"==inLine :
+			pRes['Responce'] = "ユーザID     " + str(inData['id'])
+		
 		###インプリ：フォロー者
 		elif "[@USERADMIN-MYFOLLOW@]"==inLine :
 			if inData['myfollow']==True :
