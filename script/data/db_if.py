@@ -1419,7 +1419,11 @@ class CLS_DB_IF() :
 			   str( wARR_RateFavoData['lfavo_date'] )==self.DEF_TIMEDATE :
 				wCHR_DelTimeDate = str( wARR_RateFavoData['regdate'] )
 			else:
-				wCHR_DelTimeDate = str( wARR_RateFavoData['favo_date'] )
+###				wCHR_DelTimeDate = str( wARR_RateFavoData['favo_date'] )
+				if str( wARR_RateFavoData['favo_date'] )!=self.DEF_TIMEDATE :
+					wCHR_DelTimeDate = str( wARR_RateFavoData['favo_date'] )
+				else:
+					wCHR_DelTimeDate = str( wARR_RateFavoData['lfavo_date'] )
 			
 ###			wGetLag = CLS_OSIF.sTimeLag( str( wARR_RateFavoData['favo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['favoDataDelSec'] )
 			wGetLag = CLS_OSIF.sTimeLag( wCHR_DelTimeDate, inThreshold=gVal.DEF_STR_TLNUM['favoDataDelSec'] )
