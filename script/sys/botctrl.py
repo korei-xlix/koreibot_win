@@ -32,18 +32,23 @@ class CLS_BotCtrl():
 		#############################
 		# 引数取得
 		wArg = CLS_OSIF.sGetArg()
-		if len(wArg)==4 :	#テストモード : bottest か
-			if wArg[3]==gVal.DEF_TEST_MODE :
-				gVal.FLG_Test_Mode = True
-		
-		elif wArg[1]=="add" :	#データ追加モードの場合
-			if len(wArg)!=3 :
+###		if len(wArg)==4 :	#テストモード : bottest か
+###			if wArg[3]==gVal.DEF_TEST_MODE :
+###				gVal.FLG_Test_Mode = True
+###		
+###		elif wArg[1]=="add" :	#データ追加モードの場合
+###			if len(wArg)!=3 :
+		if wArg[1]=="add" :	#データ追加モードの場合
+			if len(wArg)!=4 :
 				wRes['Reason'] = "データ追加モード: 引数が足りません"
 				CLS_OSIF.sErr( wRes )
 				return False
 			
+###			gVal.STR_SystemInfo['RunMode'] = wArg[1]
+###			gVal.STR_SystemInfo['EXT_FilePath'] = wArg[2]
 			gVal.STR_SystemInfo['RunMode'] = wArg[1]
-			gVal.STR_SystemInfo['EXT_FilePath'] = wArg[2]
+			gVal.STR_SystemInfo['EXT_FilePath'] = wArg[3]
+			gVal.STR_UserInfo['Account'] = wArg[2]	#ユーザ名
 			return True
 		
 		elif len(wArg)==2 :	#モード
@@ -59,6 +64,10 @@ class CLS_BotCtrl():
 			
 			gVal.STR_SystemInfo['RunMode'] = wArg[1]
 			return True
+		
+		elif len(wArg)==4 :	#テストモード : bottest か
+			if wArg[3]==gVal.DEF_TEST_MODE :
+				gVal.FLG_Test_Mode = True
 		
 		elif len(wArg)!=3 :	#引数が足りない
 			wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません= " + str( wArg )

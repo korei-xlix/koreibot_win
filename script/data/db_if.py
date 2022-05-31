@@ -584,6 +584,145 @@ class CLS_DB_IF() :
 
 
 #####################################################
+# リストいいね指定
+#####################################################
+	def GetOtherListFavo(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "GetOtherListFavo"
+		
+		#############################
+		# データベースを取得
+		wQuery = "select * from tbl_list_favo " + \
+					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "B", wRes )
+			return False
+		
+		#############################
+		# 辞書型に整形
+		wARR_DBData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
+		
+		wARR_Data = {}
+		#############################
+		# 除外文字データを登録する
+		wKeylist = list( wARR_DBData.keys() )
+		for wIndex in wKeylist :
+			wCell = {
+				"screen_name"	: wARR_DBData[wIndex]['screen_name'],
+				"id"			: wARR_DBData[wIndex]['id'],
+				"list_name"		: wARR_DBData[wIndex]['list_name'],
+				"list_id"		: wARR_DBData[wIndex]['list_id'],
+				"valid"			: wARR_DBData[wIndex]['valid']
+			}
+			wARR_Data.update({ wKey : wCell })
+		
+		gVal.ARR_ListFavo = wARR_Data
+		
+		#############################
+		# =正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def SetOtherListFavo( self, inARRData ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "SetOtherListFavo"
+		
+		#############################
+		# 登録データを作成する
+		wARR_Data = {}
+		wIndex = 0
+		for wLine in inARRData :
+			
+			### コメントアウトはスキップ
+			wIfind = wLine.find("#")
+			if wIfind==0 :
+				continue
+			
+			wARR_Line = wLine.split(",")
+			### 要素数が少ないのは除外
+			if len(wARR_Line)!=4 :
+				continue
+			
+			### データ登録
+			wCell = {
+				"screen_name"	: wARR_Line[0],
+				"id"			: wARR_Line[1],
+				"list_name"		: wARR_Line[2],
+				"list_id"		: wARR_Line[3],
+				"valid"			: True
+			}
+			wARR_Data.update({ wIndex : wCell })
+			wIndex += 1
+		
+		if len(wARR_Data)==0 :
+			##失敗
+			wRes['Reason'] = "get no data"
+			CLS_OSIF.sErr( wRes )
+			return False
+		
+		#############################
+		# レコードを一旦全消す
+		wQuery = "delete from tbl_list_favo " + \
+					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			CLS_OSIF.sErr( wRes )
+			return False
+		
+		wStr = "tbl_list_favo をクリアしました "
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# データベースに登録する
+		wKeylist = list( wARR_Data.keys() )
+		for wKey in wKeylist :
+			wQuery = "insert into tbl_list_favo values (" + \
+					"'" + gVal.STR_UserInfo['Account'] + "', " + \
+					"'" + str(wARR_Data[wKey]['screen_name']) + "', " + \
+					"'" + str(wARR_Data[wKey]['id']) + "', " + \
+					"'" + str(wARR_Data[wKey]['list_name']) + "', " + \
+					"'" + str(wARR_Data[wKey]['list_id']) + "', " + \
+					"True " + \
+					") ;"
+			
+			#############################
+			# クエリの実行
+			wResDB = self.OBJ_DB.RunQuery( wQuery )
+			wResDB = self.OBJ_DB.GetQueryStat()
+			if wResDB['Result']!=True :
+				##失敗
+				wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+				CLS_OSIF.sErr( wRes )
+				return False
+		
+		#############################
+		# グローバルを更新する
+		gVal.ARR_ListFavo = wARR_Data
+		
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
 # トレンドタグ設定
 #####################################################
 	def SetTrendTag( self ):

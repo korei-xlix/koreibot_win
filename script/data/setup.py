@@ -204,6 +204,14 @@ class CLS_Setup():
 			CLS_OSIF.sErr( wRes )
 			return False
 		
+		#    リストいいね指定ファイル
+		wFilePath = str( gVal.STR_SystemInfo['EXT_FilePath'] ) + gVal.DEF_STR_FILE['Melt_ExcWordArc_path'] + gVal.DEF_STR_FILE['Melt_ListFavo']
+		wARR_ListFavo = []
+		if CLS_File.sReadFile( wFilePath, outLine=wARR_ListFavo )!=True :
+			wRes['Reason'] = "解凍ファイルが見つかりません: path=" + wFilePath
+			CLS_OSIF.sErr( wRes )
+			return False
+		
 		###解凍したフォルダ削除
 		if CLS_File.sRmtree( wMelt_ExcWordArc_Path )!=True :
 			wRes['Reason'] = "解凍フォルダの削除に失敗しました: path=" + wMelt_ExcWordArc_Path
@@ -223,17 +231,17 @@ class CLS_Setup():
 		if inDBInit==True :
 			self.__create_TBL_EXC_WORD( gVal.OBJ_DB_IF.OBJ_DB )
 		
-
-
-
 		#############################
 		# 除外ユーザ名、文字、プロファイルの設定
 		wSubRes = gVal.OBJ_DB_IF.SetExeWord( wARR_ExcWord )
 		if wSubRes['Result']!=True :
 			return False
-
-
-
+		
+		#############################
+		# リストいいね指定の設定
+		wSubRes = gVal.OBJ_DB_IF.SetOtherListFavo( wARR_ListFavo )
+		if wSubRes['Result']!=True :
+			return False
 		
 		#############################
 		# DBを閉じる
@@ -295,6 +303,7 @@ class CLS_Setup():
 		self.__create_TBL_LOG_DATA( inDBobj )
 		self.__create_TBL_TRAFFIC_DATA( inDBobj )
 		self.__create_TBL_EXC_WORD( inDBobj )
+		self.__create_TBL_LIST_FAVO( inDBobj )
 		return True
 
 	#####################################################
@@ -308,6 +317,8 @@ class CLS_Setup():
 		wQuery = "drop table if exists tbl_traffic_data ;"
 		inOBJ_DB.RunQuery( wQuery )
 		wQuery = "drop table if exists tbl_exc_word ;"
+		inOBJ_DB.RunQuery( wQuery )
+		wQuery = "drop table if exists tbl_list_favo ;"
 		inOBJ_DB.RunQuery( wQuery )
 		return True
 
@@ -430,6 +441,38 @@ class CLS_Setup():
 ###					"favo_date     最終いいねツイート日時
 ###					"list_date     リスト通知日時
 ###
+		inOBJ_DB.RunQuery( wQuery )
+		return
+
+
+
+#####################################################
+# テーブル作成: TBL_LIST_FAVO
+#####################################################
+	def __create_TBL_LIST_FAVO( self, inOBJ_DB, inTBLname="tbl_list_favo" ):
+		#############################
+		# テーブルのドロップ
+		wQuery = "drop table if exists " + inTBLname + ";"
+		inOBJ_DB.RunQuery( wQuery )
+		
+		#############################
+		# テーブル枠の作成
+		wQuery = "create table " + inTBLname + "(" + \
+					"twitterid   TEXT  NOT NULL," + \
+					"screen_name TEXT  NOT NULL," + \
+					"id          TEXT  NOT NULL," + \
+					"list_name   TEXT  NOT NULL," + \
+					"list_id     TEXT  NOT NULL," + \
+					"valid       BOOL  DEFAULT true " + \
+					" ) ;"
+		
+##					"twitterid   記録したユーザ(Twitter ID)
+##					"screen_name   Listのユーザのscreen_name
+##					"id            ListのユーザのID（数値）
+##					"list_name     Listの名前
+##					"list_id       ListのID（数値）
+##					"valid       有効か True=有効
+		
 		inOBJ_DB.RunQuery( wQuery )
 		return
 

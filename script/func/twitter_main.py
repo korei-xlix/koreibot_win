@@ -137,6 +137,14 @@ class CLS_TwitterMain():
 			return wRes
 		
 		#############################
+		# リストいいね指定読み込み
+		wResSub = gVal.OBJ_DB_IF.GetOtherListFavo()
+		if wResSub['Result']!=True :
+			wRes['Reason'] = "GetListFavo failed"
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
 		# 完了
 		wRes['Result'] = True
 		return wRes

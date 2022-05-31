@@ -189,6 +189,8 @@ class gVal() :
 		"Melt_ExcWordArc_path"	: "/DEF_ExcWordArc",
 									# 除外データ 文字列ファイルパス(フォルダ付き)
 		"Melt_ExcWord"			: "/DEF_ExcWordArc/DEF_ExcWord.txt",
+									# リストいいね指定ファイル
+		"Melt_ListFavo"			: "/DEF_ExcWordArc/DEF_ListFavo.txt",
 		
 		"(dummy)"				: 0
 	}
@@ -221,6 +223,7 @@ class gVal() :
 	
 	ARR_ExeWord = {}										# 除外文字データ
 ###	ARR_ExeWordKey = []
+	ARR_ListFavo = {}										# リストいいね指定
 
 
 
