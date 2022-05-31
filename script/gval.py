@@ -211,6 +211,8 @@ class gVal() :
 	DEF_TEST_MODE     = "bottest"							#テストモード(引数文字)
 	DEF_DATA_BOUNDARY = "|,|"
 
+	DEF_SCREEN_NAME_SIZE = 24
+
 
 
 #############################

@@ -671,6 +671,15 @@ class CLS_TwitterMain():
 
 
 #####################################################
+# リストいいね 有効設定
+#####################################################
+	def SetListFavoValid(self):
+		wRes = self.OBJ_TwitterFavo.SetListFavoValid()
+		return wRes
+
+
+
+#####################################################
 # リアクションツイートチェック
 #####################################################
 	def ReactionTweetCheck( self, inTweet ):

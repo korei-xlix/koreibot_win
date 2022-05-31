@@ -191,6 +191,11 @@ class CLS_Main_Console() :
 		elif inCommand=="\\fc" :
 			cls.OBJ_TwitterMain.SetListFavo()
 		
+		#############################
+		# リストいいね 有効設定
+		elif inCommand=="\\fvc" :
+			cls.OBJ_TwitterMain.SetListFavoValid()
+		
 	#####################################################
 		#############################
 		# ユーザ管理

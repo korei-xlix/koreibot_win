@@ -621,9 +621,10 @@ class CLS_DB_IF() :
 				"id"			: wARR_DBData[wIndex]['id'],
 				"list_name"		: wARR_DBData[wIndex]['list_name'],
 				"list_id"		: wARR_DBData[wIndex]['list_id'],
-				"valid"			: wARR_DBData[wIndex]['valid']
+				"valid"			: wARR_DBData[wIndex]['valid'],
+				"update"		: False
 			}
-			wARR_Data.update({ wKey : wCell })
+			wARR_Data.update({ wIndex : wCell })
 		
 		gVal.ARR_ListFavo = wARR_Data
 		
@@ -663,7 +664,8 @@ class CLS_DB_IF() :
 				"id"			: wARR_Line[1],
 				"list_name"		: wARR_Line[2],
 				"list_id"		: wARR_Line[3],
-				"valid"			: True
+				"valid"			: True,
+				"update"		: False
 			}
 			wARR_Data.update({ wIndex : wCell })
 			wIndex += 1
@@ -711,11 +713,55 @@ class CLS_DB_IF() :
 				##失敗
 				wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
 				CLS_OSIF.sErr( wRes )
-				return False
+				return wRes
 		
 		#############################
 		# グローバルを更新する
 		gVal.ARR_ListFavo = wARR_Data
+		
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def SaveOtherListFavo(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "SaveOtherListFavo"
+		
+		wUpdate = False
+		#############################
+		# 更新があれば
+		#   データベースを更新する
+		wKeylist = list( gVal.ARR_ListFavo.keys() )
+		for wKey in wKeylist :
+			if gVal.ARR_ListFavo[wKey]['update']==False :
+				### 更新なしはスキップ
+				continue
+			
+			wQuery = "update tbl_list_favo set " + \
+					"valid = " + str(gVal.ARR_ListFavo[wKey]['valid']) + " " + \
+					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
+					"id = '" + gVal.ARR_ListFavo[wKey]['id'] + "' and " + \
+					"list_id = '" + gVal.ARR_ListFavo[wKey]['list_id'] + "' " + \
+					";"
+			
+			#############################
+			# クエリの実行
+			wResDB = self.OBJ_DB.RunQuery( wQuery )
+			wResDB = self.OBJ_DB.GetQueryStat()
+			if wResDB['Result']!=True :
+				##失敗
+				wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+				CLS_OSIF.sErr( wRes )
+				return wRes
+			
+			wUpdate = True
+		
+		if wUpdate==True :
+			CLS_OSIF.sPrn( "リストいいねの設定を更新しました。" )
 		
 		wRes['Result'] = True
 		return wRes
