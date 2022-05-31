@@ -283,7 +283,7 @@ class CLS_TwitterFavo():
 						"id"	: wUserID,
 						"cnt"	: 0
 					}
-					wARR_Counter({ wUserID : wCell })
+					wARR_Counter.update({ wUserID : wCell })
 				
 				else:
 					###カウント中
@@ -654,9 +654,9 @@ class CLS_TwitterFavo():
 			return wRes
 		
 		if wSTR_Tweet['user']['screen_name'] in gVal.DEF_STR_NOT_REACTION :
-			wStr = "●外部いいね中止(禁止ユーザ): " + wSTR_Tweet['user']['screen_name'] + '\n' ;
-			CLS_OSIF.sPrn( wStr )
-			
+#			wStr = "●外部いいね中止(禁止ユーザ): " + wSTR_Tweet['user']['screen_name'] + '\n' ;
+#			CLS_OSIF.sPrn( wStr )
+#			
 			wRes['Result'] = True
 			return wRes
 		
