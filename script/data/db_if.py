@@ -18,6 +18,10 @@ class CLS_DB_IF() :
 	
 	ARR_FollowerDataID = []		#  フォロワー情報ID
 
+	DEF_TIMEDATE = "1901-01-01 00:00:00"
+
+
+
 #####################################################
 # Init
 #####################################################
@@ -290,8 +294,9 @@ class CLS_DB_IF() :
 			###時間取得失敗  時計壊れた？
 			wStr = "PC時間取得失敗" + '\n'
 			CLS_OSIF.sPrn( wStr )
-			wTD['TimeDate'] = "1901-01-01 00:00:00"
-		### wTD['TimeDate']
+###			wTD['TimeDate'] = "1901-01-01 00:00:00"
+###		### wTD['TimeDate']
+			wTD['TimeDate'] = self.DEF_TIMEDATE
 		
 		#############################
 		# テーブルチェック
@@ -446,8 +451,9 @@ class CLS_DB_IF() :
 			###時間取得失敗  時計壊れた？
 			wStr = "PC時間取得失敗" + '\n'
 			CLS_OSIF.sPrn( wStr )
-			wTD['TimeDate'] = "1901-01-01 00:00:00"
-		### wTD['TimeDate']
+###			wTD['TimeDate'] = "1901-01-01 00:00:00"
+###		### wTD['TimeDate']
+			wTD['TimeDate'] = self.DEF_TIMEDATE
 		
 		#############################
 		# データベースから除外文字を取得
@@ -1071,7 +1077,8 @@ class CLS_DB_IF() :
 		#############################
 		# 時間の取得
 		wTimeDate = str( gVal.STR_SystemInfo['TimeDate'] )
-		wDefTimeDate = "1901-01-01 00:00:00"
+###		wDefTimeDate = "1901-01-01 00:00:00"
+		wDefTimeDate = self.DEF_TIMEDATE
 		
 		#############################
 		# SQLの作成
@@ -1404,7 +1411,18 @@ class CLS_DB_IF() :
 			
 			#############################
 			# 削除対象か
-			wGetLag = CLS_OSIF.sTimeLag( str( wARR_RateFavoData['favo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['favoDataDelSec'] )
+			#   いいね日時とリストいいね日時が初期値の場合
+			#     登録日が期間を過ぎてたら削除
+			#   いいね日時 もしくは リストいいね日時 が初期値でない場合
+			#     いいね日時が期間を過ぎてたら削除
+			if str( wARR_RateFavoData['favo_date'] )==self.DEF_TIMEDATE and \
+			   str( wARR_RateFavoData['lfavo_date'] )==self.DEF_TIMEDATE :
+				wCHR_DelTimeDate = str( wARR_RateFavoData['regdate'] )
+			else:
+				wCHR_DelTimeDate = str( wARR_RateFavoData['favo_date'] )
+			
+###			wGetLag = CLS_OSIF.sTimeLag( str( wARR_RateFavoData['favo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['favoDataDelSec'] )
+			wGetLag = CLS_OSIF.sTimeLag( wCHR_DelTimeDate, inThreshold=gVal.DEF_STR_TLNUM['favoDataDelSec'] )
 			if wGetLag['Result']!=True :
 				wRes['Reason'] = "sTimeLag failed"
 				gVal.OBJ_L.Log( "B", wRes )

@@ -239,6 +239,8 @@ class CLS_TwitterFavo():
 			# 正常
 			continue	#次へ
 		
+		wARR_Counter = {}
+		wOverTweetNum = 0
 		#############################
 		# リストいいね指定の処理
 		wKeylist = list( gVal.ARR_ListFavo.keys() )
@@ -262,6 +264,7 @@ class CLS_TwitterFavo():
 			if len(wTweetRes['Responce'])==0 :
 				### ツイートが取得できないのでスキップ
 				continue
+			wOverTweetNum += len( wTweetRes['Responce'] )
 			
 			###ウェイト初期化
 			self.OBJ_Parent.Wait_Init( inZanNum=len( wTweetRes['Responce'] ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
@@ -270,6 +273,23 @@ class CLS_TwitterFavo():
 				###ウェイトカウントダウン
 				if self.OBJ_Parent.Wait_Next()==False :
 					break	###ウェイト中止
+				
+				wUserID = str(wTweet['user']['id'])
+				#############################
+				# カウンタ
+				if wUserID not in wARR_Counter :
+					###新規
+					wCell = {
+						"id"	: wUserID,
+						"cnt"	: 0
+					}
+					wARR_Counter({ wUserID : wCell })
+				
+				else:
+					###カウント中
+					if gVal.DEF_STR_TLNUM['forOverListFavoCount']<=wARR_Counter[wUserID]['cnt'] :
+						###いいね上限のためスキップ
+						continue
 				
 				#############################
 				# 自動いいね
@@ -281,8 +301,9 @@ class CLS_TwitterFavo():
 				
 				if wResFavo['Responce']['flg_favo_run']==True :
 					### いいね実施をカウント
+					wARR_Counter[wUserID]['cnt'] += 1
 					wFavoTweet += 1
-					break	#仮で1ツイートだけ処理する
+###					break	#仮で1ツイートだけ処理する
 		
  		#############################
 		# 取得結果の表示
@@ -290,6 +311,7 @@ class CLS_TwitterFavo():
 		if inFLG_FirstDisp==False :
 			wStr = "------------------------------" + '\n'
 		wStr = wStr + "リストいいね数  : " + str( len(wARR_TwListFavoData) )+ '\n'
+		wStr = wStr + "外部ツイート数  : " + str( wOverTweetNum )+ '\n'
 		wStr = wStr + "いいね実施数    : " + str( wFavoTweet )+ '\n'
 		CLS_OSIF.sPrn( wStr )
 		
@@ -541,7 +563,8 @@ class CLS_TwitterFavo():
 		
 		wRes['Responce'] = {
 			"flg_favo"			: False,
-			"flg_favo_run"		: False
+			"flg_favo_run"		: False,
+			"data"				: None
 		}
 		
 		#############################
@@ -769,6 +792,7 @@ class CLS_TwitterFavo():
 			return wRes
 		
 		wRes['Responce']['flg_favo'] = True		#いいね済み
+		wRes['Responce']['data']     = wSTR_Tweet
 		wRes['Result'] = True
 		return wRes
 
