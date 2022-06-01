@@ -250,7 +250,11 @@ class CLS_TwitterFavo():
 			if gVal.ARR_ListFavo[wKey]['valid']!=True :
 				continue
 			
-			wStr = "リストいいねするタイムライン取得: @" + gVal.ARR_ListFavo[wKey]['screen_name'] + "/ " + gVal.ARR_ListFavo[wKey]['list_name']
+			#############################
+			# リストの表示
+###			wStr = "リストいいねするタイムライン取得: @" + gVal.ARR_ListFavo[wKey]['screen_name'] + "/ " + gVal.ARR_ListFavo[wKey]['list_name']
+			wStr = "******************************" + '\n'
+			wStr = wStr + "処理中リスト: @" + gVal.ARR_ListFavo[wKey]['screen_name'] + "/ " + gVal.ARR_ListFavo[wKey]['list_name'] + '\n'
 			CLS_OSIF.sPrn( wStr )
 			
 			#############################
