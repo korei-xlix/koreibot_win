@@ -236,12 +236,13 @@ class CLS_BotCtrl():
 			wChgDict[0]['listdate'] = str(wTD['TimeDate'])
 		gVal.STR_UserInfo['ListDate'] = wChgDict[0]['listdate']
 		
+###		#############################
+###		# リストいいね
+###		if wChgDict[0]['lfavoname']==None :
+###			wChgDict[0]['lfavoname'] = ""
+###		gVal.STR_UserInfo['LFavoName'] = wChgDict[0]['lfavoname']
 		#############################
-		# リストいいね
-		if wChgDict[0]['lfavoname']==None :
-			wChgDict[0]['lfavoname'] = ""
-		gVal.STR_UserInfo['LFavoName'] = wChgDict[0]['lfavoname']
-		
+		# リストいいね日時
 		if wChgDict[0]['lfavdate']=="" or \
 		   wChgDict[0]['lfavdate']==None :
 			### 初期化

@@ -64,7 +64,7 @@ class gVal() :
 		
 		"ListName"	: "",			#リスト通知 リスト名
 		"ListDate"	: None,			#リスト通知日時
-		"LFavoName"	: "",			#リストいいね リスト名
+###		"LFavoName"	: "",			#リストいいね リスト名
 		"LFavoDate"	: None			#リストいいね日時
 	}
 

@@ -138,7 +138,8 @@ class CLS_TwitterMain():
 		
 		#############################
 		# リストいいね指定読み込み
-		wResSub = gVal.OBJ_DB_IF.GetOtherListFavo()
+###		wResSub = gVal.OBJ_DB_IF.GetOtherListFavo()
+		wResSub = gVal.OBJ_DB_IF.GetListFavo()
 		if wResSub['Result']!=True :
 			wRes['Reason'] = "GetListFavo failed"
 			gVal.OBJ_L.Log( "C", wRes )
@@ -589,92 +590,98 @@ class CLS_TwitterMain():
 #####################################################
 # リストいいね設定
 #####################################################
+###	def SetListFavo(self):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_TwitterMain"
+###		wRes['Func']  = "SetListFavo"
+###		
+###		wListName = None
+###		#############################
+###		# Twitterキーの入力
+###		CLS_OSIF.sPrn( "リストいいねの設定をおこないます。" )
+###		CLS_OSIF.sPrn( "---------------------------------------" )
+###		while True :
+###			###初期化
+###			wListName = None
+###			
+###			#############################
+###			# 実行の確認
+###			wSelect = CLS_OSIF.sInp( "キャンセルしますか？(y)=> " )
+###			if wSelect=="y" :
+###				# 完了
+###				wRes['Result'] = True
+###				return wRes
+###			
+###			#############################
+###			# 入力
+###			wStr = "リストいいねに設定するリスト名を入力してください。"
+###			CLS_OSIF.sPrn( wStr )
+###			wKey = CLS_OSIF.sInp( "List Name ？=> " )
+###			if wKey=="" :
+###				CLS_OSIF.sPrn( "リスト名が未入力です" + '\n' )
+###				continue
+###			wListName = wKey
+###			
+###			###ここまでで入力は完了した
+###			break
+###		
+###		#############################
+###		# DBに登録する
+###		if wListName==None :
+###			wRes['Reason'] = "wListName: None"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		#############################
+###		# リストいいね リストとユーザの更新
+###		wSubRes = self.UpdateListFavoUser( inUpdate=True )
+###		if wSubRes['Result']!=True :
+###			wRes['Reason'] = "UpdateListFavoUser error"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		#############################
+###		# リストがTwitterにあるか確認
+###		wSubRes = gVal.OBJ_Tw_IF.CheckList( inListName=wListName )
+###		if wSubRes['Result']!=True :
+###			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		if wSubRes['Responce']==False :
+###			CLS_OSIF.sPrn( "Twitterにないリストです: " + wListName + '\n' )
+###			wRes['Result'] = True
+###			return wRes
+###		
+###		#############################
+###		# DBに登録する
+###		wSubRes = gVal.OBJ_DB_IF.SetListFavo( wListName )
+###		if wSubRes['Result']!=True :
+###			wRes['Reason'] = "SetListFavo Error"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		#############################
+###		# 完了
+###		wRes['Result'] = True
+###		return wRes
+###
+###
+###
+### #####################################################
+### # リストいいね 有効設定
+### #####################################################
+###	def SetListFavoValid(self):
+###		wRes = self.OBJ_TwitterFavo.SetListFavoValid()
+###		return wRes
+
+#####################################################
+# リストいいね設定
+#####################################################
 	def SetListFavo(self):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_TwitterMain"
-		wRes['Func']  = "SetListFavo"
-		
-		wListName = None
-		#############################
-		# Twitterキーの入力
-		CLS_OSIF.sPrn( "リストいいねの設定をおこないます。" )
-		CLS_OSIF.sPrn( "---------------------------------------" )
-		while True :
-			###初期化
-			wListName = None
-			
-			#############################
-			# 実行の確認
-			wSelect = CLS_OSIF.sInp( "キャンセルしますか？(y)=> " )
-			if wSelect=="y" :
-				# 完了
-				wRes['Result'] = True
-				return wRes
-			
-			#############################
-			# 入力
-			wStr = "リストいいねに設定するリスト名を入力してください。"
-			CLS_OSIF.sPrn( wStr )
-			wKey = CLS_OSIF.sInp( "List Name ？=> " )
-			if wKey=="" :
-				CLS_OSIF.sPrn( "リスト名が未入力です" + '\n' )
-				continue
-			wListName = wKey
-			
-			###ここまでで入力は完了した
-			break
-		
-		#############################
-		# DBに登録する
-		if wListName==None :
-			wRes['Reason'] = "wListName: None"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# リストいいね リストとユーザの更新
-		wSubRes = self.UpdateListFavoUser( inUpdate=True )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "UpdateListFavoUser error"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# リストがTwitterにあるか確認
-###		wSubRes = gVal.OBJ_Tw_IF.CheckListInd( inListName=wListName )
-		wSubRes = gVal.OBJ_Tw_IF.CheckList( inListName=wListName )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		if wSubRes['Responce']==False :
-			CLS_OSIF.sPrn( "Twitterにないリストです: " + wListName + '\n' )
-			wRes['Result'] = True
-			return wRes
-		
-		#############################
-		# DBに登録する
-		wSubRes = gVal.OBJ_DB_IF.SetListFavo( wListName )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "SetListFavo Error"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# 完了
-		wRes['Result'] = True
-		return wRes
-
-
-
-#####################################################
-# リストいいね 有効設定
-#####################################################
-	def SetListFavoValid(self):
-		wRes = self.OBJ_TwitterFavo.SetListFavoValid()
+		wRes = self.OBJ_TwitterFavo.SetListFavo()
 		return wRes
 
 
@@ -1264,94 +1271,92 @@ class CLS_TwitterMain():
 #####################################################
 # リストいいねユーザ更新
 #####################################################
-	def UpdateListFavoUser( self, inUpdate=False ):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_TwitterMain"
-		wRes['Func']  = "UpdateListFavoUser"
-		
-		#############################
-		# 処理時間の更新
-		wSubRes = gVal.OBJ_DB_IF.UpdateListFavoDate()
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "UpdateListFavoDate Error"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# リストの取得
-		wSubRes = gVal.OBJ_Tw_IF.GetList( inListName=gVal.STR_UserInfo['LFavoName'], inUpdate=inUpdate )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "GetListInd error"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		if wSubRes['Responce']!=True :
-			gVal.STR_UserInfo['LFavoName'] = ""
-			wRes['Reason'] = "GetListInd is not list: " + gVal.STR_UserInfo['LFavoName']
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# リストいいね ユーザの更新
-		wSubRes = gVal.OBJ_Tw_IF.GetFavoUserData( inUpdate=inUpdate )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "GetListFavoUser error"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		if wSubRes['Responce']['Update']==True :
-			wStr = "〇リストいいね: " + str( wSubRes['Responce']['Num'] ) + ".件" + '\n' ;
-		else:
-			wStr = "●リストいいね 未更新: " + str( wSubRes['Responce']['Num'] ) + ".件" + '\n' ;
-		CLS_OSIF.sPrn( wStr )
-		
-		wRes['Result'] = True
-		return wRes
-
-	#####################################################
-	# リストいいねユーザ表示
-	def ViewListFavoUser(self):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_TwitterMain"
-		wRes['Func']  = "ViewListFavoUser"
-		
-		#############################
-		# ふぁぼ一覧 取得
-		wFavoRes = gVal.OBJ_Tw_IF.GetFavo()
-		if wFavoRes['Result']!=True :
-			wRes['Reason'] = "GetFavoData is failed"
-			gVal.OBJ_L.Log( "C", wRes )
-			return wRes
-		wStr = "〇いいね一覧を取得しました" + '\n' ;
-		CLS_OSIF.sPrn( wStr )
-		
-		#############################
-		# リストいいね リストとユーザの更新
-		wSubRes = self.UpdateListFavoUser( inUpdate=True )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "UpdateListFavoUser error"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# リストいいねの表示
-###		wSubRes = gVal.OBJ_Tw_IF.ViewListFavoUser()
-		wSubRes = gVal.OBJ_Tw_IF.ViewFavoUserData()
-		if wSubRes['Result']!=True :
-###			wRes['Reason'] = "ViewListFavoUser error"
-			wRes['Reason'] = "ViewFavoUserData error"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		wRes['Result'] = True
-		return wRes
-
-
+###	def UpdateListFavoUser( self, inUpdate=False ):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_TwitterMain"
+###		wRes['Func']  = "UpdateListFavoUser"
+###		
+###		#############################
+###		# 処理時間の更新
+###		wSubRes = gVal.OBJ_DB_IF.UpdateListFavoDate()
+###		if wSubRes['Result']!=True :
+###			wRes['Reason'] = "UpdateListFavoDate Error"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		#############################
+###		# リストの取得
+###		wSubRes = gVal.OBJ_Tw_IF.GetList( inListName=gVal.STR_UserInfo['LFavoName'], inUpdate=inUpdate )
+###		if wSubRes['Result']!=True :
+###			wRes['Reason'] = "GetListInd error"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		if wSubRes['Responce']!=True :
+###			gVal.STR_UserInfo['LFavoName'] = ""
+###			wRes['Reason'] = "GetListInd is not list: " + gVal.STR_UserInfo['LFavoName']
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		#############################
+###		# リストいいね ユーザの更新
+###		wSubRes = gVal.OBJ_Tw_IF.GetFavoUserData( inUpdate=inUpdate )
+###		if wSubRes['Result']!=True :
+###			wRes['Reason'] = "GetListFavoUser error"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		if wSubRes['Responce']['Update']==True :
+###			wStr = "〇リストいいね: " + str( wSubRes['Responce']['Num'] ) + ".件" + '\n' ;
+###		else:
+###			wStr = "●リストいいね 未更新: " + str( wSubRes['Responce']['Num'] ) + ".件" + '\n' ;
+###		CLS_OSIF.sPrn( wStr )
+###		
+###		wRes['Result'] = True
+###		return wRes
+###
+###	#####################################################
+###	# リストいいねユーザ表示
+###	def ViewListFavoUser(self):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_TwitterMain"
+###		wRes['Func']  = "ViewListFavoUser"
+###		
+###		#############################
+###		# ふぁぼ一覧 取得
+###		wFavoRes = gVal.OBJ_Tw_IF.GetFavo()
+###		if wFavoRes['Result']!=True :
+###			wRes['Reason'] = "GetFavoData is failed"
+###			gVal.OBJ_L.Log( "C", wRes )
+###			return wRes
+###		wStr = "〇いいね一覧を取得しました" + '\n' ;
+###		CLS_OSIF.sPrn( wStr )
+###		
+###		#############################
+###		# リストいいね リストとユーザの更新
+###		wSubRes = self.UpdateListFavoUser( inUpdate=True )
+###		if wSubRes['Result']!=True :
+###			wRes['Reason'] = "UpdateListFavoUser error"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		#############################
+###		# リストいいねの表示
+###		wSubRes = gVal.OBJ_Tw_IF.ViewFavoUserData()
+###		if wSubRes['Result']!=True :
+###			wRes['Reason'] = "ViewFavoUserData error"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		wRes['Result'] = True
+###		return wRes
+###
+###
 
 #####################################################
 # 除外文字チェック

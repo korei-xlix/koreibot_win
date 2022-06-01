@@ -32,7 +32,7 @@ class CLS_Twitter_IF() :
 	ARR_Lists = {}			#リスト一覧
 	ARR_ListIndUser = {}	#リスト通知のユーザ
 ###	ARR_FavoUser = {}		#いいねユーザ
-	ARR_ListFavoUser = {}	#リストいいねユーザ
+###	ARR_ListFavoUser = {}	#リストいいねユーザ
 
 #####################################################
 # Init
@@ -2041,302 +2041,283 @@ class CLS_Twitter_IF() :
 #####################################################
 # リストいいねデータ取得
 #####################################################
-	def GetFavoUser(self):
+###	def GetFavoUser(self):
 ###		return self.ARR_FavoUser
-		return self.ARR_ListFavoUser
-
-
+###		return self.ARR_ListFavoUser
+###
+###
 
 #####################################################
 # リストいいね ユーザ取得
 #####################################################
-	def GetFavoUserData( self, inUpdate=False ):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_Twitter_IF"
-		wRes['Func']  = "GetFavoUserData"
-		
-		wRes['Responce'] = {
-			"Num"		: 0,
-			"Update"	: False
-		}
-		
-		#############################
-		# リストがTwitterにあるか確認
-		wSubRes = self.CheckList( gVal.STR_UserInfo['LFavoName'] )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		if wSubRes['Responce']==False :
-			wRes['Reason'] = "Twitter List not found: " + gVal.STR_UserInfo['LFavoName']
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# リスト通知のユーザIDが空なら
-		# リストのクリア
-###		if len(self.ARR_FavoUser)==0 or inUpdate==True :
-###			self.ARR_FavoUser = {}
-		if len(self.ARR_ListFavoUser)==0 or inUpdate==True :
-			self.ARR_ListFavoUser = {}
-		
-		#############################
-		# Twitterからリストのユーザ一覧を取得
-		wSubRes = self.OBJ_Twitter.GetListMember( gVal.STR_UserInfo['LFavoName'] )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		wKeylist = list( self.ARR_Favo.keys() )
-		wUpdate = False
-		#############################
-		# いいねユーザデータを作成する
-		for wLine in wSubRes['Responce'] :
-			wID = str( wLine['id'] )
-			
-			#############################
-			# 枠がなければ作成する
-###			if wID not in self.ARR_FavoUser :
-			if wID not in self.ARR_ListFavoUser :
-				wCell = {
-					"id"				: wID,
-					"screen_name"		: wLine['screen_name'],
-					"flg_favo"			: False,
-					"lastTweetDate"		: None
-				}
-###				self.ARR_FavoUser.update({ wID : wCell })
-				self.ARR_ListFavoUser.update({ wID : wCell })
-				wUpdate = True
-			
-			#############################
-			# 既にいいね済みか
-			# いいね済みがあれば、メモする
-			#   いいね一覧: ARR_Favo
-			for wTweetID in wKeylist :
-				if self.ARR_Favo[wTweetID]['user']['id']==wID :
-					### 既にいいね あり
-###					self.ARR_FavoUser[wID]['flg_favo'] = True
+###	def GetFavoUserData( self, inUpdate=False ):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_Twitter_IF"
+###		wRes['Func']  = "GetFavoUserData"
+###		
+###		wRes['Responce'] = {
+###			"Num"		: 0,
+###			"Update"	: False
+###		}
+###		
+###		#############################
+###		# リストがTwitterにあるか確認
+###		wSubRes = self.CheckList( gVal.STR_UserInfo['LFavoName'] )
+###		if wSubRes['Result']!=True :
+###			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		if wSubRes['Responce']==False :
+###			wRes['Reason'] = "Twitter List not found: " + gVal.STR_UserInfo['LFavoName']
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		#############################
+###		# リスト通知のユーザIDが空なら
+###		# リストのクリア
+###		if len(self.ARR_ListFavoUser)==0 or inUpdate==True :
+###			self.ARR_ListFavoUser = {}
+###		
+###		#############################
+###		# Twitterからリストのユーザ一覧を取得
+###		wSubRes = self.OBJ_Twitter.GetListMember( gVal.STR_UserInfo['LFavoName'] )
+###		if wSubRes['Result']!=True :
+###			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		wKeylist = list( self.ARR_Favo.keys() )
+###		wUpdate = False
+###		#############################
+###		# いいねユーザデータを作成する
+###		for wLine in wSubRes['Responce'] :
+###			wID = str( wLine['id'] )
+###			
+###			#############################
+###			# 枠がなければ作成する
+###			if wID not in self.ARR_ListFavoUser :
+###				wCell = {
+###					"id"				: wID,
+###					"screen_name"		: wLine['screen_name'],
+###					"flg_favo"			: False,
+###					"lastTweetDate"		: None
+###				}
+###				self.ARR_ListFavoUser.update({ wID : wCell })
+###				wUpdate = True
+###			
+###			#############################
+###			# 既にいいね済みか
+###			# いいね済みがあれば、メモする
+###			#   いいね一覧: ARR_Favo
+###			for wTweetID in wKeylist :
+###				if self.ARR_Favo[wTweetID]['user']['id']==wID :
+###					### 既にいいね あり
+###					self.ARR_ListFavoUser[wID]['flg_favo'] = True
+###					self.ARR_ListFavoUser[wID]['lastTweetDate'] = str( self.ARR_Favo[wTweetID]['created_at'] )
 ###					
-###					self.ARR_FavoUser[wID]['lastTweetDate'] = str( self.ARR_Favo[wTweetID]['created_at'] )
-					self.ARR_ListFavoUser[wID]['flg_favo'] = True
-					self.ARR_ListFavoUser[wID]['lastTweetDate'] = str( self.ARR_Favo[wTweetID]['created_at'] )
-					
-					#############################
-					# リストいいね情報の更新
-					wSubRes = gVal.OBJ_DB_IF.UpdateListFavoData( self.ARR_Favo[wTweetID]['user'], wTweetID, str(self.ARR_Favo[wTweetID]['created_at']) )
-					if wSubRes['Result']!=True :
-						###失敗
-						wRes['Reason'] = "UpdateListFavoData is failed"
-						gVal.OBJ_L.Log( "B", wRes )
-						break
-					
-					wUpdate = True
-					break
-			
-			#############################
-			# 最終活動日がなければ
-			# 1ツイート目の日付を入れる
-###			if self.ARR_FavoUser[wID]['lastTweetDate']==None :
-			if self.ARR_ListFavoUser[wID]['lastTweetDate']==None :
-				wTweetRes = gVal.OBJ_Tw_IF.GetTL( inTLmode="user", inFLG_Rep=False, inFLG_Rts=True,
-					 inID=wID, inCount=1 )
-				if wTweetRes['Result']!=True :
-					wRes['Reason'] = "Twitter Error: GetTL"
-					gVal.OBJ_L.Log( "B", wRes )
-					continue
-				for wTweet in wTweetRes['Responce'] :
-					###日時の変換
-					wTime = CLS_OSIF.sGetTimeformat_Twitter( wTweet['created_at'] )
-					if wTime['Result']!=True :
-						wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wTweet['created_at'])
-						gVal.OBJ_L.Log( "B", wRes )
-						break
-					### wTime['TimeDate']
-###					self.ARR_FavoUser[wID]['lastTweetDate'] = str( wTime['TimeDate'] )
-					self.ARR_ListFavoUser[wID]['lastTweetDate'] = str( wTime['TimeDate'] )
-					break
-		
-		wRes['Responce']['Update'] = wUpdate
-###		wRes['Responce']['Num'] = len( self.ARR_FavoUser )	#数を返す
-		wRes['Responce']['Num'] = len( self.ARR_ListFavoUser )	#数を返す
-		wRes['Result'] = True
-		return wRes
-
-
+###					#############################
+###					# リストいいね情報の更新
+###					wSubRes = gVal.OBJ_DB_IF.UpdateListFavoData( self.ARR_Favo[wTweetID]['user'], wTweetID, str(self.ARR_Favo[wTweetID]['created_at']) )
+###					if wSubRes['Result']!=True :
+###						###失敗
+###						wRes['Reason'] = "UpdateListFavoData is failed"
+###						gVal.OBJ_L.Log( "B", wRes )
+###						break
+###					
+###					wUpdate = True
+###					break
+###			
+###			#############################
+###			# 最終活動日がなければ
+###			# 1ツイート目の日付を入れる
+###			if self.ARR_ListFavoUser[wID]['lastTweetDate']==None :
+###				wTweetRes = gVal.OBJ_Tw_IF.GetTL( inTLmode="user", inFLG_Rep=False, inFLG_Rts=True,
+###					 inID=wID, inCount=1 )
+###				if wTweetRes['Result']!=True :
+###					wRes['Reason'] = "Twitter Error: GetTL"
+###					gVal.OBJ_L.Log( "B", wRes )
+###					continue
+###				for wTweet in wTweetRes['Responce'] :
+###					###日時の変換
+###					wTime = CLS_OSIF.sGetTimeformat_Twitter( wTweet['created_at'] )
+###					if wTime['Result']!=True :
+###						wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wTweet['created_at'])
+###						gVal.OBJ_L.Log( "B", wRes )
+###						break
+###					### wTime['TimeDate']
+###					self.ARR_ListFavoUser[wID]['lastTweetDate'] = str( wTime['TimeDate'] )
+###					break
+###		
+###		wRes['Responce']['Update'] = wUpdate
+###		wRes['Responce']['Num'] = len( self.ARR_ListFavoUser )	#数を返す
+###		wRes['Result'] = True
+###		return wRes
+###
+###
 
 #####################################################
 # リストいいね チェック
 #####################################################
-	def CheckFavoUserData( self, inID ):
-		#############################
-		# リストいいねユーザがあるか確認
-###		if inID not in self.ARR_FavoUser :
-		if inID not in self.ARR_ListFavoUser :
-			return False
-		
-		return True
-
-
+###	def CheckFavoUserData( self, inID ):
+###		#############################
+###		# リストいいねユーザがあるか確認
+###		if inID not in self.ARR_ListFavoUser :
+###			return False
+###		
+###		return True
+###
+###
 
 #####################################################
 # リストいいね 更新
 #####################################################
-	def UpdateFavoUserData( self, inID, inFLG_Favo=None, inLastTweetDate=None ):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_Twitter_IF"
-		wRes['Func']  = "UpdateFavoUserData"
-		
-		wRes['Responce'] = False
-		#############################
-		# リストいいねユーザがあるか確認
-		if self.CheckFavoUserData( inID )!=True :
-			wRes['Result'] = True
-			return wRes
-		
-		#############################
-		# リストいいねの更新
-		if inFLG_Favo!=None :
-###			self.ARR_FavoUser[inID]['flg_favo'] = inFLG_Favo
-			self.ARR_ListFavoUser[inID]['flg_favo'] = inFLG_Favo
-		if inLastTweetDate!=None :
-###			self.ARR_FavoUser[inID]['lastTweetDate'] = str(inLastTweetDate)
-			self.ARR_ListFavoUser[inID]['lastTweetDate'] = str(inLastTweetDate)
-		
-		wRes['Responce'] = True	#更新あり
-		wRes['Result'] = True
-		return wRes
-
-
+###	def UpdateFavoUserData( self, inID, inFLG_Favo=None, inLastTweetDate=None ):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_Twitter_IF"
+###		wRes['Func']  = "UpdateFavoUserData"
+###		
+###		wRes['Responce'] = False
+###		#############################
+###		# リストいいねユーザがあるか確認
+###		if self.CheckFavoUserData( inID )!=True :
+###			wRes['Result'] = True
+###			return wRes
+###		
+###		#############################
+###		# リストいいねの更新
+###		if inFLG_Favo!=None :
+###			self.ARR_ListFavoUser[inID]['flg_favo'] = inFLG_Favo
+###		if inLastTweetDate!=None :
+###			self.ARR_ListFavoUser[inID]['lastTweetDate'] = str(inLastTweetDate)
+###		
+###		wRes['Responce'] = True	#更新あり
+###		wRes['Result'] = True
+###		return wRes
+###
+###
 
 #####################################################
 # リストいいね クリア
 #####################################################
-	def ClearFavoUserData(self):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_Twitter_IF"
-		wRes['Func']  = "ClearFavoUserData"
-		
-###		wKeylist = list( self.ARR_FavoUser.keys() )
-		wKeylist = list( self.ARR_ListFavoUser.keys() )
-		for wID in wKeylist :
-###			self.ARR_FavoUser[wID]['flg_favo'] = False
-			self.ARR_ListFavoUser[wID]['flg_favo'] = False
-		
-		wRes['Result'] = True
-		return wRes
-
-
+###	def ClearFavoUserData(self):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_Twitter_IF"
+###		wRes['Func']  = "ClearFavoUserData"
+###		
+###		wKeylist = list( self.ARR_ListFavoUser.keys() )
+###		for wID in wKeylist :
+###			self.ARR_ListFavoUser[wID]['flg_favo'] = False
+###		
+###		wRes['Result'] = True
+###		return wRes
+###
+###
 
 #####################################################
 # リストいいね 表示
 #####################################################
-	def ViewFavoUserData(self):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_Twitter_IF"
-		wRes['Func']  = "ViewFavoUserData"
-		
-		#############################
-		# リストいいねが未設定の場合は
-		#   処理を抜ける
-		if gVal.STR_UserInfo['LFavoName']=="" :
-			wStr = "リストいいねは未設定です" + '\n' ;
-			CLS_OSIF.sPrn( wStr )
-			
-			wRes['Result'] = True
-			return wRes
-		
-		#############################
-		# フォロー情報未取得なら
-		# 取得する
-		if len(self.ARR_MyFollowID)==0 :
-			wSubRes = self.GetFollow()
-			if wSubRes['Result']!=True :
-				###失敗
-				wRes['Reason'] = "GetFollow is error"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-		
-		#############################
-		# ユーザ一覧
-		wStr = '\n' + "--------------------" + '\n' ;
-		wStr = wStr + "リストいいねユーザ一覧" + '\n'
-		wStr = wStr + '\n'
-		wStr = wStr + "FL FV 最終活動日  反応受信日  自動いいね  ユーザ名"
-		CLS_OSIF.sPrn( wStr )
-		
-###		wKeylist = list( self.ARR_FavoUser.keys() )
-		wKeylist = list( self.ARR_ListFavoUser.keys() )
-		for wID in wKeylist :
-			#############################
-			# DBからいいね日を取得する
-			wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wID )
-			if wSubRes['Result']!=True :
-				###失敗
-				wRes['Reason'] = "GetFavoDataOne is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				continue
-			wResFavoDate  = "----------"
-			wListFavoDate = "----------"
-			if wSubRes['Responce']!=None :
-				if wSubRes['Responce']['favo_date']!=None and wSubRes['Responce']['favo_date']!="" and \
-				   wSubRes['Responce']['favo_id']!="(none)" :
-					wResFavoDate  = str(wSubRes['Responce']['favo_date']).split(" ")
-					wResFavoDate  = wResFavoDate[0]
-				
-				if wSubRes['Responce']['lfavo_date']!=None and wSubRes['Responce']['lfavo_date']!="" and \
-				   wSubRes['Responce']['lfavo_id']!="(none)" :
-					wListFavoDate = str(wSubRes['Responce']['lfavo_date']).split(" ")
-					wListFavoDate = wListFavoDate[0]
-			
-			wStr = ""
-			### フォロー者
-			if wID in self.ARR_MyFollowID :
-				wStr = wStr + "〇 "
-			else:
-				wStr = wStr + "－ "
-			
-			### いいね済み
-###			if self.ARR_FavoUser[wID]['flg_favo']==True :
-			if self.ARR_ListFavoUser[wID]['flg_favo']==True :
-				wStr = wStr + "〇 "
-			else:
-				wStr = wStr + "－ "
-			
-			### 最終ツイート日
-			wLastTweetDate = "----------"
-###			if self.ARR_FavoUser[wID]['lastTweetDate']!=None :
-###				wLastTweetDate = self.ARR_FavoUser[wID]['lastTweetDate'].split(" ")
-			if self.ARR_ListFavoUser[wID]['lastTweetDate']!=None :
-				wLastTweetDate = self.ARR_ListFavoUser[wID]['lastTweetDate'].split(" ")
-				wLastTweetDate = wLastTweetDate[0]
-			wStr = wStr + wLastTweetDate + ": "
-			
-			### アクション日
-			wStr = wStr + wResFavoDate + ": "
-			
-			### いいね日
-			wStr = wStr + wListFavoDate + ": "
-			
-			### screen_name
-###			wStr = wStr + self.ARR_FavoUser[wID]['screen_name']
-			wStr = wStr + self.ARR_ListFavoUser[wID]['screen_name']
-			CLS_OSIF.sPrn( wStr )
-		
-		wRes['Result'] = True
-		return wRes
-
-
+###	def ViewFavoUserData(self):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_Twitter_IF"
+###		wRes['Func']  = "ViewFavoUserData"
+###		
+###		#############################
+###		# リストいいねが未設定の場合は
+###		#   処理を抜ける
+###		if gVal.STR_UserInfo['LFavoName']=="" :
+###			wStr = "リストいいねは未設定です" + '\n' ;
+###			CLS_OSIF.sPrn( wStr )
+###			
+###			wRes['Result'] = True
+###			return wRes
+###		
+###		#############################
+###		# フォロー情報未取得なら
+###		# 取得する
+###		if len(self.ARR_MyFollowID)==0 :
+###			wSubRes = self.GetFollow()
+###			if wSubRes['Result']!=True :
+###				###失敗
+###				wRes['Reason'] = "GetFollow is error"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###		
+###		#############################
+###		# ユーザ一覧
+###		wStr = '\n' + "--------------------" + '\n' ;
+###		wStr = wStr + "リストいいねユーザ一覧" + '\n'
+###		wStr = wStr + '\n'
+###		wStr = wStr + "FL FV 最終活動日  反応受信日  自動いいね  ユーザ名"
+###		CLS_OSIF.sPrn( wStr )
+###		
+###		wKeylist = list( self.ARR_ListFavoUser.keys() )
+###		for wID in wKeylist :
+###			#############################
+###			# DBからいいね日を取得する
+###			wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wID )
+###			if wSubRes['Result']!=True :
+###				###失敗
+###				wRes['Reason'] = "GetFavoDataOne is failed"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				continue
+###			wResFavoDate  = "----------"
+###			wListFavoDate = "----------"
+###			if wSubRes['Responce']!=None :
+###				if wSubRes['Responce']['favo_date']!=None and wSubRes['Responce']['favo_date']!="" and \
+###				   wSubRes['Responce']['favo_id']!="(none)" :
+###					wResFavoDate  = str(wSubRes['Responce']['favo_date']).split(" ")
+###					wResFavoDate  = wResFavoDate[0]
+###				
+###				if wSubRes['Responce']['lfavo_date']!=None and wSubRes['Responce']['lfavo_date']!="" and \
+###				   wSubRes['Responce']['lfavo_id']!="(none)" :
+###					wListFavoDate = str(wSubRes['Responce']['lfavo_date']).split(" ")
+###					wListFavoDate = wListFavoDate[0]
+###			
+###			wStr = ""
+###			### フォロー者
+###			if wID in self.ARR_MyFollowID :
+###				wStr = wStr + "〇 "
+###			else:
+###				wStr = wStr + "－ "
+###			
+###			### いいね済み
+###			if self.ARR_ListFavoUser[wID]['flg_favo']==True :
+###				wStr = wStr + "〇 "
+###			else:
+###				wStr = wStr + "－ "
+###			
+###			### 最終ツイート日
+###			wLastTweetDate = "----------"
+###			if self.ARR_ListFavoUser[wID]['lastTweetDate']!=None :
+###				wLastTweetDate = self.ARR_ListFavoUser[wID]['lastTweetDate'].split(" ")
+###				wLastTweetDate = wLastTweetDate[0]
+###			wStr = wStr + wLastTweetDate + ": "
+###			
+###			### アクション日
+###			wStr = wStr + wResFavoDate + ": "
+###			
+###			### いいね日
+###			wStr = wStr + wListFavoDate + ": "
+###			
+###			### screen_name
+###			wStr = wStr + self.ARR_ListFavoUser[wID]['screen_name']
+###			CLS_OSIF.sPrn( wStr )
+###		
+###		wRes['Result'] = True
+###		return wRes
+###
+###
+###
 

@@ -239,7 +239,8 @@ class CLS_Setup():
 		
 		#############################
 		# リストいいね指定の設定
-		wSubRes = gVal.OBJ_DB_IF.SetOtherListFavo( wARR_ListFavo )
+###		wSubRes = gVal.OBJ_DB_IF.SetOtherListFavo( wARR_ListFavo )
+		wSubRes = gVal.OBJ_DB_IF.SetListFavo( wARR_ListFavo )
 		if wSubRes['Result']!=True :
 			return False
 		
@@ -348,9 +349,9 @@ class CLS_Setup():
 					"favodate    TIMESTAMP," + \
 					"listname    TEXT," + \
 					"listdate    TIMESTAMP," + \
-					"lfavoname   TEXT," + \
 					"lfavdate    TIMESTAMP," + \
 					" PRIMARY KEY ( twitterid ) ) ;"
+###					"lfavoname   TEXT," + \
 
 ##					"twitterid   記録したユーザ(Twitter ID)
 ##					"apikey      Twitter Devで取ったAPI key
@@ -463,7 +464,8 @@ class CLS_Setup():
 					"id          TEXT  NOT NULL," + \
 					"list_name   TEXT  NOT NULL," + \
 					"list_id     TEXT  NOT NULL," + \
-					"valid       BOOL  DEFAULT true " + \
+					"valid       BOOL  DEFAULT true," + \
+					"follow      BOOL  DEFAULT false " + \
 					" ) ;"
 		
 ##					"twitterid   記録したユーザ(Twitter ID)

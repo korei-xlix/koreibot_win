@@ -191,11 +191,11 @@ class CLS_Main_Console() :
 		elif inCommand=="\\fc" :
 			cls.OBJ_TwitterMain.SetListFavo()
 		
-		#############################
-		# リストいいね 有効設定
-		elif inCommand=="\\fvc" :
-			cls.OBJ_TwitterMain.SetListFavoValid()
-		
+###		#############################
+###		# リストいいね 有効設定
+###		elif inCommand=="\\fvc" :
+###			cls.OBJ_TwitterMain.SetListFavoValid()
+###		
 	#####################################################
 		#############################
 		# ユーザ管理
@@ -207,11 +207,11 @@ class CLS_Main_Console() :
 		elif inCommand=="\\lv" :
 			cls.OBJ_TwitterMain.ViewListIndUser()
 		
-		#############################
-		# リストいいねユーザ表示
-		elif inCommand=="\\fv" :
-			cls.OBJ_TwitterMain.ViewListFavoUser()
-		
+###		#############################
+###		# リストいいねユーザ表示
+###		elif inCommand=="\\fv" :
+###			cls.OBJ_TwitterMain.ViewListFavoUser()
+###		
 	#####################################################
 		#############################
 		# ログの表示(異常ログ)

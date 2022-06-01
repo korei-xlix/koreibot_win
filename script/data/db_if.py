@@ -328,9 +328,9 @@ class CLS_DB_IF() :
 						"'" + str(wTD['TimeDate']) + "'," + \
 						"''," + \
 						"'" + str(wTD['TimeDate']) + "'," + \
-						"''," + \
 						"'" + str(wTD['TimeDate']) + "' " + \
 						") ;"
+###						"''," + \
 			
 			wResDB = self.OBJ_DB.RunQuery( wQuery )
 			wResDB = self.OBJ_DB.GetQueryStat()
@@ -592,13 +592,15 @@ class CLS_DB_IF() :
 #####################################################
 # リストいいね指定
 #####################################################
-	def GetOtherListFavo(self):
+###	def GetOtherListFavo(self):
+	def GetListFavo(self):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
 		wRes = CLS_OSIF.sGet_Resp()
 		wRes['Class'] = "CLS_DB_IF"
-		wRes['Func']  = "GetOtherListFavo"
+###		wRes['Func']  = "GetOtherListFavo"
+		wRes['Func']  = "GetListFavo"
 		
 		#############################
 		# データベースを取得
@@ -628,6 +630,7 @@ class CLS_DB_IF() :
 				"list_name"		: wARR_DBData[wIndex]['list_name'],
 				"list_id"		: wARR_DBData[wIndex]['list_id'],
 				"valid"			: wARR_DBData[wIndex]['valid'],
+				"follow"		: wARR_DBData[wIndex]['follow'],
 				"update"		: False
 			}
 			wARR_Data.update({ wIndex : wCell })
@@ -640,13 +643,15 @@ class CLS_DB_IF() :
 		return wRes
 
 	#####################################################
-	def SetOtherListFavo( self, inARRData ):
+###	def SetOtherListFavo( self, inARRData ):
+	def SetListFavo( self, inARRData ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
 		wRes = CLS_OSIF.sGet_Resp()
 		wRes['Class'] = "CLS_DB_IF"
-		wRes['Func']  = "SetOtherListFavo"
+###		wRes['Func']  = "SetOtherListFavo"
+		wRes['Func']  = "SetListFavo"
 		
 		#############################
 		# 登録データを作成する
@@ -661,16 +666,23 @@ class CLS_DB_IF() :
 			
 			wARR_Line = wLine.split(",")
 			### 要素数が少ないのは除外
-			if len(wARR_Line)!=4 :
+###			if len(wARR_Line)!=4 :
+			if len(wARR_Line)!=5 :
 				continue
 			
 			### データ登録
+			wFLG_Follow = True if wARR_Line[0]=="***" else False
 			wCell = {
-				"screen_name"	: wARR_Line[0],
-				"id"			: wARR_Line[1],
-				"list_name"		: wARR_Line[2],
-				"list_id"		: wARR_Line[3],
+###				"screen_name"	: wARR_Line[0],
+###				"id"			: wARR_Line[1],
+###				"list_name"		: wARR_Line[2],
+###				"list_id"		: wARR_Line[3],
+				"screen_name"	: wARR_Line[1],
+				"id"			: wARR_Line[2],
+				"list_name"		: wARR_Line[3],
+				"list_id"		: wARR_Line[4],
 				"valid"			: True,
+				"follow"		: wFLG_Follow,
 				"update"		: False
 			}
 			wARR_Data.update({ wIndex : wCell })
@@ -708,7 +720,8 @@ class CLS_DB_IF() :
 					"'" + str(wARR_Data[wKey]['id']) + "', " + \
 					"'" + str(wARR_Data[wKey]['list_name']) + "', " + \
 					"'" + str(wARR_Data[wKey]['list_id']) + "', " + \
-					"True " + \
+					"True, " + \
+					str(wARR_Data[wKey]['follow']) + " " + \
 					") ;"
 			
 			#############################
@@ -729,13 +742,15 @@ class CLS_DB_IF() :
 		return wRes
 
 	#####################################################
-	def SaveOtherListFavo(self):
+###	def SaveOtherListFavo(self):
+	def SaveListFavo(self):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
 		wRes = CLS_OSIF.sGet_Resp()
 		wRes['Class'] = "CLS_DB_IF"
-		wRes['Func']  = "SaveOtherListFavo"
+###		wRes['Func']  = "SaveOtherListFavo"
+		wRes['Func']  = "SaveListFavo"
 		
 		wUpdate = False
 		#############################
@@ -748,7 +763,8 @@ class CLS_DB_IF() :
 				continue
 			
 			wQuery = "update tbl_list_favo set " + \
-					"valid = " + str(gVal.ARR_ListFavo[wKey]['valid']) + " " + \
+					"valid = " + str(gVal.ARR_ListFavo[wKey]['valid']) + ", " + \
+					"follow = " + str(gVal.ARR_ListFavo[wKey]['follow']) + " " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
 					"id = '" + gVal.ARR_ListFavo[wKey]['id'] + "' and " + \
 					"list_id = '" + gVal.ARR_ListFavo[wKey]['list_id'] + "' " + \
@@ -974,47 +990,49 @@ class CLS_DB_IF() :
 #####################################################
 # リストいいね設定
 #####################################################
-	def SetListFavo( self, inListName ):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_DB_IF"
-		wRes['Func']  = "SetListFavo"
-		
-		if gVal.STR_UserInfo['LFavoName']==inListName :
-			##失敗
-			wRes['Reason'] = "同じリスト名"
-			gVal.OBJ_L.Log( "D", wRes )
-			return wRes
-		
-		if inListName=="" or inListName==None :
-			##失敗
-			wRes['Reason'] = "登録不可の文字列: " + inListName
-			gVal.OBJ_L.Log( "D", wRes )
-			return wRes
-		
-		wQuery = "update tbl_user_data set " + \
-				"lfavoname = '" + inListName + "' " + \
-				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
-		
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
-		wResDB = self.OBJ_DB.GetQueryStat()
-		if wResDB['Result']!=True :
-			##失敗
-			wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		gVal.STR_UserInfo['LFavoName'] = inListName
-		
-		wStr = "リストいいね設定を更新しました。" + '\n'
-		CLS_OSIF.sPrn( wStr )
-		
-		wRes['Result'] = True
-		return wRes
+###	def SetListFavo( self, inListName ):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_DB_IF"
+###		wRes['Func']  = "SetListFavo"
+###		
+###		if gVal.STR_UserInfo['LFavoName']==inListName :
+###			##失敗
+###			wRes['Reason'] = "同じリスト名"
+###			gVal.OBJ_L.Log( "D", wRes )
+###			return wRes
+###		
+###		if inListName=="" or inListName==None :
+###			##失敗
+###			wRes['Reason'] = "登録不可の文字列: " + inListName
+###			gVal.OBJ_L.Log( "D", wRes )
+###			return wRes
+###		
+###		wQuery = "update tbl_user_data set " + \
+###				"lfavoname = '" + inListName + "' " + \
+###				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+###		
+###		wResDB = self.OBJ_DB.RunQuery( wQuery )
+###		wResDB = self.OBJ_DB.GetQueryStat()
+###		if wResDB['Result']!=True :
+###			##失敗
+###			wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		gVal.STR_UserInfo['LFavoName'] = inListName
+###		
+###		wStr = "リストいいね設定を更新しました。" + '\n'
+###		CLS_OSIF.sPrn( wStr )
+###		
+###		wRes['Result'] = True
+###		return wRes
 
-	#####################################################
+#####################################################
+# リストいいね 日時更新
+#####################################################
 	def UpdateListFavoDate(self):
 		#############################
 		# 応答形式の取得
@@ -1370,11 +1388,11 @@ class CLS_DB_IF() :
 		for wID in wARR_DBDataID :
 			wID = str(wID)
 			
-			#############################
-			# リストいいねユーザは除外
-			if gVal.OBJ_Tw_IF.CheckFavoUserData( wID )==True :
-				continue
-			
+###			#############################
+###			# リストいいねユーザは除外
+###			if gVal.OBJ_Tw_IF.CheckFavoUserData( wID )==True :
+###				continue
+###			
 			#############################
 			# DBのいいね情報取得
 			wQuery = "select * from tbl_favouser_data where " + \
