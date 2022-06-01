@@ -240,7 +240,8 @@ class CLS_TwitterFavo():
 ###			continue	#次へ
 ###		
 		wARR_Counter = {}
-		wOverTweetNum = 0
+		wTweetNum  = 0
+		wFavoTweet = 0
 		#############################
 		# リストいいね指定の処理
 		wKeylist = list( gVal.ARR_ListFavo.keys() )
@@ -264,7 +265,7 @@ class CLS_TwitterFavo():
 			if len(wTweetRes['Responce'])==0 :
 				### ツイートが取得できないのでスキップ
 				continue
-			wOverTweetNum += len( wTweetRes['Responce'] )
+			wTweetNum += len( wTweetRes['Responce'] )
 			
 			###ウェイト初期化
 			self.OBJ_Parent.Wait_Init( inZanNum=len( wTweetRes['Responce'] ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
@@ -312,7 +313,7 @@ class CLS_TwitterFavo():
 		if inFLG_FirstDisp==False :
 			wStr = "------------------------------" + '\n'
 		wStr = wStr + "リストいいね数  : " + str( len(wARR_TwListFavoData) )+ '\n'
-		wStr = wStr + "外部ツイート数  : " + str( wOverTweetNum )+ '\n'
+		wStr = wStr + "ツイート総数    : " + str( wTweetNum )+ '\n'
 		wStr = wStr + "いいね実施数    : " + str( wFavoTweet )+ '\n'
 		CLS_OSIF.sPrn( wStr )
 		
