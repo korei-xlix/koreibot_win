@@ -227,6 +227,17 @@ class CLS_TwitterKeyword():
 			if wTweet['text'].find("@")==0 :
 				continue
 			
+			#############################
+			# 禁止ユーザは除外
+			if wTweet['user']['screen_name'] in gVal.DEF_STR_NOT_REACTION :
+				continue
+			
+			#############################
+			# フォロー者、フォロワーを除外
+			if gVal.OBJ_Tw_IF.CheckMyFollow( wUserID)==True or \
+			   gVal.OBJ_Tw_IF.CheckFollower( wUserID)==True :
+				continue
+			
 			### 範囲時間内のツイートか
 			wGetLag = CLS_OSIF.sTimeLag( str( wTweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forKeywordObjectTweetSec'] )
 			if wGetLag['Result']!=True :
