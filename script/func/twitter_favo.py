@@ -524,11 +524,13 @@ class CLS_TwitterFavo():
 			wRes['Reason'] = "Twitter API Error(Favo): user=" + inData['screen_name'] + " id=" + str(wFavoID)
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
+		
+		wStr = "--------------------" + '\n' ;
 		if wSubRes['Responce']['Run']==True :
-			wStr = "○自動いいね 実施: " + inData['screen_name'] + '\n' ;
+			wStr = wStr + "○自動いいね 実施: " + inData['screen_name'] + '\n' ;
 			wRes['Responce']['flg_favo_run'] = True		#いいね済み
 		else :
-			wStr = "●自動いいね中止(いいね被り): " + inData['screen_name'] + '\n' ;
+			wStr = wStr + "●自動いいね中止(いいね被り): " + inData['screen_name'] + '\n' ;
 		CLS_OSIF.sPrn( wStr )
 		
 		#############################
@@ -810,11 +812,13 @@ class CLS_TwitterFavo():
 			wRes['Reason'] = "Twitter API Error(Favo): user=" + wSTR_Tweet['user']['screen_name'] + " id=" + str(wFavoID)
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
+		
+		wStr = "--------------------" + '\n' ;
 		if wSubRes['Responce']['Run']==True :
-			wStr = "○外部いいね 実施: " + wSTR_Tweet['user']['screen_name'] + '\n' ;
+			wStr = wStr + "○外部いいね 実施: " + wSTR_Tweet['user']['screen_name'] + '\n' ;
 			wRes['Responce']['flg_favo_run'] = True		#いいね済み
 		else :
-			wStr = "●外部いいね中止(いいね被り): " + wSTR_Tweet['user']['screen_name'] + '\n' ;
+			wStr = wStr + "●外部いいね中止(いいね被り): " + wSTR_Tweet['user']['screen_name'] + '\n' ;
 		CLS_OSIF.sPrn( wStr )
 		
 		#############################

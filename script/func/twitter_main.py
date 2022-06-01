@@ -757,7 +757,7 @@ class CLS_TwitterMain():
 				gVal.OBJ_L.Log( "B", wRes )
 				continue
 			if wReactionRes['Responce']==True :
-				wStr = "〇いいね検出: " + wSubRes['Responce'][wID]['screen_name'] ;
+				wStr = "〇いいね検出: " + wSubRes['Responce'][wID]['screen_name'] + '\n'
 				CLS_OSIF.sPrn( wStr )
 		
 		#############################
