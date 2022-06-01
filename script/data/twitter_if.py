@@ -1135,6 +1135,14 @@ class CLS_Twitter_IF() :
 			return False
 		return True
 
+	#####################################################
+	def GetFollowerID(self):
+		wSTR_Follower = {
+			"MyFollowID" : self.ARR_MyFollowID,
+			"FollowerID" : self.ARR_FollowerID
+		}
+		return wSTR_Follower
+
 
 
 #####################################################

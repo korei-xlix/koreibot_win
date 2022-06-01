@@ -249,7 +249,7 @@ class CLS_Main_Console() :
 		# テスト
 		elif inCommand=="\\test" :
 			
-			wSubRes = cls.OBJ_TwitterMain.TestRun()
+#			wSubRes = cls.OBJ_TwitterMain.TestRun()
 ###			wTime = CLS_OSIF.sGetTimeformat_Twitter( "2021-10-06T12:23:44.000Z" )
 ###			print( str(wTime['TimeDate']) )
 #
@@ -270,6 +270,9 @@ class CLS_Main_Console() :
 ##			print( str(d) )
 ##			removed_value = d.pop('k1')
 ##			print( str(d) )
+			wSubRes = gVal.OBJ_DB_IF.GetRecordNum( "tbl_favouser_data" )
+			print( str(wSubRes) )
+
 		
 	#####################################################
 		#############################
@@ -394,6 +397,51 @@ class CLS_Main_Console() :
 	@classmethod
 	def sView_Sysinfo(cls):
 		
+		wStr = "情報収集中......" + '\n' ;
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# 枠作成
+		wSTR_Result = {
+			"MyFollowNum" : 0,
+			"FollowerNum" : 0,
+			"FavoriteNum" : 0,
+			"FavoUserDBNum" : 0
+		}
+		
+		#############################
+		# フォロー情報取得
+		wFollowRes = gVal.OBJ_Tw_IF.GetFollow()
+		if wFollowRes['Result']!=True :
+			wRes['Reason'] = "GetFollow is failed"
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		wFollowRes = gVal.OBJ_Tw_IF.GetFollowerID()
+		wSTR_Result['MyFollowNum'] = len( wFollowRes['MyFollowID'] )
+		wSTR_Result['FollowerNum'] = len( wFollowRes['FollowerID'] )
+		
+		#############################
+		# ふぁぼ一覧 取得
+		wFavoRes = gVal.OBJ_Tw_IF.GetFavo()
+		if wFavoRes['Result']!=True :
+			wRes['Reason'] = "GetFavoData is failed"
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		wFavoRes = gVal.OBJ_Tw_IF.GetFavoData()
+		wSTR_Result['FavoriteNum'] = len( wFavoRes )
+		
+		#############################
+		# いいねDBレコード数の取得
+		wDBRes = gVal.OBJ_DB_IF.GetRecordNum( "tbl_favouser_data" )
+		if wDBRes['Result']!=True :
+			wRes['Reason'] = "GetRecordNum is failed"
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		wSTR_Result['FavoUserDBNum'] = wDBRes['Responce']
+		
 		#############################
 		# 画面クリア
 		CLS_OSIF.sDispClr()
@@ -413,15 +461,22 @@ class CLS_Main_Console() :
 		#############################
 		# 情報組み立て
 		wStr = wStr + "Client Name = " + gVal.STR_SystemInfo['Client_Name'] + '\n'
-		wStr = wStr + "Project Name= " + gVal.STR_SystemInfo['ProjectName'] + '\n'
+###		wStr = wStr + "Project Name= " + gVal.STR_SystemInfo['ProjectName'] + '\n'
 		wStr = wStr + "github      = " + gVal.STR_SystemInfo['github'] + '\n'
 		wStr = wStr + "Admin       = " + gVal.STR_SystemInfo['Admin'] + '\n'
-		wStr = wStr + "Twitter URL = " + gVal.STR_SystemInfo['TwitterURL'] + '\n'
-		wStr = wStr + "Update      = " + gVal.STR_SystemInfo['Update'] + '\n'
-		wStr = wStr + "Version     = " + gVal.STR_SystemInfo['Version'] + '\n'
+###		wStr = wStr + "Twitter URL = " + gVal.STR_SystemInfo['TwitterURL'] + '\n'
+###		wStr = wStr + "Update      = " + gVal.STR_SystemInfo['Update'] + '\n'
+###		wStr = wStr + "Version     = " + gVal.STR_SystemInfo['Version'] + '\n'
 		
 		wStr = wStr + "Python      = " + str( gVal.STR_SystemInfo['PythonVer'] )  + '\n'
 		wStr = wStr + "HostName    = " + gVal.STR_SystemInfo['HostName'] + '\n'
+		wStr = wStr + '\n'
+		
+		wStr = wStr + "Tw MyFollow Num = " + str(wSTR_Result['MyFollowNum']) + '\n'
+		wStr = wStr + "Tw Follower Num = " + str(wSTR_Result['FollowerNum']) + '\n'
+		wStr = wStr + "Tw Favorite Num = " + str(wSTR_Result['FavoriteNum']) + '\n'
+		wStr = wStr + '\n'
+		wStr = wStr + "FavoUser DB Num = " + str(wSTR_Result['FavoUserDBNum']) + '\n'
 		
 		#############################
 		# コンソールに表示

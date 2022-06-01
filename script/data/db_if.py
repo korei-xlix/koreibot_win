@@ -199,6 +199,65 @@ class CLS_DB_IF() :
 
 
 #####################################################
+# レコード数取得
+#####################################################
+	def GetRecordNum( self, inTableName=None, inTraffic=True ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "GetRecordNum"
+		
+		#############################
+		# 入力チェック
+		if inTableName==None or inTableName=="" :
+			##失敗
+			wRes['Reason'] = "inTableName is invalid: " + str(inTableName)
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# クエリの作成
+		wQuery = "select count(*) from " + inTableName + ";"
+		
+		#############################
+		# 実行
+		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		
+		#############################
+		# 実行結果の取得
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed: RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# レコード数の取り出し
+		try:
+			wNum = int( wResDB['Responce']['Data'][0][0] )
+		except ValueError:
+			##失敗
+			wRes['Reason'] = "Data is failer"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# トラヒックの計測
+		if inTraffic==True :
+			gVal.STR_TrafficInfo['db_req'] += 1
+		
+		#############################
+		# 正常
+		wRes['Responce'] = wNum
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
 # チェックデータベース
 #####################################################
 	def CheckDB(self ):

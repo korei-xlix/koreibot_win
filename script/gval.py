@@ -25,13 +25,13 @@ class gVal() :
 
 	STR_SystemInfo = {
 		"Client_Name"	: "これーぼっと",
-		"ProjectName"	: "",
+###		"ProjectName"	: "",
 		"github"		: "",
 		"Admin"			: "",
-		"TwitterURL"	: "",
-		"Update"		: "",
-		"Version"		: "",
-		
+###		"TwitterURL"	: "",
+###		"Update"		: "",
+###		"Version"		: "",
+###		
 		"PythonVer"		: 0,
 		"HostName"		: "",
 		
