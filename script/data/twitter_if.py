@@ -1810,6 +1810,54 @@ class CLS_Twitter_IF() :
 
 
 #####################################################
+# リストユーザ取得
+#####################################################
+	def GetListMember( self, inListName ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_Twitter_IF"
+		wRes['Func']  = "GetListMember"
+		
+		wRes['Responce'] = {}
+		#############################
+		# リストがTwitterにあるか確認
+		wSubRes = self.CheckList( inListName )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		if wSubRes['Responce']==False :
+			wRes['Reason'] = "Twitter List not found: " + inListName
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# ユーザ一覧を取得する
+		wARR_ListUser = {}
+		
+		wSubRes = self.OBJ_Twitter.GetListMember( inListName )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		for wLine in wSubRes['Responce'] :
+			wID = str( wLine['id'] )
+			wCell = {
+				"id"          : wID,
+				"screen_name" : wLine['screen_name']
+			}
+			wARR_ListUser.update({ wID : wCell })
+		
+		wRes['Responce'] = wARR_ListUser
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
 # リスト通知
 #####################################################
 

@@ -681,6 +681,16 @@ class CLS_TwitterMain():
 # リストいいね設定
 #####################################################
 	def SetListFavo(self):
+		#############################
+		# フォロー情報取得
+		wFavoRes = gVal.OBJ_Tw_IF.GetFollow()
+		if wFavoRes['Result']!=True :
+			wRes['Reason'] = "GetFollow is failed"
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		wStr = "〇フォロー一覧を取得しました" + '\n' ;
+		CLS_OSIF.sPrn( wStr )
+		
 		wRes = self.OBJ_TwitterFavo.SetListFavo()
 		return wRes
 
