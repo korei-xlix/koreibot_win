@@ -654,8 +654,10 @@ class CLS_TwitterFavo():
 		#############################
 		# フォロー者、フォロワーを含めない場合
 		#   フォロー者、フォロワーを除外
-		if inFLG_Follow==True :
-			if gVal.OBJ_Tw_IF.CheckMyFollow( wUserID)==True :
+		wFLG_MyFollow = gVal.OBJ_Tw_IF.CheckMyFollow( wUserID)
+		if inFLG_Follow!=True :
+###			if gVal.OBJ_Tw_IF.CheckMyFollow( wUserID)==True :
+			if wFLG_MyFollow==True :
 #				wStr = "●外部いいね中止(フォロー者): " + wSTR_Tweet['user']['screen_name'] + '\n' ;
 #				CLS_OSIF.sPrn( wStr )
 #				
@@ -780,8 +782,14 @@ class CLS_TwitterFavo():
 		
 		#############################
 		# 前回からのいいね期間内は除外
+		if wFLG_MyFollow==True :
+			wListFavoSec = gVal.DEF_STR_TLNUM['forListFavoMyFollowSec']
+		else:
+			wListFavoSec = gVal.DEF_STR_TLNUM['forListFavoNoFollowSec']
+		
 		if wARR_DBData['lfavo_date']!=None and wARR_DBData['lfavo_date']!="" :
-			wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData['lfavo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['forListFavoNoFollowSec'] )
+###			wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData['lfavo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['forListFavoNoFollowSec'] )
+			wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData['lfavo_date'] ), inThreshold=wListFavoSec )
 			if wGetLag['Result']!=True :
 				wRes['Reason'] = "sTimeLag failed"
 				gVal.OBJ_L.Log( "B", wRes )
