@@ -306,17 +306,18 @@ class CLS_TwitterFavo():
 					return wRes
 				
 				if wResFavo['Responce']['flg_favo_run']==True :
-					### いいね実施をカウント
-					wARR_Counter[wUserID]['cnt'] += 1
+					### いいね実施数をカウント
 					wFavoTweet += 1
-###					break	#仮で1ツイートだけ処理する
+				if wResFavo['Responce']['flg_favo']==True :
+					### いいね済み扱いはカウント
+					wARR_Counter[wUserID]['cnt'] += 1
 		
  		#############################
 		# 取得結果の表示
 		wStr = ""
 		if inFLG_FirstDisp==False :
 			wStr = "------------------------------" + '\n'
-		wStr = wStr + "リストいいね数  : " + str( len(wARR_TwListFavoData) )+ '\n'
+###		wStr = wStr + "リストいいね数  : " + str( len(wARR_TwListFavoData) )+ '\n'
 		wStr = wStr + "ツイート総数    : " + str( wTweetNum )+ '\n'
 		wStr = wStr + "いいね実施数    : " + str( wFavoTweet )+ '\n'
 		CLS_OSIF.sPrn( wStr )
@@ -710,6 +711,7 @@ class CLS_TwitterFavo():
 			wStr = "●外部いいね中止(期間外のツイート): " + wSTR_Tweet['user']['screen_name'] + '\n' ;
 			CLS_OSIF.sPrn( wStr )
 			
+			wRes['Responce']['flg_favo'] = True		#いいね済み扱い
 			wRes['Result'] = True
 			return wRes
 		
@@ -724,6 +726,7 @@ class CLS_TwitterFavo():
 			wStr = "●外部いいね中止(いいね済ユーザ): " + wSTR_Tweet['user']['screen_name'] + '\n' ;
 			CLS_OSIF.sPrn( wStr )
 			
+			wRes['Responce']['flg_favo'] = True		#いいね済み扱い
 			wRes['Result'] = True
 			return wRes
 		
@@ -788,6 +791,7 @@ class CLS_TwitterFavo():
 				wStr = "●外部いいね中止(前回から期間内): " + wSTR_Tweet['user']['screen_name'] + '\n' ;
 				CLS_OSIF.sPrn( wStr )
 				
+				wRes['Responce']['flg_favo'] = True		#いいね済み扱い
 				wRes['Result'] = True
 				return wRes
 		
