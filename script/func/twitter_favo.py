@@ -813,12 +813,11 @@ class CLS_TwitterFavo():
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-		wStr = "--------------------" + '\n' ;
 		if wSubRes['Responce']['Run']==True :
-			wStr = wStr + "○外部いいね 実施: " + wSTR_Tweet['user']['screen_name'] + '\n' ;
+			wStr = "○外部いいね 実施: " + wSTR_Tweet['user']['screen_name'] + '\n' ;
 			wRes['Responce']['flg_favo_run'] = True		#いいね済み
 		else :
-			wStr = wStr + "●外部いいね中止(いいね被り): " + wSTR_Tweet['user']['screen_name'] + '\n' ;
+			wStr = "●外部いいね中止(いいね被り): " + wSTR_Tweet['user']['screen_name'] + '\n' ;
 		CLS_OSIF.sPrn( wStr )
 		
 		#############################
