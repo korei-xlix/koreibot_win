@@ -274,10 +274,13 @@ class CLS_TwitterFavo():
 			###ウェイト初期化
 			self.OBJ_Parent.Wait_Init( inZanNum=len( wTweetRes['Responce'] ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
 			
+			wFLG_ZanCountSkip = False
 			for wTweet in wTweetRes['Responce'] :
 				###ウェイトカウントダウン
-				if self.OBJ_Parent.Wait_Next()==False :
+###				if self.OBJ_Parent.Wait_Next()==False :
+				if self.OBJ_Parent.Wait_Next( inZanCountSkip=wFLG_ZanCountSkip )==False :
 					break	###ウェイト中止
+				wFLG_ZanCountSkip = False
 				
 				wUserID = str(wTweet['user']['id'])
 				#############################
@@ -308,6 +311,10 @@ class CLS_TwitterFavo():
 				if wResFavo['Responce']['flg_favo_run']==True :
 					### いいね実施数をカウント
 					wFavoTweet += 1
+				else:
+					### いいねを実実行しなければループ待機スキップする
+					wFLG_ZanCountSkip = True
+				
 				if wResFavo['Responce']['flg_favo']==True :
 					### いいね済み扱いはカウント
 					wARR_Counter[wUserID]['cnt'] += 1
