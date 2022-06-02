@@ -53,10 +53,10 @@ class CLS_Twitter_IF() :
 		wRes['Class'] = "CLS_Twitter_IF"
 		wRes['Func']  = "GetFollow"
 		
-		wRes['Responce'] = {
-			"Update"	: False,
-			"Data"		: []
-		}
+###		wRes['Responce'] = {
+###			"Update"	: False,
+###			"Data"		: []
+###		}
 		#############################
 		# 取得可能時間か？
 		if self.CHR_GetFollowDate!=None :
@@ -68,7 +68,7 @@ class CLS_Twitter_IF() :
 				return wRes
 			if wGetLag['Beyond']==False :
 				### 規定以内は除外
-				wRes['Responce']['Date'] = self.ARR_FollowData	#退避した古いデータを返す
+###				wRes['Responce']['Date'] = self.ARR_FollowData	#退避した古いデータを返す
 				wRes['Result'] = True
 				return wRes
 		
@@ -151,8 +151,8 @@ class CLS_Twitter_IF() :
 		self.CHR_GetFollowDate = str(gVal.STR_SystemInfo['TimeDate'])
 		self.ARR_FollowData    = wARR_FollowData
 		
-		wRes['Responce']['Update'] = True
-		wRes['Responce']['Date']   = wARR_FollowData
+###		wRes['Responce']['Update'] = True
+###		wRes['Responce']['Date']   = wARR_FollowData
 		wRes['Result'] = True
 		return wRes
 
@@ -1142,6 +1142,10 @@ class CLS_Twitter_IF() :
 			"FollowerID" : self.ARR_FollowerID
 		}
 		return wSTR_Follower
+
+	#####################################################
+	def GetFollowerData(self):
+		return self.ARR_FollowData
 
 
 
