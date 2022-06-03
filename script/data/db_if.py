@@ -1175,6 +1175,10 @@ class CLS_DB_IF() :
 		wQuery = wQuery + "'" + wDefTimeDate + "', "
 		wQuery = wQuery + "'" + wDefTimeDate + "', "
 		wQuery = wQuery + "'(none)', "
+		wQuery = wQuery + "'" + wDefTimeDate + "', "
+		wQuery = wQuery + "False, "
+		wQuery = wQuery + "'" + wDefTimeDate + "', "
+		wQuery = wQuery + "False, "
 		wQuery = wQuery + "'" + wDefTimeDate + "' "
 		
 		wQuery = wQuery + ") ;"
@@ -1404,6 +1408,73 @@ class CLS_DB_IF() :
 						"now_favo_cnt = 0 " + \
 						"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
 						" and id = '" + str(inID) + "' ;"
+		
+		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+		if wResDB['Result']!=True :
+			wRes['Reason'] = "Run Query is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def UpdateFavoDataFollower( self, inID, inFLG_MyFollow=None, inFLG_Follower=None ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "UpdateFavoDataFollower"
+		
+		#############################
+		# 入力チェック
+		if inFLG_MyFollow==None and inFLG_Follower==None :
+			wRes['Reason'] = "set input is both None"
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		if inFLG_Follower==None and (inFLG_MyFollow!=True or inFLG_MyFollow!=False) :
+			wRes['Reason'] = "set inFLG_MyFollow is not bool"
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		if inFLG_MyFollow==None and (inFLG_Follower!=True or inFLG_Follower!=False) :
+			wRes['Reason'] = "set inFLG_Follower is not bool"
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
+		# 更新
+		
+		#############################
+		# フォロー者、フォロワーとも更新
+		if inFLG_MyFollow!=None and inFLG_Follower!=None :
+			wQuery = "update tbl_favouser_data set " + \
+					"myfollow = " + str(inFLG_MyFollow) + ", " + \
+					"myfollow_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "', " + \
+					"follower = " + str(inFLG_MyFollow) + ", " + \
+					"follower_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
+					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
+					" and id = '" + str(wID) + "' ;"
+		
+		#############################
+		# フォロー者のみ更新
+		elif inFLG_MyFollow!=None and inFLG_Follower!=None :
+			wQuery = "update tbl_favouser_data set " + \
+					"myfollow = " + str(inFLG_MyFollow) + ", " + \
+					"myfollow_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
+					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
+					" and id = '" + str(wID) + "' ;"
+		
+		#############################
+		# フォロワーのみ更新
+		else :
+			wQuery = "update tbl_favouser_data set " + \
+					"follower = " + str(inFLG_MyFollow) + ", " + \
+					"follower_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
+					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
+					" and id = '" + str(wID) + "' ;"
 		
 		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
 		if wResDB['Result']!=True :

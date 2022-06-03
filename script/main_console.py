@@ -236,7 +236,8 @@ class CLS_Main_Console() :
 		#############################
 		# システム情報の表示
 		elif inCommand=="\\v" :
-			cls().sView_Sysinfo()
+###			cls().sView_Sysinfo()
+			cls.OBJ_TwitterMain.View_Sysinfo()
 		
 		#############################
 		# トラヒック情報の表示
@@ -394,95 +395,94 @@ class CLS_Main_Console() :
 #####################################################
 # システム情報の表示
 #####################################################
-	@classmethod
-	def sView_Sysinfo(cls):
-		
-		wStr = "情報収集中......" + '\n' ;
-		CLS_OSIF.sPrn( wStr )
-		
-		#############################
-		# 枠作成
-		wSTR_Result = {
-			"MyFollowNum" : 0,
-			"FollowerNum" : 0,
-			"FavoriteNum" : 0,
-			"FavoUserDBNum" : 0
-		}
-		
-		#############################
-		# フォロー情報取得
-		wFollowRes = gVal.OBJ_Tw_IF.GetFollow()
-		if wFollowRes['Result']!=True :
-			wRes['Reason'] = "GetFollow is failed"
-			gVal.OBJ_L.Log( "C", wRes )
-			return wRes
-		
-		wFollowRes = gVal.OBJ_Tw_IF.GetFollowerID()
-		wSTR_Result['MyFollowNum'] = len( wFollowRes['MyFollowID'] )
-		wSTR_Result['FollowerNum'] = len( wFollowRes['FollowerID'] )
-		
-		#############################
-		# ふぁぼ一覧 取得
-		wFavoRes = gVal.OBJ_Tw_IF.GetFavo()
-		if wFavoRes['Result']!=True :
-			wRes['Reason'] = "GetFavoData is failed"
-			gVal.OBJ_L.Log( "C", wRes )
-			return wRes
-		
-		wFavoRes = gVal.OBJ_Tw_IF.GetFavoData()
-		wSTR_Result['FavoriteNum'] = len( wFavoRes )
-		
-		#############################
-		# いいねDBレコード数の取得
-		wDBRes = gVal.OBJ_DB_IF.GetRecordNum( "tbl_favouser_data" )
-		if wDBRes['Result']!=True :
-			wRes['Reason'] = "GetRecordNum is failed"
-			gVal.OBJ_L.Log( "C", wRes )
-			return wRes
-		
-		wSTR_Result['FavoUserDBNum'] = wDBRes['Responce']
-		
-		#############################
-		# 画面クリア
-		CLS_OSIF.sDispClr()
-		
-		#############################
-		# ヘッダ表示
-		wStr = "--------------------" + '\n'
-		wStr = wStr + " システム情報" + '\n'
-		wStr = wStr + "--------------------" + '\n'
-		
-		#############################
-		# 時間の取得
-		wRes = CLS_OSIF.sGetTime()
-		if wRes['Result']==True :
-			wStr = wStr + wRes['TimeDate'] + '\n'
-		
-		#############################
-		# 情報組み立て
-		wStr = wStr + "Client Name = " + gVal.STR_SystemInfo['Client_Name'] + '\n'
-###		wStr = wStr + "Project Name= " + gVal.STR_SystemInfo['ProjectName'] + '\n'
-		wStr = wStr + "github      = " + gVal.STR_SystemInfo['github'] + '\n'
-		wStr = wStr + "Admin       = " + gVal.STR_SystemInfo['Admin'] + '\n'
+###	@classmethod
+###	def sView_Sysinfo(cls):
+###		
+###		wStr = "情報収集中......" + '\n' ;
+###		CLS_OSIF.sPrn( wStr )
+###		
+###		#############################
+###		# 枠作成
+###		wSTR_Result = {
+###			"MyFollowNum" : 0,
+###			"FollowerNum" : 0,
+###			"FavoriteNum" : 0,
+###			"FavoUserDBNum" : 0
+###		}
+###		
+###		#############################
+###		# フォロー情報取得
+###		wFollowRes = gVal.OBJ_Tw_IF.GetFollow()
+###		if wFollowRes['Result']!=True :
+###			wRes['Reason'] = "GetFollow is failed"
+###			gVal.OBJ_L.Log( "C", wRes )
+###			return wRes
+###		
+###		wFollowRes = gVal.OBJ_Tw_IF.GetFollowerID()
+###		wSTR_Result['MyFollowNum'] = len( wFollowRes['MyFollowID'] )
+###		wSTR_Result['FollowerNum'] = len( wFollowRes['FollowerID'] )
+###		
+###		#############################
+###		# ふぁぼ一覧 取得
+###		wFavoRes = gVal.OBJ_Tw_IF.GetFavo()
+###		if wFavoRes['Result']!=True :
+###			wRes['Reason'] = "GetFavoData is failed"
+###			gVal.OBJ_L.Log( "C", wRes )
+###			return wRes
+###		
+###		wFavoRes = gVal.OBJ_Tw_IF.GetFavoData()
+###		wSTR_Result['FavoriteNum'] = len( wFavoRes )
+###		
+###		#############################
+###		# いいねDBレコード数の取得
+###		wDBRes = gVal.OBJ_DB_IF.GetRecordNum( "tbl_favouser_data" )
+###		if wDBRes['Result']!=True :
+###			wRes['Reason'] = "GetRecordNum is failed"
+###			gVal.OBJ_L.Log( "C", wRes )
+###			return wRes
+###		
+###		wSTR_Result['FavoUserDBNum'] = wDBRes['Responce']
+###		
+###		#############################
+###		# 画面クリア
+###		CLS_OSIF.sDispClr()
+###		
+###		#############################
+###		# ヘッダ表示
+###		wStr = "--------------------" + '\n'
+###		wStr = wStr + " システム情報" + '\n'
+###		wStr = wStr + "--------------------" + '\n'
+###		
+###		#############################
+###		# 時間の取得
+###		wRes = CLS_OSIF.sGetTime()
+###		if wRes['Result']==True :
+###			wStr = wStr + wRes['TimeDate'] + '\n'
+###		
+###		#############################
+###		# 情報組み立て
+###		wStr = wStr + "Client Name = " + gVal.STR_SystemInfo['Client_Name'] + '\n'
+######		wStr = wStr + "Project Name= " + gVal.STR_SystemInfo['ProjectName'] + '\n'
+###		wStr = wStr + "github      = " + gVal.STR_SystemInfo['github'] + '\n'
+###		wStr = wStr + "Admin       = " + gVal.STR_SystemInfo['Admin'] + '\n'
 ###		wStr = wStr + "Twitter URL = " + gVal.STR_SystemInfo['TwitterURL'] + '\n'
 ###		wStr = wStr + "Update      = " + gVal.STR_SystemInfo['Update'] + '\n'
 ###		wStr = wStr + "Version     = " + gVal.STR_SystemInfo['Version'] + '\n'
-		
-		wStr = wStr + "Python      = " + str( gVal.STR_SystemInfo['PythonVer'] )  + '\n'
-		wStr = wStr + "HostName    = " + gVal.STR_SystemInfo['HostName'] + '\n'
-		wStr = wStr + '\n'
-		
-		wStr = wStr + "Tw MyFollow Num = " + str(wSTR_Result['MyFollowNum']) + '\n'
-		wStr = wStr + "Tw Follower Num = " + str(wSTR_Result['FollowerNum']) + '\n'
-		wStr = wStr + "Tw Favorite Num = " + str(wSTR_Result['FavoriteNum']) + '\n'
-		wStr = wStr + '\n'
-		wStr = wStr + "FavoUser DB Num = " + str(wSTR_Result['FavoUserDBNum']) + '\n'
-		
-		#############################
-		# コンソールに表示
-		CLS_OSIF.sPrn( wStr )
-		return
-
-
-
-
+###		
+###		wStr = wStr + "Python      = " + str( gVal.STR_SystemInfo['PythonVer'] )  + '\n'
+###		wStr = wStr + "HostName    = " + gVal.STR_SystemInfo['HostName'] + '\n'
+###		wStr = wStr + '\n'
+###		
+###		wStr = wStr + "Tw MyFollow Num = " + str(wSTR_Result['MyFollowNum']) + '\n'
+###		wStr = wStr + "Tw Follower Num = " + str(wSTR_Result['FollowerNum']) + '\n'
+###		wStr = wStr + "Tw Favorite Num = " + str(wSTR_Result['FavoriteNum']) + '\n'
+###		wStr = wStr + '\n'
+###		wStr = wStr + "FavoUser DB Num = " + str(wSTR_Result['FavoUserDBNum']) + '\n'
+###		
+###		#############################
+###		# コンソールに表示
+###		CLS_OSIF.sPrn( wStr )
+###		return
+###
+###
+###

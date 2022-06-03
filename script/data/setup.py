@@ -426,7 +426,11 @@ class CLS_Setup():
 					"favo_date     TIMESTAMP," + \
 					"list_date     TIMESTAMP," + \
 					"lfavo_id      TEXT  NOT NULL," + \
-					"lfavo_date    TIMESTAMP " + \
+					"lfavo_date    TIMESTAMP, " + \
+					"myfollow      BOOL  DEFAULT false," + \
+					"myfollow_date TIMESTAMP, " + \
+					"follower      BOOL  DEFAULT false," + \
+					"follower_date TIMESTAMP " + \
 					" ) ;"
 		
 ##					"twitterid   記録したユーザ(Twitter ID)
