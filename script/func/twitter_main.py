@@ -137,6 +137,14 @@ class CLS_TwitterMain():
 			return wRes
 		
 		#############################
+		# 禁止ユーザ読み込み
+		wResSub = gVal.OBJ_DB_IF.GetExeUser()
+		if wResSub['Result']!=True :
+			wRes['Reason'] = "GetExeUser failed"
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
 		# リストいいね指定読み込み
 ###		wResSub = gVal.OBJ_DB_IF.GetOtherListFavo()
 		wResSub = gVal.OBJ_DB_IF.GetListFavo()

@@ -168,13 +168,13 @@ class gVal() :
 
 #############################
 # リアクション禁止
-	DEF_STR_NOT_REACTION = [
-		"korei_xlix",
-		"korei_dev",
-		"korei_comm",
-		"korei_send",
-		"galaxy_fleet"
-	]
+###	DEF_STR_NOT_REACTION = [
+###		"korei_xlix",
+###		"korei_dev",
+###		"korei_comm",
+###		"korei_send",
+###		"galaxy_fleet"
+###	]
 
 #############################
 # ファイルパス
@@ -191,6 +191,8 @@ class gVal() :
 		"Melt_ExcWordArc_path"	: "/DEF_ExcWordArc",
 									# 除外データ 文字列ファイルパス(フォルダ付き)
 		"Melt_ExcWord"			: "/DEF_ExcWordArc/DEF_ExcWord.txt",
+									# 禁止ユーザファイルパス(フォルダ付き)
+		"Melt_ExcUser"			: "/DEF_ExcWordArc/DEF_ExcUser.txt",
 									# リストいいね指定ファイル
 		"Melt_ListFavo"			: "/DEF_ExcWordArc/DEF_ListFavo.txt",
 		
@@ -228,6 +230,9 @@ class gVal() :
 	ARR_ExeWord = {}										# 除外文字データ
 ###	ARR_ExeWordKey = []
 	ARR_ListFavo = {}										# リストいいね指定
+	ARR_NotReactionUser = {}								# リアクション禁止ユーザ
+
+	ARR_SearchData = {}										# 検索データ
 
 
 
