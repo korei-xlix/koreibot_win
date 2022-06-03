@@ -212,6 +212,11 @@ class CLS_Main_Console() :
 ###		elif inCommand=="\\fv" :
 ###			cls.OBJ_TwitterMain.ViewListFavoUser()
 ###		
+		#############################
+		# フォロワー状態の更新 確認
+		elif inCommand=="\\f" :
+			cls.OBJ_TwitterMain.FollowerConfirm()
+		
 	#####################################################
 		#############################
 		# ログの表示(異常ログ)

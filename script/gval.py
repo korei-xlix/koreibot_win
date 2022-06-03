@@ -152,6 +152,7 @@ class gVal() :
 		
 														# ユーザ管理
 		"forGetUserSec"		: 600,						#   ユーザ取得間隔  10分  60x10
+		"forFollowerConfirmSec"	: 86400,				#   フォロワー状態の更新 期間   1日  (60x60x24)x1
 		
 														# キーワードいいね
 		"KeywordTweetLen"		: 40,					#   キーワードいいねツイート取得数

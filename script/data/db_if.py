@@ -1435,11 +1435,11 @@ class CLS_DB_IF() :
 			wRes['Reason'] = "set input is both None"
 			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
-		if inFLG_Follower==None and (inFLG_MyFollow!=True or inFLG_MyFollow!=False) :
+		if inFLG_Follower==None and (inFLG_MyFollow!=True and inFLG_MyFollow!=False) :
 			wRes['Reason'] = "set inFLG_MyFollow is not bool"
 			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
-		if inFLG_MyFollow==None and (inFLG_Follower!=True or inFLG_Follower!=False) :
+		if inFLG_MyFollow==None and (inFLG_Follower!=True and inFLG_Follower!=False) :
 			wRes['Reason'] = "set inFLG_Follower is not bool"
 			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
@@ -1456,25 +1456,25 @@ class CLS_DB_IF() :
 					"follower = " + str(inFLG_MyFollow) + ", " + \
 					"follower_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
-					" and id = '" + str(wID) + "' ;"
+					" and id = '" + str(inID) + "' ;"
 		
 		#############################
 		# フォロー者のみ更新
-		elif inFLG_MyFollow!=None and inFLG_Follower!=None :
+		elif inFLG_MyFollow!=None :
 			wQuery = "update tbl_favouser_data set " + \
 					"myfollow = " + str(inFLG_MyFollow) + ", " + \
 					"myfollow_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
-					" and id = '" + str(wID) + "' ;"
+					" and id = '" + str(inID) + "' ;"
 		
 		#############################
 		# フォロワーのみ更新
 		else :
 			wQuery = "update tbl_favouser_data set " + \
-					"follower = " + str(inFLG_MyFollow) + ", " + \
+					"follower = " + str(inFLG_Follower) + ", " + \
 					"follower_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
-					" and id = '" + str(wID) + "' ;"
+					" and id = '" + str(inID) + "' ;"
 		
 		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
 		if wResDB['Result']!=True :

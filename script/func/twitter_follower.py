@@ -428,3 +428,104 @@ class CLS_TwitterFollower():
 
 
 
+#####################################################
+# フォロワー状態の更新 確認
+#####################################################
+	def FollowerConfirm(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterFollower"
+		wRes['Func']  = "FollowerConfirm"
+		
+		#############################
+		# DBのいいね情報取得
+		wQuery = "select id, screen_name, myfollow, myfollow_date, follower, follower_date " + \
+					"from tbl_favouser_data where " + \
+					"twitterid = '" + gVal.STR_UserInfo['Account'] + "' " + \
+					";"
+		
+		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+		if wResDB['Result']!=True :
+			wRes['Reason'] = "Run Query is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 辞書型に整形
+		wARR_DBData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
+		
+		#############################
+		# 添え字をIDに差し替える
+		wARR_DBData = gVal.OBJ_DB_IF.ChgDataID( wARR_DBData )
+		
+		#############################
+		# データなし
+		if len(wARR_DBData)==0 :
+			wStr = "いいね情報がないため処理が継続できません。" + '\n'
+			CLS_OSIF.sPrn( wStr )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# 画面クリア
+		CLS_OSIF.sDispClr()
+		
+		#############################
+		# ヘッダ表示
+		wStr = "--------------------" + '\n'
+		wStr = wStr + " フォロワー状態の更新 確認" + '\n'
+		wStr = wStr + "--------------------" + '\n'
+		CLS_OSIF.sPrn( wStr )
+		
+		wKeylist = list( wARR_DBData.keys() )
+		for wID in wKeylist :
+			wID = str(wID)
+			
+			wUpdate = False
+			#############################
+			# 規定以内のフォロー者か
+			wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData[wID]['myfollow_date'] ), inThreshold=gVal.DEF_STR_TLNUM['forFollowerConfirmSec'] )
+			if wGetLag['Result']!=True :
+				wRes['Reason'] = "sTimeLag failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if wGetLag['Beyond']==False :
+				### 規定内=更新あり
+				if wARR_DBData[wID]['myfollow']==True :
+					wStr = "○フォロー者　　: " + wARR_DBData[wID]['screen_name']
+				else:
+					if str( wARR_DBData[wID]['myfollow_date'] )!=gVal.OBJ_DB_IF.DEF_TIMEDATE :
+						wStr = "●リムーブ者　　: " + wARR_DBData[wID]['screen_name']
+				CLS_OSIF.sPrn( wStr )
+				wUpdate = True
+			
+			#############################
+			# 規定以内のフォロワーか
+			wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData[wID]['follower_date'] ), inThreshold=gVal.DEF_STR_TLNUM['forFollowerConfirmSec'] )
+			if wGetLag['Result']!=True :
+				wRes['Reason'] = "sTimeLag failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if wGetLag['Beyond']==False :
+				### 規定内=更新あり
+				if wARR_DBData[wID]['follower']==True :
+					wStr = "○フォロワー獲得: " + wARR_DBData[wID]['screen_name']
+				else:
+					if str( wARR_DBData[wID]['follower_date'] )!=gVal.OBJ_DB_IF.DEF_TIMEDATE :
+						wStr = "●リムーブされた: " + wARR_DBData[wID]['screen_name']
+				CLS_OSIF.sPrn( wStr )
+				wUpdate = True
+			
+			### 更新があれば1行開ける
+			if wUpdate==True :
+				CLS_OSIF.sPrn( "" )
+		
+		#############################
+		# 正常終了
+		wRes['Result'] = True
+		return wRes
+
+
+
