@@ -138,7 +138,7 @@ class CLS_BotCtrl():
 		wLock = cls.sLock()
 		if wLock['Result']!=True :
 			wRes['Reason'] = "排他取得失敗: " + wLock['Reason']
-			gVal.OBJ_L.Log( "B", wRes )
+			gVal.OBJ_L.Log( "A", wRes )
 			gVal.OBJ_DB_IF.Close()
 			return
 		elif wLock['Responce']!=None :
@@ -430,7 +430,7 @@ class CLS_BotCtrl():
 		if wLocked!=True :
 			### 排他がかかってない
 			wRes['Reason'] = "Do not lock"
-			gVal.OBJ_L.Log( "C", wRes )
+			gVal.OBJ_L.Log( "D", wRes )
 			return wRes
 		
 		#############################
@@ -494,7 +494,7 @@ class CLS_BotCtrl():
 		# ユーザ登録の確認
 		if len(wResDB['Responce']['Data'])==0 :
 			wRes['Reason'] = "Not Regist User"
-			gVal.OBJ_L.Log( "D", wRes )
+			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
 		#############################

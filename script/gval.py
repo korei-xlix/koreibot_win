@@ -196,6 +196,8 @@ class gVal() :
 									# リストいいね指定ファイル
 		"Melt_ListFavo"			: "/DEF_ExcWordArc/DEF_ListFavo.txt",
 		
+									# ログの退避フォルダ
+		"LogBackup_path"		: "../koreibot_win_log",
 		"(dummy)"				: 0
 	}
 
@@ -205,6 +207,7 @@ class gVal() :
 		"MainConsole"			: DEF_DISPPATH + "main_console.disp",
 		"UserAdminConsole"		: DEF_DISPPATH + "useradmin_console.disp",
 		"KeywordConsole"		: DEF_DISPPATH + "keyword_console.disp",
+		"ListFavoConsole"		: DEF_DISPPATH + "listfavo_console.disp",
 		"(dummy)"				: 0
 	}
 

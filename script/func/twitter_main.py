@@ -116,7 +116,7 @@ class CLS_TwitterMain():
 		wUserinfoRes = gVal.OBJ_Tw_IF.GetMyUserinfo()
 		if wUserinfoRes['Result']!=True :
 			wRes['Reason'] = "Twitter Error"
-			gVal.OBJ_L.Log( "B", wRes )
+			gVal.OBJ_L.Log( "A", wRes )
 			return wRes
 		gVal.STR_UserInfo['id'] = wUserinfoRes['Responce']['id']
 		
@@ -133,7 +133,7 @@ class CLS_TwitterMain():
 		wResSub = gVal.OBJ_DB_IF.GetExeWord()
 		if wResSub['Result']!=True :
 			wRes['Reason'] = "GetExcWord failed"
-			gVal.OBJ_L.Log( "C", wRes )
+			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
 		#############################
@@ -141,7 +141,7 @@ class CLS_TwitterMain():
 		wResSub = gVal.OBJ_DB_IF.GetExeUser()
 		if wResSub['Result']!=True :
 			wRes['Reason'] = "GetExeUser failed"
-			gVal.OBJ_L.Log( "C", wRes )
+			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
 		#############################
@@ -150,7 +150,7 @@ class CLS_TwitterMain():
 		wResSub = gVal.OBJ_DB_IF.GetListFavo()
 		if wResSub['Result']!=True :
 			wRes['Reason'] = "GetListFavo failed"
-			gVal.OBJ_L.Log( "C", wRes )
+			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
 		#############################
@@ -230,7 +230,7 @@ class CLS_TwitterMain():
 		wTwitterRes = gVal.OBJ_Tw_IF.ReConnect()
 		if wTwitterRes['Result']!=True :
 			wRes['Reason'] = "Twitterの再接続失敗"
-			gVal.OBJ_L.Log( "B", wRes )
+			gVal.OBJ_L.Log( "A", wRes )
 			return wRes
 		
 		#############################
@@ -331,7 +331,7 @@ class CLS_TwitterMain():
 		wFavoRes = gVal.OBJ_Tw_IF.GetFollow()
 		if wFavoRes['Result']!=True :
 			wRes['Reason'] = "GetFollow is failed"
-			gVal.OBJ_L.Log( "C", wRes )
+			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		wStr = "〇フォロー一覧を取得しました" + '\n'
 		CLS_OSIF.sPrn( wStr )
@@ -384,32 +384,106 @@ class CLS_TwitterMain():
 			#############################
 			# フォロー者検出
 			if wARR_DBData['myfollow']!=wFollowerData[wID]['myfollow'] :
-#				if wFollowerData[wID]['myfollow']==True :
-#					if str(wARR_DBData['myfollow_date'])==gVal.OBJ_DB_IF.DEF_TIMEDATE :
-#						wStr = "〇新規フォロー者"
-#					else:
-#						wStr = "△再フォロー者"
-#				else:
-#					wStr = "●リムーブ者"
-#				
+				if wFollowerData[wID]['myfollow']==True :
+					if str(wARR_DBData['myfollow_date'])==gVal.OBJ_DB_IF.DEF_TIMEDATE :
+						wStr = "〇新規フォロー者"
+					else:
+						wStr = "△再フォロー者"
+				else:
+					wStr = "●リムーブ者"
+				
 				wMyFollow = wFollowerData[wID]['myfollow']
 #				wStr = wStr + ": " + wFollowerData[wID]['screen_name']
 #				CLS_OSIF.sPrn( wStr + '\n' )
+				wRes['Reason'] = wStr + ": " + wFollowerData[wID]['screen_name']
+				gVal.OBJ_L.Log( "U", wRes )
 			
 			#############################
 			# フォロワー検出
 			if wARR_DBData['follower']!=wFollowerData[wID]['follower'] :
-#				if wFollowerData[wID]['follower']==True :
-#					if str(wARR_DBData['follower_date'])==gVal.OBJ_DB_IF.DEF_TIMEDATE :
-#						wStr = "〇新規フォロワー"
-#					else:
-#						wStr = "△再フォローされた"
-#				else:
-#					wStr = "●リムーブされた"
-#				
+				if wFollowerData[wID]['follower']==True :
+					if str(wARR_DBData['follower_date'])==gVal.OBJ_DB_IF.DEF_TIMEDATE :
+						wStr = "〇新規フォロワー"
+					else:
+						wStr = "△再フォローされた"
+				else:
+					wStr = "●リムーブされた"
+				
 				wFollower = wFollowerData[wID]['follower']
 #				wStr = wStr + ": " + wFollowerData[wID]['screen_name']
 #				CLS_OSIF.sPrn( wStr + '\n' )
+				wRes['Reason'] = wStr + ": " + wFollowerData[wID]['screen_name']
+				gVal.OBJ_L.Log( "U", wRes )
+			
+			#############################
+			# 変更ありの場合
+			#   DBへ反映
+			if wMyFollow!=None or wFollower!=None :
+				wSubRes = gVal.OBJ_DB_IF.UpdateFavoDataFollower( wID, wMyFollow, wFollower )
+				if wSubRes['Result']!=True :
+					###失敗
+					wRes['Reason'] = "UpdateFavoDataFollower is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				
+				wRes['Responce'] = True
+		
+		#############################
+		# リムーブ もしくは ブロックでTwitterから完全リムーブされたか
+		#   DB上フォロー者 もしくは フォロワーを抽出
+		wQuery = "select * from tbl_favouser_data where " + \
+					"twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
+					"myfollow = True or " + \
+					"follower = True " + \
+					";"
+		
+		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+		if wResDB['Result']!=True :
+			wRes['Reason'] = "Run Query is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 辞書型に整形
+		wARR_DBData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
+		
+		#############################
+		# 添え字をIDに差し替える
+		wARR_RateFavoDate = gVal.OBJ_DB_IF.ChgDataID( wARR_DBData )
+		
+		wKeylist = list( wARR_RateFavoDate.keys() )
+		for wID in wKeylist :
+			wUserID = str(wID)
+			
+			#############################
+			# Twitterでフォロー者 もしくは フォロワーの場合
+			# スキップ
+			if wID in wFollowerData :
+				continue
+			
+			# ※Twitterでリムーブした リムーブされた ブロックされた
+			#   でTwitterからアンフォロー（=情報がなくなった）
+			#   かつ DBではフォロー者 フォロワーの場合
+			
+			wMyFollow = None
+			wFollower = None
+			#############################
+			# リムーブした
+			if wARR_RateFavoDate[wID]['myfollow']==True :
+				wStr = "●リムーブ者"
+				
+				wMyFollow = False
+				wRes['Reason'] = wStr + ": " + wARR_RateFavoDate[wID]['screen_name']
+				gVal.OBJ_L.Log( "U", wRes )
+			
+			#############################
+			# リムーブされた
+			if wARR_RateFavoDate[wID]['follower']==True :
+				wStr = "●リムーブされた"
+				
+				wFollower = False
+				wRes['Reason'] = wStr + ": " + wARR_RateFavoDate[wID]['screen_name']
+				gVal.OBJ_L.Log( "U", wRes )
 			
 			#############################
 			# 変更ありの場合
@@ -429,7 +503,7 @@ class CLS_TwitterMain():
 		wFavoRes = gVal.OBJ_Tw_IF.GetFavo()
 		if wFavoRes['Result']!=True :
 			wRes['Reason'] = "GetFavoData is failed"
-			gVal.OBJ_L.Log( "C", wRes )
+			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		wStr = "〇いいね一覧を取得しました" + '\n'
 		CLS_OSIF.sPrn( wStr )
@@ -476,7 +550,7 @@ class CLS_TwitterMain():
 		wFavoRes = self.GetTwitterInfo()
 		if wFavoRes['Result']!=True :
 			wRes['Reason'] = "GetTwitterInfo is failed"
-			gVal.OBJ_L.Log( "C", wRes )
+			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
 		#############################
@@ -555,17 +629,17 @@ class CLS_TwitterMain():
 #####################################################
 # フォロワー状態の更新 確認
 #####################################################
-	def FollowerConfirm(self):
-		#############################
-		# Twitter情報取得
-		wFavoRes = self.GetTwitterInfo()
-		if wFavoRes['Result']!=True :
-			return wFavoRes
-		
-		wRes = self.OBJ_TwitterFollower.FollowerConfirm()
-		return wFavoRes
-
-
+###	def FollowerConfirm(self):
+###		#############################
+###		# Twitter情報取得
+###		wFavoRes = self.GetTwitterInfo()
+###		if wFavoRes['Result']!=True :
+###			return wFavoRes
+###		
+###		wRes = self.OBJ_TwitterFollower.FollowerConfirm()
+###		return wFavoRes
+###
+###
 
 #####################################################
 # いいね解除
@@ -579,29 +653,29 @@ class CLS_TwitterMain():
 #####################################################
 # トレンドツイート
 #####################################################
-	def TrendTweet(self):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_TwitterMain"
-		wRes['Func']  = "TrendTweet"
-		
-		#############################
-		# リスト通知 リストとユーザの更新
-		wSubRes = self.UpdateListIndUser()
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "UpdateListIndUser error"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		wRes = self.OBJ_TwitterKeyword.TrendTweet()
-		
-		#############################
-		# 完了
-		wRes['Result'] = True
-		return wRes
-
+###	def TrendTweet(self):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_TwitterMain"
+###		wRes['Func']  = "TrendTweet"
+###		
+###		#############################
+###		# リスト通知 リストとユーザの更新
+###		wSubRes = self.UpdateListIndUser()
+###		if wSubRes['Result']!=True :
+###			wRes['Reason'] = "UpdateListIndUser error"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		wRes = self.OBJ_TwitterKeyword.TrendTweet()
+###		
+###		#############################
+###		# 完了
+###		wRes['Result'] = True
+###		return wRes
+###
 
 #####################################################
 # キーワードいいね
@@ -705,7 +779,7 @@ class CLS_TwitterMain():
 		# DBに登録する
 		if wListName==None :
 			wRes['Reason'] = "wListName: None"
-			gVal.OBJ_L.Log( "B", wRes )
+			gVal.OBJ_L.Log( "D", wRes )
 			return wRes
 		
 ###		#############################
@@ -1055,7 +1129,8 @@ class CLS_TwitterMain():
 		
 		#############################
 		# リアクション禁止ユーザか
-		if wARR_DBData['screen_name'] in gVal.DEF_STR_NOT_REACTION :
+###		if wARR_DBData['screen_name'] in gVal.DEF_STR_NOT_REACTION :
+		if wARR_DBData['screen_name'] in gVal.ARR_NotReactionUser :
 			if wFLG_Action==True :
 				### 除外してない場合
 				
@@ -1348,8 +1423,10 @@ class CLS_TwitterMain():
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-		wStr = "○リスト通知の発行: " + inData['screen_name'] + '\n' ;
-		CLS_OSIF.sPrn( wStr )
+###		wStr = "○リスト通知の発行: " + inData['screen_name'] + '\n' ;
+###		CLS_OSIF.sPrn( wStr )
+		wRes['Reason'] = "○リスト通知の発行: " + inData['screen_name']
+		gVal.OBJ_L.Log( "T", wRes )
 		
 		wRes['Result'] = True
 		return wRes
@@ -1420,8 +1497,10 @@ class CLS_TwitterMain():
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			
-			wStr = "●リスト通知を全クリアしました" + '\n' ;
-			CLS_OSIF.sPrn( wStr )
+###			wStr = "●リスト通知を全クリアしました" + '\n' ;
+###			CLS_OSIF.sPrn( wStr )
+			wRes['Reason'] = "●リスト通知クリア"
+			gVal.OBJ_L.Log( "T", wRes )
 		
 		wRes['Result'] = True
 		return wRes
@@ -1555,9 +1634,12 @@ class CLS_TwitterMain():
 		# 除外文字があるかチェック
 		if inWord in gVal.ARR_ExeWord :
 			if gVal.ARR_ExeWord[inWord]['report']==True :
-				wStr = "●報告対象の文字除外: id=" + inData['screen_name'] + '\n'
-				wStr = wStr + inWord + '\n'
+###				wStr = "●報告対象の文字除外: id=" + inData['screen_name'] + '\n'
+###				wStr = wStr + inWord + '\n'
 				CLS_OSIF.sPrn( wStr )
+				### 報告対象の表示と、ログに記録(テストログ)
+				wRes['Reason'] = "●報告対象の文字除外: id=" + inData['screen_name'] + " word=" + inWord
+				gVal.OBJ_L.Log( "X", wRes )
 			
 			### 除外
 			wRes['Result'] = True
@@ -1617,7 +1699,7 @@ class CLS_TwitterMain():
 		wDBRes = gVal.OBJ_DB_IF.GetRecordNum( "tbl_favouser_data" )
 		if wDBRes['Result']!=True :
 			wRes['Reason'] = "GetRecordNum is failed"
-			gVal.OBJ_L.Log( "C", wRes )
+			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
 		wSTR_Result['FavoUserDBNum'] = wDBRes['Responce']

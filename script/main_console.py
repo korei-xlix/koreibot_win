@@ -183,7 +183,8 @@ class CLS_Main_Console() :
 		
 		#############################
 		# リスト通知設定
-		elif inCommand=="\\lc" :
+###		elif inCommand=="\\lc" :
+		elif inCommand=="\\ic" :
 			cls.OBJ_TwitterMain.SetListInd()
 		
 		#############################
@@ -204,7 +205,8 @@ class CLS_Main_Console() :
 		
 		#############################
 		# リスト通知ユーザ表示
-		elif inCommand=="\\lv" :
+###		elif inCommand=="\\lv" :
+		elif inCommand=="\\iv" :
 			cls.OBJ_TwitterMain.ViewListIndUser()
 		
 ###		#############################
@@ -212,16 +214,21 @@ class CLS_Main_Console() :
 ###		elif inCommand=="\\fv" :
 ###			cls.OBJ_TwitterMain.ViewListFavoUser()
 ###		
-		#############################
-		# フォロワー状態の更新 確認
-		elif inCommand=="\\f" :
-			cls.OBJ_TwitterMain.FollowerConfirm()
-		
+###		#############################
+###		# フォロワー状態の更新 確認
+###		elif inCommand=="\\f" :
+###			cls.OBJ_TwitterMain.FollowerConfirm()
+###		
 	#####################################################
 		#############################
 		# ログの表示(異常ログ)
 		elif inCommand=="\\l" :
 			gVal.OBJ_L.View( inViewMode="E" )
+		
+		#############################
+		# ログの表示(ユーザ記録ログ)
+		elif inCommand=="\\lu" :
+			gVal.OBJ_L.View( inViewMode="U" )
 		
 		#############################
 		# ログの表示(運用ログ)
@@ -237,6 +244,11 @@ class CLS_Main_Console() :
 		# ログクリア
 		elif inCommand=="\\lc" :
 			gVal.OBJ_L.Clear()
+		
+		#############################
+		# 全ログクリア
+		elif inCommand=="\\lca" :
+			gVal.OBJ_L.Clear( inAllClear=True )
 		
 		#############################
 		# システム情報の表示
@@ -370,7 +382,7 @@ class CLS_Main_Console() :
 		w15Res = cls.OBJ_TwitterMain.Circle15min()
 		if w15Res['Result']!=True :
 			wRes['Reason'] = "Circle15min is failed"
-			gVal.OBJ_L.Log( "C", wRes )
+			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
 		#############################

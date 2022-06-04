@@ -399,8 +399,13 @@ class CLS_DB_IF() :
 				CLS_OSIF.sErr( wRes )
 				return False
 			
-			wStr = "データベースにユーザ " + inUserData['Account'] + " を登録しました。" + '\n'
-			CLS_OSIF.sPrn( wStr )
+###			wStr = "データベースにユーザ " + inUserData['Account'] + " を登録しました。" + '\n'
+###			CLS_OSIF.sPrn( wStr )
+			#############################
+			# ログ記録
+			wRes['Reason'] = "Insert UserData : " + inUserData['Account']
+			gVal.OBJ_L.Log( "T", wRes )
+		
 		#############################
 		# 登録されていればキーを更新する
 		elif len(wResDB['Responce']['Data'])==1 :
@@ -1394,6 +1399,12 @@ class CLS_DB_IF() :
 		gVal.STR_TrafficInfo['db_ins'] += 1
 		
 		self.ARR_FollowerDataID.append( wID )
+		
+		#############################
+		# ログ記録
+		wRes['Reason'] = "Insert FavoData : " + wScreenName
+		gVal.OBJ_L.Log( "T", wRes )
+		
 		#############################
 		# 正常
 		wRes['Result'] = True
@@ -1434,7 +1445,7 @@ class CLS_DB_IF() :
 		if len(wResDB['Responce']['Data'])!=1 :
 			## 1個ではない
 			wRes['Reason'] = "Get data is failed : id=" + str(inID)
-			gVal.OBJ_L.Log( "C", wRes )
+			gVal.OBJ_L.Log( "D", wRes )
 			return wRes
 		
 		#############################
@@ -1632,15 +1643,15 @@ class CLS_DB_IF() :
 		# 入力チェック
 		if inFLG_MyFollow==None and inFLG_Follower==None :
 			wRes['Reason'] = "set input is both None"
-			gVal.OBJ_L.Log( "C", wRes )
+			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		if inFLG_Follower==None and (inFLG_MyFollow!=True and inFLG_MyFollow!=False) :
 			wRes['Reason'] = "set inFLG_MyFollow is not bool"
-			gVal.OBJ_L.Log( "C", wRes )
+			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		if inFLG_MyFollow==None and (inFLG_Follower!=True and inFLG_Follower!=False) :
 			wRes['Reason'] = "set inFLG_Follower is not bool"
-			gVal.OBJ_L.Log( "C", wRes )
+			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
 		#############################
@@ -1747,7 +1758,7 @@ class CLS_DB_IF() :
 			if len(wResDB['Responce']['Data'])!=1 :
 				## 1個ではない
 				wRes['Reason'] = "Get data is failed : id=" + str(inID)
-				gVal.OBJ_L.Log( "C", wRes )
+				gVal.OBJ_L.Log( "D", wRes )
 				return wRes
 			
 			#############################
@@ -1802,7 +1813,7 @@ class CLS_DB_IF() :
 ###			wRes['Reason'] = "Delete FavoData : " + str( wResDB['Responce']['Data']['screen_name'] )
 ###			wRes['Reason'] = "Delete FavoData : " + wScreenName
 			wRes['Reason'] = "Delete FavoData : " + str( wARR_RateFavoData['screen_name'] )
-			gVal.OBJ_L.Log( "D", wRes )
+			gVal.OBJ_L.Log( "T", wRes )
 		
 		#############################
 		# 正常

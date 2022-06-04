@@ -224,7 +224,7 @@ class CLS_Twitter_IF() :
 		# 重複があるか
 		if wID in self.ARR_Favo :
 			wRes['Reason'] = "ID is exist : id=" + str( wID )
-			gVal.OBJ_L.Log( "C", wRes )
+			gVal.OBJ_L.Log( "D", wRes )
 			return wRes
 		
 		#############################
@@ -1974,7 +1974,7 @@ class CLS_Twitter_IF() :
 			return wRes
 		if wSubRes['Responce']==False :
 			wRes['Reason'] = "Twitter List not found: " + gVal.STR_UserInfo['ListName']
-			gVal.OBJ_L.Log( "B", wRes )
+			gVal.OBJ_L.Log( "D", wRes )
 			return wRes
 		
 		#############################

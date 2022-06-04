@@ -46,6 +46,9 @@ class CLS_MyDisp():
 		###キーワードいいね画面
 		elif inDisp=="KeywordConsole" :
 			cls.__dispInp_Keyword( inLine, wRes, inData )
+		###リストいいね設定画面
+		elif inDisp=="ListFavoConsole" :
+			cls.__dispInp_ListFavo( inLine, wRes, inData )
 		
 		return wRes
 
@@ -413,6 +416,25 @@ class CLS_MyDisp():
 ###		return
 ###
 ###
+
+	#####################################################
+	# リストいいね設定画面
+	@classmethod
+	def __dispInp_ListFavo( cls, inLine, outRes, inData=None ):
+		pRes = outRes
+		#############################
+		# インプリメント処理
+		
+		###インプリ：リストいいね設定 一覧
+		if "[@LISTFAVO_LIST@]"==inLine :
+			pRes['Responce'] = inData
+		
+		#############################
+		# 正常
+		pRes['Result'] = True
+		return
+
+
 
 #####################################################
 # ディスプレイファイル 読み込み→画面表示

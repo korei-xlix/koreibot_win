@@ -119,8 +119,11 @@ class CLS_TwitterFavo():
 				gVal.OBJ_L.Log( "B", wRes )
 			
 			if wRemoveRes['Responce']['Run']==True :
-				wStr = "●解除いいね日時: " + str(wRemoveRes['Responce']['Data']['created_at'])
-				CLS_OSIF.sPrn( wStr )
+###				wStr = "●解除いいね日時: " + str(wRemoveRes['Responce']['Data']['created_at'])
+###				CLS_OSIF.sPrn( wStr )
+				wRes['Reason'] = "●Remove Favorite: id=" + str(wID) + ": " + str(wRemoveRes['Responce']['Data']['created_at'])
+				gVal.OBJ_L.Log( "T", wRes )
+				
 				wRemTweet += 1
 			else:
 				wRes['Reason'] = "FavoRemove failed: id=" + str(wID)
@@ -534,11 +537,15 @@ class CLS_TwitterFavo():
 		
 		wStr = "--------------------" + '\n' ;
 		if wSubRes['Responce']['Run']==True :
-			wStr = wStr + "○自動いいね 実施: " + inData['screen_name'] + '\n' ;
+###			wStr = wStr + "○自動いいね 実施: " + inData['screen_name'] + '\n' ;
+			wRes['Reason'] = "〇Run Favorite: user=" + inData['screen_name'] + " id=" + str(wFavoID)
+			gVal.OBJ_L.Log( "T", wRes )
+			
 			wRes['Responce']['flg_favo_run'] = True		#いいね済み
 		else :
 			wStr = wStr + "●自動いいね中止(いいね被り): " + inData['screen_name'] + '\n' ;
-		CLS_OSIF.sPrn( wStr )
+			CLS_OSIF.sPrn( wStr )
+###		CLS_OSIF.sPrn( wStr )
 		
 		#############################
 		# リストいいね情報の更新
@@ -653,7 +660,8 @@ class CLS_TwitterFavo():
 		
 		#############################
 		# 禁止ユーザは除外
-		if wSTR_Tweet['user']['screen_name'] in gVal.DEF_STR_NOT_REACTION :
+###		if wSTR_Tweet['user']['screen_name'] in gVal.DEF_STR_NOT_REACTION :
+		if wSTR_Tweet['user']['screen_name'] in gVal.ARR_NotReactionUser :
 #			wStr = "●外部いいね中止(禁止ユーザ): " + wSTR_Tweet['user']['screen_name'] + '\n' ;
 #			CLS_OSIF.sPrn( wStr )
 #			
@@ -821,11 +829,15 @@ class CLS_TwitterFavo():
 			return wRes
 		
 		if wSubRes['Responce']['Run']==True :
-			wStr = "○外部いいね 実施: " + wSTR_Tweet['user']['screen_name'] + '\n' ;
+###			wStr = "○外部いいね 実施: " + wSTR_Tweet['user']['screen_name'] + '\n' ;
+			wRes['Reason'] = "〇Run Over Favorite: user=" + wSTR_Tweet['user']['screen_name'] + " id=" + str(wFavoID)
+			gVal.OBJ_L.Log( "T", wRes )
+			
 			wRes['Responce']['flg_favo_run'] = True		#いいね済み
 		else :
 			wStr = "●外部いいね中止(いいね被り): " + wSTR_Tweet['user']['screen_name'] + '\n' ;
-		CLS_OSIF.sPrn( wStr )
+			CLS_OSIF.sPrn( wStr )
+###		CLS_OSIF.sPrn( wStr )
 		
 		#############################
 		# リストいいね情報の更新
@@ -868,37 +880,37 @@ class CLS_TwitterFavo():
 		# コンソールを表示
 		while True :
 			
-			#############################
-			# 画面クリア
-			CLS_OSIF.sDispClr()
-			
-			#############################
-			# ヘッダ表示
-			wStr = "--------------------" + '\n'
-###			wStr = wStr + " リストいいね指定 有効 / 無効" + '\n'
-			wStr = wStr + " リストいいね設定" + '\n'
-			wStr = wStr + "--------------------" + '\n'
-###			wStr = wStr + "リストいいね指定中のリストの有効/無効を設定します。" + '\n'
-###			wStr = wStr + "番号のリストが有効 / 無効に設定できます。" + '\n'
-			wStr = wStr + '\n'
-			wStr = wStr + "   : LIST  有効  FOLLOW  USER NAME                 LIST NAME" + '\n'
-			CLS_OSIF.sPrn( wStr )
-			
+###			#############################
+###			# 画面クリア
+###			CLS_OSIF.sDispClr()
+###			
+###			#############################
+###			# ヘッダ表示
+###			wStr = "--------------------" + '\n'
+####		wStr = wStr + " リストいいね指定 有効 / 無効" + '\n'
+###			wStr = wStr + " リストいいね設定" + '\n'
+###			wStr = wStr + "--------------------" + '\n'
+####		wStr = wStr + "リストいいね指定中のリストの有効/無効を設定します。" + '\n'
+####		wStr = wStr + "番号のリストが有効 / 無効に設定できます。" + '\n'
+###			wStr = wStr + '\n'
+###			wStr = wStr + "   : LIST  有効  FOLLOW  USER NAME                 LIST NAME" + '\n'
+###			CLS_OSIF.sPrn( wStr )
+###			
 			#############################
 			# データ表示
 			self.__view_ListFavo()
 			
-			#############################
-			# 実行の確認
-			wStr = "--------------------" + '\n'
-			wStr = wStr + "Command:" + '\n'
-			wStr = wStr + "  [LIST番号]   : LIST有効ON/OFF  (コマンドなし)" + '\n'
-			wStr = wStr + "  [LIST番号]-f : フォロー者/フォロワーを含める ON/OFF" + '\n'
-			wStr = wStr + "  [LIST番号]-v : リスト登録ユーザ表示" + '\n'
-			wStr = wStr + "  \\f           : フォロー者反応(フォロー者 かつ FAVO送信あり)" + '\n'
-			wStr = wStr + "  \\q           : 前へ戻る" + '\n'
-			CLS_OSIF.sPrn( wStr )
-			
+###			#############################
+###			# 実行の確認
+###			wStr = "--------------------" + '\n'
+###			wStr = wStr + "Command:" + '\n'
+###			wStr = wStr + "  [LIST番号]   : LIST有効ON/OFF  (コマンドなし)" + '\n'
+###			wStr = wStr + "  [LIST番号]-f : フォロー者/フォロワーを含める ON/OFF" + '\n'
+###			wStr = wStr + "  [LIST番号]-v : リスト登録ユーザ表示" + '\n'
+###			wStr = wStr + "  \\f           : フォロー者反応(フォロー者 かつ FAVO送信あり)" + '\n'
+###			wStr = wStr + "  \\q           : 前へ戻る" + '\n'
+###			CLS_OSIF.sPrn( wStr )
+###			
 			#############################
 			# 実行の確認
 ###			wListNumber = CLS_OSIF.sInp( "リスト番号？(\\q=中止)=> " )
@@ -933,8 +945,10 @@ class CLS_TwitterFavo():
 		
 		wKeylist = list( gVal.ARR_ListFavo.keys() )
 		wListNum = 1
+		wStr = ""
 		for wI in wKeylist :
-			wStr = "   : "
+###			wStr = "   : "
+			wStr = wStr + "   : "
 			
 			### リスト番号
 			wListData = wI + 1
@@ -969,10 +983,16 @@ class CLS_TwitterFavo():
 			wListData = gVal.ARR_ListFavo[wI]['list_name']
 			wStr = wStr + wListData
 			
-			CLS_OSIF.sPrn( wStr )
+###			CLS_OSIF.sPrn( wStr )
+			wStr = wStr + '\n'
 		
-		wStr = '\n'
-		CLS_OSIF.sPrn( wStr )
+###		wStr = '\n'
+###		CLS_OSIF.sPrn( wStr )
+		
+		wResDisp = CLS_MyDisp.sViewDisp( inDisp="ListFavoConsole", inIndex=-1, inData=wStr )
+		if wResDisp['Result']==False :
+			gVal.OBJ_L.Log( "D", wResDisp )
+		
 		return
 
 	#####################################################
@@ -1130,7 +1150,7 @@ class CLS_TwitterFavo():
 		wARR_FollowerData = gVal.OBJ_Tw_IF.GetFollowerData()
 		if len(wARR_FollowerData)==0 :
 			wRes['Reason'] = "FollowerData is zero"
-			gVal.OBJ_L.Log( "C", wRes )
+			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
 		#############################
@@ -1160,7 +1180,7 @@ class CLS_TwitterFavo():
 				### 除外
 				continue
 			
-			if wDBRes['Responce']['lfavo_date']==gVal.OBJ_DB_IF.DEF_TIMEDATE or \
+			if str(wDBRes['Responce']['lfavo_date'])==gVal.OBJ_DB_IF.DEF_TIMEDATE or \
 			   wDBRes['Responce']['lfavo_date']==None :
 				### リストいいねしてないなら除外
 				continue

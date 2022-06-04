@@ -163,7 +163,7 @@ class CLS_TwitterAdmin():
 ###		wResDisp = CLS_MyDisp.sViewDisp( "UserAdminConsole", -1 )
 		wResDisp = CLS_MyDisp.sViewDisp( inDisp="UserAdminConsole", inIndex=-1, inData=self.STR_UserAdminInfo )
 		if wResDisp['Result']==False :
-			gVal.OBJ_L.Log( "D", wResDisp )
+			gVal.OBJ_L.Log( "B", wResDisp )
 			return "\\q"	#失敗=強制終了
 		
 		wWord = CLS_OSIF.sInp( "コマンド？=> " )
@@ -249,7 +249,10 @@ class CLS_TwitterAdmin():
 		
 		#############################
 		# 正常終了
-		CLS_OSIF.sPrn( "リムーブが正常終了しました" )
+###		CLS_OSIF.sPrn( "リムーブが正常終了しました" )
+		wRes['Reason'] = "●リムーブ者: " + self.STR_UserAdminInfo['screen_name']
+		gVal.OBJ_L.Log( "U", wRes )
+		
 		wRes['Result'] = True
 		return wRes
 
@@ -303,7 +306,10 @@ class CLS_TwitterAdmin():
 		
 		#############################
 		# 正常終了
-		CLS_OSIF.sPrn( "リムーブが正常終了しました" )
+###		CLS_OSIF.sPrn( "リムーブが正常終了しました" )
+		wRes['Reason'] = "●関係リセットによるリムーブ: " + self.STR_UserAdminInfo['screen_name']
+		gVal.OBJ_L.Log( "U", wRes )
+		
 		wRes['Result'] = True
 		return wRes
 
