@@ -570,7 +570,9 @@ class CLS_Setup():
 		wQuery = "create table " + inTBLname + "(" + \
 					"twitterid   TEXT  NOT NULL," + \
 					"regdate     TIMESTAMP," + \
+					"id          TEXT  NOT NULL," + \
 					"word        TEXT  NOT NULL, " + \
+					"hit_cnt     INTEGER DEFAULT 0," + \
 					"favo_cnt    INTEGER DEFAULT 0," + \
 					"update_date TIMESTAMP," + \
 					"valid       BOOL  DEFAULT false " + \

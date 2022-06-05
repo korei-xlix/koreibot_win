@@ -1822,3 +1822,345 @@ class CLS_DB_IF() :
 
 
 
+#####################################################
+# 検索ワード
+#####################################################
+	def GetSearchWord(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "GetSearchWord"
+		
+		#############################
+		# データベースを取得
+		wQuery = "select * from tbl_search_word " + \
+					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "B", wRes )
+			return False
+		
+		#############################
+		# 辞書型に整形
+		wARR_DBData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
+		
+		wARR_Data = {}
+		#############################
+		# 除外文字データを登録する
+		wKeylist = list( wARR_DBData.keys() )
+		for wIndex in wKeylist :
+			wCell = {
+				"regdate"		: str(wARR_DBData[wIndex]['regdate']),
+				"id"			: str(wARR_DBData[wIndex]['id']),
+				"word"			: str(wARR_DBData[wIndex]['word']),
+				"hit_cnt"		: wARR_DBData[wIndex]['hit_cnt'],
+				"favo_cnt"		: wARR_DBData[wIndex]['favo_cnt'],
+				"update_date"	: str(wARR_DBData[wIndex]['update_date']),
+				"valid"			: wARR_DBData[wIndex]['valid']
+			}
+			wARR_Data.update({ str(wARR_DBData[wIndex]['id']) : wCell })
+		
+		#############################
+		# グローバルに反映
+		gVal.ARR_SearchData = wARR_Data
+		
+		#############################
+		# =正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def SetSearchWord( self, inWord ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "SetSearchWord"
+		
+		#############################
+		# 入力チェック
+		wWord = inWord.replace( "'", "''" )
+		
+		wFlg_Detect = False
+		wKeylist = list( gVal.ARR_SearchData.keys() )
+		for wIndex in wKeylist :
+			if gVal.ARR_SearchData[wIndex]['word']==wWord :
+				wFlg_Detect = True
+				break
+		if wFlg_Detect==True :
+			##失敗
+			wRes['Reason'] = "Dual word input: word=" + wWord
+			gVal.OBJ_L.Log( "D", wRes )
+			return wRes
+		
+		#############################
+		# 登録データを作成する
+		wTimeDate = str( gVal.STR_SystemInfo['TimeDate'] )
+		wIndex = len( gVal.ARR_SearchData ) + 1
+		
+		wCell = {
+			"regdate"		: wTimeDate,
+			"id"			: str(wIndex),
+			"word"			: wWord,
+			"hit_cnt"		: 0,
+			"favo_cnt"		: 0,
+			"update_date"	: wTimeDate,
+			"valid"			: True
+		}
+		
+		#############################
+		# データベースに登録する
+		wQuery = "insert into tbl_search_word values (" + \
+				"'" + gVal.STR_UserInfo['Account'] + "', " + \
+				"'" + str( wCell['regdate'] ) + "', " + \
+				"'" + str( wCell['id'] ) + "', " + \
+				"'" + str( wCell['word'] ) + "', " + \
+				str( wCell['hit_cnt'] ) + ", " + \
+				str( wCell['favo_cnt'] ) + ", " + \
+				"'" + str( wCell['update_date'] ) + "', " + \
+				str( wCell['valid'] ) + " " + \
+				") ;"
+		
+		#############################
+		# クエリの実行
+		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			CLS_OSIF.sErr( wRes )
+			return wRes
+		
+		#############################
+		# グローバルを更新する
+		gVal.ARR_SearchData.update({ str(wIndex) : wCell })
+		
+		#############################
+		# ログ記録
+		wRes['Reason'] = "Insert SearchWord : index=" + str(wIndex) + " word=" + str( wCell['word'] )
+		gVal.OBJ_L.Log( "T", wRes )
+		
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def ValidSearchWord( self, inIndex ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "ValidSearchWord"
+		
+		#############################
+		# インデックスチェック
+		wIndex = str(inIndex)
+		if wIndex not in gVal.ARR_SearchData :
+			wRes['Reason'] = "Index is not found: index=" + inIndex
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 有効/無効の切り替え
+		if gVal.ARR_SearchData[wIndex]['valid']==True :
+			gVal.ARR_SearchData[wIndex]['valid'] = False
+		else:
+			gVal.ARR_SearchData[wIndex]['valid'] = True
+		
+		#############################
+		# データベースを更新する
+		wQuery = "update tbl_search_word set " + \
+					"valid = " + str(gVal.ARR_SearchData[wIndex]['valid']) + " " + \
+					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
+					"id = '" + wIndex + "' " + \
+					";"
+		
+		#############################
+		# クエリの実行
+		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			CLS_OSIF.sErr( wRes )
+			return wRes
+		
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def UpdateSearchWord( self, inIndex, inWord=None ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "UpdateSearchWord"
+		
+		#############################
+		# インデックスチェック
+		wIndex = str(inIndex)
+		if wIndex not in gVal.ARR_SearchData :
+			wRes['Reason'] = "Index is not found: index=" + inIndex
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 検索ワードの設定
+		gVal.ARR_SearchData[wIndex]['word'] = inWord
+		
+		#############################
+		# データベースを更新する
+		wQuery = "update tbl_search_word set " + \
+					"word = '" + str(gVal.ARR_SearchData[wIndex]['word']) + "' " + \
+					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
+					"id = '" + wIndex + "' " + \
+					";"
+		
+		#############################
+		# クエリの実行
+		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			CLS_OSIF.sErr( wRes )
+			return wRes
+		
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def CountSearchWord( self, inIndex, inHitCnt=1, inFavoCnt=1 ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "CountSearchWord"
+		
+		#############################
+		# インデックスチェック
+		wIndex = str(inIndex)
+		if wIndex not in gVal.ARR_SearchData :
+			wRes['Reason'] = "Index is not found: index=" + inIndex
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 時間の取得
+		gVal.ARR_SearchData[wIndex]['update_date'] = str( gVal.STR_SystemInfo['TimeDate'] )
+		
+		#############################
+		# カウンタ進行
+		gVal.ARR_SearchData[wIndex]['hit_cnt'] += inHitCnt
+		gVal.ARR_SearchData[wIndex]['favo_cnt'] += inFavoCnt
+		
+		#############################
+		# データベースを更新する
+		wQuery = "update tbl_search_word set " + \
+					"hit_cnt = " + str(gVal.ARR_SearchData[wIndex]['hit_cnt']) + ", " + \
+					"favo_cnt = " + str(gVal.ARR_SearchData[wIndex]['favo_cnt']) + ", " + \
+					"update_date = '" + str(gVal.ARR_SearchData[wIndex]['update_date']) + "' " + \
+					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
+					"id = '" + wIndex + "' " + \
+					";"
+		
+		#############################
+		# クエリの実行
+		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			CLS_OSIF.sErr( wRes )
+			return wRes
+		
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def ClearSearchWord(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "ClearSearchWord"
+		
+		#############################
+		# カウンタを0クリア
+		wQuery = "update tbl_search_word set " + \
+				"hit_cnt = 0, " + \
+				"favo_cnt = 0 " + \
+				"where twitterid = '" + inUserData['Account'] + "' ;"
+		
+		#############################
+		# クエリの実行
+		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			CLS_OSIF.sErr( wRes )
+			return wRes
+		
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def DeleteSearchWord( self, inIndex ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "DeleteSearchWord"
+		
+		#############################
+		# インデックスチェック
+		wIndex = str(inIndex)
+		if wIndex not in gVal.ARR_SearchData :
+			wRes['Reason'] = "Index is not found: index=" + inIndex
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# データベースから削除
+		wQuery = "delete from tbl_search_word " + \
+				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
+				"id = '" + wIndex + "' " + \
+				";"
+		
+		#############################
+		# クエリの実行
+		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			CLS_OSIF.sErr( wRes )
+			return wRes
+		
+		#############################
+		# データ削除
+		wWord = gVal.ARR_SearchData[wIndex]['word']
+		del gVal.ARR_SearchData[inIndex]
+		
+		#############################
+		# ログ記録
+		wRes['Reason'] = "Delete SearchWord : index=" + str(wIndex) + " word=" + str( wWord )
+		gVal.OBJ_L.Log( "T", wRes )
+		
+		wRes['Result'] = True
+		return wRes
+
+
+

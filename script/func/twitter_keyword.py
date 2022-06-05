@@ -49,13 +49,14 @@ class CLS_TwitterKeyword():
 	def GetKeywordFavoInfo(self):
 		
 		self.STR_KeywordFavoInfo = {
-			"str_keyword"		: None,			# キーワード
-			
+###			"str_keyword"		: None,			# キーワード
+###			
 			"max_searchnum"		: gVal.DEF_STR_TLNUM['KeywordTweetLen'],
 			"searchnum"			: 0,
 			"usernum"			: 0,
 			"now_usernum"		: 0,
-			"favo_usernum"		: 0
+			"favo_usernum"		: 0,
+			"list_data"			: ""
 		}
 		return
 
@@ -144,42 +145,24 @@ class CLS_TwitterKeyword():
 		wRes['Class'] = "CLS_TwitterKeyword"
 		wRes['Func']  = "KeywordFavo"
 		
-
-#####################################################
-# リストいいね設定
-#####################################################
-	def SetListFavo(self):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_TwitterFavo"
-		wRes['Func']  = "SetListFavo"
-		
 		#############################
 		# コンソールを表示
 		while True :
 			
 			#############################
 			# データ表示
-			self.__view_ListFavo()
+			self.__view_KeywordFavo()
 			
 			#############################
 			# 実行の確認
 			wListNumber = CLS_OSIF.sInp( "コマンド？(\\q=中止)=> " )
 			if wListNumber=="\\q" :
-				###  設定をセーブして終わる
-				wSubRes = gVal.OBJ_DB_IF.SaveListFavo()
-				if wSubRes['Result']!=True :
-					wRes['Reason'] = "SaveListFavo is failed"
-					gVal.OBJ_L.Log( "B", wRes )
-
 				wRes['Result'] = True
 				return wRes
 			
 			#############################
 			# コマンド処理
-			wCommRes = self.__run_ListFavo( wListNumber )
+			wCommRes = self.__run_KeywordFavo( wListNumber )
 			if wCommRes['Result']!=True :
 				wRes['Reason'] = "__run_ListFavo is failed: " + wCommRes['Reason']
 				gVal.OBJ_L.Log( "B", wRes )
@@ -191,50 +174,48 @@ class CLS_TwitterKeyword():
 	#####################################################
 	# 画面表示
 	#####################################################
-	def __view_ListFavo(self):
+	def __view_KeywordFavo(self):
 		
-		wKeylist = list( gVal.ARR_ListFavo.keys() )
-		wListNum = 1
+		wKeylist = list( gVal.ARR_SearchData.keys() )
 		wStr = ""
 		for wI in wKeylist :
 			wStr = wStr + "   : "
 			
 			### リスト番号
-			wListData = wI + 1
-			wListData = str(wListData)
+			wListData = str(gVal.ARR_SearchData[wI]['id'])
 			wListNumSpace = 4 - len( wListData )
 			if wListNumSpace>0 :
 				wListData = wListData + " " * wListNumSpace
-			wStr = wStr + wListData + "  "
+			wStr = wStr + wListData + ": "
+			
+			### ヒットツイート数
+			wListData = str(gVal.ARR_SearchData[wI]['hit_cnt'])
+			wListNumSpace = 6 - len( wListData )
+			if wListNumSpace>0 :
+				wListData = wListData + " " * wListNumSpace
+			wStr = wStr + wListData + ": "
+			
+			### いいね数
+			wListData = str(gVal.ARR_SearchData[wI]['favo_cnt'])
+			wListNumSpace = 6 - len( wListData )
+			if wListNumSpace>0 :
+				wListData = wListData + " " * wListNumSpace
+			wStr = wStr + wListData + " "
 			
 			### 有効/無効
-			if gVal.ARR_ListFavo[wI]['valid']==True :
+			if gVal.ARR_SearchData[wI]['valid']==True :
 				wStr = wStr + "[〇]"
 			else:
 				wStr = wStr + "[  ]"
 			wStr = wStr + "  "
 			
-			### フォロー者、フォロワーを含める
-			if gVal.ARR_ListFavo[wI]['follow']==True :
-				wStr = wStr + "[〇]"
-			else:
-				wStr = wStr + "[  ]"
-			wStr = wStr + "    "
-			
-			### ユーザ名（screen_name）
-			wListData = gVal.ARR_ListFavo[wI]['screen_name']
-			wListNumSpace = gVal.DEF_SCREEN_NAME_SIZE - len(wListData)
-			if wListNumSpace>0 :
-				wListData = wListData + " " * wListNumSpace
-			wStr = wStr + wListData + ": "
-			
-			### リスト名
-			wListData = gVal.ARR_ListFavo[wI]['list_name']
-			wStr = wStr + wListData
-			
-			wStr = wStr + '\n'
+			### 検索ワード
+			wListData = gVal.ARR_SearchData[wI]['word']
+			wStr = wStr + wListData + '\n'
 		
-		wResDisp = CLS_MyDisp.sViewDisp( inDisp="ListFavoConsole", inIndex=-1, inData=wStr )
+		self.STR_KeywordFavoInfo['list_data'] = wStr
+		
+		wResDisp = CLS_MyDisp.sViewDisp( inDisp="KeywordConsole", inIndex=-1, inData=self.STR_KeywordFavoInfo )
 		if wResDisp['Result']==False :
 			gVal.OBJ_L.Log( "D", wResDisp )
 		
@@ -243,7 +224,7 @@ class CLS_TwitterKeyword():
 	#####################################################
 	# コマンド処理
 	#####################################################
-	def __run_ListFavo( self, inWord ):
+	def __run_KeywordFavo( self, inWord ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -252,9 +233,25 @@ class CLS_TwitterKeyword():
 		wRes['Func']  = "__run_ListFavo"
 		
 		#############################
-		# f: フォロー者反応
-		if inWord=="\\f" :
-			self.__view_ListFollower()
+		# g: 検索実行
+		if inWord=="\\g" :
+			self.RunKeywordSearchFavo()
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# s: 検索ワード追加
+		elif inWord=="\\s" :
+			self.__set_KeywordFavo()
+###			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# r: 全カウンタクリア
+		elif inWord=="\\r" :
+			self.__clear_KeywordFavo()
 			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
 			wRes['Result'] = True
 			return wRes
@@ -285,8 +282,17 @@ class CLS_TwitterKeyword():
 			wRes['Result'] = True
 			return wRes
 		
-		wNum = wNum - 1
-		if wNum<0 or len(gVal.ARR_ListFavo)<=wNum :
+		#############################
+		# リストのインデックス
+		wNum = str(wNum)
+		wKeylist = list( gVal.ARR_SearchData.keys() )
+		wGetIndex = None
+		for wIndex in wKeylist :
+			if gVal.ARR_SearchData[wIndex]['id']==wNum :
+				wGetIndex = str(wIndex)
+				break
+		
+		if wGetIndex==None :
 			CLS_OSIF.sPrn( "LIST番号が範囲外です" + '\n' )
 			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
 			wRes['Result'] = True
@@ -298,28 +304,26 @@ class CLS_TwitterKeyword():
 		#############################
 		# コマンドなし: 指定の番号のリストの設定変更をする
 		if wCom==None :
-			if gVal.ARR_ListFavo[wNum]['valid']==True :
-				gVal.ARR_ListFavo[wNum]['valid'] = False
-			else:
-				gVal.ARR_ListFavo[wNum]['valid'] = True
-			
-			gVal.ARR_ListFavo[wNum]['update'] = True
+			self.__valid_KeywordFavo( wGetIndex )
+###			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
 		
 		#############################
-		# f: フォロー者、フォロワーを含める ON/OFF
-		elif wCom=="f" :
-			if gVal.ARR_ListFavo[wNum]['follow']==True :
-				gVal.ARR_ListFavo[wNum]['follow'] = False
-			else:
-				gVal.ARR_ListFavo[wNum]['follow'] = True
-			
-			gVal.ARR_ListFavo[wNum]['update'] = True
-		
-		#############################
-		# v: リストユーザ表示
-		elif wCom=="v" :
-			self.__view_ListFavoUser( gVal.ARR_ListFavo[wNum]['list_name'] )
+		# c: 検索ワード変更
+		elif wCom=="c" :
+			self.__change_KeywordFavo( wGetIndex )
 			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# d: 検索ワード削除
+		elif wCom=="d" :
+			self.__delete_KeywordFavo( wGetIndex )
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
 		
 		#############################
 		# 範囲外のコマンド
@@ -333,121 +337,102 @@ class CLS_TwitterKeyword():
 		return wRes
 
 	#####################################################
-	# リストユーザ表示
+	# 検索ワード追加
 	#####################################################
-	def __view_ListFavoUser( self, inListName ):
+	def __set_KeywordFavo(self):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
 		wRes = CLS_OSIF.sGet_Resp()
 		wRes['Class'] = "CLS_TwitterFavo"
-		wRes['Func']  = "__view_ListFavoUser"
+		wRes['Func']  = "__set_KeywordFavo"
 		
 		#############################
-		# リストの取得にあるか確認
-		wSubRes = gVal.OBJ_Tw_IF.GetList( inListName )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		if wSubRes['Responce']==False :
-			wRes['Reason'] = "Twitter List not found: " + inListName
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# Twitterからリストのユーザ一覧を取得
-		wSubRes = gVal.OBJ_Tw_IF.GetListMember( inListName )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# 画面表示
-		wSubRes = self.__view_ListFavoUser_Disp( wSubRes['Responce'] )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "__view_ListFavoUser_Disp is failed"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# 完了
-		wRes['Result'] = True
-		return wRes
-
-	#####################################################
-	# フォロー者反応表示
-	#####################################################
-	def __view_ListFollower(self):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_TwitterFavo"
-		wRes['Func']  = "__view_ListFollower"
-		
-		#############################
-		# Twitterからリストのユーザ一覧を取得
-		wARR_FollowerData = gVal.OBJ_Tw_IF.GetFollowerData()
-		if len(wARR_FollowerData)==0 :
-			wRes['Reason'] = "FollowerData is zero"
-			gVal.OBJ_L.Log( "D", wRes )
-			return wRes
-		
-		#############################
-		# 表示するユーザ情報の作成
-		#   フォロー者 かつ FAVO送信ありユーザをセット
-		wARR_ListUser = {}
-		wKeylist = list( wARR_FollowerData.keys() )
-		for wID in wKeylist :
-			wID = str( wID )
-			
-			if wARR_FollowerData[wID]['myfollow']==False :
-				### フォロー者じゃないので除外
-				continue
+		# コンソールを表示
+		while True :
 			
 			#############################
-			# DBからいいね情報を取得する(1個)
-			#   
-			#   
-			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wID )
-			if wDBRes['Result']!=True :
-				###失敗
-				wRes['Reason'] = "GetFavoDataOne is failed"
-				gVal.OBJ_L.Log( "B", wRes )
+			# 実行の確認
+			wWord = CLS_OSIF.sInp( "検索ワード？(\\q=中止)=> " )
+			if wWord=="\\q" :
+				wRes['Result'] = True
 				return wRes
-			### DB登録なし
-			if wDBRes['Responce']==None :
-				### 除外
-				continue
 			
-			if str(wDBRes['Responce']['lfavo_date'])==gVal.OBJ_DB_IF.DEF_TIMEDATE or \
-			   wDBRes['Responce']['lfavo_date']==None :
-				### リストいいねしてないなら除外
-				continue
-			
-			#############################
-			# 対象なのでセット
-			wCell = {
-				"id"			: wARR_FollowerData[wID]['id'],
-				"screen_name"	: wARR_FollowerData[wID]['screen_name']
-			}
-			wARR_ListUser.update({ wID : wCell })
+			if wWord!="" :
+				### 文字列あり= 入力完了
+				break
 		
 		#############################
-		# 相互フォローなし
-		if len(wARR_ListUser)==0 :
-			CLS_OSIF.sPrn( "相互フォローがありません" + '\n' )
+		# 実行の確認
+		wSubRes = gVal.OBJ_DB_IF.SetSearchWord( wWord )
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "SetSearchWord is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		wStr = "〇検索ワードを登録: word=" + wWord
+		CLS_OSIF.sInp( wStr )
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	# 全カウンタクリア
+	#####################################################
+	def __clear_KeywordFavo(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterFavo"
+		wRes['Func']  = "__clear_KeywordFavo"
+		
+		#############################
+		# コンソールを表示
+		
+		wWord = CLS_OSIF.sInp( "全カウンタをクリアします(\\y=YES / other=中止)=> " )
+		if wWord!="y" :
 			wRes['Result'] = True
 			return wRes
 		
 		#############################
-		# 画面表示
-		wSubRes = self.__view_ListFavoUser_Disp( wARR_ListUser )
+		# 実行の確認
+		wSubRes = gVal.OBJ_DB_IF.ClearSearchWord()
 		if wSubRes['Result']!=True :
-			wRes['Reason'] = "__view_ListFavoUser_Disp is failed"
-			gVal.OBJ_L.Log( "D", wRes )
+			###失敗
+			wRes['Reason'] = "ClearSearchWord is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		wStr = "全カウンタをクリアしました"
+		CLS_OSIF.sInp( wStr )
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	# 検索ワード 有効/無効
+	#####################################################
+	def __valid_KeywordFavo( self, inNum ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterFavo"
+		wRes['Func']  = "__valid_KeywordFavo"
+		
+		#############################
+		# 実行の確認
+		wSubRes = gVal.OBJ_DB_IF.ValidSearchWord( inNum )
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "DeleteSearchWord is failed"
+			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
 		#############################
@@ -456,143 +441,75 @@ class CLS_TwitterKeyword():
 		return wRes
 
 	#####################################################
-	# リスト画面表示
+	# 検索ワード変更
 	#####################################################
-	def __view_ListFavoUser_Disp( self, inARR_Data ):
+	def __change_KeywordFavo( self, inNum ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
 		wRes = CLS_OSIF.sGet_Resp()
 		wRes['Class'] = "CLS_TwitterFavo"
-		wRes['Func']  = "__view_ListFavoUser_Disp"
+		wRes['Func']  = "__change_KeywordFavo"
 		
-
 		#############################
-		# ユーザなし
-		if len( inARR_Data )==0 :
-			CLS_OSIF.sPrn( "リスト登録のユーザはありません" )
-			
+		# コンソールを表示
+		
+		wWord = CLS_OSIF.sInp( "検索ワード？(空欄=中止)=> " )
+		if wWord=="" :
 			wRes['Result'] = True
 			return wRes
 		
 		#############################
-		# ヘッダの表示
-		wStr = "USER NAME                FW者  FW受  FAVO受信(回数/日)   FAVO送信日   最終活動日" + '\n'
+		# 実行の確認
+		wSubRes = gVal.OBJ_DB_IF.UpdateSearchWord( inNum, wWord )
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "SetSearchWord is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	# 検索ワード削除
+	#####################################################
+	def __delete_KeywordFavo( self, inNum ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterFavo"
+		wRes['Func']  = "__delete_KeywordFavo"
+		
+		#############################
+		# コンソールを表示
+		wStr = "検索ワード " + str(gVal.ARR_SearchData[inNum]['word']) + " を削除します"
 		CLS_OSIF.sPrn( wStr )
+		wWord = CLS_OSIF.sInp( "  \\y=YES / other=中止=> " )
+		if wWord!="y" :
+			wRes['Result'] = True
+			return wRes
 		
 		#############################
-		# いいねユーザデータを作成する
-		wKeylist = list( inARR_Data.keys() )
-		for wID in wKeylist :
-			wID = str( wID )
-			
-			wARR_DBData = {
-				"favo_cnt"		: 0,
-				"now_favo_cnt"	: 0,
-				"favo_date"		: gVal.OBJ_DB_IF.DEF_TIMEDATE,
-				"lfavo_date"	: gVal.OBJ_DB_IF.DEF_TIMEDATE,
-				"update_date"	: gVal.OBJ_DB_IF.DEF_TIMEDATE
-			}
-			
-			#############################
-			# タイムラインを取得する
-			#   最初の1ツイートの日時を最新の活動日とする
-			wTweetRes = gVal.OBJ_Tw_IF.GetTL( inTLmode="user", inFLG_Rep=False, inFLG_Rts=True,
-				 inID=wID, inCount=1 )
-			if wTweetRes['Result']!=True :
-				wRes['Reason'] = "Twitter Error: GetTL"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			if len(wTweetRes['Responce'])==1 :
-				### 最新の活動日時
-				
-				###日時の変換をして、設定
-				wTime = CLS_OSIF.sGetTimeformat_Twitter( wTweetRes['Responce'][0]['created_at'] )
-				if wTime['Result']!=True :
-					wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wTweetRes['Responce'][0]['created_at'])
-					gVal.OBJ_L.Log( "B", wRes )
-					return wRes
-				wARR_DBData['update_date'] = wTime['TimeDate']
-			
-			#############################
-			# DBからいいね情報を取得する(1個)
-			#   
-			#   
-			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wID )
-			if wDBRes['Result']!=True :
-				###失敗
-				wRes['Reason'] = "GetFavoDataOne is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			### DB登録
-			if wDBRes['Responce']!=None :
-				wARR_DBData['favo_cnt']     = wDBRes['Responce']['favo_cnt']
-				wARR_DBData['now_favo_cnt'] = wDBRes['Responce']['now_favo_cnt']
-				wARR_DBData['favo_date']  = wDBRes['Responce']['favo_date']
-				wARR_DBData['lfavo_date'] = wDBRes['Responce']['lfavo_date']
-			
-			#############################
-			# 表示するデータ組み立て
-			wStr = ""
-			
-			### 名前
-			wListNumSpace = gVal.DEF_SCREEN_NAME_SIZE - len(inARR_Data[wID]['screen_name'])
-			if wListNumSpace>0 :
-				wListData = inARR_Data[wID]['screen_name'] + " " * wListNumSpace
-			wStr = wStr + wListData + "  "
-			
-			### フォロー者
-			if gVal.OBJ_Tw_IF.CheckMyFollow( wID )==True :
-				wListData = "〇"
-			else:
-				wListData = "--"
-			wStr = wStr + wListData + "    "
-			
-			### フォロワー
-			if gVal.OBJ_Tw_IF.CheckFollower( wID )==True :
-				wListData = "〇"
-			else:
-				wListData = "--"
-			wStr = wStr + wListData + "    "
-			
-			### いいね回数
-			wListNumSpace = 5 - len( str(wARR_DBData['favo_cnt']) )
-			if wListNumSpace>0 :
-				wListData = str(wARR_DBData['favo_cnt']) + " " * wListNumSpace
-			wStr = wStr + wListData + ": "
-			
-			### いいね受信日
-			if str(wARR_DBData['favo_date'])==gVal.OBJ_DB_IF.DEF_TIMEDATE or \
-			   str(wARR_DBData['favo_date'])==None :
-				wListData = "----/--/--"
-			else:
-				wListData = str(wARR_DBData['favo_date']).split(" ")
-				wListData = wListData[0]
-			wStr = wStr + wListData + "   "
-			
-			### いいね送信日
-			if str(wARR_DBData['lfavo_date'])==gVal.OBJ_DB_IF.DEF_TIMEDATE or \
-			   str(wARR_DBData['lfavo_date'])==None :
-				wListData = "----/--/--"
-			else:
-				wListData = str(wARR_DBData['lfavo_date']).split(" ")
-				wListData = wListData[0]
-			wStr = wStr + wListData + "   "
-			
-			### 最終活動日
-			if str(wARR_DBData['update_date'])==gVal.OBJ_DB_IF.DEF_TIMEDATE :
-				wListData = "----/--/--"
-			else:
-				wListData = str(wARR_DBData['update_date']).split(" ")
-				wListData = wListData[0]
-			wStr = wStr + wListData + "   "
-			
-			CLS_OSIF.sPrn( wStr )
+		# 実行の確認
+		wSubRes = gVal.OBJ_DB_IF.DeleteSearchWord( inNum )
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "DeleteSearchWord is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		wStr = "検索ワードを削除しました"
+		CLS_OSIF.sInp( wStr )
 		
 		#############################
 		# 完了
 		wRes['Result'] = True
 		return wRes
+
 
 
 
@@ -607,38 +524,72 @@ class CLS_TwitterKeyword():
 		wRes['Class'] = "CLS_TwitterKeyword"
 		wRes['Func']  = "RunKeywordSearchFavo"
 		
-		#############################
-		# 検索文字列が None ではない
-		if self.STR_KeywordFavoInfo['str_keyword']==None or \
-		   self.STR_KeywordFavoInfo['str_keyword']=="" :
-			### ありえない？
-			wRes['Reason'] = "str_keyword is None"
-			gVal.OBJ_L.Log( "D", wRes )
-			return wRes
+###		#############################
+###		# 検索文字列が None ではない
+###		if self.STR_KeywordFavoInfo['str_keyword']==None or \
+###		   self.STR_KeywordFavoInfo['str_keyword']=="" :
+###			### ありえない？
+###			wRes['Reason'] = "str_keyword is None"
+###			gVal.OBJ_L.Log( "D", wRes )
+###			return wRes
 		
 		self.STR_KeywordFavoInfo['searchnum'] = 0
 		self.STR_KeywordFavoInfo['usernum']      = len( self.ARR_KeywordFavoUser )
 		self.STR_KeywordFavoInfo['now_usernum']  = 0
 		self.STR_KeywordFavoInfo['favo_usernum'] = 0
 		
-		CLS_OSIF.sPrn( "ツイートを検索してます。しばらくお待ちください......" )
+		CLS_OSIF.sPrn( "抽出したツイートをいいねしていきます。しばらくお待ちください......" )
+		#############################
+		# 検索実行
+		wKeylist = list( gVal.ARR_SearchData.keys() )
+		for wIndex in wKeylist :
+			if gVal.ARR_SearchData[wIndex]['valid']!=True :
+				### 有効じゃなければスキップ
+				continue
+			
+			wSubRes = self.__runKeywordSearchFavo( wIndex )
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "RunKeywordSearchFavo is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+		
+		#############################
+		# 正常終了
+###		wStr = "------------------------------" + '\n'
+###		wStr = wStr + "検索ツイート数  : " + str( len(wTweetRes['Responce']) )+ '\n'
+###		wStr = wStr + "いいね実施数    : " + str( wFavoNum )+ '\n'
+		wStr = '\n' + "キーワードいいねが正常終了しました" + '\n'
+		CLS_OSIF.sPrn( wStr )
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def __runKeywordSearchFavo( self, inIndex ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterKeyword"
+		wRes['Func']  = "__runKeywordSearchFavo"
+		
+		wWord = gVal.ARR_SearchData[inIndex]['word']
+		CLS_OSIF.sPrn( "検索中のツイート: word=" + wWord )
 		#############################
 		# ツイートを検索する
 		wTweetRes = gVal.OBJ_Tw_IF.GetSearch( 
-		   self.STR_KeywordFavoInfo['str_keyword'],
-		   inMaxResult=self.STR_KeywordFavoInfo['max_searchnum'] )
+		   wWord, inMaxResult=self.STR_KeywordFavoInfo['max_searchnum'] )
 		if wTweetRes['Result']!=True :
 			wRes['Reason'] = "GetSearch is failed: " + wTweetRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
 		### 抽出ツイート数
-		self.STR_KeywordFavoInfo['searchnum'] = len( wTweetRes['Responce'] )
+###		self.STR_KeywordFavoInfo['searchnum'] = len( wTweetRes['Responce'] )
+		wHitCnt = len( wTweetRes['Responce'] )
 		
 		###ウェイト初期化
 		self.OBJ_Parent.Wait_Init( inZanNum=len( wTweetRes['Responce'] ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
 		
-		CLS_OSIF.sPrn( "抽出したツイートをいいねしていきます。しばらくお待ちください......" )
 		wFavoNum = 0
 		#############################
 		# ツイートチェック
@@ -677,7 +628,6 @@ class CLS_TwitterKeyword():
 				### いいね済み
 				continue
 			
-###			wTweetID = str( wTweet['id'] )
 			### ノーマル以外は除外
 			if wTweet['type']!="normal" :
 				continue
@@ -687,7 +637,6 @@ class CLS_TwitterKeyword():
 			
 			#############################
 			# 禁止ユーザは除外
-###			if wTweet['user']['screen_name'] in gVal.DEF_STR_NOT_REACTION :
 			if wTweet['user']['screen_name'] in gVal.ARR_NotReactionUser :
 				continue
 			
@@ -750,12 +699,21 @@ class CLS_TwitterKeyword():
 				continue
 		
 		#############################
-		# 正常終了
-		wStr = "------------------------------" + '\n'
-		wStr = wStr + "検索ツイート数  : " + str( len(wTweetRes['Responce']) )+ '\n'
-		wStr = wStr + "いいね実施数    : " + str( wFavoNum )+ '\n'
-		wStr = wStr + '\n' + "キーワードいいねが正常終了しました" + '\n'
-		CLS_OSIF.sPrn( wStr )
+		# カウンタを進行
+		wSubRes = gVal.OBJ_DB_IF.CountSearchWord( inIndex, inHitCnt=wHitCnt, inFavoCnt=wFavoNum )
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "CountSearchWord is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+###		#############################
+###		# 正常終了
+###		wStr = "------------------------------" + '\n'
+###		wStr = wStr + "検索ツイート数  : " + str( len(wTweetRes['Responce']) )+ '\n'
+###		wStr = wStr + "いいね実施数    : " + str( wFavoNum )+ '\n'
+###		wStr = wStr + '\n' + "キーワードいいねが正常終了しました" + '\n'
+###		CLS_OSIF.sPrn( wStr )
 		wRes['Result'] = True
 		return wRes
 

@@ -323,22 +323,22 @@ class CLS_MyDisp():
 		#############################
 		# インプリメント処理
 		
-		###インプリ：キーワードいいね文字列
-		if "[@KEYWORD-STRING@]"==inLine :
-			if inData['str_keyword']!=None :
-				wStr = str( inData['str_keyword'] )
-			else:
-				wStr = "(設定なし)"
-			pRes['Responce'] = "設定文字列: " + wStr
-		
+###		###インプリ：キーワードいいね文字列
+###		if "[@KEYWORD-STRING@]"==inLine :
+###			if inData['str_keyword']!=None :
+###				wStr = str( inData['str_keyword'] )
+###			else:
+###				wStr = "(設定なし)"
+###			pRes['Responce'] = "設定文字列: " + wStr
+###		
 		###インプリ：最大ツイート取得数
-		elif "[@KEYWORD-MAXSEARCHNUM@]"==inLine :
+		if "[@KEYWORD-MAXSEARCHNUM@]"==inLine :
 			pRes['Responce'] = "    最大ツイート取得数: " + str( inData['max_searchnum'] )
 		
-		###インプリ：抽出ツイート数
-		elif "[@KEYWORD-SEARCHNUM@]"==inLine :
-			pRes['Responce'] = "    抽出ツイート数    : " + str( inData['searchnum'] )
-		
+###		###インプリ：抽出ツイート数
+###		elif "[@KEYWORD-SEARCHNUM@]"==inLine :
+###			pRes['Responce'] = "    抽出ツイート数    : " + str( inData['searchnum'] )
+###		
 		###インプリ：記憶ユーザ数
 		elif "[@KEYWORD-USERNUM@]"==inLine :
 			pRes['Responce'] = "    記憶ユーザ数      : " + str( inData['usernum'] )
@@ -350,6 +350,10 @@ class CLS_MyDisp():
 		###インプリ：いいね実行数
 		elif "[@KEYWORD-FAVOUSERNUM@]"==inLine :
 			pRes['Responce'] = "    いいね実行数      : " + str( inData['favo_usernum'] )
+		
+		###インプリ：検索データ 一覧
+		elif "[@KEYWORD-LIST@]"==inLine :
+			pRes['Responce'] = str( inData['list_data'] )
 		
 		#############################
 		# 正常

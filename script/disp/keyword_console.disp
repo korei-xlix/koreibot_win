@@ -4,19 +4,27 @@
 検索するキーワードを設定してください。
 設定したキーワードのツイートをいいねします。
 
-[@KEYWORD-STRING@]
-
+#[@KEYWORD-STRING@]
+#
 [@KEYWORD-MAXSEARCHNUM@]
-[@KEYWORD-SEARCHNUM@]
+#[@KEYWORD-SEARCHNUM@]
 [@KEYWORD-USERNUM@]
 [@KEYWORD-FAVOUSERNUM@]
 
+
+   : LIST  HIT   有効     検索ワード
+
+[@KEYWORD-LIST@]
 
 --------------------
 
 コマンドを入力してください。
 
-    [文字列]    検索するワードを設定
+    [LIST番号]   : 検索ワード 有効ON/OFF  (コマンドなし)
+    [LIST番号]-d : 検索ワード 削除
+    [\s]         : 検索ワード追加
+    [\c]         : 全カウンタクリア
+
     [\g]        ワードで検索＆いいいね実行
 
     [\q]        １つ前に戻る

@@ -145,6 +145,14 @@ class CLS_TwitterMain():
 			return wRes
 		
 		#############################
+		# 検索ワード読み込み
+		wResSub = gVal.OBJ_DB_IF.GetSearchWord()
+		if wResSub['Result']!=True :
+			wRes['Reason'] = "GetSearchWord failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
 		# リストいいね指定読み込み
 ###		wResSub = gVal.OBJ_DB_IF.GetOtherListFavo()
 		wResSub = gVal.OBJ_DB_IF.GetListFavo()
