@@ -675,7 +675,7 @@ class CLS_DB_IF() :
 			##失敗
 			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
 			gVal.OBJ_L.Log( "B", wRes )
-			return False
+			return wRes
 		
 		#############################
 		# 辞書型に整形
@@ -685,13 +685,16 @@ class CLS_DB_IF() :
 		#############################
 		# 禁止ユーザデータを登録する
 		wKeylist = list( wARR_DBData.keys() )
+		wListNo = 1
 		for wIndex in wKeylist :
 			wKey = wARR_DBData[wIndex]['screen_name']
 			wCell = {
+				"list_number"	: wListNo,
 				"screen_name"	: wKey,
 				"report"		: wARR_DBData[wIndex]['report']
 			}
 			wARR_ExeUser.update({ wKey : wCell })
+			wListNo += 1
 		
 		gVal.ARR_NotReactionUser = wARR_ExeUser
 		
@@ -699,6 +702,19 @@ class CLS_DB_IF() :
 		# =正常
 		wRes['Result'] = True
 		return wRes
+
+	#####################################################
+	def GetExeUserName( self, inListNumber=-1 ):
+		wName = None
+		if inListNumber==-1 :
+			return wName
+		
+		wKeylist = list( gVal.ARR_NotReactionUser.keys() )
+		for wKey in wKeylist :
+			if gVal.ARR_NotReactionUser[wKey]['list_number']==inListNumber :
+				wName = gVal.ARR_NotReactionUser[wKey]['screen_name']
+				break
+		return wName
 
 	#####################################################
 	def SetExeUser( self, inARRData ):
@@ -729,7 +745,7 @@ class CLS_DB_IF() :
 			##失敗
 			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
 			gVal.OBJ_L.Log( "B", wRes )
-			return False
+			return wRes
 		
 		### リスト型に整形
 		wARR_RateWord = []
@@ -738,6 +754,7 @@ class CLS_DB_IF() :
 		#############################
 		# 登録データを作成する
 		wARR_Word = {}
+		wListNo = 1
 		for wLine in inARRData :
 			
 			### 通報設定ありか
@@ -756,10 +773,12 @@ class CLS_DB_IF() :
 			
 			### データ登録
 			wCell = {
+				"list_number"	: wListNo,
 				"screen_name"	: wLine,
 				"report"		: wReport
 			}
 			wARR_Word.update({ wLine : wCell })
+			wListNo += 1
 		
 		#############################
 		# データベースに登録する
@@ -791,7 +810,7 @@ class CLS_DB_IF() :
 				##失敗
 				wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
 				CLS_OSIF.sErr( wRes )
-				return False
+				return wRes
 			
 			#############################
 			# 実行結果の表示
@@ -836,7 +855,7 @@ class CLS_DB_IF() :
 				##失敗
 				wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
 				CLS_OSIF.sErr( wRes )
-				return False
+				return wRes
 			
 			#############################
 			# 実行結果の表示
@@ -847,6 +866,180 @@ class CLS_DB_IF() :
 		# グローバルを更新する
 		gVal.ARR_NotReactionUser = wARR_Word
 		
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def InsertExeUser( self, inName ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "InsertExeUser"
+		
+		#############################
+		# 時間を取得
+		wTD = CLS_OSIF.sGetTime()
+		if wTD['Result']!=True :
+			###時間取得失敗  時計壊れた？
+			wStr = "PC時間取得失敗" + '\n'
+			CLS_OSIF.sPrn( wStr )
+			wTD['TimeDate'] = self.DEF_TIMEDATE
+		
+		#############################
+		# ダブりチェック
+		wKeylist = list( gVal.ARR_NotReactionUser.keys() )
+		wListNo = 1
+		for wKey in wKeylist :
+			### ダブり登録はNG
+			if gVal.ARR_NotReactionUser[wKey]['screen_name']==inName :
+				wRes['Reason'] = "Duai Screen_Name: name=" + str(inName)
+				CLS_OSIF.sErr( wRes )
+				return wRes
+		
+		#############################
+		# 新規登録する
+		wQuery = "insert into tbl_exc_user values (" + \
+				"'" + str(wTD['TimeDate']) + "', " + \
+				"'" + str(inName) + "', " + \
+				"False " + \
+				") ;"
+		
+		#############################
+		# クエリの実行
+		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			CLS_OSIF.sErr( wRes )
+			return wRes
+		
+		#############################
+		# リスト番号の取得
+		wKeylist = list( gVal.ARR_NotReactionUser.keys() )
+		wListNo = 1
+		for wKey in wKeylist :
+			### ダブり登録はスキップ
+			if gVal.ARR_NotReactionUser[wKey]['list_number']==wListNo :
+				wListNo += 1
+				continue
+		
+		#############################
+		# データ登録
+		wCell = {
+			"list_number"	: wListNo,
+			"screen_name"	: str(inName),
+			"report"		: False
+		}
+		gVal.ARR_NotReactionUser.update({ str(inName) : wCell })
+		
+		#############################
+		# =正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def UpdateExeUser( self, inName ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "UpdateExeUser"
+		
+		#############################
+		# ダブりチェック
+		wKeylist = list( gVal.ARR_NotReactionUser.keys() )
+		wFLG_Detect = False
+		for wKey in wKeylist :
+			### データあり
+			if gVal.ARR_NotReactionUser[wKey]['screen_name']==inName :
+				wFLG_Detect = True
+				break
+		if wFLG_Detect!=True :
+			wRes['Reason'] = "No data Screen_Name: name=" + str(inName)
+			CLS_OSIF.sErr( wRes )
+			return wRes
+		
+		#############################
+		# 設定の自動切換え
+		wReport = False
+		if gVal.ARR_NotReactionUser[inName]['report']==False :
+			wReport = True
+		
+		#############################
+		# 変更する
+		wQuery = "update tbl_exc_user set " + \
+				"report = " + str( wReport ) + " " + \
+				"where screen_name = '" + inName + "' " + \
+				";"
+		
+		#############################
+		# クエリの実行
+		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			CLS_OSIF.sErr( wRes )
+			return False
+		
+		#############################
+		# データ変更
+		gVal.ARR_NotReactionUser[inName]['report'] = wReport
+		
+		#############################
+		# =正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def DeleteExeUser( self, inName ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "DeleteExeUser"
+		
+		#############################
+		# ダブりチェック
+		wKeylist = list( gVal.ARR_NotReactionUser.keys() )
+		wFLG_Detect = False
+		for wKey in wKeylist :
+			### データあり
+			if gVal.ARR_NotReactionUser[wKey]['screen_name']==inName :
+				wFLG_Detect = True
+				break
+		if wFLG_Detect!=True :
+			wRes['Reason'] = "No data Screen_Name: name=" + str(inName)
+			CLS_OSIF.sErr( wRes )
+			return wRes
+		
+		#############################
+		# 変更する
+		wQuery = "delete from tbl_exc_user where " + \
+					"screen_name = '" + inName + "' " + \
+					";"
+		
+		#############################
+		# クエリの実行
+		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			CLS_OSIF.sErr( wRes )
+			return False
+		
+		#############################
+		# データ削除
+		del gVal.ARR_NotReactionUser[inName]
+		
+		#############################
+		# =正常
 		wRes['Result'] = True
 		return wRes
 

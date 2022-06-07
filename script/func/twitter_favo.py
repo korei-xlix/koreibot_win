@@ -309,7 +309,8 @@ class CLS_TwitterFavo():
 				if wResFavo['Result']!=True :
 					wRes['Reason'] = "Twitter Error"
 					gVal.OBJ_L.Log( "B", wRes )
-					return wRes
+###					return wRes
+					continue
 				
 				if wResFavo['Responce']['flg_favo_run']==True :
 					### いいね実施数をカウント
@@ -1185,6 +1186,11 @@ class CLS_TwitterFavo():
 				### リストいいねしてないなら除外
 				continue
 			
+			if wARR_FollowerData[wID]['follower']==False and \
+			   wDBRes['Responce']['favo_cnt']==0 :
+				### フォロワーではない かつ いいね受信=0 は除外
+				continue
+			
 			#############################
 			# 対象なのでセット
 			wCell = {
@@ -1193,10 +1199,16 @@ class CLS_TwitterFavo():
 			}
 			wARR_ListUser.update({ wID : wCell })
 		
+###		#############################
+###		# 相互フォローなし
+###		if len(wARR_ListUser)==0 :
+###			CLS_OSIF.sPrn( "相互フォローがありません" + '\n' )
+###			wRes['Result'] = True
+###			return wRes
 		#############################
-		# 相互フォローなし
+		# 対象ユーザなし
 		if len(wARR_ListUser)==0 :
-			CLS_OSIF.sPrn( "相互フォローがありません" + '\n' )
+			CLS_OSIF.sPrn( "対象ユーザがありません" + '\n' )
 			wRes['Result'] = True
 			return wRes
 		

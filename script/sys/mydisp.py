@@ -49,6 +49,9 @@ class CLS_MyDisp():
 		###リストいいね設定画面
 		elif inDisp=="ListFavoConsole" :
 			cls.__dispInp_ListFavo( inLine, wRes, inData )
+		###禁止ユーザ画面
+		elif inDisp=="ExcUserConsole" :
+			cls.__dispInp_ExcUser( inLine, wRes, inData )
 		
 		return wRes
 
@@ -431,6 +434,23 @@ class CLS_MyDisp():
 		
 		###インプリ：リストいいね設定 一覧
 		if "[@LISTFAVO_LIST@]"==inLine :
+			pRes['Responce'] = inData
+		
+		#############################
+		# 正常
+		pRes['Result'] = True
+		return
+
+	#####################################################
+	# 禁止ユーザ画面
+	@classmethod
+	def __dispInp_ExcUser( cls, inLine, outRes, inData=None ):
+		pRes = outRes
+		#############################
+		# インプリメント処理
+		
+		###インプリ：禁止ユーザ 一覧
+		if "[@EXCUSER-LIST@]"==inLine :
 			pRes['Responce'] = inData
 		
 		#############################

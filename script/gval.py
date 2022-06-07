@@ -208,6 +208,7 @@ class gVal() :
 		"UserAdminConsole"		: DEF_DISPPATH + "useradmin_console.disp",
 		"KeywordConsole"		: DEF_DISPPATH + "keyword_console.disp",
 		"ListFavoConsole"		: DEF_DISPPATH + "listfavo_console.disp",
+		"ExcUserConsole"		: DEF_DISPPATH + "excuser_console.disp",
 		"(dummy)"				: 0
 	}
 

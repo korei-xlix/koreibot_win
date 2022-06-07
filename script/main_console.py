@@ -204,6 +204,11 @@ class CLS_Main_Console() :
 			cls.OBJ_TwitterMain.UserAdmin()
 		
 		#############################
+		# 禁止ユーザ
+		elif inCommand=="\\ue" :
+			cls.OBJ_TwitterMain.ExcuteUser()
+		
+		#############################
 		# リスト通知ユーザ表示
 ###		elif inCommand=="\\lv" :
 		elif inCommand=="\\iv" :

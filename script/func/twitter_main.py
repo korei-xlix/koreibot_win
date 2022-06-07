@@ -609,6 +609,15 @@ class CLS_TwitterMain():
 			return wRes
 		
 		#############################
+		# 検索ワード実行
+		if inFLG_Short==False :
+			wSubRes = self.OBJ_TwitterKeyword.RunKeywordSearchFavo()
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "RunKeywordSearchFavo"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+		
+		#############################
 		# 古いいいね情報の削除
 		if inFLG_Short==False :
 			wSubRes = gVal.OBJ_DB_IF.DeleteFavoData()
@@ -630,6 +639,15 @@ class CLS_TwitterMain():
 #####################################################
 	def UserAdmin(self):
 		wRes = self.OBJ_TwitterAdmin.UserAdmin()
+		return wRes
+
+
+
+#####################################################
+# 禁止ユーザ
+#####################################################
+	def ExcuteUser(self):
+		wRes = self.OBJ_TwitterAdmin.ExcuteUser()
 		return wRes
 
 

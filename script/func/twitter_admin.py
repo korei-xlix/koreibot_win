@@ -63,6 +63,7 @@ class CLS_TwitterAdmin():
 			"protected"			: False,		# 鍵付き
 			"blocking"			: False,		# ブロック
 			"blocked_by"		: False,		# 被ブロック
+			"excute_by"			: False,		# 禁止ユーザ
 			
 			"flg_db_set"		: False,		# DB設定 True=DBあり
 			"regdate"			: None,
@@ -454,6 +455,278 @@ class CLS_TwitterAdmin():
 		wRes['Responce'] = True
 		wRes['Result'] = True
 		return wRes
+
+
+
+#####################################################
+# 禁止ユーザ
+#####################################################
+	def ExcuteUser(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterAdmin"
+		wRes['Func']  = "ExcuteUser"
+		
+		#############################
+		# コンソールを表示
+		while True :
+			
+			#############################
+			# データ表示
+			self.__view_ExcuteUser()
+			
+			#############################
+			# 実行の確認
+			wListNumber = CLS_OSIF.sInp( "コマンド？(\\q=中止)=> " )
+			if wListNumber=="\\q" :
+				wRes['Result'] = True
+				return wRes
+			
+			#############################
+			# コマンド処理
+			wCommRes = self.__run_ExcuteUser( wListNumber )
+			if wCommRes['Result']!=True :
+				wRes['Reason'] = "__run_ExcuteUser is failed: " + wCommRes['Reason']
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+		
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	# 画面表示
+	#####################################################
+	def __view_ExcuteUser(self):
+		
+		wKeylist = list( gVal.ARR_NotReactionUser.keys() )
+		wStr = ""
+		for wI in wKeylist :
+			wStr = wStr + "   : "
+			
+			### リスト番号
+			wListData = str(gVal.ARR_NotReactionUser[wI]['list_number'])
+			wListNumSpace = 4 - len( wListData )
+			if wListNumSpace>0 :
+				wListData = wListData + " " * wListNumSpace
+			wStr = wStr + wListData + ": "
+			
+			### 通報 有効/無効
+			if gVal.ARR_NotReactionUser[wI]['report']==True :
+				wStr = wStr + "[〇]"
+			else:
+				wStr = wStr + "[  ]"
+			wStr = wStr + "   "
+			
+			### ユーザ名
+			wListData = gVal.ARR_NotReactionUser[wI]['screen_name']
+			wStr = wStr + wListData + '\n'
+		
+		wResDisp = CLS_MyDisp.sViewDisp( inDisp="ExcUserConsole", inIndex=-1, inData=wStr )
+		if wResDisp['Result']==False :
+			gVal.OBJ_L.Log( "D", wResDisp )
+		
+		return
+
+	#####################################################
+	# コマンド処理
+	#####################################################
+	def __run_ExcuteUser( self, inWord ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterAdmin"
+		wRes['Func']  = "__run_ExcuteUser"
+		
+		#############################
+		# s: 禁止ユーザ追加
+		if inWord=="\\s" :
+			self.__set_ExcuteUser()
+###			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# チェック
+		
+		wARR_Comm = str(inWord).split("-")
+		wCom = None
+		if len(wARR_Comm)==1 :
+			wNum = wARR_Comm[0]
+			wCom = None
+		elif len(wARR_Comm)==2 :
+			wNum = wARR_Comm[0]
+			wCom = wARR_Comm[1]
+		else:
+			CLS_OSIF.sPrn( "コマンドの書式が違います" + '\n' )
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		### 整数か
+		try:
+			wNum = int(wNum)
+		except ValueError:
+			CLS_OSIF.sPrn( "LIST番号が整数ではありません" + '\n' )
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# リストのインデックス
+		wGetIndex = gVal.OBJ_DB_IF.GetExeUserName( wNum )
+		if wGetIndex==None :
+			CLS_OSIF.sPrn( "LIST番号が範囲外です" + '\n' )
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# コマンドの分岐
+		
+		#############################
+		# コマンドなし: 通報の設定変更をする
+		if wCom==None :
+			self.__report_ExcuteUser( wGetIndex )
+###			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# c: 検索ワード変更
+		elif wCom=="c" :
+			self.__change_KeywordFavo( wGetIndex )
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# d: 検索ワード削除
+		elif wCom=="d" :
+			self.__delete_KeywordFavo( wGetIndex )
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# 範囲外のコマンド
+		else:
+			CLS_OSIF.sPrn( "コマンドが違います" + '\n' )
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	# 禁止ユーザ追加
+	#####################################################
+	def __set_ExcuteUser(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterAdmin"
+		wRes['Func']  = "__set_ExcuteUser"
+		
+		#############################
+		# コンソールを表示
+		wWord = CLS_OSIF.sInp( "禁止ユーザ？=> " )
+		if wWord=="" :
+			### 未入力は終了
+			wRes['Result'] = True
+			return wRes
+		
+		if wWord in gVal.ARR_NotReactionUser :
+			### ダブりは終了
+			wStr = "既に登録済みのユーザ: screen_user=" + wWord
+			CLS_OSIF.sInp( wStr )
+			
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# 実行の確認
+		wSubRes = gVal.OBJ_DB_IF.InsertExeUser( wWord )
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "InsertExeUser is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		wStr = "〇禁止ユーザを登録: screen_user=" + wWord
+		CLS_OSIF.sInp( wStr )
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	# 検索ワード 有効/無効
+	#####################################################
+	def __report_ExcuteUser( self, inName ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterAdmin"
+		wRes['Func']  = "__valid_KeywordFavo"
+		
+		#############################
+		# 実行の確認
+		wSubRes = gVal.OBJ_DB_IF.UpdateExeUser( inName )
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "UpdateExeUser is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	# 検索ワード削除
+	#####################################################
+	def __delete_KeywordFavo( self, inName ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterAdmin"
+		wRes['Func']  = "__delete_KeywordFavo"
+		
+		#############################
+		# コンソールを表示
+		wStr = "禁止ユーザ " + str( inName ) + " を削除します"
+		CLS_OSIF.sPrn( wStr )
+		wWord = CLS_OSIF.sInp( "  \\y=YES / other=中止=> " )
+		if wWord!="y" :
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# 実行の確認
+		wSubRes = gVal.OBJ_DB_IF.DeleteExeUser( inName )
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "DeleteExeUser is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		wStr = "禁止ユーザを削除しました"
+		CLS_OSIF.sInp( wStr )
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
+		return wRes
+
 
 
 
