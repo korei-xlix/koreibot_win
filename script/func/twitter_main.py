@@ -571,18 +571,18 @@ class CLS_TwitterMain():
 				return wRes
 		
 		#############################
-		# リスト登録ユーザチェック
-		wSubRes = self.CheckListUsers( inUpdate=True )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "CheckListUsers error"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
 		# リスト通知 リストとユーザの更新
 		wSubRes = self.UpdateListIndUser( inUpdate=True )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "UpdateListIndUser error"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# リスト登録ユーザチェック
+		wSubRes = self.CheckListUsers( inUpdate=True )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "CheckListUsers error"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
