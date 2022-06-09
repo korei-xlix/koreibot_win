@@ -662,10 +662,17 @@ class CLS_TwitterFavo():
 		#############################
 		# 禁止ユーザは除外
 ###		if wSTR_Tweet['user']['screen_name'] in gVal.DEF_STR_NOT_REACTION :
-		if wSTR_Tweet['user']['screen_name'] in gVal.ARR_NotReactionUser :
-#			wStr = "●外部いいね中止(禁止ユーザ): " + wSTR_Tweet['user']['screen_name'] + '\n' ;
-#			CLS_OSIF.sPrn( wStr )
-#			
+###		if wSTR_Tweet['user']['screen_name'] in gVal.ARR_NotReactionUser :
+####		wStr = "●外部いいね中止(禁止ユーザ): " + wSTR_Tweet['user']['screen_name'] + '\n' ;
+####		CLS_OSIF.sPrn( wStr )
+####		
+		wUserRes = self.OBJ_Parent.CheckExtUser( wSTR_Tweet['user']['screen_name'], "外部いいね中止" )
+		if wUserRes['Result']!=True :
+			wRes['Reason'] = "CheckExtUser failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		if wUserRes['Responce']==False :
+			### 禁止あり=除外
 			wRes['Result'] = True
 			return wRes
 		
@@ -971,6 +978,13 @@ class CLS_TwitterFavo():
 				wStr = wStr + "[〇]"
 			else:
 				wStr = wStr + "[  ]"
+			wStr = wStr + "  "
+			
+			### 警告の有無
+			if gVal.ARR_ListFavo[wI]['caution']==True :
+				wStr = wStr + "[〇]"
+			else:
+				wStr = wStr + "[  ]"
 			wStr = wStr + "    "
 			
 			### ユーザ名（screen_name）
@@ -1069,6 +1083,16 @@ class CLS_TwitterFavo():
 				gVal.ARR_ListFavo[wNum]['follow'] = False
 			else:
 				gVal.ARR_ListFavo[wNum]['follow'] = True
+			
+			gVal.ARR_ListFavo[wNum]['update'] = True
+		
+		#############################
+		# c: 警告 ON/OFF
+		elif wCom=="c" :
+			if gVal.ARR_ListFavo[wNum]['caution']==True :
+				gVal.ARR_ListFavo[wNum]['caution'] = False
+			else:
+				gVal.ARR_ListFavo[wNum]['caution'] = True
 			
 			gVal.ARR_ListFavo[wNum]['update'] = True
 		

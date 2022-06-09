@@ -2,7 +2,8 @@
  リストいいね設定
 --------------------
 
-   : LIST  有効  FOLLOW  USER NAME                 LIST NAME
+#   : LIST  有効  FOLLOW  USER NAME                 LIST NAME
+   : LIST  有効  FW含  警告   USER NAME                 LIST NAME
 
 [@LISTFAVO_LIST@]
 

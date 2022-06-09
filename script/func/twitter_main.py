@@ -571,6 +571,14 @@ class CLS_TwitterMain():
 				return wRes
 		
 		#############################
+		# リスト登録ユーザチェック
+		wSubRes = self.CheckListUsers( inUpdate=True )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "CheckListUsers error"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
 		# リスト通知 リストとユーザの更新
 		wSubRes = self.UpdateListIndUser( inUpdate=True )
 		if wSubRes['Result']!=True :
@@ -1156,7 +1164,15 @@ class CLS_TwitterMain():
 		#############################
 		# リアクション禁止ユーザか
 ###		if wARR_DBData['screen_name'] in gVal.DEF_STR_NOT_REACTION :
-		if wARR_DBData['screen_name'] in gVal.ARR_NotReactionUser :
+###		if wARR_DBData['screen_name'] in gVal.ARR_NotReactionUser :
+		wUserRes = self.CheckExtUser( wARR_DBData['screen_name'], "リアクション検出" )
+		if wUserRes['Result']!=True :
+			wRes['Reason'] = "CheckExtUser failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		if wUserRes['Responce']==False :
+			### 禁止あり=除外
+			
 			if wFLG_Action==True :
 				### 除外してない場合
 				
@@ -1509,9 +1525,9 @@ class CLS_TwitterMain():
 ###			wStr = "〇リスト通知ユーザ取: " + str( wSubRes['Responce'] ) + ".件" + '\n' ;
 ###			CLS_OSIF.sPrn( wStr )
 			if wSubRes['Responce']['Update']==True :
-				wStr = "〇リスト通知: " + str( wSubRes['Responce']['Num'] ) + ".件" + '\n' ;
+				wStr = "〇リスト通知: " + str( wSubRes['Responce']['Num'] ) + ".件" + '\n'
 			else:
-				wStr = "●リスト通知 未更新: " + str( wSubRes['Responce']['Num'] ) + ".件" + '\n' ;
+				wStr = "●リスト通知 未更新: " + str( wSubRes['Responce']['Num'] ) + ".件" + '\n'
 			CLS_OSIF.sPrn( wStr )
 		
 		#############################
@@ -1549,6 +1565,78 @@ class CLS_TwitterMain():
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# リスト登録ユーザチェック
+#####################################################
+	def CheckListUsers( self, inUpdate=False ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "CheckListUsers"
+		
+		wStr = "リスト登録ユーザチェック中..."
+		CLS_OSIF.sPrn( wStr )
+		#############################
+		# ListFavo一覧のうち
+		# 警告ありのリストをチェックする
+		wKeylist = list( gVal.ARR_ListFavo.keys() )
+		for wKey in wKeylist :
+			if gVal.ARR_ListFavo[wKey]['caution']!=True :
+				### 警告なしはスキップ
+				continue
+			
+			wStr = "〇チェック中リスト: " + gVal.ARR_ListFavo[wKey]['list_name']
+			CLS_OSIF.sPrn( wStr )
+			#############################
+			# Twitterからリストの登録ユーザ一覧を取得
+			wListRes = gVal.OBJ_Tw_IF.GetListSubscribers( gVal.ARR_ListFavo[wKey]['list_name'] )
+			if wListRes['Result']!=True :
+				wRes['Reason'] = "Twitter API Error(GetListSubscribers): " + wListRes['Reason']
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if len(wListRes['Responce'])==0 :
+				### 登録者なしはスキップ
+				continue
+			
+			wKeylistUser = list( wListRes['Responce'].keys() )
+			for wID in wKeylistUser :
+				wID = str(wID)
+				
+				### 警告済はスキップ
+				if wID in gVal.ARR_CautionUserID :
+					continue
+				
+				# ※警告確定
+				#############################
+				# 警告ツイートを作成
+				wTweet = "@" + wListRes['Responce'][wID]['screen_name'] + " "
+				wTweet = wTweet + "[ご注意] リスト " + gVal.ARR_ListFavo[wKey]['list_name'] + " はフォロー禁止です。" + '\n'
+				wTweet = wTweet + "[Caution] Sorry, The list " + gVal.ARR_ListFavo[wKey]['list_name'] + " is not allowed to follow." + '\n'
+				
+				#############################
+				# ツイート送信
+#				wTweetRes = gVal.OBJ_Tw_IF.Tweet( wTweet )
+#				if wTweetRes['Result']!=True :
+#					wRes['Reason'] = "Twitter API Error(3): " + wTweetRes['Reason']
+#					gVal.OBJ_L.Log( "B", wRes )
+#					return wRes
+				
+				### ログに記録
+				wRes['Reason'] = "●リスト登録への警告: " + wListRes['Responce'][wID]['screen_name']
+				gVal.OBJ_L.Log( "X", wRes )
+				
+				### IDを警告済に追加
+				gVal.ARR_CautionUserID.append( wID )
+		
+		#############################
+		# 正常終了
 		wRes['Result'] = True
 		return wRes
 
@@ -1665,6 +1753,39 @@ class CLS_TwitterMain():
 				CLS_OSIF.sPrn( wStr )
 				### 報告対象の表示と、ログに記録(テストログ)
 				wRes['Reason'] = "●報告対象の文字除外: id=" + inData['screen_name'] + " word=" + inWord
+				gVal.OBJ_L.Log( "X", wRes )
+			
+			### 除外
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# 正常終了
+		wRes['Responce'] = True
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# 禁止ユーザチェック
+#####################################################
+	def CheckExtUser( self, inName, inReason ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "CheckExtUser"
+		
+		wRes['Responce'] = False
+		#############################
+		# 禁止ユーザかチェック
+		if inName in gVal.ARR_NotReactionUser :
+			if gVal.ARR_NotReactionUser[inName]['report']==True :
+				CLS_OSIF.sPrn( wStr )
+				### 報告対象の表示と、ログに記録(テストログ)
+				wRes['Reason'] = "●禁止ユーザ: user=" + inName + " reason=" + inReason
 				gVal.OBJ_L.Log( "X", wRes )
 			
 			### 除外

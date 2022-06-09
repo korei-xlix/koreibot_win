@@ -1087,6 +1087,7 @@ class CLS_DB_IF() :
 				"list_id"		: wARR_DBData[wIndex]['list_id'],
 				"valid"			: wARR_DBData[wIndex]['valid'],
 				"follow"		: wARR_DBData[wIndex]['follow'],
+				"caution"		: wARR_DBData[wIndex]['caution'],
 				"update"		: False
 			}
 			wARR_Data.update({ wIndex : wCell })
@@ -1139,6 +1140,7 @@ class CLS_DB_IF() :
 				"list_id"		: wARR_Line[4],
 				"valid"			: True,
 				"follow"		: wFLG_Follow,
+				"caution"		: False,
 				"update"		: False
 			}
 			wARR_Data.update({ wIndex : wCell })
@@ -1177,7 +1179,8 @@ class CLS_DB_IF() :
 					"'" + str(wARR_Data[wKey]['list_name']) + "', " + \
 					"'" + str(wARR_Data[wKey]['list_id']) + "', " + \
 					"True, " + \
-					str(wARR_Data[wKey]['follow']) + " " + \
+					str(wARR_Data[wKey]['follow']) + ", " + \
+					str(wARR_Data[wKey]['caution']) + " " + \
 					") ;"
 			
 			#############################
@@ -1220,7 +1223,8 @@ class CLS_DB_IF() :
 			
 			wQuery = "update tbl_list_favo set " + \
 					"valid = " + str(gVal.ARR_ListFavo[wKey]['valid']) + ", " + \
-					"follow = " + str(gVal.ARR_ListFavo[wKey]['follow']) + " " + \
+					"follow = " + str(gVal.ARR_ListFavo[wKey]['follow']) + ", " + \
+					"caution = " + str(gVal.ARR_ListFavo[wKey]['caution']) + " " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
 					"id = '" + gVal.ARR_ListFavo[wKey]['id'] + "' and " + \
 					"list_id = '" + gVal.ARR_ListFavo[wKey]['list_id'] + "' " + \

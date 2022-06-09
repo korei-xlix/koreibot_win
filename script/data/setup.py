@@ -489,7 +489,8 @@ class CLS_Setup():
 					"list_name   TEXT  NOT NULL," + \
 					"list_id     TEXT  NOT NULL," + \
 					"valid       BOOL  DEFAULT true," + \
-					"follow      BOOL  DEFAULT false " + \
+					"follow      BOOL  DEFAULT false, " + \
+					"caution     BOOL  DEFAULT false " + \
 					" ) ;"
 		
 ##					"twitterid   記録したユーザ(Twitter ID)
@@ -498,6 +499,8 @@ class CLS_Setup():
 ##					"list_name     Listの名前
 ##					"list_id       ListのID（数値）
 ##					"valid       有効か True=有効
+##					"follow      フォロー者、フォロワーを含める
+##					"caution     リストフォロー時警告を出す
 		
 		inOBJ_DB.RunQuery( wQuery )
 		return
