@@ -2009,8 +2009,10 @@ class CLS_DB_IF() :
 			
 ###			wRes['Reason'] = "Delete FavoData : " + str( wResDB['Responce']['Data']['screen_name'] )
 ###			wRes['Reason'] = "Delete FavoData : " + wScreenName
-			wRes['Reason'] = "Delete FavoData : " + str( wARR_RateFavoData['screen_name'] )
-			gVal.OBJ_L.Log( "T", wRes )
+###			wRes['Reason'] = "Delete FavoData : " + str( wARR_RateFavoData['screen_name'] )
+###			gVal.OBJ_L.Log( "T", wRes )
+			wTextReason = "Delete FavoData : " + str( wARR_RateFavoData['screen_name'] )
+			gVal.OBJ_L.Log( "T", wRes, wTextReason )
 		
 		#############################
 		# 正常

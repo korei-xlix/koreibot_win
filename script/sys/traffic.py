@@ -128,8 +128,10 @@ class CLS_Traffic():
 			else :
 				gVal.STR_TrafficInfo[wKey] = 0
 		
-		wRes['Reason'] = "Insert Traffic: " + str(wARR_TD[0])
-		gVal.OBJ_L.Log( "T", wRes )
+###		wRes['Reason'] = "Insert Traffic: " + str(wARR_TD[0])
+###		gVal.OBJ_L.Log( "T", wRes )
+		wTextReason = "Insert Traffic: " + str(wARR_TD[0])
+		gVal.OBJ_L.Log( "T", wRes, wTextReason )
 		
 		#############################
 		# 正常終了

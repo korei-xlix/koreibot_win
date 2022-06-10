@@ -696,8 +696,10 @@ class CLS_TwitterKeyword():
 			
 			#############################
 			# ログに記録
-			wRes['Reason'] = "〇Run Favorite: user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
-			gVal.OBJ_L.Log( "T", wRes )
+###			wRes['Reason'] = "〇Run Favorite: user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
+###			gVal.OBJ_L.Log( "T", wRes )
+			wTextReason = "〇検索いいね実施: user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
+			gVal.OBJ_L.Log( "T", wRes, wTextReason )
 			
 			### キーワードユーザ 更新
 			wSubRes = self.UpdateKeywordFavoUser( wTweet )

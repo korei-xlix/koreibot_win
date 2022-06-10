@@ -121,8 +121,10 @@ class CLS_TwitterFavo():
 			if wRemoveRes['Responce']['Run']==True :
 ###				wStr = "●解除いいね日時: " + str(wRemoveRes['Responce']['Data']['created_at'])
 ###				CLS_OSIF.sPrn( wStr )
-				wRes['Reason'] = "●Remove Favorite: id=" + str(wID) + ": " + str(wRemoveRes['Responce']['Data']['created_at'])
-				gVal.OBJ_L.Log( "T", wRes )
+###				wRes['Reason'] = "●Remove Favorite: id=" + str(wID) + ": " + str(wRemoveRes['Responce']['Data']['created_at'])
+###				gVal.OBJ_L.Log( "T", wRes )
+				wTextReason = "●解除いいね日時: id=" + str(wID) + ": " + str(wRemoveRes['Responce']['Data']['created_at'])
+				gVal.OBJ_L.Log( "T", wRes, wTextReason )
 				
 				wRemTweet += 1
 			else:
@@ -539,8 +541,10 @@ class CLS_TwitterFavo():
 		wStr = "--------------------" + '\n' ;
 		if wSubRes['Responce']['Run']==True :
 ###			wStr = wStr + "○自動いいね 実施: " + inData['screen_name'] + '\n' ;
-			wRes['Reason'] = "〇Run Favorite: user=" + inData['screen_name'] + " id=" + str(wFavoID)
-			gVal.OBJ_L.Log( "T", wRes )
+###			wRes['Reason'] = "〇Run Favorite: user=" + inData['screen_name'] + " id=" + str(wFavoID)
+###			gVal.OBJ_L.Log( "T", wRes )
+			wTextReason = "〇自動いいね 実施: user=" + inData['screen_name'] + " id=" + str(wFavoID)
+			gVal.OBJ_L.Log( "T", wRes, wTextReason )
 			
 			wRes['Responce']['flg_favo_run'] = True		#いいね済み
 		else :
@@ -838,8 +842,10 @@ class CLS_TwitterFavo():
 		
 		if wSubRes['Responce']['Run']==True :
 ###			wStr = "○外部いいね 実施: " + wSTR_Tweet['user']['screen_name'] + '\n' ;
-			wRes['Reason'] = "〇Run Over Favorite: user=" + wSTR_Tweet['user']['screen_name'] + " id=" + str(wFavoID)
-			gVal.OBJ_L.Log( "T", wRes )
+###			wRes['Reason'] = "〇Run Over Favorite: user=" + wSTR_Tweet['user']['screen_name'] + " id=" + str(wFavoID)
+###			gVal.OBJ_L.Log( "T", wRes )
+			wTextReason = "〇外部いいね 実施: user=" + wSTR_Tweet['user']['screen_name'] + " id=" + str(wFavoID)
+			gVal.OBJ_L.Log( "T", wRes, wTextReason )
 			
 			wRes['Responce']['flg_favo_run'] = True		#いいね済み
 		else :

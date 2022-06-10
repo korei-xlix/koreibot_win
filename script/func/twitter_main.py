@@ -1467,8 +1467,10 @@ class CLS_TwitterMain():
 		
 ###		wStr = "○リスト通知の発行: " + inData['screen_name'] + '\n' ;
 ###		CLS_OSIF.sPrn( wStr )
-		wRes['Reason'] = "○リスト通知の発行: " + inData['screen_name']
-		gVal.OBJ_L.Log( "T", wRes )
+###		wRes['Reason'] = "○リスト通知の発行: " + inData['screen_name']
+###		gVal.OBJ_L.Log( "T", wRes )
+		wTextReason = "○リスト通知の発行: " + inData['screen_name']
+		gVal.OBJ_L.Log( "T", wRes, wTextReason )
 		
 		wRes['Result'] = True
 		return wRes
@@ -1541,8 +1543,10 @@ class CLS_TwitterMain():
 			
 ###			wStr = "●リスト通知を全クリアしました" + '\n' ;
 ###			CLS_OSIF.sPrn( wStr )
-			wRes['Reason'] = "●リスト通知クリア"
-			gVal.OBJ_L.Log( "T", wRes )
+###			wRes['Reason'] = "●リスト通知クリア"
+###			gVal.OBJ_L.Log( "T", wRes )
+			wTextReason = "●リスト通知クリア"
+			gVal.OBJ_L.Log( "T", wRes, wTextReason )
 		
 		wRes['Result'] = True
 		return wRes

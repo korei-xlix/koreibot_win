@@ -402,8 +402,10 @@ class CLS_TwitterFollower():
 		
 		#############################
 		# ログに記録
-		wRes['Reason'] = "Send FavoInfo at twitter"
-		gVal.OBJ_L.Log( "T", wRes )
+###		wRes['Reason'] = "Send FavoInfo at twitter"
+###		gVal.OBJ_L.Log( "T", wRes )
+		wTextReason = "いいね情報送信(Twitter)"
+		gVal.OBJ_L.Log( "T", wRes, wTextReason )
 		
 		#############################
 		# 送信済 いいね情報を更新する
