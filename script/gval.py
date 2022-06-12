@@ -119,7 +119,8 @@ class gVal() :
 		"favoCancelNum"		: 8,						#   いいね時 連続スキップでキャンセル
 ###		"autoRepFavoSec"	: 172800,					#   自動おかえしいいね時間 2日 (60x60x24)x2
 		"autoRepFavo"		: True,						#   自動おかえしいいね True=有効
-		"getUserTimeLine"	: 40,						#   相手ユーザ取得タイムライン数
+###		"getUserTimeLine"	: 40,						#   相手ユーザ取得タイムライン数
+		"getUserTimeLine"	: 80,						#   相手ユーザ取得タイムライン数
 		
 														# 周回待ち要
 		"defWaitCount"		: 16,						#   デフォルト待ち回数
@@ -155,7 +156,8 @@ class gVal() :
 		"forFollowerConfirmSec"	: 86400,				#   フォロワー状態の更新 期間   1日  (60x60x24)x1
 		
 														# キーワードいいね
-		"KeywordTweetLen"		: 40,					#   キーワードいいねツイート取得数
+###		"KeywordTweetLen"		: 40,					#   キーワードいいねツイート取得数
+		"KeywordTweetLen"		: 80,					#   キーワードいいねツイート取得数
 		"forKeywordTweetSec"	: 28800,				#   キーワードいいね いいね期間   8時間  60x60x8
 		"forKeywordObjectTweetSec"	: 86400,			#   キーワードいいね 対象いいね期間   1日  (60x60x24)x1
 		

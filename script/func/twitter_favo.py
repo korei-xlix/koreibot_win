@@ -482,9 +482,9 @@ class CLS_TwitterFavo():
 ###					gVal.OBJ_L.Log( "B", wRes )
 ###					return wRes
 ###			
-			### リプライは除外
-			if wTweet['in_reply_to_status_id']!=None :
-				continue
+###			### リプライは除外
+###			if wTweet['in_reply_to_status_id']!=None :
+###				continue
 			### リツイートは除外
 			if "retweeted_status" in wTweet :
 				continue
@@ -610,11 +610,17 @@ class CLS_TwitterFavo():
 			"name"				: None,
 			"screen_name"		: None
 		}
+		wSTR_SrcUser = {
+			"id"				: None,
+			"name"				: None,
+			"screen_name"		: None
+		}
 		wSTR_Tweet = {
 			"kind"				: None,
 			"id"				: wFavoID,
 			"text"				: inData['text'],
-			"user"				: wSTR_User
+			"user"				: wSTR_User,
+			"src_user"			: wSTR_SrcUser
 		}
 ###			"kind"				: "normal",
 ###		### wTweet['retweeted_status']['user']['id'] :
@@ -626,6 +632,10 @@ class CLS_TwitterFavo():
 			wUserID = str( inData['retweeted_status']['user']['id'] )
 			wName   = inData['retweeted_status']['user']['name'].replace( "'", "''" )
 			wSN     = inData['retweeted_status']['user']['screen_name']
+			
+			wSTR_Tweet['src_user']['id'] = str( inData['user']['id'] )
+			wSTR_Tweet['src_user']['name']        = inData['user']['name'].replace( "'", "''" )
+			wSTR_Tweet['src_user']['screen_name'] = inData['user']['screen_name']
 		
 		### 引用リツイート
 		elif "quoted_status" in inData :
@@ -633,6 +643,10 @@ class CLS_TwitterFavo():
 			wUserID = str( inData['quoted_status']['user']['id'] )
 			wName   = inData['quoted_status']['user']['name'].replace( "'", "''" )
 			wSN     = inData['quoted_status']['user']['screen_name']
+			
+			wSTR_Tweet['src_user']['id'] = str( inData['user']['id'] )
+			wSTR_Tweet['src_user']['name']        = inData['user']['name'].replace( "'", "''" )
+			wSTR_Tweet['src_user']['screen_name'] = inData['user']['screen_name']
 		
 		### リプライ
 		elif inData['in_reply_to_status_id']!=None or \
@@ -844,7 +858,13 @@ class CLS_TwitterFavo():
 ###			wStr = "○外部いいね 実施: " + wSTR_Tweet['user']['screen_name'] + '\n' ;
 ###			wRes['Reason'] = "〇Run Over Favorite: user=" + wSTR_Tweet['user']['screen_name'] + " id=" + str(wFavoID)
 ###			gVal.OBJ_L.Log( "T", wRes )
-			wTextReason = "〇外部いいね 実施: user=" + wSTR_Tweet['user']['screen_name'] + " id=" + str(wFavoID)
+###			wTextReason = "〇外部いいね 実施: user=" + wSTR_Tweet['user']['screen_name'] + " id=" + str(wFavoID)
+
+			if wSTR_Tweet['kind']=="retweet" or wSTR_Tweet['kind']=="quoted" :
+				wTextReason = "〇外部いいね 実施: user=" + wSTR_Tweet['user']['screen_name'] + " id=" + str(wFavoID)
+				wTextReason = wTextReason + " src_user=" + wSTR_Tweet['src_user']['screen_name']
+			else:
+				wTextReason = "〇外部いいね 実施: user=" + wSTR_Tweet['user']['screen_name'] + " id=" + str(wFavoID)
 			gVal.OBJ_L.Log( "T", wRes, wTextReason )
 			
 			wRes['Responce']['flg_favo_run'] = True		#いいね済み

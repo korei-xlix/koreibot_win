@@ -169,8 +169,12 @@ class CLS_Mylog():
 		
 		#############################
 		# ログの組み立て
-		if wLevel=="U" :
-			wOutLog = wSTR_Log['Reason']
+###		if wLevel=="U" :
+###		if wLevel=="U" or \
+		if wLevel=="U" or wLevel=="R" or \
+		   ( wLevel=="T" and inText!=None ) :
+###			wOutLog = wSTR_Log['Reason']
+			wOutLog = wLevel + ": " + wSTR_Log['Reason']
 		else:
 			wOutLog = wLevel + ": "
 			wOutLog = wOutLog + wSTR_Log['LogClass'] + ": "
