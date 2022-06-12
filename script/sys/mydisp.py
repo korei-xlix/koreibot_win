@@ -246,7 +246,7 @@ class CLS_MyDisp():
 				wStr = "  いいえ"
 			pRes['Responce'] = "    被ブロック                  : " + wStr
 		
-		###インプリ：いいね送信回数
+		###インプリ：いいね情報 送信回数
 		elif "[@USERADMIN-SEND_CNT@]"==inLine :
 			if inData['flg_db_set']==False :
 				wStr = "－－－"
@@ -254,9 +254,9 @@ class CLS_MyDisp():
 				wStr = str( inData['send_cnt'] )
 			else:
 				wStr = "  なし"
-			pRes['Responce'] = "    いいね送信回数              : " + wStr
+			pRes['Responce'] = "    いいね情報 送信回数         : " + wStr
 		
-		###インプリ：いいね総回数
+		###インプリ：いいね受信 総回数
 		elif "[@USERADMIN-FAVO_CNT@]"==inLine :
 			if inData['flg_db_set']==False :
 				wStr = "－－－"
@@ -264,9 +264,9 @@ class CLS_MyDisp():
 				wStr = str( inData['favo_cnt'] )
 			else:
 				wStr = "  なし"
-			pRes['Responce'] = "    いいね総回数                : " + wStr
+			pRes['Responce'] = "    いいね受信 総回数           : " + wStr
 		
-		###インプリ：いいね今週数
+		###インプリ：いいね受信 今週数
 		elif "[@USERADMIN-NOW_FAVO_CNT@]"==inLine :
 			if inData['flg_db_set']==False :
 				wStr = "－－－"
@@ -274,16 +274,16 @@ class CLS_MyDisp():
 				wStr = str( inData['now_favo_cnt'] )
 			else:
 				wStr = "  なし"
-			pRes['Responce'] = "    いいね今週数                : " + wStr
+			pRes['Responce'] = "    いいね受信 今週数           : " + wStr
 		
-		###インプリ：最終いいね実施日
+		###インプリ：最終いいね受信日
 		elif "[@USERADMIN-FAVO_DATE@]"==inLine :
 			if inData['flg_db_set']==False or \
 			   inData['favo_date']==None :
 				wStr = "－－－"
 			else:
 				wStr = str( inData['favo_date'] )
-			pRes['Responce'] = "    最終いいね実施日            : " + wStr
+			pRes['Responce'] = "    最終いいね受信日            : " + wStr
 		
 		###インプリ：最終リスト通知日
 		elif "[@USERADMIN-LIST_DATE@]"==inLine :
@@ -293,6 +293,15 @@ class CLS_MyDisp():
 			else:
 				wStr = str( inData['list_date'] )
 			pRes['Responce'] = "    最終リスト通知日            : " + wStr
+		
+		###インプリ：最終いいね実施日
+		elif "[@USERADMIN-LIST_FAVO_DATE@]"==inLine :
+			if inData['flg_db_set']==False or \
+			   inData['lfavo_date']==None :
+				wStr = "－－－"
+			else:
+				wStr = str( inData['lfavo_date'] )
+			pRes['Responce'] = "    最終いいね実施日            : " + wStr
 		
 		###インプリ：DB情報あり
 		elif "[@USERADMIN-EXIST@]"==inLine :

@@ -76,6 +76,8 @@ class CLS_TwitterAdmin():
 			"favo_date"			: None,
 			"list_date"			: None,
 			
+			"lfavo_date"		: None,
+			
 			"report"			: False			# 通報 True=通報あり
 		}
 		return
@@ -444,6 +446,7 @@ class CLS_TwitterAdmin():
 			self.STR_UserAdminInfo['now_favo_cnt'] = wARR_DBData['now_favo_cnt']
 			self.STR_UserAdminInfo['favo_date'] = str( wARR_DBData['favo_date'] )
 			self.STR_UserAdminInfo['list_date'] = str( wARR_DBData['list_date'] )
+			self.STR_UserAdminInfo['lfavo_date'] = str( wARR_DBData['lfavo_date'] )
 			
 			self.STR_UserAdminInfo['flg_db_set'] = True
 		
