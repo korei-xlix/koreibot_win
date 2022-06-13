@@ -504,7 +504,8 @@ class CLS_TwitterFavo():
 				continue
 			### センシティブなツイートは除外
 			if "possibly_sensitive" in wTweet :
-				continue
+				if str(wTweet['possibly_sensitive'])=="true" :
+					continue
 			
 			### 範囲時間内のツイートか
 			wGetLag = CLS_OSIF.sTimeLag( str( wTweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forReactionTweetSec'] )
@@ -707,12 +708,13 @@ class CLS_TwitterFavo():
 		# センシティブなツイートは除外
 		if inFLG_Sensitive==False :
 			if "possibly_sensitive" in inData :
-				wStr = "●外部いいね中止(センシティブ): " + wSTR_Tweet['user']['screen_name'] + '\n' ;
-				CLS_OSIF.sPrn( wStr )
-				
-				wRes['Responce']['flg_favo'] = True		#いいね済み扱い
-				wRes['Result'] = True
-				return wRes
+				if str(inData['possibly_sensitive'])=="true" :
+					wStr = "●外部いいね中止(センシティブ): " + wSTR_Tweet['user']['screen_name'] + '\n' ;
+					CLS_OSIF.sPrn( wStr )
+					
+					wRes['Responce']['flg_favo'] = True		#いいね済み扱い
+					wRes['Result'] = True
+					return wRes
 		
 		#############################
 		# 禁止ユーザは除外

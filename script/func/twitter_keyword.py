@@ -677,7 +677,8 @@ class CLS_TwitterKeyword():
 			### センシティブなツイートは除外
 			if gVal.ARR_SearchData[inIndex]['sensitive']==False :
 				if "possibly_sensitive" in wTweet :
-					continue
+					if str(wTweet['possibly_sensitive'])=="true" :
+						continue
 			
 			#############################
 			# 禁止ユーザは除外
