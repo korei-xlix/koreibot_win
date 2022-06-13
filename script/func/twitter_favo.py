@@ -309,7 +309,8 @@ class CLS_TwitterFavo():
 				# 自動いいね
 ###				wResFavo = self.OverAutoFavo( wTweet )
 ###				wResFavo = self.OverAutoFavo( wTweet, gVal.ARR_ListFavo[wKey]['follow'] )
-				wResFavo = self.OverAutoFavo( wTweet, wARR_FavoUserID, gVal.ARR_ListFavo[wKey]['follow'] )
+###				wResFavo = self.OverAutoFavo( wTweet, wARR_FavoUserID, gVal.ARR_ListFavo[wKey]['follow'] )
+				wResFavo = self.OverAutoFavo( wTweet, wARR_FavoUserID, gVal.ARR_ListFavo[wKey]['follow'], gVal.ARR_ListFavo[wKey]['sensitive'] )
 				if wResFavo['Result']!=True :
 					wRes['Reason'] = "Twitter Error"
 					gVal.OBJ_L.Log( "B", wRes )
@@ -590,7 +591,8 @@ class CLS_TwitterFavo():
 #####################################################
 ###	def OverAutoFavo( self, inData ):
 ###	def OverAutoFavo( self, inData, inFLG_Follow=False ):
-	def OverAutoFavo( self, inData, inARR_FavoUserID, inFLG_Follow=False ):
+###	def OverAutoFavo( self, inData, inARR_FavoUserID, inFLG_Follow=False ):
+	def OverAutoFavo( self, inData, inARR_FavoUserID, inFLG_Follow=False, inFLG_Sensitive=False ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -703,13 +705,14 @@ class CLS_TwitterFavo():
 		
 		#############################
 		# センシティブなツイートは除外
-		if "possibly_sensitive" in inData :
-			wStr = "●外部いいね中止(センシティブ): " + wSTR_Tweet['user']['screen_name'] + '\n' ;
-			CLS_OSIF.sPrn( wStr )
-			
-			wRes['Responce']['flg_favo'] = True		#いいね済み扱い
-			wRes['Result'] = True
-			return wRes
+		if inFLG_Sensitive==False :
+			if "possibly_sensitive" in inData :
+				wStr = "●外部いいね中止(センシティブ): " + wSTR_Tweet['user']['screen_name'] + '\n' ;
+				CLS_OSIF.sPrn( wStr )
+				
+				wRes['Responce']['flg_favo'] = True		#いいね済み扱い
+				wRes['Result'] = True
+				return wRes
 		
 		#############################
 		# 禁止ユーザは除外
@@ -1046,6 +1049,13 @@ class CLS_TwitterFavo():
 				wStr = wStr + "[〇]"
 			else:
 				wStr = wStr + "[  ]"
+			wStr = wStr + "  "
+			
+			### センシティブツイートを含める
+			if gVal.ARR_ListFavo[wI]['sensitive']==True :
+				wStr = wStr + "[〇]"
+			else:
+				wStr = wStr + "[  ]"
 			wStr = wStr + "    "
 			
 			### ユーザ名（screen_name）
@@ -1154,6 +1164,16 @@ class CLS_TwitterFavo():
 				gVal.ARR_ListFavo[wNum]['caution'] = False
 			else:
 				gVal.ARR_ListFavo[wNum]['caution'] = True
+			
+			gVal.ARR_ListFavo[wNum]['update'] = True
+		
+		#############################
+		# n: センシティブツイートを含める
+		elif wCom=="n" :
+			if gVal.ARR_ListFavo[wNum]['sensitive']==True :
+				gVal.ARR_ListFavo[wNum]['sensitive'] = False
+			else:
+				gVal.ARR_ListFavo[wNum]['sensitive'] = True
 			
 			gVal.ARR_ListFavo[wNum]['update'] = True
 		

@@ -209,6 +209,13 @@ class CLS_TwitterKeyword():
 				wStr = wStr + "[  ]"
 			wStr = wStr + "  "
 			
+			### センシティブツイートを含める
+			if gVal.ARR_SearchData[wI]['sensitive']==True :
+				wStr = wStr + "[〇]"
+			else:
+				wStr = wStr + "[  ]"
+			wStr = wStr + "  "
+			
 			### 検索ワード
 			wListData = gVal.ARR_SearchData[wI]['word']
 			wStr = wStr + wListData + '\n'
@@ -635,8 +642,9 @@ class CLS_TwitterKeyword():
 			if wTweet['text'].find("@")==0 :
 				continue
 			### センシティブなツイートは除外
-			if "possibly_sensitive" in wTweet :
-				continue
+			if gVal.ARR_SearchData[inIndex]['sensitive']==False :
+				if "possibly_sensitive" in wTweet :
+					continue
 			
 			#############################
 			# 禁止ユーザは除外

@@ -490,7 +490,8 @@ class CLS_Setup():
 					"list_id     TEXT  NOT NULL," + \
 					"valid       BOOL  DEFAULT true," + \
 					"follow      BOOL  DEFAULT false, " + \
-					"caution     BOOL  DEFAULT false " + \
+					"caution     BOOL  DEFAULT false, " + \
+					"sensitive   BOOL  DEFAULT false " + \
 					" ) ;"
 		
 ##					"twitterid   記録したユーザ(Twitter ID)
@@ -578,7 +579,8 @@ class CLS_Setup():
 					"hit_cnt     INTEGER DEFAULT 0," + \
 					"favo_cnt    INTEGER DEFAULT 0," + \
 					"update_date TIMESTAMP," + \
-					"valid       BOOL  DEFAULT false " + \
+					"valid       BOOL  DEFAULT false, " + \
+					"sensitive   BOOL  DEFAULT false " + \
 					" ) ;"
 		
 		inOBJ_DB.RunQuery( wQuery )

@@ -1088,6 +1088,7 @@ class CLS_DB_IF() :
 				"valid"			: wARR_DBData[wIndex]['valid'],
 				"follow"		: wARR_DBData[wIndex]['follow'],
 				"caution"		: wARR_DBData[wIndex]['caution'],
+				"sensitive"		: wARR_DBData[wIndex]['sensitive'],
 				"update"		: False
 			}
 			wARR_Data.update({ wIndex : wCell })
@@ -1141,6 +1142,7 @@ class CLS_DB_IF() :
 				"valid"			: True,
 				"follow"		: wFLG_Follow,
 				"caution"		: False,
+				"sensitive"		: False,
 				"update"		: False
 			}
 			wARR_Data.update({ wIndex : wCell })
@@ -1180,7 +1182,8 @@ class CLS_DB_IF() :
 					"'" + str(wARR_Data[wKey]['list_id']) + "', " + \
 					"True, " + \
 					str(wARR_Data[wKey]['follow']) + ", " + \
-					str(wARR_Data[wKey]['caution']) + " " + \
+					str(wARR_Data[wKey]['caution']) + ", " + \
+					str(wARR_Data[wKey]['sensitive']) + " " + \
 					") ;"
 			
 			#############################
@@ -1224,7 +1227,8 @@ class CLS_DB_IF() :
 			wQuery = "update tbl_list_favo set " + \
 					"valid = " + str(gVal.ARR_ListFavo[wKey]['valid']) + ", " + \
 					"follow = " + str(gVal.ARR_ListFavo[wKey]['follow']) + ", " + \
-					"caution = " + str(gVal.ARR_ListFavo[wKey]['caution']) + " " + \
+					"caution = " + str(gVal.ARR_ListFavo[wKey]['caution']) + ", " + \
+					"sensitive = " + str(gVal.ARR_ListFavo[wKey]['sensitive']) + " " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
 					"id = '" + gVal.ARR_ListFavo[wKey]['id'] + "' and " + \
 					"list_id = '" + gVal.ARR_ListFavo[wKey]['list_id'] + "' " + \
@@ -2061,7 +2065,8 @@ class CLS_DB_IF() :
 				"hit_cnt"		: wARR_DBData[wIndex]['hit_cnt'],
 				"favo_cnt"		: wARR_DBData[wIndex]['favo_cnt'],
 				"update_date"	: str(wARR_DBData[wIndex]['update_date']),
-				"valid"			: wARR_DBData[wIndex]['valid']
+				"valid"			: wARR_DBData[wIndex]['valid'],
+				"sensitive"		: wARR_DBData[wIndex]['sensitive']
 			}
 			wARR_Data.update({ str(wARR_DBData[wIndex]['id']) : wCell })
 		
@@ -2111,7 +2116,8 @@ class CLS_DB_IF() :
 			"hit_cnt"		: 0,
 			"favo_cnt"		: 0,
 			"update_date"	: wTimeDate,
-			"valid"			: True
+			"valid"			: True,
+			"sensitive"		: False
 		}
 		
 		#############################
@@ -2124,7 +2130,8 @@ class CLS_DB_IF() :
 				str( wCell['hit_cnt'] ) + ", " + \
 				str( wCell['favo_cnt'] ) + ", " + \
 				"'" + str( wCell['update_date'] ) + "', " + \
-				str( wCell['valid'] ) + " " + \
+				str( wCell['valid'] ) + ", " + \
+				str( wCell['sensitive'] ) + " " + \
 				") ;"
 		
 		#############################
@@ -2177,6 +2184,51 @@ class CLS_DB_IF() :
 		# データベースを更新する
 		wQuery = "update tbl_search_word set " + \
 					"valid = " + str(gVal.ARR_SearchData[wIndex]['valid']) + " " + \
+					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
+					"id = '" + wIndex + "' " + \
+					";"
+		
+		#############################
+		# クエリの実行
+		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			CLS_OSIF.sErr( wRes )
+			return wRes
+		
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def SensitiveSearchWord( self, inIndex ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "SensitiveSearchWord"
+		
+		#############################
+		# インデックスチェック
+		wIndex = str(inIndex)
+		if wIndex not in gVal.ARR_SearchData :
+			wRes['Reason'] = "Index is not found: index=" + inIndex
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# センシティブ設定の切り替え
+		if gVal.ARR_SearchData[wIndex]['sensitive']==True :
+			gVal.ARR_SearchData[wIndex]['sensitive'] = False
+		else:
+			gVal.ARR_SearchData[wIndex]['sensitive'] = True
+		
+		#############################
+		# データベースを更新する
+		wQuery = "update tbl_search_word set " + \
+					"sensitive = " + str(gVal.ARR_SearchData[wIndex]['sensitive']) + " " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
 					"id = '" + wIndex + "' " + \
 					";"
