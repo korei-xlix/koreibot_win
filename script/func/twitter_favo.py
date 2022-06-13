@@ -499,8 +499,10 @@ class CLS_TwitterFavo():
 			### 引用リツイートは除外
 			if "quoted_status" in wTweet :
 				continue
-			### リプライは除外(ツイートの先頭が @文字=リプライ)
-			if wTweet['text'].find("@")==0 :
+###			### リプライは除外(ツイートの先頭が @文字=リプライ)
+###			if wTweet['text'].find("@")==0 :
+			### リプライは除外
+			if wTweet['text'].find("@")>=0 :
 				continue
 			### センシティブなツイートは除外
 			if "possibly_sensitive" in wTweet :
@@ -667,7 +669,8 @@ class CLS_TwitterFavo():
 		### リプライ
 ###		elif inData['in_reply_to_status_id']!=None or \
 ###			 wSTR_Tweet['text'].find("@")==0 :
-		elif wSTR_Tweet['text'].find("@")==0 :
+###		elif wSTR_Tweet['text'].find("@")==0 :
+		elif wSTR_Tweet['text'].find("@")>=0 :
 			wSTR_Tweet['kind'] = "reply"
 			wUserID = str( inData['user']['id'] )
 			wName   = inData['user']['name'].replace( "'", "''" )
