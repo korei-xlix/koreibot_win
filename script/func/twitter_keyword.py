@@ -634,6 +634,9 @@ class CLS_TwitterKeyword():
 			### リプライは除外(ツイートの先頭が @文字=リプライ)
 			if wTweet['text'].find("@")==0 :
 				continue
+			### センシティブなツイートは除外
+			if "possibly_sensitive" in wTweet :
+				continue
 			
 			#############################
 			# 禁止ユーザは除外
@@ -648,12 +651,12 @@ class CLS_TwitterKeyword():
 				### 禁止あり=除外
 				continue
 			
-			#############################
-			# フォロー者、フォロワーを除外
-			if gVal.OBJ_Tw_IF.CheckMyFollow( wUserID)==True or \
-			   gVal.OBJ_Tw_IF.CheckFollower( wUserID)==True :
-				continue
-			
+###			#############################
+###			# フォロー者、フォロワーを除外
+###			if gVal.OBJ_Tw_IF.CheckMyFollow( wUserID)==True or \
+###			   gVal.OBJ_Tw_IF.CheckFollower( wUserID)==True :
+###				continue
+###			
 			### 範囲時間内のツイートか
 			wGetLag = CLS_OSIF.sTimeLag( str( wTweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forKeywordObjectTweetSec'] )
 			if wGetLag['Result']!=True :
