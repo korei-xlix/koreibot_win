@@ -647,6 +647,7 @@ class CLS_DB_IF() :
 		#############################
 		# グローバルを更新する
 		gVal.ARR_ExeWord = wARR_Word
+		gVal.ARR_ExeWordKeys = list( wARR_Word.keys() )
 		
 		wRes['Result'] = True
 		return wRes

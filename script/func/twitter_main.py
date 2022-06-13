@@ -1750,18 +1750,29 @@ class CLS_TwitterMain():
 		wRes['Responce'] = False
 		#############################
 		# 除外文字があるかチェック
-		if inWord in gVal.ARR_ExeWord :
-			if gVal.ARR_ExeWord[inWord]['report']==True :
-###				wStr = "●報告対象の文字除外: id=" + inData['screen_name'] + '\n'
-###				wStr = wStr + inWord + '\n'
-				CLS_OSIF.sPrn( wStr )
-				### 報告対象の表示と、ログに記録(テストログ)
-				wRes['Reason'] = "●報告対象の文字除外: id=" + inData['screen_name'] + " word=" + inWord
-				gVal.OBJ_L.Log( "X", wRes )
-			
-			### 除外
-			wRes['Result'] = True
-			return wRes
+###		if inWord in gVal.ARR_ExeWord :
+###			if gVal.ARR_ExeWord[inWord]['report']==True :
+####			wStr = "●報告対象の文字除外: id=" + inData['screen_name'] + '\n'
+####			wStr = wStr + inWord + '\n'
+###				CLS_OSIF.sPrn( wStr )
+###				### 報告対象の表示と、ログに記録(テストログ)
+###				wRes['Reason'] = "●報告対象の文字除外: id=" + inData['screen_name'] + " word=" + inWord
+###				gVal.OBJ_L.Log( "X", wRes )
+###			
+###			### 除外
+###			wRes['Result'] = True
+###			return wRes
+		for wExeWord in gVal.ARR_ExeWordKeys :
+			if inWord.find( wExeWord )>=0 :
+				if gVal.ARR_ExeWord[wExeWord]['report']==True :
+					CLS_OSIF.sPrn( wStr )
+					### 報告対象の表示と、ログに記録(テストログ)
+					wRes['Reason'] = "●報告対象の文字除外: id=" + inData['screen_name'] + " word=" + inWord
+					gVal.OBJ_L.Log( "X", wRes )
+				
+				### 除外
+				wRes['Result'] = True
+				return wRes
 		
 		#############################
 		# 正常終了
