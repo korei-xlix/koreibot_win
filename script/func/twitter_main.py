@@ -1621,16 +1621,16 @@ class CLS_TwitterMain():
 				#############################
 				# 警告ツイートを作成
 				wTweet = "@" + wListRes['Responce'][wID]['screen_name'] + " "
-				wTweet = wTweet + "[ご注意] リスト " + gVal.ARR_ListFavo[wKey]['list_name'] + " はフォロー禁止です。" + '\n'
+				wTweet = wTweet + "[ご注意] リスト " + gVal.ARR_ListFavo[wKey]['list_name'] + " はフォロー禁止です。" + '\n' + '\n'
 				wTweet = wTweet + "[Caution] Sorry, The list " + gVal.ARR_ListFavo[wKey]['list_name'] + " is not allowed to follow." + '\n'
 				
 				#############################
 				# ツイート送信
-#				wTweetRes = gVal.OBJ_Tw_IF.Tweet( wTweet )
-#				if wTweetRes['Result']!=True :
-#					wRes['Reason'] = "Twitter API Error(3): " + wTweetRes['Reason']
-#					gVal.OBJ_L.Log( "B", wRes )
-#					return wRes
+				wTweetRes = gVal.OBJ_Tw_IF.Tweet( wTweet )
+				if wTweetRes['Result']!=True :
+					wRes['Reason'] = "Twitter API Error(3): " + wTweetRes['Reason']
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
 				
 				### ログに記録
 				wRes['Reason'] = "●リスト登録への警告: " + wListRes['Responce'][wID]['screen_name']
