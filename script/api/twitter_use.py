@@ -76,6 +76,7 @@ class CLS_Twitter_Use():
 	ARR_TwitterList = {}	#Twitterリスト
 	# id    リストid
 	# name  リスト名
+	# me    自分か True=自分
 
 	ARR_MuteList = []	#ミュートIDs(リスト)
 
@@ -291,6 +292,10 @@ class CLS_Twitter_Use():
 		# Twitter接続
 		if self.__twConnect()!=True :
 			return False
+		
+		#############################
+		# リストクリア
+		self.ARR_TwitterList = {}
 		
 		return True
 
@@ -2751,7 +2756,7 @@ class CLS_Twitter_Use():
 		
 		wFLG_Me = False
 		#############################
-		# パラメータの生成
+		# 名前の設定
 		wScreenName = inScreenName
 ###		if inScreenName==None :
 		if wScreenName==None :
@@ -2763,6 +2768,16 @@ class CLS_Twitter_Use():
 ###		else :
 ###			wScreenName = inScreenName
 		
+		#############################
+		# リストがロード済なら終わる
+		#   = Twittter Connect時にクリアされる
+		if wScreenName in self.ARR_TwitterList :
+			wRes['Responce'] = self.ARR_TwitterList[wScreenName]
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# パラメータの生成
 ###		wParams = {
 ###			"screen_name" : self.STR_TWITTERdata['TwitterID']
 ###		}
@@ -2821,11 +2836,14 @@ class CLS_Twitter_Use():
 			wARR_List.update({ wIndex : wCell })
 			wIndex += 1
 		
+###		#############################
+###		# 自分ならグローバルに保存する
+###		if wFLG_Me==True :
+###			self.ARR_TwitterList = wARR_List
 		#############################
-		# 自分ならグローバルに保存する
-		if wFLG_Me==True :
-			self.ARR_TwitterList = wARR_List
-
+		# グローバルに保存する
+		self.ARR_TwitterList.update({ wScreenName : wARR_List })
+		
 		#############################
 		# 一覧を返す
 ###		wRes['Responce'] = self.ARR_TwitterList
@@ -2902,7 +2920,8 @@ class CLS_Twitter_Use():
 		#############################
 		# API規制チェック
 		if self.__get_APIrect( "lists_members" )!=True :
-			wRes['Reason'] = "Twitter規制中(アプリ内)"
+###			wRes['Reason'] = "Twitter規制中(アプリ内)"
+			wRes['Reason'] = "Twitter規制中(アプリ内): countt=" + str(self.TwStatus['APIrect']['lists_members']['num'])
 			return wRes
 		
 		#############################
