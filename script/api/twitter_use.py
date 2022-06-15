@@ -121,56 +121,64 @@ class CLS_Twitter_Use():
 		#   ※アプリでの規制値は 15分 * 80% で計算する
 		self.TwStatus['APIrect'] = {}
 		###	POST														# リクエストとTwitter規制値
-		self.__set_API( "status",      20, self.TwStatus['APIrect'] )	# POST: 3h/300 (ツイートとリツイは共通)
-		self.__set_API( "favorites",    8, self.TwStatus['APIrect'] )	# POST: 24h/1000
-		self.__set_API( "friendships",  3, self.TwStatus['APIrect'] )	# POST: 24h/400
-		self.__set_API( "muted",       20, self.TwStatus['APIrect'] )	# POST: 3h/300
-		self.__set_API( "directmsg",    8, self.TwStatus['APIrect'] )	# POST: 24h/400
+		self.__set_API( "status",      20 )			# POST: 3h/300 (ツイートとリツイは共通)
+		self.__set_API( "favorites",    8 )			# POST: 24h/1000
+		self.__set_API( "friendships",  3 )			# POST: 24h/400
+		self.__set_API( "muted",       20 )			# POST: 3h/300
+		self.__set_API( "directmsg",    8 )			# POST: 24h/400
 		
 		###	GET
-		self.__set_API( "home_timeline",  12, self.TwStatus['APIrect'] )# GET: 15m/15
-		self.__set_API( "mention_timeline", 60, self.TwStatus['APIrect'] )# GET: 15m/75
-		self.__set_API( "user_timeline", 720, self.TwStatus['APIrect'] )# GET: 15m/900
-		self.__set_API( "lists_status",  720, self.TwStatus['APIrect'] )# GET: 15m/900
-		self.__set_API( "search_tweets", 144, self.TwStatus['APIrect'] )# GET: 15m/180
-		self.__set_API( "friends_list",   12, self.TwStatus['APIrect'] )# GET: 15m/15
-		self.__set_API( "friends_show",   12, self.TwStatus['APIrect'] )# GET: 15m/15
-		self.__set_API( "friends_ids",    12, self.TwStatus['APIrect'] )# GET: 15m/15
-		self.__set_API( "followers_list", 12, self.TwStatus['APIrect'] )# GET: 15m/15
-		self.__set_API( "favorites_list", 60, self.TwStatus['APIrect'] )# GET: 15m/75
-		self.__set_API( "lists_list",     12, self.TwStatus['APIrect'] )# GET: 15m/15
-		self.__set_API( "lists_members", 720, self.TwStatus['APIrect'] )# GET: 15m/900
-		self.__set_API( "lists_subscribers", 144, self.TwStatus['APIrect'] )# GET: 15m/180
-		self.__set_API( "trends_place",   60, self.TwStatus['APIrect'] )# GET: 15m/75
-		self.__set_API( "users_show",    900, self.TwStatus['APIrect'] )# GET: 15m/900
-		self.__set_API( "friendships_show", 144, self.TwStatus['APIrect'] )# GET: 15m/180
-		self.__set_API( "mute_list",      12, self.TwStatus['APIrect'] )# GET: 15m/15
-		self.__set_API( "tweet_status",  240, self.TwStatus['APIrect'] )# GET: 15m/300
-		self.__set_API( "tweet_lookup",  240, self.TwStatus['APIrect'] )# GET: 15m/300
-		self.__set_API( "mention_lookup", 144, self.TwStatus['APIrect'] )# GET: 15m/180
-		self.__set_API( "likes_lookup",   40, self.TwStatus['APIrect'] )# GET: 15m/50
-		self.__set_API( "retweet_lookup", 60, self.TwStatus['APIrect'] )# GET: 15m/75
-		self.__set_API( "search_tweets_v2", 144, self.TwStatus['APIrect'] )# GET: 15m/180
-		self.__set_API( "fleet_list",    144, self.TwStatus['APIrect'] )# GET: 15m/180
-		self.__set_API( "fleet_users",    80, self.TwStatus['APIrect'] )# GET: 15m/100
+		self.__set_API( "home_timeline",	12 )	# GET: 15m/15
+		self.__set_API( "mention_timeline",	60 )	# GET: 15m/75
+		self.__set_API( "user_timeline",	720 )	# GET: 15m/900
+		self.__set_API( "lists_status",		720 )	# GET: 15m/900
+		self.__set_API( "search_tweets",	144 )	# GET: 15m/180
+		self.__set_API( "friends_list",		12 )	# GET: 15m/15
+		self.__set_API( "friends_show",		12 )	# GET: 15m/15
+		self.__set_API( "friends_ids",		12 )	# GET: 15m/15
+		self.__set_API( "followers_list",	12 )	# GET: 15m/15
+		self.__set_API( "favorites_list",	60 )	# GET: 15m/75
+		self.__set_API( "lists_list",		12 )	# GET: 15m/15
+		self.__set_API( "lists_members",	720 )	# GET: 15m/900
+		self.__set_API( "lists_subscribers", 144 )	# GET: 15m/180
+		self.__set_API( "trends_place",		60 )	# GET: 15m/75
+		self.__set_API( "users_show",		900 )	# GET: 15m/900
+		self.__set_API( "friendships_show",	144 )	# GET: 15m/180
+		self.__set_API( "mute_list",		12 )	# GET: 15m/15
+		self.__set_API( "tweet_status",		240 )	# GET: 15m/300
+		self.__set_API( "tweet_lookup",		240 )	# GET: 15m/300
+		self.__set_API( "mention_lookup",	144 )	# GET: 15m/180
+		self.__set_API( "likes_lookup",		40 )	# GET: 15m/50
+		self.__set_API( "retweet_lookup",	60 )	# GET: 15m/75
+		self.__set_API( "search_tweets_v2",	144 )	# GET: 15m/180
+		self.__set_API( "fleet_list",		144 )	# GET: 15m/180
+		self.__set_API( "fleet_users",		80 )	# GET: 15m/100
 		return
 
 	#####################################################
-	def __set_API( self, inName, inMAX, outStatus ):
-		pStatus = outStatus
-		pStatus.update({ inName : {} })
-		self.__set_APIcolum( inMAX, pStatus[inName] )
+###	def __set_API( self, inName, inMAX, outStatus ):
+###		pStatus = outStatus
+###		pStatus.update({ inName : {} })
+###		self.__set_APIcolum( inMAX, pStatus[inName] )
+###		return
+	def __set_API( self, inName, inMAX ):
+		wCell = {
+			"num"	: 0,
+			"max"	: inMAX,
+			"rect"	: False
+		}
+		self.TwStatus['APIrect'].update({ inName : wCell })
 		return
 
-	#####################################################
-	def __set_APIcolum( self, inMAX, outStatus ):
-		pStatus = outStatus
-		pStatus.update({ "num"    :  0 })
-		pStatus.update({ "max"    : inMAX })
-		pStatus.update({ "rect"   : False })
-		return
-
-
+###	#####################################################
+###	def __set_APIcolum( self, inMAX, outStatus ):
+###		pStatus = outStatus
+###		pStatus.update({ "num"    :  0 })
+###		pStatus.update({ "max"    : inMAX })
+###		pStatus.update({ "rect"   : False })
+###		return
+###
+###
 
 #####################################################
 # API規制値カウント
