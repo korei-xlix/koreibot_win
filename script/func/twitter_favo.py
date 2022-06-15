@@ -288,7 +288,7 @@ class CLS_TwitterFavo():
 			#############################
 			# タイムラインを取得する
 			wTweetRes = gVal.OBJ_Tw_IF.GetTL( inTLmode="list", inFLG_Rep=True, inFLG_Rts=True,
-				 inID=wUserID, inListID=gVal.ARR_ListFavo[wKey]['list_id'],
+				 inID=wUserID, inListID=wListID,
 				 inCount=gVal.DEF_STR_TLNUM['getUserTimeLine'] )
 			if wTweetRes['Result']!=True :
 				wRes['Reason'] = "Twitter Error: GetTL"
