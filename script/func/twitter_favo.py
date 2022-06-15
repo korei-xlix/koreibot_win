@@ -739,7 +739,7 @@ class CLS_TwitterFavo():
 			wOverUserID = wSTR_Tweet['src_user']['id']
 			
 			if wOverUserID in self.ARR_OverFavoUserID :
-				if self.ARR_OverFavoUserID[wOverUserID]>gVal.DEF_STR_TLNUM['forOverListFavoCount'] :
+				if self.ARR_OverFavoUserID[wOverUserID]>=gVal.DEF_STR_TLNUM['forOverListFavoCount'] :
 					### 規定回数超え
 #					wStr = "●外部いいね中止(外部ユーザ規定数): " + wName + '\n' ;
 #					CLS_OSIF.sPrn( wStr )
