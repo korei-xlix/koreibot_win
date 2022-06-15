@@ -264,9 +264,31 @@ class CLS_TwitterFavo():
 			CLS_OSIF.sPrn( wStr )
 			
 			#############################
+			# ユーザIDの取得
+			wUserInfoRes = gVal.OBJ_Tw_IF.GetUserinfo( inScreenName=gVal.ARR_ListFavo[wKey]['screen_name'] )
+			if wUserInfoRes['Result']!=True :
+				wRes['Reason'] = "Twitter Error: @" + gVal.ARR_ListFavo[wKey]['screen_name']
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			
+			### IDの取得
+			wUserID = str( wUserInfoRes['Responce']['id'] )
+			
+			#############################
+			# リストIDの取得
+			wListsRes = gVal.OBJ_Tw_IF.GetListID( gVal.ARR_ListFavo[wKey]['screen_name'], gVal.ARR_ListFavo[wKey]['list_name'] )
+			if wListsRes['Result']!=True :
+				wRes['Reason'] = "Twitter Error: GetListID"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			
+			### List IDの取得
+			wListID = str( wListsRes['Responce'] )
+			
+			#############################
 			# タイムラインを取得する
 			wTweetRes = gVal.OBJ_Tw_IF.GetTL( inTLmode="list", inFLG_Rep=True, inFLG_Rts=True,
-				 inID=gVal.ARR_ListFavo[wKey]['id'], inListID=gVal.ARR_ListFavo[wKey]['list_id'],
+				 inID=wUserID, inListID=gVal.ARR_ListFavo[wKey]['list_id'],
 				 inCount=gVal.DEF_STR_TLNUM['getUserTimeLine'] )
 			if wTweetRes['Result']!=True :
 				wRes['Reason'] = "Twitter Error: GetTL"

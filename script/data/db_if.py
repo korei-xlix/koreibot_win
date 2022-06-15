@@ -1081,9 +1081,11 @@ class CLS_DB_IF() :
 		# 除外文字データを登録する
 		wKeylist = list( wARR_DBData.keys() )
 		for wIndex in wKeylist :
+			wScreenName = wARR_DBData[wIndex]['screen_name']
+			
 			wCell = {
-				"screen_name"	: wARR_DBData[wIndex]['screen_name'],
-###				"id"			: wARR_DBData[wIndex]['id'],
+###				"screen_name"	: wARR_DBData[wIndex]['screen_name'],
+				"screen_name"	: wScreenName,
 				"list_name"		: wARR_DBData[wIndex]['list_name'],
 ###				"list_id"		: wARR_DBData[wIndex]['list_id'],
 				"valid"			: wARR_DBData[wIndex]['valid'],
@@ -1165,6 +1167,7 @@ class CLS_DB_IF() :
 				"auto_rem"		: wARR_Line[3],
 				"update"		: False
 			}
+			
 			wARR_Data.update({ wIndex : wCell })
 			wIndex += 1
 		

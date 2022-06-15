@@ -1505,16 +1505,17 @@ class CLS_TwitterMain():
 ###		wSubRes = gVal.OBJ_Tw_IF.GetListInd( inUpdate=inUpdate )
 		#############################
 		# リストの取得
-		wSubRes = gVal.OBJ_Tw_IF.GetList( inListName=gVal.STR_UserInfo['ListName'], inUpdate=inUpdate )
+###		wSubRes = gVal.OBJ_Tw_IF.GetList( inListName=gVal.STR_UserInfo['ListName'], inUpdate=inUpdate )
+		wSubRes = gVal.OBJ_Tw_IF.GetList()
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "GetListInd error"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		if wSubRes['Responce']!=True :
-			gVal.STR_UserInfo['ListName'] = ""
-			wRes['Reason'] = "GetListInd is not list: " + gVal.STR_UserInfo['ListName']
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
+###		if wSubRes['Responce']!=True :
+###			gVal.STR_UserInfo['ListName'] = ""
+###			wRes['Reason'] = "GetListInd is not list: " + gVal.STR_UserInfo['ListName']
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
 		
 		#############################
 		# まだ今日の場合
