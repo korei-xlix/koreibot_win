@@ -1627,9 +1627,12 @@ class CLS_TwitterMain():
 				# ※警告確定
 				#############################
 				# 警告ツイートを作成
-				wTweet = "@" + wListRes['Responce'][wID]['screen_name'] + " "
-				wTweet = wTweet + "[ご注意] リスト " + gVal.ARR_ListFavo[wKey]['list_name'] + " はフォロー禁止です。" + '\n' + '\n'
-				wTweet = wTweet + "[Caution] Sorry, The list " + gVal.ARR_ListFavo[wKey]['list_name'] + " is not allowed to follow." + '\n'
+###				wTweet = "@" + wListRes['Responce'][wID]['screen_name'] + " "
+###				wTweet = wTweet + "[ご注意] リスト " + gVal.ARR_ListFavo[wKey]['list_name'] + " はフォロー禁止です。" + '\n' + '\n'
+###				wTweet = wTweet + "[Caution] Sorry, The list " + gVal.ARR_ListFavo[wKey]['list_name'] + " is not allowed to follow." + '\n'
+				wTweet = "@" + wListRes['Responce'][wID]['screen_name'] + '\n'
+				wTweet = wTweet + "[ご注意] ユーザ " + gVal.ARR_ListFavo[wKey]['screen_name'] + " のリスト " + gVal.ARR_ListFavo[wKey]['list_name'] + " はフォロー禁止です。" + '\n'
+				wTweet = wTweet + "[Caution] Excuse me. The list " + gVal.ARR_ListFavo[wKey]['list_name'] + " for user " + gVal.ARR_ListFavo[wKey]['screen_name'] + " is unfollowable."
 				
 				#############################
 				# ツイート送信
