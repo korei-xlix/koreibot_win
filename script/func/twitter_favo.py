@@ -14,6 +14,10 @@ from gval import gVal
 class CLS_TwitterFavo():
 #####################################################
 	OBJ_Parent = ""				#親クラス実体
+	
+	ARR_FavoUserID = {}
+	ARR_OverFavoUserID = {}
+	
 
 #####################################################
 # Init
@@ -181,6 +185,9 @@ class CLS_TwitterFavo():
 				return wRes
 		
 		self.OBJ_Parent.CHR_GetListFavoDate = None	#一度クリアしておく(異常時再取得するため)
+		
+		self.ARR_FavoUserID = {}
+		self.ARR_OverFavoUserID = {}
 		#############################
 		# 取得開始の表示
 		if inFLG_FirstDisp==True :
@@ -245,7 +252,7 @@ class CLS_TwitterFavo():
 ###			continue	#次へ
 ###		
 ###		wARR_Counter = {}
-		wARR_FavoUserID = []
+###		wARR_FavoUserID = []
 		wTweetNum  = 0
 		wFavoTweet = 0
 		#############################
@@ -332,7 +339,8 @@ class CLS_TwitterFavo():
 ###				wResFavo = self.OverAutoFavo( wTweet )
 ###				wResFavo = self.OverAutoFavo( wTweet, gVal.ARR_ListFavo[wKey]['follow'] )
 ###				wResFavo = self.OverAutoFavo( wTweet, wARR_FavoUserID, gVal.ARR_ListFavo[wKey]['follow'] )
-				wResFavo = self.OverAutoFavo( wTweet, wARR_FavoUserID, gVal.ARR_ListFavo[wKey]['follow'], gVal.ARR_ListFavo[wKey]['sensitive'] )
+###				wResFavo = self.OverAutoFavo( wTweet, wARR_FavoUserID, gVal.ARR_ListFavo[wKey]['follow'], gVal.ARR_ListFavo[wKey]['sensitive'] )
+				wResFavo = self.OverAutoFavo( wTweet, gVal.ARR_ListFavo[wKey] )
 				if wResFavo['Result']!=True :
 					wRes['Reason'] = "Twitter Error"
 					gVal.OBJ_L.Log( "B", wRes )
@@ -347,13 +355,18 @@ class CLS_TwitterFavo():
 					wFLG_ZanCountSkip = True
 				
 				if wResFavo['Responce']['flg_favo']==True :
-					### いいね済み扱いはカウント
+###					### いいね済み扱いはカウント
 ###					wARR_Counter[wUserID]['cnt'] += 1
-					wUserID = wResFavo['Responce']['data']['user']['id']
-					if wUserID not in wARR_FavoUserID :
-						wARR_FavoUserID.append( wUserID )
-					else:
-						wFLG_ZanCountSkip = True
+###					wUserID = wResFavo['Responce']['data']['user']['id']
+###					if wUserID not in wARR_FavoUserID :
+###						wARR_FavoUserID.append( wUserID )
+###					if wUserID not in self.ARR_FavoUserID :
+###						self.ARR_FavoUserID.update({ wUserID : 1 })
+###					else:
+###						self.ARR_FavoUserID[wUserID] += 1
+###						wFLG_ZanCountSkip = True
+					### いいね済み扱いはスキップ
+					wFLG_ZanCountSkip = True
 		
  		#############################
 		# 取得結果の表示
@@ -617,7 +630,8 @@ class CLS_TwitterFavo():
 ###	def OverAutoFavo( self, inData ):
 ###	def OverAutoFavo( self, inData, inFLG_Follow=False ):
 ###	def OverAutoFavo( self, inData, inARR_FavoUserID, inFLG_Follow=False ):
-	def OverAutoFavo( self, inData, inARR_FavoUserID, inFLG_Follow=False, inFLG_Sensitive=False ):
+###	def OverAutoFavo( self, inData, inARR_FavoUserID, inFLG_Follow=False, inFLG_Sensitive=False ):
+	def OverAutoFavo( self, inData, inListFavoData ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -625,7 +639,7 @@ class CLS_TwitterFavo():
 		wRes['Class'] = "CLS_TwitterFavo"
 		wRes['Func']  = "OverAutoFavo"
 		
-		wARR_FavoUserID = inARR_FavoUserID
+###		wARR_FavoUserID = inARR_FavoUserID
 		
 		wRes['Responce'] = {
 			"flg_favo"			: False,
@@ -707,12 +721,35 @@ class CLS_TwitterFavo():
 		
 		#############################
 		# 今処理で同一ユーザへの処理は除外
-		if wUserID in wARR_FavoUserID :
+###		if wUserID in wARR_FavoUserID :
+		if wUserID in self.ARR_FavoUserID :
 #			wStr = "●外部いいね中止(同一ユーザ): " + wName + '\n' ;
 #			CLS_OSIF.sPrn( wStr )
-#			
+			### 同一ユーザ検出 =終了
+			self.ARR_FavoUserID[wUserID] += 1
 			wRes['Result'] = True
 			return wRes
+		else:
+			### ユーザをメモする
+			self.ARR_FavoUserID.update({ wUserID : 1 })
+		
+		#############################
+		# 規定以上の外部ユーザへの処理は除外
+		if wSTR_Tweet['kind']=="retweet" or wSTR_Tweet['kind']=="quoted" :
+			wOverUserID = wSTR_Tweet['src_user']['id']
+			
+			if wOverUserID in self.ARR_OverFavoUserID :
+				if self.ARR_OverFavoUserID[wOverUserID]>gVal.DEF_STR_TLNUM['forOverListFavoCount'] :
+					### 規定回数超え
+#					wStr = "●外部いいね中止(外部ユーザ規定数): " + wName + '\n' ;
+#					CLS_OSIF.sPrn( wStr )
+					wRes['Result'] = True
+					return wRes
+				else:
+					self.ARR_OverFavoUserID[wOverUserID] += 1
+			else:
+				### ユーザをメモする
+				self.ARR_OverFavoUserID.update({ wOverUserID : 1 })
 		
 		### ユーザ情報のセット
 		wSTR_Tweet['user']['id'] = wUserID
@@ -731,7 +768,8 @@ class CLS_TwitterFavo():
 		
 		#############################
 		# センシティブなツイートは除外
-		if inFLG_Sensitive==False :
+###		if inFLG_Sensitive==False :
+		if inListFavoData['sensitive']==False :
 			if "possibly_sensitive" in inData :
 				if str(inData['possibly_sensitive'])=="true" :
 					wStr = "●外部いいね中止(センシティブ): " + wSTR_Tweet['user']['screen_name'] + '\n' ;
@@ -763,7 +801,8 @@ class CLS_TwitterFavo():
 		# フォロー者、フォロワーを含めない場合
 		#   フォロー者、フォロワーを除外
 		wFLG_MyFollow = gVal.OBJ_Tw_IF.CheckMyFollow( wUserID)
-		if inFLG_Follow!=True :
+###		if inFLG_Follow!=True :
+		if inListFavoData['follow']!=True :
 ###			if gVal.OBJ_Tw_IF.CheckMyFollow( wUserID)==True :
 			if wFLG_MyFollow==True :
 #				wStr = "●外部いいね中止(フォロー者): " + wSTR_Tweet['user']['screen_name'] + '\n' ;

@@ -296,12 +296,26 @@ class CLS_Main_Console() :
 ###			wSubRes = gVal.OBJ_DB_IF.GetRecordNum( "tbl_favouser_data" )
 ###			print( str(wSubRes) )
 
-			wSubRes = self.OBJ_Twitter.GetListMember( gVal.STR_UserInfo['ListName'] )
-			if wSubRes['Result']!=True :
-				wRes['Reason'] = "xxxx: " + wSubRes['Reason']
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
+##			wSubRes = self.OBJ_Twitter.GetListMember( gVal.STR_UserInfo['ListName'] )
+##			if wSubRes['Result']!=True :
+##				wRes['Reason'] = "xxxx: " + wSubRes['Reason']
+##				gVal.OBJ_L.Log( "B", wRes )
+##				return wRes
 
+			wARR_Dict = {}
+			wARR_Dict.update({ "test1" : 1 })
+			wARR_Dict.update({ "test2" : 2 })
+			wARR_Dict.update({ "test3" : 3 })
+			wARR_Dict.update({ "test4" : 4 })
+			if "test2" in wARR_Dict :
+				print("OK")
+			else:
+				print("NG")
+			
+			if "test5" in wARR_Dict :
+				print("OK")
+			else:
+				print("NG")
 
 		
 	#####################################################

@@ -3186,9 +3186,13 @@ class CLS_Twitter_Use():
 			wRes['Reason'] = "Twitter connect error: " + wResIni['Reason']
 			return wRes
 		
+###		#############################
+###		# リスト一覧が空ならまず取得しにいく
+###		if len(self.ARR_TwitterList)==0 :
 		#############################
-		# リスト一覧が空ならまず取得しにいく
-		if len(self.ARR_TwitterList)==0 :
+		# 自分のリスト一覧がなければまず取得しにいく
+		wMyScreenName = self.STR_TWITTERdata['TwitterID']
+		if wMyScreenName not in self.ARR_TwitterList :
 			wResList = self.GetLists()
 			if wResList['Result']!=True :
 				wRes['Reason'] = "GetLists failed: " + str(wResList['Reason'])
@@ -3197,11 +3201,14 @@ class CLS_Twitter_Use():
 		#############################
 		# リスト名のIDを取得
 		wListID = -1
-		wKeylist = self.ARR_TwitterList.keys()
+###		wKeylist = self.ARR_TwitterList.keys()
+		wKeylist = self.ARR_TwitterList[wMyScreenName].keys()
 		for wKey in wKeylist :
-			if self.ARR_TwitterList[wKey]['name']==inListName :
+###			if self.ARR_TwitterList[wKey]['name']==inListName :
+			if self.ARR_TwitterList[wMyScreenName][wKey]['name']==inListName :
 				###リスト発見 =idを取得する
-				wListID = self.ARR_TwitterList[wKey]['id']
+###				wListID = self.ARR_TwitterList[wKey]['id']
+				wListID = self.ARR_TwitterList[wMyScreenName][wKey]['id']
 				break
 		
 		if wListID==-1 :
@@ -3260,9 +3267,13 @@ class CLS_Twitter_Use():
 			wRes['Reason'] = "Twitter connect error: " + wResIni['Reason']
 			return wRes
 		
+###		#############################
+###		# リスト一覧が空ならまず取得しにいく
+###		if len(self.ARR_TwitterList)==0 :
 		#############################
-		# リスト一覧が空ならまず取得しにいく
-		if len(self.ARR_TwitterList)==0 :
+		# 自分のリスト一覧がなければまず取得しにいく
+		wMyScreenName = self.STR_TWITTERdata['TwitterID']
+		if wMyScreenName not in self.ARR_TwitterList :
 			wResList = self.GetLists()
 			if wResList['Result']!=True :
 				wRes['Reason'] = "GetLists failed: " + str(wResList['Reason'])
@@ -3271,11 +3282,14 @@ class CLS_Twitter_Use():
 		#############################
 		# リスト名のIDを取得
 		wListID = -1
-		wKeylist = self.ARR_TwitterList.keys()
+###		wKeylist = self.ARR_TwitterList.keys()
+		wKeylist = self.ARR_TwitterList[wMyScreenName].keys()
 		for wKey in wKeylist :
-			if self.ARR_TwitterList[wKey]['name']==inListName :
+###			if self.ARR_TwitterList[wKey]['name']==inListName :
+			if self.ARR_TwitterList[wMyScreenName][wKey]['name']==inListName :
 				###リスト発見 =idを取得する
-				wListID = self.ARR_TwitterList[wKey]['id']
+###				wListID = self.ARR_TwitterList[wKey]['id']
+				wListID = self.ARR_TwitterList[wMyScreenName][wKey]['id']
 				break
 		
 		if wListID==-1 :
