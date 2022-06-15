@@ -28,6 +28,9 @@ class CLS_TwitterMain():
 	ARR_ReacrionUserID = []
 ###	ARR_FavoUserID = []
 
+	CHR_AutoRemoveDate = None
+
+
 
 #####################################################
 # TEST
@@ -1600,7 +1603,8 @@ class CLS_TwitterMain():
 			CLS_OSIF.sPrn( wStr )
 			#############################
 			# Twitterからリストの登録ユーザ一覧を取得
-			wListRes = gVal.OBJ_Tw_IF.GetListSubscribers( gVal.ARR_ListFavo[wKey]['list_name'] )
+###			wListRes = gVal.OBJ_Tw_IF.GetListSubscribers( gVal.ARR_ListFavo[wKey]['list_name'] )
+			wListRes = gVal.OBJ_Tw_IF.GetListSubscribers( gVal.ARR_ListFavo[wKey]['list_name'], gVal.ARR_ListFavo[wKey]['screen_name'] )
 			if wListRes['Result']!=True :
 				wRes['Reason'] = "Twitter API Error(GetListSubscribers): " + wListRes['Reason']
 				gVal.OBJ_L.Log( "B", wRes )
@@ -1615,6 +1619,9 @@ class CLS_TwitterMain():
 				
 				### 警告済はスキップ
 				if wID in gVal.ARR_CautionUserID :
+					continue
+				### 自分には警告しない
+				if str(gVal.STR_UserInfo['id'])==wID  :
 					continue
 				
 				# ※警告確定
@@ -1638,6 +1645,73 @@ class CLS_TwitterMain():
 				
 				### IDを警告済に追加
 				gVal.ARR_CautionUserID.append( wID )
+		
+		wStr = "チェック終了" + '\n'
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# 自動リムーブチェック
+		
+		#############################
+		# 取得可能時間か？
+		if self.CHR_AutoRemoveDate!=None :
+			### 範囲時間内のツイートか
+			wGetLag = CLS_OSIF.sTimeLag( str( self.CHR_AutoRemoveDate ), inThreshold=gVal.DEF_STR_TLNUM['forCheckAutoRemoveSec'] )
+			if wGetLag['Result']!=True :
+				wRes['Reason'] = "sTimeLag failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if wGetLag['Beyond']==False :
+				### 規定以内は除外
+				wStr = "●自動リムーブチェック期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
+				CLS_OSIF.sPrn( wStr )
+				wRes['Result'] = True
+				return wRes
+		
+		self.CHR_GetReactionDate = None	#一度クリアしておく(異常時再取得するため)
+		
+		wStr = "自動リムーブチェック中..."
+		CLS_OSIF.sPrn( wStr )
+		#############################
+		# ListFavo一覧のうち
+		# 自動リムーブ有効のリストをチェックする
+		wKeylist = list( gVal.ARR_ListFavo.keys() )
+		for wKey in wKeylist :
+			if gVal.ARR_ListFavo[wKey]['auto_rem']!=True :
+				### 自動リムーブ無効はスキップ
+				continue
+			
+			wStr = "〇チェック中リスト: " + gVal.ARR_ListFavo[wKey]['list_name']
+			CLS_OSIF.sPrn( wStr )
+			#############################
+			# Twitterからリストの登録ユーザ一覧を取得
+			wListRes = gVal.OBJ_Tw_IF.GetListMember( gVal.ARR_ListFavo[wKey]['list_name'], gVal.ARR_ListFavo[wKey]['screen_name'] )
+			if wListRes['Result']!=True :
+				wRes['Reason'] = "Twitter API Error(GetListMember): " + wListRes['Reason']
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if len(wListRes['Responce'])==0 :
+				### 登録者なしはスキップ
+				continue
+			
+			wKeylistUser = list( wListRes['Responce'].keys() )
+			for wID in wKeylistUser :
+				wID = str(wID)
+				
+				#############################
+				# 自動リムーブ
+				wSubRes = self.OBJ_TwitterFollower.AutoRemove( wListRes['Responce'][wID] )
+				if wSubRes['Result']!=True :
+					wRes['Reason'] = "AutoRemove is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+		
+		#############################
+		# 現時刻をメモる
+		self.CHR_AutoRemoveDate = str(gVal.STR_SystemInfo['TimeDate'])
+		
+		wStr = "チェック終了" + '\n'
+		CLS_OSIF.sPrn( wStr )
 		
 		#############################
 		# 正常終了

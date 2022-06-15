@@ -485,23 +485,25 @@ class CLS_Setup():
 		wQuery = "create table " + inTBLname + "(" + \
 					"twitterid   TEXT  NOT NULL," + \
 					"screen_name TEXT  NOT NULL," + \
-					"id          TEXT  NOT NULL," + \
 					"list_name   TEXT  NOT NULL," + \
-					"list_id     TEXT  NOT NULL," + \
 					"valid       BOOL  DEFAULT true," + \
 					"follow      BOOL  DEFAULT false, " + \
 					"caution     BOOL  DEFAULT false, " + \
-					"sensitive   BOOL  DEFAULT false " + \
+					"sensitive   BOOL  DEFAULT false, " + \
+					"auto_rem    BOOL  DEFAULT false " + \
 					" ) ;"
+
+###					"id          TEXT  NOT NULL," + \
+###					"list_id     TEXT  NOT NULL," + \
 		
 ##					"twitterid   記録したユーザ(Twitter ID)
 ##					"screen_name   Listのユーザのscreen_name
-##					"id            ListのユーザのID（数値）
 ##					"list_name     Listの名前
-##					"list_id       ListのID（数値）
 ##					"valid       有効か True=有効
 ##					"follow      フォロー者、フォロワーを含める
 ##					"caution     リストフォロー時警告を出す
+##					"sensitive   センシティブツイートを含める
+##					"auto_rem    自動リムーブ有効
 		
 		inOBJ_DB.RunQuery( wQuery )
 		return
@@ -579,8 +581,7 @@ class CLS_Setup():
 					"hit_cnt     INTEGER DEFAULT 0," + \
 					"favo_cnt    INTEGER DEFAULT 0," + \
 					"update_date TIMESTAMP," + \
-					"valid       BOOL  DEFAULT false, " + \
-					"sensitive   BOOL  DEFAULT false " + \
+					"valid       BOOL  DEFAULT false " + \
 					" ) ;"
 		
 		inOBJ_DB.RunQuery( wQuery )

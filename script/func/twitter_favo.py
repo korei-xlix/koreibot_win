@@ -1061,6 +1061,13 @@ class CLS_TwitterFavo():
 				wStr = wStr + "[〇]"
 			else:
 				wStr = wStr + "[  ]"
+			wStr = wStr + "  "
+			
+			### 自動リムーブ
+			if gVal.ARR_ListFavo[wI]['auto_rem']==True :
+				wStr = wStr + "[〇]"
+			else:
+				wStr = wStr + "[  ]"
 			wStr = wStr + "    "
 			
 			### ユーザ名（screen_name）
@@ -1179,6 +1186,16 @@ class CLS_TwitterFavo():
 				gVal.ARR_ListFavo[wNum]['sensitive'] = False
 			else:
 				gVal.ARR_ListFavo[wNum]['sensitive'] = True
+			
+			gVal.ARR_ListFavo[wNum]['update'] = True
+		
+		#############################
+		# r: 自動リムーブ
+		elif wCom=="r" :
+			if gVal.ARR_ListFavo[wNum]['auto_rem']==True :
+				gVal.ARR_ListFavo[wNum]['auto_rem'] = False
+			else:
+				gVal.ARR_ListFavo[wNum]['auto_rem'] = True
 			
 			gVal.ARR_ListFavo[wNum]['update'] = True
 		

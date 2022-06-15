@@ -2,8 +2,7 @@
  リストいいね設定
 --------------------
 
-#   : LIST  有効  FOLLOW  USER NAME                 LIST NAME
-   : LIST  有効  FW含  警告  セン   USER NAME         LIST NAME
+   : LIST  有効  FW含  警告  セン  自RM   USER NAME         LIST NAME
 
 [@LISTFAVO_LIST@]
 
@@ -15,6 +14,7 @@
     [LIST番号]-f : フォロー者/フォロワーを含める ON/OFF
     [LIST番号]-v : リスト登録ユーザ表示
     [LIST番号]-n : センシティブツイートを含める
+    [LIST番号]-r : 自動リムーブ
     \f           : フォロー者反応(フォロー者 かつ FAVO送信あり)
     \q           : 前へ戻る
 

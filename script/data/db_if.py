@@ -1083,13 +1083,14 @@ class CLS_DB_IF() :
 		for wIndex in wKeylist :
 			wCell = {
 				"screen_name"	: wARR_DBData[wIndex]['screen_name'],
-				"id"			: wARR_DBData[wIndex]['id'],
+###				"id"			: wARR_DBData[wIndex]['id'],
 				"list_name"		: wARR_DBData[wIndex]['list_name'],
-				"list_id"		: wARR_DBData[wIndex]['list_id'],
+###				"list_id"		: wARR_DBData[wIndex]['list_id'],
 				"valid"			: wARR_DBData[wIndex]['valid'],
 				"follow"		: wARR_DBData[wIndex]['follow'],
 				"caution"		: wARR_DBData[wIndex]['caution'],
 				"sensitive"		: wARR_DBData[wIndex]['sensitive'],
+				"auto_rem"		: wARR_DBData[wIndex]['auto_rem'],
 				"update"		: False
 			}
 			wARR_Data.update({ wIndex : wCell })
@@ -1126,24 +1127,42 @@ class CLS_DB_IF() :
 			wARR_Line = wLine.split(",")
 			### 要素数が少ないのは除外
 ###			if len(wARR_Line)!=4 :
-			if len(wARR_Line)!=5 :
+###			if len(wARR_Line)!=5 :
+			if len(wARR_Line)!=6 :
 				continue
 			
 			### データ登録
-			wFLG_Follow = True if wARR_Line[0]=="***" else False
+###			wFLG_Follow = True if wARR_Line[0]=="***" else False
+			### フォロー/フォロワー含むか
+			wARR_Line[0] = True if wARR_Line[0]=="***" else False
+			### 警告
+			wARR_Line[1] = True if wARR_Line[1]=="***" else False
+			### センシティブツ
+			wARR_Line[2] = True if wARR_Line[2]=="***" else False
+			### 自動リムーブ
+			wARR_Line[3] = True if wARR_Line[3]=="***" else False
+			
 			wCell = {
 ###				"screen_name"	: wARR_Line[0],
 ###				"id"			: wARR_Line[1],
 ###				"list_name"		: wARR_Line[2],
 ###				"list_id"		: wARR_Line[3],
-				"screen_name"	: wARR_Line[1],
-				"id"			: wARR_Line[2],
-				"list_name"		: wARR_Line[3],
-				"list_id"		: wARR_Line[4],
+###				"screen_name"	: wARR_Line[1],
+###				"id"			: wARR_Line[2],
+###				"list_name"		: wARR_Line[3],
+###				"list_id"		: wARR_Line[4],
+				"screen_name"	: wARR_Line[4],
+###				"id"			: wARR_Line[5],
+				"list_name"		: wARR_Line[5],
+###				"list_id"		: wARR_Line[7],
 				"valid"			: True,
-				"follow"		: wFLG_Follow,
-				"caution"		: False,
-				"sensitive"		: False,
+###				"follow"		: wFLG_Follow,
+###				"caution"		: False,
+###				"sensitive"		: False,
+				"follow"		: wARR_Line[0],
+				"caution"		: wARR_Line[1],
+				"sensitive"		: wARR_Line[2],
+				"auto_rem"		: wARR_Line[3],
 				"update"		: False
 			}
 			wARR_Data.update({ wIndex : wCell })
@@ -1178,15 +1197,17 @@ class CLS_DB_IF() :
 			wQuery = "insert into tbl_list_favo values (" + \
 					"'" + gVal.STR_UserInfo['Account'] + "', " + \
 					"'" + str(wARR_Data[wKey]['screen_name']) + "', " + \
-					"'" + str(wARR_Data[wKey]['id']) + "', " + \
 					"'" + str(wARR_Data[wKey]['list_name']) + "', " + \
-					"'" + str(wARR_Data[wKey]['list_id']) + "', " + \
 					"True, " + \
 					str(wARR_Data[wKey]['follow']) + ", " + \
 					str(wARR_Data[wKey]['caution']) + ", " + \
-					str(wARR_Data[wKey]['sensitive']) + " " + \
+					str(wARR_Data[wKey]['sensitive']) + ", " + \
+					str(wARR_Data[wKey]['auto_rem']) + " " + \
 					") ;"
 			
+###					"'" + str(wARR_Data[wKey]['id']) + "', " + \
+###					"'" + str(wARR_Data[wKey]['list_id']) + "', " + \
+###
 			#############################
 			# クエリの実行
 			wResDB = self.OBJ_DB.RunQuery( wQuery )
@@ -1229,12 +1250,15 @@ class CLS_DB_IF() :
 					"valid = " + str(gVal.ARR_ListFavo[wKey]['valid']) + ", " + \
 					"follow = " + str(gVal.ARR_ListFavo[wKey]['follow']) + ", " + \
 					"caution = " + str(gVal.ARR_ListFavo[wKey]['caution']) + ", " + \
-					"sensitive = " + str(gVal.ARR_ListFavo[wKey]['sensitive']) + " " + \
+					"sensitive = " + str(gVal.ARR_ListFavo[wKey]['sensitive']) + ", " + \
+					"auto_rem = " + str(gVal.ARR_ListFavo[wKey]['auto_rem']) + " " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
-					"id = '" + gVal.ARR_ListFavo[wKey]['id'] + "' and " + \
-					"list_id = '" + gVal.ARR_ListFavo[wKey]['list_id'] + "' " + \
+					"screen_name = '" + gVal.ARR_ListFavo[wKey]['screen_name'] + "' and " + \
+					"list_name = '" + gVal.ARR_ListFavo[wKey]['list_name'] + "' " + \
 					";"
 			
+###					"id = '" + gVal.ARR_ListFavo[wKey]['id'] + "' and " + \
+###					"list_id = '" + gVal.ARR_ListFavo[wKey]['list_id'] + "' " + \
 			#############################
 			# クエリの実行
 			wResDB = self.OBJ_DB.RunQuery( wQuery )

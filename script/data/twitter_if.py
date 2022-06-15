@@ -1174,6 +1174,11 @@ class CLS_Twitter_IF() :
 			return wRes
 		
 		#############################
+		# フォロー情報に反映
+		if inID in self.ARR_MyFollowID :
+			self.ARR_MyFollowID.remove( inID )
+		
+		#############################
 		# 完了
 		wRes['Result'] = True
 		return wRes
@@ -1210,6 +1215,13 @@ class CLS_Twitter_IF() :
 			wRes['Reason'] = "Twitter API Error(RemoveBlock): " + wTwitterRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
+		
+		#############################
+		# フォロー情報に反映
+		if inID in self.ARR_MyFollowID :
+			self.ARR_MyFollowID.remove( inID )
+		if inID in self.ARR_FollowerID :
+			self.ARR_FollowerID.remove( inID )
 		
 		#############################
 		# 完了
@@ -1824,7 +1836,7 @@ class CLS_Twitter_IF() :
 #####################################################
 # リストユーザ取得
 #####################################################
-	def GetListMember( self, inListName ):
+	def GetListMember( self, inListName, inListOwner=None ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -1833,25 +1845,25 @@ class CLS_Twitter_IF() :
 		wRes['Func']  = "GetListMember"
 		
 		wRes['Responce'] = {}
-		#############################
-		# リストがTwitterにあるか確認
-		wSubRes = self.CheckList( inListName )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		if wSubRes['Responce']==False :
-			wRes['Reason'] = "Twitter List not found: " + inListName
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
+###		#############################
+###		# リストがTwitterにあるか確認
+###		wSubRes = self.CheckList( inListName )
+###		if wSubRes['Result']!=True :
+###			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		if wSubRes['Responce']==False :
+###			wRes['Reason'] = "Twitter List not found: " + inListName
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
 		#############################
 		# ユーザ一覧を取得する
 		wARR_ListUser = {}
 		
-		wSubRes = self.OBJ_Twitter.GetListMember( inListName )
+		wSubRes = self.OBJ_Twitter.GetListMember( inListName, inListOwner )
 		if wSubRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
+			wRes['Reason'] = "Twitter API Error(GetListMember): " + wSubRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
@@ -1872,7 +1884,7 @@ class CLS_Twitter_IF() :
 #####################################################
 # リスト登録者取得
 #####################################################
-	def GetListSubscribers( self, inListName ):
+	def GetListSubscribers( self, inListName, inListOwner=None ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -1881,25 +1893,25 @@ class CLS_Twitter_IF() :
 		wRes['Func']  = "GetListSubscribers"
 		
 		wRes['Responce'] = {}
-		#############################
-		# リストがTwitterにあるか確認
-		wSubRes = self.CheckList( inListName )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		if wSubRes['Responce']==False :
-			wRes['Reason'] = "Twitter List not found: " + inListName
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
+###		#############################
+###		# リストがTwitterにあるか確認
+###		wSubRes = self.CheckList( inListName )
+###		if wSubRes['Result']!=True :
+###			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		if wSubRes['Responce']==False :
+###			wRes['Reason'] = "Twitter List not found: " + inListName
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
 		#############################
 		# ユーザ一覧を取得する
 		wARR_ListUser = {}
 		
-		wSubRes = self.OBJ_Twitter.GetListSubscribers( inListName )
+		wSubRes = self.OBJ_Twitter.GetListSubscribers( inListName, inListOwner )
 		if wSubRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
+			wRes['Reason'] = "Twitter API Error(GetListSubscribers): " + wSubRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
@@ -1957,7 +1969,7 @@ class CLS_Twitter_IF() :
 			
 			wSubRes = self.OBJ_Twitter.GetListMember( gVal.STR_UserInfo['ListName'] )
 			if wSubRes['Result']!=True :
-				wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
+				wRes['Reason'] = "Twitter API Error(GetListMember): " + wSubRes['Reason']
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			

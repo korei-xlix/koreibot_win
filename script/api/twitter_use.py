@@ -2733,6 +2733,7 @@ class CLS_Twitter_Use():
 		#############################
 		# APIの指定
 		wAPI = "https://api.twitter.com/1.1/lists/list.json"
+###		wAPI = "https://api.twitter.com/1.1/lists/subscriptions.json"
 		
 		#############################
 		# API規制チェック
@@ -2740,12 +2741,19 @@ class CLS_Twitter_Use():
 			wRes['Reason'] = "Twitter規制中(アプリ内)"
 			return wRes
 		
+		wFLG_Me = False
 		#############################
 		# パラメータの生成
-		if inScreenName==None :
+		wScreenName = inScreenName
+###		if inScreenName==None :
+		if wScreenName==None :
 			wScreenName = self.STR_TWITTERdata['TwitterID']
-		else :
-			wScreenName = inScreenName
+			wFLG_Me = True
+###		elif inScreenName==self.STR_TWITTERdata['TwitterID']
+		elif wScreenName==self.STR_TWITTERdata['TwitterID'] :
+			wFLG_Me = True
+###		else :
+###			wScreenName = inScreenName
 		
 ###		wParams = {
 ###			"screen_name" : self.STR_TWITTERdata['TwitterID']
@@ -2784,22 +2792,36 @@ class CLS_Twitter_Use():
 		
 		#############################
 		# Twitterリストの作成
-		self.ARR_TwitterList = {}	#Twitterリスト
+		wARR_List = {}
 		wIndex = 0
 		for wROW in wTweetList :
+			wFLG_Me = True
 			#自分のリストではない
 			if wROW['user']['name']!=self.STR_TWITTERdata['TwitterID'] :
-				continue
+###				continue
+				wFLG_Me = False
 			
-			wCell = {}
-			wCell.update({ "id"   : wROW['id'] })
-			wCell.update({ "name" : wROW['name'] })
-			self.ARR_TwitterList.update({ wIndex : wCell })
+###			wCell = {}
+###			wCell.update({ "id"   : wROW['id'] })
+###			wCell.update({ "name" : wROW['name'] })
+###			self.ARR_TwitterList.update({ wIndex : wCell })
+			wCell = {
+				"id"		: wROW['id'],
+				"name"		: wROW['name'],
+				"me"		: wFLG_Me
+			}
+			wARR_List.update({ wIndex : wCell })
 			wIndex += 1
 		
 		#############################
+		# 自分ならグローバルに保存する
+		if wFLG_Me==True :
+			self.ARR_TwitterList = wARR_List
+
+		#############################
 		# 一覧を返す
-		wRes['Responce'] = self.ARR_TwitterList
+###		wRes['Responce'] = self.ARR_TwitterList
+		wRes['Responce'] = wARR_List
 		
 		#############################
 		# 正常
@@ -2811,7 +2833,7 @@ class CLS_Twitter_Use():
 #####################################################
 # リスト登録者一覧の取得
 #####################################################
-	def GetListMember( self, inListName ):
+	def GetListMember( self, inListName, inListOwner=None ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -2825,28 +2847,46 @@ class CLS_Twitter_Use():
 			wRes['Reason'] = "Twitter connect error: " + str(wResIni['Reason'])
 			return wRes
 		
+###		#############################
+###		# リスト一覧が空ならまず取得しにいく
+###		if len(self.ARR_TwitterList)==0 :
+###			wResList = self.GetLists()
+###			if wResList['Result']!=True :
+###				wRes['Reason'] = "GetLists failed: " + str(wResList['Reason'])
+###				return wRes
 		#############################
-		# リスト一覧が空ならまず取得しにいく
-		if len(self.ARR_TwitterList)==0 :
-			wResList = self.GetLists()
-			if wResList['Result']!=True :
-				wRes['Reason'] = "GetLists failed: " + str(wResList['Reason'])
-				return wRes
+		# リスト一覧の取得
+		wResList = self.GetLists( inListOwner )
+		if wResList['Result']!=True :
+			wRes['Reason'] = "GetLists failed: " + str(wResList['Reason'])
+			return wRes
 		
 		#############################
 		# リスト名のIDを取得
 		wListID = -1
-		wKeylist = self.ARR_TwitterList.keys()
+###		wKeylist = self.ARR_TwitterList.keys()
+###		for wKey in wKeylist :
+###			if self.ARR_TwitterList[wKey]['name']==inListName :
+###				###リスト発見 =idを取得する
+###				wListID = self.ARR_TwitterList[wKey]['id']
+###				break
+		wARR_Lists = wResList['Responce']
+		wKeylist = list( wARR_Lists.keys() )
 		for wKey in wKeylist :
-			if self.ARR_TwitterList[wKey]['name']==inListName :
+			if wARR_Lists[wKey]['name']==inListName :
 				###リスト発見 =idを取得する
-				wListID = self.ARR_TwitterList[wKey]['id']
+				wListID = wARR_Lists[wKey]['id']
 				break
 		
 		if wListID==-1 :
-			wRes['Reason'] = "List is not found: " + inListName
+###			wRes['Reason'] = "List is not found: " + inListName
+			wRes['Reason'] = "List is not found: " + inListName + " owner=" + inListOwner
 			return wRes
 		
+###		wListOwner = inListOwner
+###		if wListOwner==None :
+###			wListOwner = self.STR_TWITTERdata['TwitterID']
+###		
 		#############################
 		# APIの指定
 		wAPI = "https://api.twitter.com/1.1/lists/members.json"
@@ -2864,6 +2904,13 @@ class CLS_Twitter_Use():
 					"cursor"		: "-1",
 					"skip_status"	: "True"
 		}
+###		wParams = { "slug"				: inListName,
+###					"owner_screen_name"	: wListOwner,
+###					"count"			: self.VAL_TwitListNum,
+###					"cursor"		: "-1",
+###					"skip_status"	: "True"
+###		}
+###		※slugを使うとTwitterからエラーが返されるので使えない
 		
 		#############################
 		# タイムライン読み込み
@@ -2923,7 +2970,9 @@ class CLS_Twitter_Use():
 			if 'errors' in wUsers :
 				wCHR_StatusCode = wCHR_StatusCode + ": Error Code=" + str(wUsers['errors'][0]['code']) + ":" + str(wUsers['errors'][0]['message'])
 			
-			wRes['Reason'] = "Twitter responce failed: Status Code=" + str(wTweetRes.status_code) + ":" + wCHR_StatusCode
+			wStr = "Twitter responce failed: Status Code=" + str(wTweetRes.status_code) + ":" + wCHR_StatusCode
+			wStr = wStr + " list_name=" + str(inListName) + " owner=" + wListOwner
+			wRes['Reason'] = wStr
 			return wRes
 		
 		#############################
@@ -2940,7 +2989,7 @@ class CLS_Twitter_Use():
 #####################################################
 # リスト登録 登録者一覧の取得
 #####################################################
-	def GetListSubscribers( self, inListName ):
+	def GetListSubscribers( self, inListName, inListOwner=None ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -2954,28 +3003,46 @@ class CLS_Twitter_Use():
 			wRes['Reason'] = "Twitter connect error: " + str(wResIni['Reason'])
 			return wRes
 		
+###		#############################
+###		# リスト一覧が空ならまず取得しにいく
+###		if len(self.ARR_TwitterList)==0 :
+###			wResList = self.GetLists()
+###			if wResList['Result']!=True :
+###				wRes['Reason'] = "GetLists failed: " + str(wResList['Reason'])
+###				return wRes
 		#############################
-		# リスト一覧が空ならまず取得しにいく
-		if len(self.ARR_TwitterList)==0 :
-			wResList = self.GetLists()
-			if wResList['Result']!=True :
-				wRes['Reason'] = "GetLists failed: " + str(wResList['Reason'])
-				return wRes
+		# リスト一覧の取得
+		wResList = self.GetLists( inListOwner )
+		if wResList['Result']!=True :
+			wRes['Reason'] = "GetLists failed: " + str(wResList['Reason'])
+			return wRes
 		
 		#############################
 		# リスト名のIDを取得
 		wListID = -1
-		wKeylist = self.ARR_TwitterList.keys()
+###		wKeylist = self.ARR_TwitterList.keys()
+###		for wKey in wKeylist :
+###			if self.ARR_TwitterList[wKey]['name']==inListName :
+###				###リスト発見 =idを取得する
+###				wListID = self.ARR_TwitterList[wKey]['id']
+###				break
+		wARR_Lists = wResList['Responce']
+		wKeylist = list( wARR_Lists.keys() )
 		for wKey in wKeylist :
-			if self.ARR_TwitterList[wKey]['name']==inListName :
+			if wARR_Lists[wKey]['name']==inListName :
 				###リスト発見 =idを取得する
-				wListID = self.ARR_TwitterList[wKey]['id']
+				wListID = wARR_Lists[wKey]['id']
 				break
 		
 		if wListID==-1 :
-			wRes['Reason'] = "List is not found: " + inListName
+###			wRes['Reason'] = "List is not found: " + inListName
+			wRes['Reason'] = "List is not found: " + inListName + " owner=" + inListOwner
 			return wRes
 		
+###		wListOwner = inListOwner
+###		if wListOwner==None :
+###			wListOwner = self.STR_TWITTERdata['TwitterID']
+###		
 		#############################
 		# APIの指定
 		wAPI = "https://api.twitter.com/1.1/lists/subscribers.json"
@@ -2993,6 +3060,13 @@ class CLS_Twitter_Use():
 					"cursor"		: "-1",
 					"skip_status"	: "True"
 		}
+###		wParams = { "slug"				: inListName,
+###					"owner_screen_name"	: wListOwner,
+###					"count"			: self.VAL_TwitListNum,
+###					"cursor"		: "-1",
+###					"skip_status"	: "True"
+###		}
+###		※slugを使うとTwitterからエラーが返されるので使えない
 		
 		#############################
 		# タイムライン読み込み
@@ -3052,7 +3126,9 @@ class CLS_Twitter_Use():
 			if 'errors' in wUsers :
 				wCHR_StatusCode = wCHR_StatusCode + ": Error Code=" + str(wUsers['errors'][0]['code']) + ":" + str(wUsers['errors'][0]['message'])
 			
-			wRes['Reason'] = "Twitter responce failed: Status Code=" + str(wTweetRes.status_code) + ":" + wCHR_StatusCode
+			wStr = "Twitter responce failed: Status Code=" + str(wTweetRes.status_code) + ":" + wCHR_StatusCode
+			wStr = wStr + " list_name=" + str(inListName) + " owner=" + wListOwner
+			wRes['Reason'] = wStr
 			return wRes
 		
 		#############################

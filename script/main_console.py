@@ -293,8 +293,15 @@ class CLS_Main_Console() :
 ##			print( str(d) )
 ##			removed_value = d.pop('k1')
 ##			print( str(d) )
-			wSubRes = gVal.OBJ_DB_IF.GetRecordNum( "tbl_favouser_data" )
-			print( str(wSubRes) )
+###			wSubRes = gVal.OBJ_DB_IF.GetRecordNum( "tbl_favouser_data" )
+###			print( str(wSubRes) )
+
+			wSubRes = self.OBJ_Twitter.GetListMember( gVal.STR_UserInfo['ListName'] )
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "xxxx: " + wSubRes['Reason']
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+
 
 		
 	#####################################################

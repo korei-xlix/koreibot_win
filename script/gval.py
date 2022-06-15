@@ -141,6 +141,8 @@ class gVal() :
 ###		"forListFavoNoFollowSec"	: 345600,			#   リストいいね フォロー外への期間   4日  (60x60x24)x4
 		"forListFavoMyFollowSec"	: 14400,			#   リストいいね フォロー者への期間   4時間  60x60x4
 		"forListFavoNoFollowSec"	: 259200,			#   リストいいね フォロー外への期間   3日  (60x60x24)x3
+		"forListFavoAutoRemoveSec"	: 604800,			#   リストいいね 自動リムーブまでの期間   7日  (60x60x24)x7
+		"forCheckAutoRemoveSec"		: 86400,			#   自動リムーブチェック期間 1日 (60x60x24)x1
 ###		"forOverListFavoCount"		: 3,				#   外部いいね数(1ユーザ)
 		
 														# いいね送信
