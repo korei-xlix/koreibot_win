@@ -2010,10 +2010,10 @@ class CLS_Twitter_IF() :
 		#############################
 		# リストがTwitterにあるか確認
 		wSubRes = self.CheckList( gVal.STR_UserInfo['ListName'] )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "CheckList is failed: " + wSubRes['Reason']
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
+###		if wSubRes['Result']!=True :
+###			wRes['Reason'] = "CheckList is failed: " + wSubRes['Reason']
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
 		if wSubRes['Responce']==False :
 			wRes['Reason'] = "Twitter List not found: " + gVal.STR_UserInfo['ListName']
 			gVal.OBJ_L.Log( "B", wRes )

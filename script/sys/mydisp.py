@@ -362,7 +362,7 @@ class CLS_MyDisp():
 			if inData['Sys_TrendTag']==None or inData['Sys_TrendTag']=="" :
 				wStr = wStr + "(なし)"
 			else:
-				wStr = wStr + inData['Sys_TrendTag'] + ")"
+				wStr = wStr + inData['Sys_TrendTag']
 			pRes['Responce'] = wStr
 		
 		###インプリ：リスト通知
