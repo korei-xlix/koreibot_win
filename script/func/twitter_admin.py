@@ -849,13 +849,17 @@ class CLS_TwitterAdmin():
 		if wInputName!="\\n" :
 			#############################
 			# リストがTwitterにあるか確認
-			wSubRes = gVal.OBJ_Tw_IF.GetList()
+###			wSubRes = gVal.OBJ_Tw_IF.GetList()
+###			if wSubRes['Result']!=True :
+###				wRes['Reason'] = "Twitter is failed(GetList)"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			
+			wSubRes = gVal.OBJ_Tw_IF.CheckList( wInputName )
 			if wSubRes['Result']!=True :
-				wRes['Reason'] = "Twitter is failed(GetList)"
+				wRes['Reason'] = "CheckList is failed"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
-			
-			wSubRes = gVal.OBJ_Tw_IF.CheckList( wInputName )
 			if wSubRes['Responce']!=True :
 				wRes['Reason'] = "List name is not found: name=" + str(wInputName)
 				gVal.OBJ_L.Log( "B", wRes )
@@ -871,14 +875,14 @@ class CLS_TwitterAdmin():
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			
-			#############################
-			# リスト通知 リストとユーザの更新
-			wSubRes = self.OBJ_Parent.UpdateListIndUser( inUpdate=True )
-			if wSubRes['Result']!=True :
-				wRes['Reason'] = "UpdateListIndUser error"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			
+###			#############################
+###			# リスト通知 リストとユーザの更新
+###			wSubRes = self.OBJ_Parent.UpdateListIndUser( inUpdate=True )
+###			if wSubRes['Result']!=True :
+###				wRes['Reason'] = "UpdateListIndUser error"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			
 			wStr = "〇設定が完了しました" + '\n'
 			CLS_OSIF.sPrn( wStr )
 		
@@ -947,13 +951,17 @@ class CLS_TwitterAdmin():
 		if wInputName!="\\n" :
 			#############################
 			# リストがTwitterにあるか確認
-			wSubRes = gVal.OBJ_Tw_IF.GetList()
+###			wSubRes = gVal.OBJ_Tw_IF.GetList()
+###			if wSubRes['Result']!=True :
+###				wRes['Reason'] = "Twitter is failed(GetList)"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			
+			wSubRes = gVal.OBJ_Tw_IF.CheckList( wInputName )
 			if wSubRes['Result']!=True :
-				wRes['Reason'] = "Twitter is failed(GetList)"
+				wRes['Reason'] = "CheckList is failed"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
-			
-			wSubRes = gVal.OBJ_Tw_IF.CheckList( wInputName )
 			if wSubRes['Responce']!=True :
 				wRes['Reason'] = "List name is not found: name=" + str(wInputName)
 				gVal.OBJ_L.Log( "B", wRes )

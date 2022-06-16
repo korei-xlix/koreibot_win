@@ -211,11 +211,11 @@ class CLS_Main_Console() :
 		elif inCommand=="\\fc" :
 			cls.OBJ_TwitterMain.SetListFavo()
 		
-		#############################
-		# リスト通知ユーザ表示
-		elif inCommand=="\\iv" :
-			cls.OBJ_TwitterMain.ViewListIndUser()
-		
+###		#############################
+###		# リスト通知ユーザ表示
+###		elif inCommand=="\\iv" :
+###			cls.OBJ_TwitterMain.ViewListIndUser()
+###		
 	#####################################################
 		#############################
 		# ユーザ管理

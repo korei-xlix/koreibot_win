@@ -1204,7 +1204,8 @@ class CLS_TwitterMain():
 		
 		#############################
 		# リストがTwitterにあるか確認
-		wSubRes = gVal.OBJ_Tw_IF.InserttListIndUser( inData )
+###		wSubRes = gVal.OBJ_Tw_IF.InserttListIndUser( inData )
+		wSubRes = gVal.OBJ_Tw_IF.ListInd_AddUser( inData )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "Twitter API Error(InserttListIndUser): " + wSubRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
@@ -1236,7 +1237,8 @@ class CLS_TwitterMain():
 #####################################################
 # リスト通知ユーザ更新
 #####################################################
-	def UpdateListIndUser( self, inUpdate=False ):
+###	def UpdateListIndUser( self, inUpdate=False ):
+	def UpdateListIndUser(self):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -1253,27 +1255,42 @@ class CLS_TwitterMain():
 			return wRes
 		wFLG_NextDay = wSubRes['Responce']
 		
+###		#############################
+###		# まだ今日の場合
+###		if wFLG_NextDay==False :
+###			#############################
+###			# リスト通知 ユーザの更新
+####		wSubRes = gVal.OBJ_Tw_IF.GetListIndUser( inUpdate=inUpdate )
+###			wSubRes = gVal.OBJ_Tw_IF.ListInd_GetUser( inUpdate=inUpdate )
+###			if wSubRes['Result']!=True :
+###				wRes['Reason'] = "ListInd_GetUser is failed"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			
+###			if wSubRes['Responce']['Update']==True :
+###				wStr = "〇リスト通知: " + str( wSubRes['Responce']['Num'] ) + ".件" + '\n'
+###			else:
+###				wStr = "●リスト通知 未更新: " + str( wSubRes['Responce']['Num'] ) + ".件" + '\n'
+###			CLS_OSIF.sPrn( wStr )
+###		
+###		#############################
+###		# 翌日
+###		else:
+####		wSubRes = gVal.OBJ_Tw_IF.AllClearListInd()
+###			wSubRes = gVal.OBJ_Tw_IF.ListInd_Clear()
+###			if wSubRes['Result']!=True :
+###				wRes['Reason'] = "AllClearListInd error"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			
+###			wTextReason = "●リスト通知クリア"
+###			gVal.OBJ_L.Log( "T", wRes, wTextReason )
+###		
 		#############################
-		# まだ今日の場合
-		if wFLG_NextDay==False :
-			#############################
-			# リスト通知 ユーザの更新
-			wSubRes = gVal.OBJ_Tw_IF.GetListIndUser( inUpdate=inUpdate )
-			if wSubRes['Result']!=True :
-				wRes['Reason'] = "GetListIndUser error"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			
-			if wSubRes['Responce']['Update']==True :
-				wStr = "〇リスト通知: " + str( wSubRes['Responce']['Num'] ) + ".件" + '\n'
-			else:
-				wStr = "●リスト通知 未更新: " + str( wSubRes['Responce']['Num'] ) + ".件" + '\n'
-			CLS_OSIF.sPrn( wStr )
-		
-		#############################
-		# 翌日
-		else:
-			wSubRes = gVal.OBJ_Tw_IF.AllClearListInd()
+		# 翌日の場合
+		#   リスト通知をクリアする
+		if wFLG_NextDay==True :
+			wSubRes = gVal.OBJ_Tw_IF.ListInd_Clear()
 			if wSubRes['Result']!=True :
 				wRes['Reason'] = "AllClearListInd error"
 				gVal.OBJ_L.Log( "B", wRes )
@@ -1285,28 +1302,28 @@ class CLS_TwitterMain():
 		wRes['Result'] = True
 		return wRes
 
-	#####################################################
-	# リスト通知ユーザ表示
-	def ViewListIndUser(self):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_TwitterMain"
-		wRes['Func']  = "ViewListIndUser"
-		
-		#############################
-		# リスト通知の表示
-		wSubRes = gVal.OBJ_Tw_IF.ViewListIndUser()
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "ViewListIndUser error"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		wRes['Result'] = True
-		return wRes
-
-
+###	#####################################################
+###	# リスト通知ユーザ表示
+###	def ViewListIndUser(self):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_TwitterMain"
+###		wRes['Func']  = "ViewListIndUser"
+###		
+###		#############################
+###		# リスト通知の表示
+###		wSubRes = gVal.OBJ_Tw_IF.ViewListIndUser()
+###		if wSubRes['Result']!=True :
+###			wRes['Reason'] = "ViewListIndUser error"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		wRes['Result'] = True
+###		return wRes
+###
+###
 
 #####################################################
 # リスト登録ユーザチェック
