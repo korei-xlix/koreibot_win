@@ -997,6 +997,7 @@ class CLS_Twitter_IF() :
 		# 結果チェック
 		if wTweetRes['Result']!=True :
 			wRes['Reason'] = "Twitter API Error: " + wTweetRes['Reason']
+			wRes.update({ "StatusCode" : str(wTweetRes['StatusCode']) })
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
@@ -1867,6 +1868,15 @@ class CLS_Twitter_IF() :
 		wRes['Func']  = "CheckList"
 		
 		wFLG_Detect = False
+		#############################
+		# リストを取得してなければ取得する
+		if len(self.ARR_Lists)==0 :
+			wSubRes = self.GetList()
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "GetList is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+		
 		#############################
 		# リストがTwitterにあるか確認
 		wKeylist = list( self.ARR_Lists.keys() )

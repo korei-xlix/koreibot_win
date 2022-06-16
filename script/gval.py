@@ -65,7 +65,9 @@ class gVal() :
 		"ListName"	: "",			#リスト通知 リスト名
 		"ListDate"	: None,			#リスト通知日時
 ###		"LFavoName"	: "",			#リストいいね リスト名
-		"LFavoDate"	: None			#リストいいね日時
+		"LFavoDate"	: None,			#リストいいね日時
+		
+		"ArListName": "",			#自動リムーブ先リスト
 	}
 
 #############################
@@ -213,6 +215,9 @@ class gVal() :
 		"KeywordConsole"		: DEF_DISPPATH + "keyword_console.disp",
 		"ListFavoConsole"		: DEF_DISPPATH + "listfavo_console.disp",
 		"ExcUserConsole"		: DEF_DISPPATH + "excuser_console.disp",
+		
+		"SystemConfigConsole"	: DEF_DISPPATH + "system_config_console.disp",
+		"SystemViewConsole"		: DEF_DISPPATH + "system_view_console.disp",
 		"(dummy)"				: 0
 	}
 

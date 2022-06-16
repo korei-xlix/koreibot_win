@@ -82,6 +82,31 @@ class CLS_Main_Console() :
 				#############################
 			
 			#############################
+			# システム設定
+			if wCommand=="\\conf" :
+				while True :
+					wSysCommand = cls().sViewSystemConfigConsole()
+					
+					if wSysCommand=="" :
+						###未入力は再度入力
+						continue
+					
+					if wSysCommand=="\\q" :
+						#############################
+						# 終了
+						break
+					
+					#############################
+					# コマンド実行
+					wResCmd = cls().sRunSystemConfig( wSysCommand )
+					
+					#############################
+					# 待機(入力待ち)
+					CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+				
+				continue
+			
+			#############################
 			# コマンド実行前処理
 			wSubRes = cls.sFirstProcess()
 			if wSubRes['Result']!=True :
@@ -150,11 +175,6 @@ class CLS_Main_Console() :
 		
 	#####################################################
 ###		#############################
-###		# いいね解除
-###		if inCommand=="\\ic" :
-###			cls.OBJ_TwitterMain.RemFavo()
-###		
-###		#############################
 ###		# トレンドツイート
 ###		elif inCommand=="\\tt" :
 ###			cls.OBJ_TwitterMain.TrendTweet()
@@ -167,62 +187,45 @@ class CLS_Main_Console() :
 		elif inCommand=="\\kk" :
 			cls.OBJ_TwitterMain.KeywordFavo()
 		
-	#####################################################
-		#############################
-		# Twitter APIの変更
-		elif inCommand=="\\ca" :
-			wResAPI = gVal.OBJ_Tw_IF.SetTwitter( gVal.STR_UserInfo['Account'] )
-			if wResAPI['Result']!=True :
-				wRes['Reason'] = "Set Twitter API failed: " + wResAPI['Reason']
-				gVal.OBJ_L.Log( "D", wRes )
-		
-		#############################
-		# トレンドタグ設定
-		elif inCommand=="\\tc" :
-			cls.OBJ_TwitterMain.SetTrendTag()
-		
-		#############################
-		# リスト通知設定
-###		elif inCommand=="\\lc" :
-		elif inCommand=="\\ic" :
-			cls.OBJ_TwitterMain.SetListInd()
-		
+###	#####################################################
+###		#############################
+###		# Twitter APIの変更
+###		elif inCommand=="\\ca" :
+###			wResAPI = gVal.OBJ_Tw_IF.SetTwitter( gVal.STR_UserInfo['Account'] )
+###			if wResAPI['Result']!=True :
+###				wRes['Reason'] = "Set Twitter API failed: " + wResAPI['Reason']
+###				gVal.OBJ_L.Log( "D", wRes )
+###		
+###		#############################
+###		# トレンドタグ設定
+###		elif inCommand=="\\tc" :
+###			cls.OBJ_TwitterMain.SetTrendTag()
+###		
+###		#############################
+###		# リスト通知設定
+###		elif inCommand=="\\ic" :
+###			cls.OBJ_TwitterMain.SetListInd()
+###		
 		#############################
 		# リストいいね設定
 		elif inCommand=="\\fc" :
 			cls.OBJ_TwitterMain.SetListFavo()
 		
-###		#############################
-###		# リストいいね 有効設定
-###		elif inCommand=="\\fvc" :
-###			cls.OBJ_TwitterMain.SetListFavoValid()
-###		
+		#############################
+		# リスト通知ユーザ表示
+		elif inCommand=="\\iv" :
+			cls.OBJ_TwitterMain.ViewListIndUser()
+		
 	#####################################################
 		#############################
 		# ユーザ管理
 		elif inCommand=="\\u" :
 			cls.OBJ_TwitterMain.UserAdmin()
 		
-		#############################
-		# 禁止ユーザ
-		elif inCommand=="\\ue" :
-			cls.OBJ_TwitterMain.ExcuteUser()
-		
-		#############################
-		# リスト通知ユーザ表示
-###		elif inCommand=="\\lv" :
-		elif inCommand=="\\iv" :
-			cls.OBJ_TwitterMain.ViewListIndUser()
-		
 ###		#############################
-###		# リストいいねユーザ表示
-###		elif inCommand=="\\fv" :
-###			cls.OBJ_TwitterMain.ViewListFavoUser()
-###		
-###		#############################
-###		# フォロワー状態の更新 確認
-###		elif inCommand=="\\f" :
-###			cls.OBJ_TwitterMain.FollowerConfirm()
+###		# 禁止ユーザ
+###		elif inCommand=="\\ue" :
+###			cls.OBJ_TwitterMain.ExcuteUser()
 ###		
 	#####################################################
 		#############################
@@ -245,25 +248,25 @@ class CLS_Main_Console() :
 		elif inCommand=="\\la" :
 			gVal.OBJ_L.View()
 		
-		#############################
-		# ログクリア
-		elif inCommand=="\\lc" :
-			gVal.OBJ_L.Clear()
-		
-		#############################
-		# 全ログクリア
-		elif inCommand=="\\lca" :
-			gVal.OBJ_L.Clear( inAllClear=True )
-		
+###		#############################
+###		# ログクリア
+###		elif inCommand=="\\lc" :
+###			gVal.OBJ_L.Clear()
+###		
+###		#############################
+###		# 全ログクリア
+###		elif inCommand=="\\lca" :
+###			gVal.OBJ_L.Clear( inAllClear=True )
+###		
 		#############################
 		# システム情報の表示
 		elif inCommand=="\\v" :
-###			cls().sView_Sysinfo()
 			cls.OBJ_TwitterMain.View_Sysinfo()
 		
 		#############################
 		# トラヒック情報の表示
-		elif inCommand=="\\vt" :
+###		elif inCommand=="\\vt" :
+		elif inCommand=="\\lt" :
 			wResTraffic = CLS_Traffic.sView()
 			if wResTraffic['Result']!=True :
 				gVal.OBJ_L.Log( "B", wResTraffic )
@@ -317,6 +320,89 @@ class CLS_Main_Console() :
 			else:
 				print("NG")
 
+		
+	#####################################################
+		#############################
+		# ないコマンド
+		else :
+			wRes['Reason'] = "存在しないコマンド :" + str(inCommand)
+			gVal.OBJ_L.Log( "D", wRes )
+			return False
+		
+		return True
+
+
+
+#####################################################
+# システム設定の表示
+#####################################################
+	@classmethod
+	def sViewSystemConfigConsole(cls):
+		
+		#############################
+		# システム設定画面
+		wResDisp = CLS_MyDisp.sViewDisp( "SystemConfigConsole", inClear=cls.FLG_MainDispClear )
+		if wResDisp['Result']==False :
+			gVal.OBJ_L.Log( "D", wResDisp )
+			return "\\q"	#失敗=強制終了
+		
+		wCommand = CLS_OSIF.sInp( "コマンド？=> " )
+		return wCommand
+
+
+
+#####################################################
+# システム設定 実行
+#####################################################
+	@classmethod
+	def sRunSystemConfig( cls, inCommand ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_Main_Console"
+		wRes['Func']  = "sRunSystemConfig"
+		
+		#############################
+		# トレンドタグ設定
+		if inCommand=="\\t" :
+			cls.OBJ_TwitterMain.SetTrendTag()
+		
+		#############################
+		# リスト通知設定
+		elif inCommand=="\\i" :
+			cls.OBJ_TwitterMain.SetListName()
+		
+		#############################
+		# 自動リムーブ
+		elif inCommand=="\\r" :
+			cls.OBJ_TwitterMain.SetAutoRemove()
+		
+	#####################################################
+		#############################
+		# 禁止ユーザ
+		elif inCommand=="\\u" :
+			cls.OBJ_TwitterMain.ExcuteUser()
+		
+	#####################################################
+		#############################
+		# ログクリア
+		elif inCommand=="\\lc" :
+			gVal.OBJ_L.Clear()
+		
+		#############################
+		# 全ログクリア
+		elif inCommand=="\\lall" :
+			gVal.OBJ_L.Clear( inAllClear=True )
+		
+	#####################################################
+		#############################
+		# Twitter APIの変更
+		elif inCommand=="\\apiconf" :
+			wResAPI = gVal.OBJ_Tw_IF.SetTwitter( gVal.STR_UserInfo['Account'] )
+			if wResAPI['Result']!=True :
+				wRes['Reason'] = "Set Twitter API failed: " + wResAPI['Reason']
+				gVal.OBJ_L.Log( "D", wRes )
 		
 	#####################################################
 		#############################

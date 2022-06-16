@@ -179,7 +179,7 @@ class CLS_TwitterFavo():
 				return wRes
 			if wGetLag['Beyond']==False :
 				### 規定以内は除外
-				wStr = "●リアクション期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
+				wStr = "●リストいいね期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
 				CLS_OSIF.sPrn( wStr )
 				wRes['Result'] = True
 				return wRes
@@ -1305,20 +1305,20 @@ class CLS_TwitterFavo():
 		wRes['Class'] = "CLS_TwitterFavo"
 		wRes['Func']  = "__view_ListFavoUser"
 		
-		#############################
+###		#############################
 ###		# リストがTwitterにあるか確認
 ###		wSubRes = gVal.OBJ_Tw_IF.CheckList( inListName )
-		# リストの取得にあるか確認
-		wSubRes = gVal.OBJ_Tw_IF.GetList( inListName )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		if wSubRes['Responce']==False :
-			wRes['Reason'] = "Twitter List not found: " + inListName
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
+###		# リストの取得にあるか確認
+###		wSubRes = gVal.OBJ_Tw_IF.GetList( inListName )
+###		if wSubRes['Result']!=True :
+###			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		if wSubRes['Responce']==False :
+###			wRes['Reason'] = "Twitter List not found: " + inListName
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
 		#############################
 		# Twitterからリストのユーザ一覧を取得
 		wSubRes = gVal.OBJ_Tw_IF.GetListMember( inListName )
@@ -1453,7 +1453,7 @@ class CLS_TwitterFavo():
 		
 		#############################
 		# ヘッダの表示
-		wStr = "USER NAME                FW者  FW受  FAVO受信(回数/日)   FAVO送信日   最終活動日" + '\n'
+		wStr = "USER NAME         FW者  FW受  FAVO受信(回数/日)   FAVO送信日   最終活動日" + '\n'
 		CLS_OSIF.sPrn( wStr )
 		
 		#############################

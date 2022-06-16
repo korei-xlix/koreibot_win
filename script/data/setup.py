@@ -370,6 +370,7 @@ class CLS_Setup():
 					"listname    TEXT," + \
 					"listdate    TIMESTAMP," + \
 					"lfavdate    TIMESTAMP," + \
+					"arlistname  TEXT," + \
 					" PRIMARY KEY ( twitterid ) ) ;"
 ###					"lfavoname   TEXT," + \
 

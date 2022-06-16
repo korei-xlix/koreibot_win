@@ -1285,75 +1285,75 @@ class CLS_DB_IF() :
 #####################################################
 # トレンドタグ設定
 #####################################################
-	def SetTrendTag( self ):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_DB_IF"
-		wRes['Func']  = "SetTrendTag"
-		
-		wTrendTag = None
-		#############################
-		# Twitterキーの入力
-		CLS_OSIF.sPrn( "トレンドタグの設定をおこないます。" )
-		CLS_OSIF.sPrn( "---------------------------------------" )
-		while True :
-			###初期化
-			wTrendTag = None
-			
-			#############################
-			# 実行の確認
-			wSelect = CLS_OSIF.sInp( "キャンセルしますか？(y)=> " )
-			if wSelect=="y" :
-				# 完了
-				wRes['Result'] = True
-				return wRes
-			
-			#############################
-			# 入力
-			wStr = "トレンドツイートに設定するトレンドタグを入力してください。"
-			CLS_OSIF.sPrn( wStr )
-			wKey = CLS_OSIF.sInp( "Trend Tag？=> " )
-			if wKey=="" :
-				CLS_OSIF.sPrn( "トレンドタグが未入力です" + '\n' )
-				continue
-			wTrendTag = wKey
-			
-			###ここまでで入力は完了した
-			break
-		
-		#############################
-		# DBに登録する
-		if wTrendTag==None :
-			##失敗
-			wRes['Reason'] = "Trend unset"
-			CLS_OSIF.sErr( wRes )
-			return False
-		else :
-			wQuery = "update tbl_user_data set " + \
-					"trendtag = '" + wTrendTag + "' " + \
-					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
-			
-			wResDB = self.OBJ_DB.RunQuery( wQuery )
-			wResDB = self.OBJ_DB.GetQueryStat()
-			if wResDB['Result']!=True :
-				##失敗
-				wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-				CLS_OSIF.sErr( wRes )
-				return False
-			
-			#############################
-			# トレンドタグの更新
-			gVal.STR_UserInfo['TrendTag'] = wTrendTag
-			
-			wStr = "トレンドを更新しました。" + '\n'
-			CLS_OSIF.sPrn( wStr )
-		
-		wRes['Result'] = True
-		return wRes
-
-
+###	def SetTrendTag( self ):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_DB_IF"
+###		wRes['Func']  = "SetTrendTag"
+###		
+###		wTrendTag = None
+###		#############################
+###		# Twitterキーの入力
+###		CLS_OSIF.sPrn( "トレンドタグの設定をおこないます。" )
+###		CLS_OSIF.sPrn( "---------------------------------------" )
+###		while True :
+###			###初期化
+###			wTrendTag = None
+###			
+###			#############################
+###			# 実行の確認
+###			wSelect = CLS_OSIF.sInp( "キャンセルしますか？(y)=> " )
+###			if wSelect=="y" :
+###				# 完了
+###				wRes['Result'] = True
+###				return wRes
+###			
+###			#############################
+###			# 入力
+###			wStr = "トレンドツイートに設定するトレンドタグを入力してください。"
+###			CLS_OSIF.sPrn( wStr )
+###			wKey = CLS_OSIF.sInp( "Trend Tag？=> " )
+###			if wKey=="" :
+###				CLS_OSIF.sPrn( "トレンドタグが未入力です" + '\n' )
+###				continue
+###			wTrendTag = wKey
+###			
+###			###ここまでで入力は完了した
+###			break
+###		
+###		#############################
+###		# DBに登録する
+###		if wTrendTag==None :
+###			##失敗
+###			wRes['Reason'] = "Trend unset"
+###			CLS_OSIF.sErr( wRes )
+###			return False
+###		else :
+###			wQuery = "update tbl_user_data set " + \
+###					"trendtag = '" + wTrendTag + "' " + \
+###					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+###			
+###			wResDB = self.OBJ_DB.RunQuery( wQuery )
+###			wResDB = self.OBJ_DB.GetQueryStat()
+###			if wResDB['Result']!=True :
+###				##失敗
+###				wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+###				CLS_OSIF.sErr( wRes )
+###				return False
+###			
+###			#############################
+###			# トレンドタグの更新
+###			gVal.STR_UserInfo['TrendTag'] = wTrendTag
+###			
+###			wStr = "トレンドを更新しました。" + '\n'
+###			CLS_OSIF.sPrn( wStr )
+###		
+###		wRes['Result'] = True
+###		return wRes
+###
+###
 
 #####################################################
 # いいね者送信日時 更新
@@ -1393,30 +1393,20 @@ class CLS_DB_IF() :
 
 
 #####################################################
-# リスト通知設定
+# リスト名設定
 #####################################################
-	def SetListInd( self, inListName ):
+	def SetListName(self):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
 		wRes = CLS_OSIF.sGet_Resp()
 		wRes['Class'] = "CLS_DB_IF"
-		wRes['Func']  = "SetListInd"
-		
-		if gVal.STR_UserInfo['ListName']==inListName :
-			##失敗
-			wRes['Reason'] = "同じリスト名"
-			gVal.OBJ_L.Log( "D", wRes )
-			return wRes
-		
-		if inListName=="" or inListName==None :
-			##失敗
-			wRes['Reason'] = "登録不可の文字列: " + inListName
-			gVal.OBJ_L.Log( "D", wRes )
-			return wRes
+		wRes['Func']  = "SetListName"
 		
 		wQuery = "update tbl_user_data set " + \
-				"listname = '" + inListName + "' " + \
+				"trendtag = '" + gVal.STR_UserInfo['TrendTag'] + "', " + \
+				"listname = '" + gVal.STR_UserInfo['ListName'] + "', " + \
+				"arlistname = '" + gVal.STR_UserInfo['ArListName'] + "' " + \
 				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
 		
 		wResDB = self.OBJ_DB.RunQuery( wQuery )
@@ -1427,15 +1417,55 @@ class CLS_DB_IF() :
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-		gVal.STR_UserInfo['ListName'] = inListName
-		
-		wStr = "リスト通知設定を更新しました。" + '\n'
-		CLS_OSIF.sPrn( wStr )
-		
 		wRes['Result'] = True
 		return wRes
 
-	#####################################################
+#####################################################
+# リスト通知設定
+#####################################################
+###	def SetListInd( self, inListName ):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_DB_IF"
+###		wRes['Func']  = "SetListInd"
+###		
+###		if gVal.STR_UserInfo['ListName']==inListName :
+###			##失敗
+###			wRes['Reason'] = "同じリスト名"
+###			gVal.OBJ_L.Log( "D", wRes )
+###			return wRes
+###		
+###		if inListName=="" or inListName==None :
+###			##失敗
+###			wRes['Reason'] = "登録不可の文字列: " + inListName
+###			gVal.OBJ_L.Log( "D", wRes )
+###			return wRes
+###		
+###		wQuery = "update tbl_user_data set " + \
+###				"listname = '" + inListName + "' " + \
+###				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+###		
+###		wResDB = self.OBJ_DB.RunQuery( wQuery )
+###		wResDB = self.OBJ_DB.GetQueryStat()
+###		if wResDB['Result']!=True :
+###			##失敗
+###			wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		gVal.STR_UserInfo['ListName'] = inListName
+###		
+###		wStr = "リスト通知設定を更新しました。" + '\n'
+###		CLS_OSIF.sPrn( wStr )
+###		
+###		wRes['Result'] = True
+###		return wRes
+
+#####################################################
+# リスト通知日時更新
+#####################################################
 	def UpdateListIndDate(self):
 		#############################
 		# 応答形式の取得

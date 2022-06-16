@@ -210,10 +210,10 @@ class CLS_BotCtrl():
 			# キーを設定
 			gVal.STR_SystemInfo[wGetLine[0]] = wGetLine[1]
 		
-		#############################
-		# トレンドタグの取得
-		gVal.STR_UserInfo['TrendTag'] = wChgDict[0]['trendtag']
-		
+###		#############################
+###		# トレンドタグの取得
+###		gVal.STR_UserInfo['TrendTag'] = wChgDict[0]['trendtag']
+###		
 		#############################
 		# いいね者送信日時(直近)
 		if wChgDict[0]['favodate']=="" or \
@@ -225,10 +225,22 @@ class CLS_BotCtrl():
 		gVal.STR_UserInfo['FavoDate'] = wChgDict[0]['favodate']
 		
 		#############################
+		# トレンドタグの取得
+		if wChgDict[0]['trendtag']==None :
+			wChgDict[0]['trendtag'] = ""
+		gVal.STR_UserInfo['TrendTag'] = wChgDict[0]['trendtag']
+		
+		#############################
 		# リスト通知
 		if wChgDict[0]['listname']==None :
 			wChgDict[0]['listname'] = ""
 		gVal.STR_UserInfo['ListName'] = wChgDict[0]['listname']
+		
+		#############################
+		# 自動リムーブ
+		if wChgDict[0]['arlistname']==None :
+			wChgDict[0]['arlistname'] = ""
+		gVal.STR_UserInfo['ArListName'] = wChgDict[0]['arlistname']
 		
 		if wChgDict[0]['listdate']=="" or \
 		   wChgDict[0]['listdate']==None :

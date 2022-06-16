@@ -18,7 +18,6 @@ class CLS_MyDisp():
 # インプリメント処理
 #####################################################
 	@classmethod
-###	def sDispInp( cls, inDisp, inLine, inIndex ):
 	def sDispInp( cls, inDisp, inLine, inIndex, inData={} ):
 		#############################
 		# 応答形式の取得
@@ -30,19 +29,12 @@ class CLS_MyDisp():
 		###メイン画面
 		if inDisp=="MainConsole" :
 			cls.__dispInp_Main( inLine, wRes )
-###		###検索モード画面
-###		elif inDisp=="SearchConsole" :
-###			cls.__dispInp_SearchMode( inLine, inIndex, wRes )
-###		###キーユーザ変更画面
-###		elif inDisp=="KeyuserConsole" :
-###			cls.__dispInp_Keyuser( inLine, wRes )
+		###システム設定画面
+		elif inDisp=="SystemConfigConsole" :
+			cls.__dispInp_SystemConfig( inLine, wRes )
 		###ユーザ管理画面
 		elif inDisp=="UserAdminConsole" :
-###			cls.__dispInp_UserAdmin( inLine, wRes )
 			cls.__dispInp_UserAdmin( inLine, wRes, inData )
-###		###自動いいね設定画面
-###		elif inDisp=="AutoFavoConsole" :
-###			cls.__dispInp_AutoFavo( inLine, wRes )
 		###キーワードいいね画面
 		elif inDisp=="KeywordConsole" :
 			cls.__dispInp_Keyword( inLine, wRes, inData )
@@ -52,6 +44,12 @@ class CLS_MyDisp():
 		###禁止ユーザ画面
 		elif inDisp=="ExcUserConsole" :
 			cls.__dispInp_ExcUser( inLine, wRes, inData )
+		
+
+
+		###システム情報画面
+		elif inDisp=="SystemViewConsole" :
+			cls.__dispInp_SystemView( inLine, wRes, inData )
 		
 		return wRes
 
@@ -72,128 +70,26 @@ class CLS_MyDisp():
 		pRes['Result'] = True
 		return
 
-###	#####################################################
-###	# 検索モード画面
-###	@classmethod
-###	def __dispInp_SearchMode( cls, inLine, inIndex, outRes ):
-###		pRes = outRes
-###		#############################
-###		# Indexが範囲内かチェック
-###		wLen = len(gVal.STR_SearchMode)
-###		if inIndex<=-1 and wLen<=inIndex :
-###			pRes['Reason'] = "Index is out of range value=" + str(inIndex)
-###			return
-###		
-###		#############################
-###		# インプリメント処理
-###		
-###		###インプリ：検索 画像を含める
-###		if "[@SEARCH-IMAGE@]"==inLine :
-###			wJPstr = cls.__get_JPstr_Dual( gVal.STR_SearchMode[inIndex]['IncImage'], gVal.STR_SearchMode[inIndex]['ExcImage'] )
-###			if wJPstr==None :
-###				pRes['Reason'] = "フラグ取り扱い矛盾: 検索に画像を含める Dual flag is True"
-###				return
-###			pRes['Responce'] = "    検索に画像を含める    [\\i]: " + wJPstr
-###		
-###		###インプリ：検索 動画を含める
-###		elif "[@SEARCH-VIDEO@]"==inLine :
-###			wJPstr = cls.__get_JPstr_Dual( gVal.STR_SearchMode[inIndex]['IncVideo'], gVal.STR_SearchMode[inIndex]['ExcVideo'] )
-###			if wJPstr==None :
-###				pRes['Reason'] = "フラグ取り扱い矛盾: 検索に動画を含める Dual flag is True"
-###				return
-###			pRes['Responce'] = "    検索に動画を含める    [\\v]: " + wJPstr
-###		
-###		###インプリ：検索 リンクを含める
-###		elif "[@SEARCH-LINK@]"==inLine :
-###			wJPstr = cls.__get_JPstr_Dual( gVal.STR_SearchMode[inIndex]['IncLink'], gVal.STR_SearchMode[inIndex]['ExcLink'] )
-###			if wJPstr==None :
-###				pRes['Reason'] = "フラグ取り扱い矛盾: 検索にリンクを含める Dual flag is True"
-###				return
-###			pRes['Responce'] = "    検索にリンクを含める  [\\l]: " + wJPstr
-###		
-###		###インプリ：検索 公式マークのみ
-###		elif "[@SEARCH-OFFICIAL@]"==inLine :
-###			pRes['Responce'] = "    検索は公式マークのみ  [\\o]: " + cls.__get_JPstr_Single( gVal.STR_SearchMode[inIndex]['OFonly'] )
-###		
-###		###インプリ：検索 日本語のみ
-###		elif "[@SEARCH-JPONLY@]"==inLine :
-###			pRes['Responce'] = "    検索は日本語のみ     [\\jp]: " + cls.__get_JPstr_Single( gVal.STR_SearchMode[inIndex]['JPonly'] )
-###		
-###		###インプリ：検索 リツイート含む
-###		elif "[@SEARCH-RT@]"==inLine :
-###			pRes['Responce'] = "    リツイート含めない   [\\rt]: " + cls.__get_JPstr_Single( gVal.STR_SearchMode[inIndex]['ExcRT'] )
-###		
-###		###インプリ：検索 センシティブな内容を含めない
-###		elif "[@SEARCH-SENSI@]"==inLine :
-###			pRes['Responce'] = "    センシティブを除外   [\\sn]: " + cls.__get_JPstr_Single( gVal.STR_SearchMode[inIndex]['ExcSensi'] )
-###		
-###		###インプリ：検索 荒らし除去をおこなう
-###		elif "[@SEARCH-ARASHI@]"==inLine :
-###			pRes['Responce'] = "    荒らし除去           [\\tr]: " + cls.__get_JPstr_Single( gVal.STR_SearchMode[inIndex]['Arashi'] )
-###		
-###		###インプリ：検索文字
-###		elif "[@SEARCH-KEYWORD@]"==inLine :
-###			if gVal.STR_SearchMode[inIndex]['Keyword']=="" :
-###				pRes['Responce'] = "    検索文字: " + "(未設定)"
-###			else:
-###				pRes['Responce'] = "    検索文字: " + gVal.STR_SearchMode[inIndex]['Keyword']
-###
-###		
-###		#############################
-###		# 正常
-###		pRes['Result'] = True
-###		return
-
-###	#####################################################
-###	# キーユーザ変更画面
-###	@classmethod
-###	def __dispInp_Keyuser( cls, inLine, outRes ):
-###		pRes = outRes
-###		#############################
-###		# インプリメント処理
-###		
-###		###インプリ：キーユーザ一覧
-###		if "[@KEYUSER-LIST@]"==inLine :
-###			wRange = len( gVal.STR_SearchMode )
-###			wList = ""
-###			wCell = 1
-###			for wIndex in range( wRange ) :
-###				if gVal.STR_SearchMode[wIndex]['id']==0 :
-###					###手動用は表示しない
-###					continue
-###				
-###				wList = wList + "    "
-###				if gVal.STR_SearchMode[wIndex]['Choice']==True :
-###					wList = wList + "■ "
-###				else :
-###					wList = wList + "□ "
-###				
-###				###データ組み立て
-###				wList = wList + str(gVal.STR_SearchMode[wIndex]['id']) + ": "
-###				wLen = 10 - len( str(gVal.STR_SearchMode[wIndex]['Count']) )
-###				wBlank = " " * wLen
-###				wList = wList + wBlank + str(gVal.STR_SearchMode[wIndex]['Count']) + "  " + gVal.STR_SearchMode[wIndex]['Keyword']
-###				
-###				###最終行でなければ改行する
-###				if wCell!=wRange :
-###					wList = wList + '\n'
-###			
-###			if wList!="" :
-###				###リストの後ろに改行
-###				wList = wList + '\n'
-###				pRes['Responce'] = wList
-###			else:
-###				pRes['Responce'] = "    (キーユーザ設定がありません)" + '\n'
-###	
-###		#############################
-###		# 正常
-###		pRes['Result'] = True
-###		return
+	#####################################################
+	# システム設定画面
+	@classmethod
+	def __dispInp_SystemConfig( cls, inLine, outRes ):
+		pRes = outRes
+		#############################
+		# インプリメント処理
+		
+		###インプリ：ユーザアカウント
+		if "[@USER-ACCOUNT@]"==inLine :
+			pRes['Responce'] = "Twitter ID : " + gVal.STR_UserInfo['Account']
+		
+		#############################
+		# 正常
+		pRes['Result'] = True
+		return
 
 	#####################################################
 	# ユーザ管理画面
 	@classmethod
-###	def __dispInp_UserAdmin( cls, inLine, outRes ):
 	def __dispInp_UserAdmin( cls, inLine, outRes, inData={} ):
 		pRes = outRes
 		#############################
@@ -325,8 +221,6 @@ class CLS_MyDisp():
 		pRes['Result'] = True
 		return
 
-
-
 	#####################################################
 	# キーワードいいね画面
 	@classmethod
@@ -335,22 +229,10 @@ class CLS_MyDisp():
 		#############################
 		# インプリメント処理
 		
-###		###インプリ：キーワードいいね文字列
-###		if "[@KEYWORD-STRING@]"==inLine :
-###			if inData['str_keyword']!=None :
-###				wStr = str( inData['str_keyword'] )
-###			else:
-###				wStr = "(設定なし)"
-###			pRes['Responce'] = "設定文字列: " + wStr
-###		
 		###インプリ：最大ツイート取得数
 		if "[@KEYWORD-MAXSEARCHNUM@]"==inLine :
 			pRes['Responce'] = "    最大ツイート取得数: " + str( inData['max_searchnum'] )
 		
-###		###インプリ：抽出ツイート数
-###		elif "[@KEYWORD-SEARCHNUM@]"==inLine :
-###			pRes['Responce'] = "    抽出ツイート数    : " + str( inData['searchnum'] )
-###		
 		###インプリ：記憶ユーザ数
 		elif "[@KEYWORD-USERNUM@]"==inLine :
 			pRes['Responce'] = "    記憶ユーザ数      : " + str( inData['usernum'] )
@@ -371,67 +253,6 @@ class CLS_MyDisp():
 		# 正常
 		pRes['Result'] = True
 		return
-
-
-
-###	#####################################################
-###	# 自動いいね設定画面
-###	@classmethod
-###	def __dispInp_AutoFavo( cls, inLine, outRes ):
-###		pRes = outRes
-###		#############################
-###		# インプリメント処理
-###		
-###		###インプリ：リプライを含める
-###		if "[@AUTOFAVO-RIP@]"==inLine :
-###			if gVal.STR_AutoFavo['Rip']==True :
-###				wStr = "含める"
-###			else:
-###				wStr = "除外する"
-###			pRes['Responce'] = "    リプライ            : " + wStr
-###		
-###		###インプリ：リツイートを含める
-###		elif "[@AUTOFAVO-RETWEET@]"==inLine :
-###			if gVal.STR_AutoFavo['Ret']==True :
-###				wStr = "含める"
-###			else:
-###				wStr = "除外する"
-###			pRes['Responce'] = "    リツイート          : " + wStr
-###		
-###		###インプリ：引用リツイートを含める
-###		elif "[@AUTOFAVO-INYOURT@]"==inLine :
-###			if gVal.STR_AutoFavo['iRet']==True :
-###				wStr = "含める"
-###			else:
-###				wStr = "除外する"
-###			pRes['Responce'] = "    引用リツイート      : " + wStr
-###		
-###		###インプリ：タグを含める
-###		elif "[@AUTOFAVO-TAG@]"==inLine :
-###			if gVal.STR_AutoFavo['Tag']==True :
-###				wStr = "含める"
-###			else:
-###				wStr = "除外する"
-###			pRes['Responce'] = "    タグ                : " + wStr
-###		
-###		###インプリ：片フォローを含める
-###		elif "[@AUTOFAVO-PIEFOLLOW@]"==inLine :
-###			if gVal.STR_AutoFavo['PieF']==True :
-###				wStr = "含める"
-###			else:
-###				wStr = "除外する"
-###			pRes['Responce'] = "    片フォロー          : " + wStr
-###		
-###		###インプリ：対象時間
-###		elif "[@AUTOFAVO-LENGTH@]"==inLine :
-###			pRes['Responce'] = "    対象範囲時間        : " + str( gVal.STR_AutoFavo['Len'] )
-###		
-###		#############################
-###		# 正常
-###		pRes['Result'] = True
-###		return
-###
-###
 
 	#####################################################
 	# リストいいね設定画面
@@ -469,11 +290,110 @@ class CLS_MyDisp():
 
 
 
+
+
+
+
+
+
+
+
+
+
+	#####################################################
+	# システム情報画面
+	@classmethod
+	def __dispInp_SystemView( cls, inLine, outRes, inData={} ):
+		pRes = outRes
+		#############################
+		# インプリメント処理
+		
+		###インプリ：ユーザアカウント
+		if "[@USER-ID@]"==inLine :
+			pRes['Responce'] = "Twitter ID : " + str( inData['screen_name'] ) + "(id=" + str( inData['id'] ) + ")"
+		
+		###インプリ：現在時刻
+		elif "[@NOW-TIMEDATE@]"==inLine :
+			pRes['Responce'] = "             " + str( inData['now_TimeDate'] )
+		
+		###インプリ：クライアント名
+		elif "[@PRJ-CLIENT-NAME@]"==inLine :
+			pRes['Responce'] = "    クライアント名    : " + str( inData['Prj_Client_Name'] )
+		
+		###インプリ：github
+		elif "[@PRJ-GITHUB@]"==inLine :
+			pRes['Responce'] = "    github            : " + str( inData['Prj_github'] )
+		
+		###インプリ：作成者(Admin)
+		elif "[@PRJ-ADMIN@]"==inLine :
+			pRes['Responce'] = "    作成者(Admin)     : " + str( inData['Prj_Admin'] )
+		
+		###インプリ：Pythonバージョン
+		elif "[@PRJ-PYTHONVER@]"==inLine :
+			pRes['Responce'] = "    Pythonバージョン  : " + str( inData['Prj_PythonVer'] )
+		
+		###インプリ：ホスト名
+		elif "[@PRJ-HOSTNAME@]"==inLine :
+			pRes['Responce'] = "    ホスト名          : " + str( inData['Prj_HostName'] )
+		
+		###インプリ：フォロー者数
+		elif "[@TWT-MYFOLLOWNUM@]"==inLine :
+			pRes['Responce'] = "    フォロー者数      : " + str( inData['Twt_MyFollowNum'] )
+		
+		###インプリ：フォロワー数
+		elif "[@TWT-FOLLOWERNUM@]"==inLine :
+			pRes['Responce'] = "    フォロワー数      : " + str( inData['Twt_FollowerNum'] )
+		
+		###インプリ：いいね数
+		elif "[@TWT-FAVORITENUM@]"==inLine :
+			pRes['Responce'] = "    いいね数          : " + str( inData['Twt_FavoriteNum'] )
+		
+		###インプリ：DBユーザ情報数
+		elif "[@DB-FAVOUSERNUM@]"==inLine :
+			pRes['Responce'] = "    DBユーザ情報数    : " + str( inData['DB_FavoUserNum'] )
+		
+		###インプリ：DBログ総数
+		elif "[@DB-LOGNUM@]"==inLine :
+			pRes['Responce'] = "    DBログ総数        : " + str( inData['DB_LogNum'] )
+		
+		###インプリ：トレンドタグ
+		elif "[@SYS-TRENDTAG@]"==inLine :
+			wStr = "    トレンドタグ      : "
+			if inData['Sys_TrendTag']==None or inData['Sys_TrendTag']=="" :
+				wStr = wStr + "(なし)"
+			else:
+				wStr = wStr + inData['Sys_TrendTag'] + ")"
+			pRes['Responce'] = wStr
+		
+		###インプリ：リスト通知
+		elif "[@SYS-LISTNAME@]"==inLine :
+			wStr = "    リスト通知        : "
+			if inData['Sys_ListName']==None or inData['Sys_ListName']=="" :
+				wStr = wStr + "無効"
+			else:
+				wStr = wStr + "有効(list=" + inData['Sys_ListName'] + ")"
+			pRes['Responce'] = wStr
+		
+		###インプリ：自動リムーブ
+		elif "[@SYS-ARLISTNAME@]"==inLine :
+			wStr = "    自動リムーブ      : "
+			if inData['Sys_ArListName']==None or inData['Sys_ArListName']=="" :
+				wStr = wStr + "無効"
+			else:
+				wStr = wStr + "有効(list=" + inData['Sys_ArListName'] + ")"
+			pRes['Responce'] = wStr
+		
+		#############################
+		# 正常
+		pRes['Result'] = True
+		return
+
+
+
 #####################################################
 # ディスプレイファイル 読み込み→画面表示
 #####################################################
 	@classmethod
-###	def sViewDisp( cls, inDisp, inIndex=-1, inClear=True ):
 	def sViewDisp( cls, inDisp, inIndex=-1, inClear=True, inData={} ):
 		#############################
 		# 応答形式の取得
@@ -519,7 +439,6 @@ class CLS_MyDisp():
 				continue
 			
 			###インプリメント
-###			wResInp = cls.sDispInp( inDisp, wLine, inIndex )
 			wResInp = cls.sDispInp( inDisp, wLine, inIndex, inData )
 			if wResInp['Result']!=True :
 				wRes['Reason'] = "sDispInp is failed: reasin=" + wResInp['Reason']
