@@ -855,7 +855,7 @@ class CLS_TwitterAdmin():
 ###				gVal.OBJ_L.Log( "B", wRes )
 ###				return wRes
 ###			
-			wSubRes = gVal.OBJ_Tw_IF.CheckList( wInputName )
+			wSubRes = gVal.OBJ_Tw_IF.CheckList( inListName=wInputName )
 			if wSubRes['Result']!=True :
 				wRes['Reason'] = "CheckList is failed"
 				gVal.OBJ_L.Log( "B", wRes )
@@ -957,7 +957,7 @@ class CLS_TwitterAdmin():
 ###				gVal.OBJ_L.Log( "B", wRes )
 ###				return wRes
 ###			
-			wSubRes = gVal.OBJ_Tw_IF.CheckList( wInputName )
+			wSubRes = gVal.OBJ_Tw_IF.CheckList( inListName=wInputName )
 			if wSubRes['Result']!=True :
 				wRes['Reason'] = "CheckList is failed"
 				gVal.OBJ_L.Log( "B", wRes )

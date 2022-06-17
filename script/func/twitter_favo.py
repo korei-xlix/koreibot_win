@@ -283,7 +283,11 @@ class CLS_TwitterFavo():
 			
 			#############################
 			# リストIDの取得
-			wListsRes = gVal.OBJ_Tw_IF.GetListID( gVal.ARR_ListFavo[wKey]['screen_name'], gVal.ARR_ListFavo[wKey]['list_name'] )
+###			wListsRes = gVal.OBJ_Tw_IF.GetListID( gVal.ARR_ListFavo[wKey]['screen_name'], gVal.ARR_ListFavo[wKey]['list_name'] )
+			wListsRes = gVal.OBJ_Tw_IF.GetListID(
+			   inListName=gVal.ARR_ListFavo[wKey]['list_name'],
+			   inScreenName=gVal.ARR_ListFavo[wKey]['screen_name'] )
+			
 			if wListsRes['Result']!=True :
 				wRes['Reason'] = "Twitter Error: GetListID"
 				gVal.OBJ_L.Log( "B", wRes )
@@ -1321,7 +1325,8 @@ class CLS_TwitterFavo():
 ###		
 		#############################
 		# Twitterからリストのユーザ一覧を取得
-		wSubRes = gVal.OBJ_Tw_IF.GetListMember( inListName )
+###		wSubRes = gVal.OBJ_Tw_IF.GetListMember( inListName )
+		wSubRes = gVal.OBJ_Tw_IF.GetListMember( inListName=inListName )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )

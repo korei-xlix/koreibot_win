@@ -1352,7 +1352,10 @@ class CLS_TwitterMain():
 			#############################
 			# Twitterからリストの登録ユーザ一覧を取得
 ###			wListRes = gVal.OBJ_Tw_IF.GetListSubscribers( gVal.ARR_ListFavo[wKey]['list_name'] )
-			wListRes = gVal.OBJ_Tw_IF.GetListSubscribers( gVal.ARR_ListFavo[wKey]['list_name'], gVal.ARR_ListFavo[wKey]['screen_name'] )
+			wListRes = gVal.OBJ_Tw_IF.GetListSubscribers(
+			   inListName=gVal.ARR_ListFavo[wKey]['list_name'],
+			   inScreenName=gVal.ARR_ListFavo[wKey]['screen_name'] )
+			
 			if wListRes['Result']!=True :
 				wRes['Reason'] = "Twitter API Error(GetListSubscribers): " + wListRes['Reason']
 				gVal.OBJ_L.Log( "B", wRes )
@@ -1405,6 +1408,12 @@ class CLS_TwitterMain():
 		CLS_OSIF.sPrn( wStr )
 		
 		#############################
+		# 自動リムーブが無効ならここで終わる
+		if gVal.STR_UserInfo['ArListName']=="" :
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
 		# 自動リムーブチェック
 		
 		#############################
@@ -1440,7 +1449,11 @@ class CLS_TwitterMain():
 			CLS_OSIF.sPrn( wStr )
 			#############################
 			# Twitterからリストの登録ユーザ一覧を取得
-			wListRes = gVal.OBJ_Tw_IF.GetListMember( gVal.ARR_ListFavo[wKey]['list_name'], gVal.ARR_ListFavo[wKey]['screen_name'] )
+###			wListRes = gVal.OBJ_Tw_IF.GetListMember( gVal.ARR_ListFavo[wKey]['list_name'], gVal.ARR_ListFavo[wKey]['screen_name'] )
+			wListRes = gVal.OBJ_Tw_IF.GetListMember(
+			   inListName=gVal.ARR_ListFavo[wKey]['list_name'],
+			   inScreenName=gVal.ARR_ListFavo[wKey]['screen_name'] )
+			
 			if wListRes['Result']!=True :
 				wRes['Reason'] = "Twitter API Error(GetListMember): " + wListRes['Reason']
 				gVal.OBJ_L.Log( "B", wRes )

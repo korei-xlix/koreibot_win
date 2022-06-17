@@ -611,6 +611,16 @@ class CLS_TwitterFollower():
 			wRes['Result'] = True
 			return wRes
 		
+		# ※リムーブ確定
+		#############################
+		# 自動リムーブリストに登録
+		# (他のリスト登録は全削除)
+		wTweetRes = gVal.OBJ_Tw_IF.AutoRemove_AddUser( inUser )
+		if wTweetRes['Result']!=True :
+			wRes['Reason'] = "AutoRemove_AddUser is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
 		#############################
 		# リムーブ実行
 		wTweetRes = gVal.OBJ_Tw_IF.Remove( wUserID )
