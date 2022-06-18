@@ -575,7 +575,8 @@ class CLS_TwitterMain():
 		
 		#############################
 		# リスト通知 リストとユーザの更新
-		wSubRes = self.UpdateListIndUser( inUpdate=True )
+###		wSubRes = self.UpdateListIndUser( inUpdate=True )
+		wSubRes = self.UpdateListIndUser()
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "UpdateListIndUser error"
 			gVal.OBJ_L.Log( "B", wRes )
@@ -583,7 +584,8 @@ class CLS_TwitterMain():
 		
 		#############################
 		# リスト登録ユーザチェック
-		wSubRes = self.CheckListUsers( inUpdate=True )
+###		wSubRes = self.CheckListUsers( inUpdate=True )
+		wSubRes = self.CheckListUsers()
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "CheckListUsers error"
 			gVal.OBJ_L.Log( "B", wRes )
@@ -1328,7 +1330,8 @@ class CLS_TwitterMain():
 #####################################################
 # リスト登録ユーザチェック
 #####################################################
-	def CheckListUsers( self, inUpdate=False ):
+###	def CheckListUsers( self, inUpdate=False ):
+	def CheckListUsers(self):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
