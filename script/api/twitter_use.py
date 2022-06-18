@@ -816,7 +816,8 @@ class CLS_Twitter_Use():
 						[
 							"id",
 							"username",	# v1.1でいうscreen_name
-							"name"
+							"name",
+							"description"
 						]
 		)
 		
@@ -933,6 +934,7 @@ class CLS_Twitter_Use():
 							"id",
 							"username",	# v1.1でいうscreen_name
 							"name",
+							"description"
 						]
 		)
 		
@@ -1022,6 +1024,7 @@ class CLS_Twitter_Use():
 							"id",
 							"username",	# v1.1でいうscreen_name
 							"name",
+							"description"
 						]
 		)
 		
@@ -1110,6 +1113,7 @@ class CLS_Twitter_Use():
 							"id",
 							"username",	# v1.1でいうscreen_name
 							"name",
+							"description"
 						]
 		)
 		
@@ -1223,6 +1227,7 @@ class CLS_Twitter_Use():
 							"id",
 							"username",	# v1.1でいうscreen_name
 							"name",
+							"description"
 						]
 		)
 		

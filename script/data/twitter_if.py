@@ -102,6 +102,7 @@ class CLS_Twitter_IF() :
 				"id"			: wID,
 				"name"			: wName,
 				"screen_name"	: str( wROW['screen_name'] ),
+				"description"	: str( wROW['description'] ),
 				"statuses_count"	: wROW['statuses_count'],
 				"myfollow"		: True,
 				"follower"		: False
@@ -125,6 +126,7 @@ class CLS_Twitter_IF() :
 					"id"			: wID,
 					"name"			: wName,
 					"screen_name"	: str( wROW['screen_name'] ),
+					"description"	: str( wROW['description'] ),
 					"statuses_count"	: wROW['statuses_count'],
 					"myfollow"		: False,
 					"follower"		: True
@@ -222,7 +224,8 @@ class CLS_Twitter_IF() :
 		# いいね情報の詰め込み
 		wCellUser = {
 			"id"			: wUserID,
-			"screen_name"	: inTweet['user']['screen_name']
+			"screen_name"	: inTweet['user']['screen_name'],
+			"description"	: inTweet['user']['description']
 		}
 		
 		wCell = {
@@ -242,7 +245,8 @@ class CLS_Twitter_IF() :
 		if wUserID not in self.ARR_FavoUser :
 			wCellUser = {
 				"id"			: wUserID,
-				"screen_name"	: inTweet['user']['screen_name']
+				"screen_name"	: inTweet['user']['screen_name'],
+				"description"	: inTweet['user']['description']
 			}
 			wCell = {
 				"id"			: wID,
@@ -565,18 +569,33 @@ class CLS_Twitter_IF() :
 			### Tweetデータから対象引用リツイートを抽出
 			for wTweet in wTweetRes['Responce']['data'] :
 				### 枠の作成
-				wSTR_CellUser = {}
-				wSTR_CellUser.update({ "id"				: None })
-				wSTR_CellUser.update({ "name"			: None })
-				wSTR_CellUser.update({ "screen_name"	: None })
-				wSTR_Cell = {}
-				wSTR_Cell.update({ "type"			: None })
-				wSTR_Cell.update({ "reply_settings"	: None })
-				wSTR_Cell.update({ "id"				: None })
-				wSTR_Cell.update({ "text"			: None })
-				wSTR_Cell.update({ "created_at"		: None })
-				wSTR_Cell.update({ "referenced_id"	: None })
-				wSTR_Cell.update({ "user"	: wSTR_CellUser })
+###				wSTR_CellUser = {}
+###				wSTR_CellUser.update({ "id"				: None })
+###				wSTR_CellUser.update({ "name"			: None })
+###				wSTR_CellUser.update({ "screen_name"	: None })
+				wSTR_CellUser = {
+					"id"			: None,
+					"name"			: None,
+					"screen_name"	: None,
+					"description"	: None
+				}
+###				wSTR_Cell = {}
+###				wSTR_Cell.update({ "type"			: None })
+###				wSTR_Cell.update({ "reply_settings"	: None })
+###				wSTR_Cell.update({ "id"				: None })
+###				wSTR_Cell.update({ "text"			: None })
+###				wSTR_Cell.update({ "created_at"		: None })
+###				wSTR_Cell.update({ "referenced_id"	: None })
+###				wSTR_Cell.update({ "user"	: wSTR_CellUser })
+				wSTR_Cell = {
+					"type"				: None,
+					"reply_settings"	: None,
+					"id"				: None,
+					"text"				: None,
+					"created_at"		: None,
+					"referenced_id"		: None,
+					"user"				: wSTR_CellUser
+				}
 				
 				### リプライの抜き取り
 				if "referenced_tweets" not in wTweet :
@@ -621,10 +640,16 @@ class CLS_Twitter_IF() :
 					continue
 				wName = wUser['name'].replace( "'", "''" )
 				
-				wSTR_Cell = {}
-				wSTR_Cell.update({ "id"				: wID })
-				wSTR_Cell.update({ "name"			: wName })
-				wSTR_Cell.update({ "screen_name"	: wUser['username'] })
+###				wSTR_Cell = {}
+###				wSTR_Cell.update({ "id"				: wID })
+###				wSTR_Cell.update({ "name"			: wName })
+###				wSTR_Cell.update({ "screen_name"	: wUser['username'] })
+				wSTR_Cell = {
+					"id"			: wID,
+					"name"			: wName,
+					"screen_name"	: wUser['username'],
+					"description"	: wUser['description']
+				}
 				wARR_Users.update({ wID : wSTR_Cell })
 			
 			### ユーザ情報を反映する
@@ -643,6 +668,7 @@ class CLS_Twitter_IF() :
 				
 				wARR_Tweets[wID]['user']['name']        = wARR_Users[wUserID]['name']
 				wARR_Tweets[wID]['user']['screen_name'] = wARR_Users[wUserID]['screen_name']
+				wARR_Tweets[wID]['user']['description'] = wARR_Users[wUserID]['description']
 				wARR_Tweets[wID]['set_data'] = True
 		
 		###返すデータを設定する
@@ -691,8 +717,8 @@ class CLS_Twitter_IF() :
 		wTweets = {}
 		if "data" in wTweetRes['Responce'] :
 			
-			wSTR_Cell = {}
-			wSTR_CellUser = {}
+###			wSTR_Cell = {}
+###			wSTR_CellUser = {}
 			wID     = str( wTweetRes['Responce']['data']['id'] )
 			wUserID = str( wTweetRes['Responce']['data']['author_id'] )
 			
@@ -700,7 +726,8 @@ class CLS_Twitter_IF() :
 			wScreenName = ""
 			for wUsers in wTweetRes['Responce']['includes']['users'] :
 				if str(wUsers['id'])==wUserID :
-					wScreenName = wUsers['username']
+					wScreenName  = wUsers['username']
+					wDescription = wUsers['description']
 			
 			###日時の変換
 			wTimeDate = wTweetRes['Responce']['data']['created_at']
@@ -711,14 +738,25 @@ class CLS_Twitter_IF() :
 				return wRes
 			wTimeDate = str( wTimeRes['TimeDate'] )
 		 	
-			wSTR_CellUser.update({ "id" 			: wUserID })
-			wSTR_CellUser.update({ "screen_name"	: wScreenName })
+###			wSTR_CellUser.update({ "id" 			: wUserID })
+###			wSTR_CellUser.update({ "screen_name"	: wScreenName })
+###			
+###			wSTR_Cell.update({ "created_at"		: wTimeDate })
+###			wSTR_Cell.update({ "id"				: wID })
+###			wSTR_Cell.update({ "text"			: wTweetRes['Responce']['data']['text'] })
+###			wSTR_Cell.update({ "user"			: wSTR_CellUser })
 			
-			wSTR_Cell.update({ "created_at"		: wTimeDate })
-			wSTR_Cell.update({ "id"				: wID })
-			wSTR_Cell.update({ "text"			: wTweetRes['Responce']['data']['text'] })
-			wSTR_Cell.update({ "user"			: wSTR_CellUser })
-			
+			wSTR_Cell = {
+				"id" 			: wUserID,
+				"screen_name"	: wScreenName,
+				"description"	: wDescription
+			}
+			wSTR_CellUser = {
+				"created_at"	: wTimeDate,
+				"id"			: wID,
+				"text"			: wTweetRes['Responce']['data']['text'],
+				"user"			: wSTR_CellUser
+			}
 			wSTR_Cell.update({ "data" : wTweetRes['Responce'] })
 			wTweets = wSTR_Cell
 		
@@ -775,12 +813,19 @@ class CLS_Twitter_IF() :
 					continue
 				wTweetID = str( wTweet['referenced_tweets'][0]['id'] )
 				
-				wSTR_Cell = {}
-				wSTR_Cell.update({ "id" : wReplyUserID })	#ユーザID
-				wSTR_Cell.update({ "created_at"    : wTimeDate })
-				wSTR_Cell.update({ "reply_id"    : wReplyID })
-				wSTR_Cell.update({ "reply_text"  : wReplyText })
-				wSTR_Cell.update({ "tweet_id"    : wTweetID })
+###				wSTR_Cell = {}
+###				wSTR_Cell.update({ "id" : wReplyUserID })	#ユーザID
+###				wSTR_Cell.update({ "created_at"    : wTimeDate })
+###				wSTR_Cell.update({ "reply_id"    : wReplyID })
+###				wSTR_Cell.update({ "reply_text"  : wReplyText })
+###				wSTR_Cell.update({ "tweet_id"    : wTweetID })
+				wSTR_Cell = {
+					"id" 			: wReplyUserID,
+					"created_at"    : wTimeDate,
+					"reply_id"		: wReplyID,
+					"reply_text"	: wReplyText,
+					"tweet_id"		: wTweetID,
+				}
 				wMentions.update({ wReplyID : wSTR_Cell })
 		
 		#############################
@@ -829,10 +874,16 @@ class CLS_Twitter_IF() :
 				wID = str(wUser['id'])
 				wName = wUser['name'].replace( "'", "''" )
 				
-				wSTR_Cell = {}
-				wSTR_Cell.update({ "id"          : wID })
-				wSTR_Cell.update({ "name"        : wName })
-				wSTR_Cell.update({ "screen_name" : wUser['username'] })
+###				wSTR_Cell = {}
+###				wSTR_Cell.update({ "id"          : wID })
+###				wSTR_Cell.update({ "name"        : wName })
+###				wSTR_Cell.update({ "screen_name" : wUser['username'] })
+				wSTR_Cell = {
+					"id"			: wID,
+					"name"			: wName,
+					"screen_name"	: wUser['username'],
+					"description"	: wUser['description']
+				}
 				wUsers.update({ wID : wSTR_Cell })
 		
 		#############################
@@ -877,10 +928,16 @@ class CLS_Twitter_IF() :
 				wID = str(wUser['id'])
 				wName = wUser['name'].replace( "'", "''" )
 				
-				wSTR_Cell = {}
-				wSTR_Cell.update({ "id"          : wID })
-				wSTR_Cell.update({ "name"        : wName })
-				wSTR_Cell.update({ "screen_name" : wUser['username'] })
+###				wSTR_Cell = {}
+###				wSTR_Cell.update({ "id"          : wID })
+###				wSTR_Cell.update({ "name"        : wName })
+###				wSTR_Cell.update({ "screen_name" : wUser['username'] })
+				wSTR_Cell = {
+					"id"			: wID,
+					"name"			: wName,
+					"screen_name"	: wUser['username'],
+					"description"	: wUser['description']
+				}
 				wUsers.update({ wID : wSTR_Cell })
 		
 		#############################
@@ -930,7 +987,7 @@ class CLS_Twitter_IF() :
 				if "referenced_tweets" not in wTweet :
 					continue
 				for wTweetCont in wTweet['referenced_tweets'] :
-					wSTR_Cell = {}
+###					wSTR_Cell = {}
 					if "id" not in wTweetCont :
 						continue
 					wID = str(wTweetCont['id'])
@@ -938,12 +995,21 @@ class CLS_Twitter_IF() :
 						continue
 					
 					wUserID = str( wTweet['author_id'] )
-					wSTR_Cell.update({ "id"     : wUserID })					#引用したユーザID
-					wSTR_Cell.update({ "name"        : None })
-					wSTR_Cell.update({ "screen_name" : None })
-					wSTR_Cell.update({ "tweet_id"    : str( wTweet['id'] ) })	#引用リツイートID
-					wSTR_Cell.update({ "text"        : wTweet['text'] })
-					wSTR_Cell.update({ "set_data"    : True })
+###					wSTR_Cell.update({ "id"     : wUserID })					#引用したユーザID
+###					wSTR_Cell.update({ "name"        : None })
+###					wSTR_Cell.update({ "screen_name" : None })
+###					wSTR_Cell.update({ "tweet_id"    : str( wTweet['id'] ) })	#引用リツイートID
+###					wSTR_Cell.update({ "text"        : wTweet['text'] })
+###					wSTR_Cell.update({ "set_data"    : True })
+					wSTR_Cell = {
+						"id"			: wUserID,
+						"name"			: None,
+						"screen_name"	: None,
+						"description"	: None,
+						"tweet_id"		: str( wTweet['id'],
+						"text"			: wTweet['text'],
+						"set_data"		: True
+					}
 					break
 				if "set_data" in wSTR_Cell :
 					wUsers.update({ wUserID : wSTR_Cell })
@@ -955,6 +1021,7 @@ class CLS_Twitter_IF() :
 					continue
 				wUsers[wUserID]['name'] = wUser['name'].replace( "'", "''" )
 				wUsers[wUserID]['screen_name'] = wUser['username']
+				wUsers[wUserID]['description'] = wUser['description']
 		
 		#############################
 		# 完了
@@ -1921,7 +1988,8 @@ class CLS_Twitter_IF() :
 			wID = str( wLine['id'] )
 			wCell = {
 				"id"          : wID,
-				"screen_name" : wLine['screen_name']
+				"screen_name" : wLine['screen_name'],
+				"description" : wLine['description']
 			}
 			wARR_ListUser.update({ wID : wCell })
 		
@@ -1989,7 +2057,8 @@ class CLS_Twitter_IF() :
 			wID = str( wLine['id'] )
 			wCell = {
 				"id"          : wID,
-				"screen_name" : wLine['screen_name']
+				"screen_name" : wLine['screen_name'],
+				"description" : wLine['description']
 			}
 			wARR_ListUser.update({ wID : wCell })
 		
@@ -2079,7 +2148,8 @@ class CLS_Twitter_IF() :
 			wID = str( wLine['id'] )
 			wCell = {
 				"id"          : wID,
-				"screen_name" : wLine['screen_name']
+				"screen_name" : wLine['screen_name'],
+				"description" : wLine['description']
 			}
 			wARR_ListIndUser.update({ wID : wCell })
 		
