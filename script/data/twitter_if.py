@@ -1006,7 +1006,7 @@ class CLS_Twitter_IF() :
 						"name"			: None,
 						"screen_name"	: None,
 						"description"	: None,
-						"tweet_id"		: str( wTweet['id'],
+						"tweet_id"		: str(wTweet['id']),
 						"text"			: wTweet['text'],
 						"set_data"		: True
 					}

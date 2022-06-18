@@ -768,10 +768,20 @@ class CLS_TwitterKeyword():
 				CLS_OSIF.sPrn( wStr )
 				continue
 			
+			### discriptionチェック
+			wWordRes = self.OBJ_Parent.CheckExtWord( wTweet['user'], wTweet['user']['description'] )
+			if wWordRes['Result']!=True :
+				wRes['Reason'] = "CheckExtWord failed(description)"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if wWordRes['Responce']==False :
+				### 除外
+				continue
+			
 			### ツイートチェック
 			wWordRes = self.OBJ_Parent.CheckExtWord( wTweet['user'], wTweet['text'] )
 			if wWordRes['Result']!=True :
-				wRes['Reason'] = "CheckExtWord failed"
+				wRes['Reason'] = "CheckExtWord failed(word)"
 				gVal.OBJ_L.Log( "B", wRes )
 				continue
 			if wWordRes['Responce']==False :

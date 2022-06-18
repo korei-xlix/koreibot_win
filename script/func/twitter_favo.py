@@ -669,10 +669,20 @@ class CLS_TwitterFavo():
 				### 規定外 =古いツイートなので除外
 				continue
 			
+			### discriptionチェック
+			wWordRes = self.OBJ_Parent.CheckExtWord( inData, inData['description'] )
+			if wWordRes['Result']!=True :
+				wRes['Reason'] = "CheckExtWord failed(description)"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if wWordRes['Responce']==False :
+				### 除外
+				continue
+			
 			### ツイートチェック
 			wWordRes = self.OBJ_Parent.CheckExtWord( inData, wTweet['text'] )
 			if wWordRes['Result']!=True :
-				wRes['Reason'] = "CheckExtWord failed"
+				wRes['Reason'] = "CheckExtWord failed(word)"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			if wWordRes['Responce']==False :
@@ -1011,13 +1021,26 @@ class CLS_TwitterFavo():
 		
 		#############################
 		# 禁止文字を含む場合は除外
-		wWordRes = self.OBJ_Parent.CheckExtWord( wSTR_Tweet, wSTR_Tweet['text'] )
+		wWordRes = self.OBJ_Parent.CheckExtWord( wSTR_Tweet['user'], wSTR_Tweet['user']['description'] )
 		if wWordRes['Result']!=True :
-			wRes['Reason'] = "CheckExtWord failed"
+			wRes['Reason'] = "CheckExtWord failed(description)"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		if wWordRes['Responce']==False :
-			wStr = "●外部いいね中止(禁止文字): " + wSTR_Tweet['user']['screen_name'] + '\n' ;
+			wStr = "●外部いいね中止(プロフ禁止文字): " + wSTR_Tweet['user']['screen_name'] + '\n' ;
+			CLS_OSIF.sPrn( wStr )
+			
+			wRes['Result'] = True
+			return wRes
+		
+###		wWordRes = self.OBJ_Parent.CheckExtWord( wSTR_Tweet, wSTR_Tweet['text'] )
+		wWordRes = self.OBJ_Parent.CheckExtWord( wSTR_Tweet['user'], wSTR_Tweet['text'] )
+		if wWordRes['Result']!=True :
+			wRes['Reason'] = "CheckExtWord failed(word)"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		if wWordRes['Responce']==False :
+			wStr = "●外部いいね中止(ツイート禁止文字): " + wSTR_Tweet['user']['screen_name'] + '\n' ;
 			CLS_OSIF.sPrn( wStr )
 			
 			wRes['Result'] = True
