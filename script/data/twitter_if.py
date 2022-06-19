@@ -987,7 +987,7 @@ class CLS_Twitter_IF() :
 				if "referenced_tweets" not in wTweet :
 					continue
 				for wTweetCont in wTweet['referenced_tweets'] :
-###					wSTR_Cell = {}
+					wSTR_Cell = {}
 					if "id" not in wTweetCont :
 						continue
 					wID = str(wTweetCont['id'])
