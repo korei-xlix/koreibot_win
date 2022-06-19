@@ -746,12 +746,12 @@ class CLS_Twitter_IF() :
 ###			wSTR_Cell.update({ "text"			: wTweetRes['Responce']['data']['text'] })
 ###			wSTR_Cell.update({ "user"			: wSTR_CellUser })
 			
-			wSTR_Cell = {
+			wSTR_CellUser = {
 				"id" 			: wUserID,
 				"screen_name"	: wScreenName,
 				"description"	: wDescription
 			}
-			wSTR_CellUser = {
+			wSTR_Cell = {
 				"created_at"	: wTimeDate,
 				"id"			: wID,
 				"text"			: wTweetRes['Responce']['data']['text'],

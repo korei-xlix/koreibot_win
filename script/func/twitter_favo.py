@@ -785,12 +785,14 @@ class CLS_TwitterFavo():
 		wSTR_User = {
 			"id"				: None,
 			"name"				: None,
-			"screen_name"		: None
+			"screen_name"		: None,
+			"description"		: None
 		}
 		wSTR_SrcUser = {
 			"id"				: None,
 			"name"				: None,
-			"screen_name"		: None
+			"screen_name"		: None,
+			"description"		: None
 		}
 		wSTR_Tweet = {
 			"kind"				: None,
@@ -809,10 +811,12 @@ class CLS_TwitterFavo():
 			wUserID = str( inData['retweeted_status']['user']['id'] )
 			wName   = inData['retweeted_status']['user']['name'].replace( "'", "''" )
 			wSN     = inData['retweeted_status']['user']['screen_name']
+			wDisk   = inData['retweeted_status']['user']['description']
 			
 			wSTR_Tweet['src_user']['id'] = str( inData['user']['id'] )
 			wSTR_Tweet['src_user']['name']        = inData['user']['name'].replace( "'", "''" )
 			wSTR_Tweet['src_user']['screen_name'] = inData['user']['screen_name']
+			wSTR_Tweet['src_user']['description'] = inData['user']['description']
 		
 		### 引用リツイート
 		elif "quoted_status" in inData :
@@ -820,10 +824,12 @@ class CLS_TwitterFavo():
 			wUserID = str( inData['quoted_status']['user']['id'] )
 			wName   = inData['quoted_status']['user']['name'].replace( "'", "''" )
 			wSN     = inData['quoted_status']['user']['screen_name']
+			wDisk   = inData['quoted_status']['user']['description']
 			
 			wSTR_Tweet['src_user']['id'] = str( inData['user']['id'] )
 			wSTR_Tweet['src_user']['name']        = inData['user']['name'].replace( "'", "''" )
 			wSTR_Tweet['src_user']['screen_name'] = inData['user']['screen_name']
+			wSTR_Tweet['src_user']['description'] = inData['user']['description']
 		
 		### リプライ
 ###		elif inData['in_reply_to_status_id']!=None or \
@@ -834,6 +840,7 @@ class CLS_TwitterFavo():
 			wUserID = str( inData['user']['id'] )
 			wName   = inData['user']['name'].replace( "'", "''" )
 			wSN     = inData['user']['screen_name']
+			wDisk   = inData['user']['description']
 		
 		### 通常ツイート
 		else:
@@ -841,6 +848,7 @@ class CLS_TwitterFavo():
 			wUserID = str( inData['user']['id'] )
 			wName   = inData['user']['name'].replace( "'", "''" )
 			wSN     = inData['user']['screen_name']
+			wDisk   = inData['user']['description']
 		
 		#############################
 		# 今処理で同一ユーザへの処理は除外
@@ -878,6 +886,7 @@ class CLS_TwitterFavo():
 		wSTR_Tweet['user']['id'] = wUserID
 		wSTR_Tweet['user']['name']        = wName
 		wSTR_Tweet['user']['screen_name'] = wSN
+		wSTR_Tweet['user']['description'] = wDisk
 		wRes['Responce']['data']     = wSTR_Tweet
 		
 		#############################
