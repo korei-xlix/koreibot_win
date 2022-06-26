@@ -537,25 +537,6 @@ class CLS_TwitterMain():
 		wRes['Class'] = "CLS_TwitterMain"
 		wRes['Func']  = "AllRun"
 		
-###		#############################
-###		# フォロー情報取得
-###		wFavoRes = gVal.OBJ_Tw_IF.GetFollow()
-###		if wFavoRes['Result']!=True :
-###			wRes['Reason'] = "GetFollow is failed"
-###			gVal.OBJ_L.Log( "C", wRes )
-###			return wRes
-###		wStr = "〇フォロー一覧を取得しました" + '\n' ;
-###		CLS_OSIF.sPrn( wStr )
-###		
-###		#############################
-###		# ふぁぼ一覧 取得
-###		wFavoRes = gVal.OBJ_Tw_IF.GetFavo()
-###		if wFavoRes['Result']!=True :
-###			wRes['Reason'] = "GetFavoData is failed"
-###			gVal.OBJ_L.Log( "C", wRes )
-###			return wRes
-###		wStr = "〇いいね一覧を取得しました" + '\n' ;
-###		CLS_OSIF.sPrn( wStr )
 		#############################
 		# Twitter情報取得
 		wFavoRes = self.GetTwitterInfo()
@@ -575,7 +556,6 @@ class CLS_TwitterMain():
 		
 		#############################
 		# リスト通知 リストとユーザの更新
-###		wSubRes = self.UpdateListIndUser( inUpdate=True )
 		wSubRes = self.UpdateListIndUser()
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "UpdateListIndUser error"
@@ -584,7 +564,6 @@ class CLS_TwitterMain():
 		
 		#############################
 		# リスト登録ユーザチェック
-###		wSubRes = self.CheckListUsers( inUpdate=True )
 		wSubRes = self.CheckListUsers()
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "CheckListUsers error"
@@ -607,12 +586,6 @@ class CLS_TwitterMain():
 				wRes['Reason'] = "ListFavo"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
-###		wSubRes = self.OBJ_TwitterFavo.ListFavo()
-###		if wSubRes['Result']!=True :
-###			wRes['Reason'] = "ListFavo"
-###			gVal.OBJ_L.Log( "B", wRes )
-###			return wRes
-###		
 		#############################
 		# いいね情報送信
 		wSubRes = self.OBJ_TwitterFollower.SendFavoDate()
@@ -1045,8 +1018,6 @@ class CLS_TwitterMain():
 		
 		#############################
 		# リアクション禁止ユーザか
-###		if wARR_DBData['screen_name'] in gVal.DEF_STR_NOT_REACTION :
-###		if wARR_DBData['screen_name'] in gVal.ARR_NotReactionUser :
 		wUserRes = self.CheckExtUser( wARR_DBData['screen_name'], "リアクション検出" )
 		if wUserRes['Result']!=True :
 			wRes['Reason'] = "CheckExtUser failed"
@@ -1091,27 +1062,9 @@ class CLS_TwitterMain():
 			# トラヒック計測：リアクション獲得数
 			gVal.STR_TrafficInfo['get_reaction'] += 1
 			
-###			#############################
-###			# 自動おかえしいいねする
-###			if gVal.DEF_STR_TLNUM['autoRepFavo']==True :
-###				wSubRes = self.__ReactionUserCheck_RepFavo( wARR_DBData )
-###				if wSubRes['Result']!=True :
-###					###失敗
-###					wRes['Reason'] = "__ReactionUserCheck_RepFavo is failed"
-###					gVal.OBJ_L.Log( "B", wRes )
-###			
-###			#############################
-###			# リスト通知をおこなう
-###			if gVal.STR_UserInfo['ListName']!="" :
-###				wSubRes = self.__ReactionUserCheck_ListInd( wARR_DBData )
-###				if wSubRes['Result']!=True :
-###					###失敗
-###					wRes['Reason'] = "__ReactionUserCheck_ListInd is failed"
-###					gVal.OBJ_L.Log( "B", wRes )
-###			
 			#############################
 			# リアクションへのリアクション
-			wSubRes = self.__ReactionUserCheck_PutReaction( wARR_DBData, inTweet, wNewUser )
+			wSubRes = self.__ReactionUserCheck_PutReaction( inUser, wARR_DBData, inTweet, wNewUser )
 			if wSubRes['Result']!=True :
 				###失敗
 				wRes['Reason'] = "__ReactionUserCheck_ListInd is failed"
@@ -1127,7 +1080,7 @@ class CLS_TwitterMain():
 	#####################################################
 	# リアクションユーザへのリアクション
 	#####################################################
-	def __ReactionUserCheck_PutReaction( self, inData, inTweet, inNewUser=False ):
+	def __ReactionUserCheck_PutReaction( self, inUser, inData, inTweet, inNewUser=False ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -1155,11 +1108,9 @@ class CLS_TwitterMain():
 		#############################
 		# 自動おかえしいいねする
 		if gVal.DEF_STR_TLNUM['autoRepFavo']==True :
-###			wSubRes = self.__ReactionUserCheck_RepFavo( inData )
-			wSubRes = self.OBJ_TwitterFavo.AutoFavo( inData )
+			wSubRes = self.OBJ_TwitterFavo.AutoFavo( inUser, inData )
 			if wSubRes['Result']!=True :
 				###失敗
-###				wRes['Reason'] = "__ReactionUserCheck_RepFavo is failed"
 				wRes['Reason'] = "AutoFavo is failed"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
@@ -1330,7 +1281,6 @@ class CLS_TwitterMain():
 #####################################################
 # リスト登録ユーザチェック
 #####################################################
-###	def CheckListUsers( self, inUpdate=False ):
 	def CheckListUsers(self):
 		#############################
 		# 応答形式の取得
@@ -1354,7 +1304,6 @@ class CLS_TwitterMain():
 			CLS_OSIF.sPrn( wStr )
 			#############################
 			# Twitterからリストの登録ユーザ一覧を取得
-###			wListRes = gVal.OBJ_Tw_IF.GetListSubscribers( gVal.ARR_ListFavo[wKey]['list_name'] )
 			wListRes = gVal.OBJ_Tw_IF.GetListSubscribers(
 			   inListName=gVal.ARR_ListFavo[wKey]['list_name'],
 			   inScreenName=gVal.ARR_ListFavo[wKey]['screen_name'] )
@@ -1381,9 +1330,6 @@ class CLS_TwitterMain():
 				# ※警告確定
 				#############################
 				# 警告ツイートを作成
-###				wTweet = "@" + wListRes['Responce'][wID]['screen_name'] + " "
-###				wTweet = wTweet + "[ご注意] リスト " + gVal.ARR_ListFavo[wKey]['list_name'] + " はフォロー禁止です。" + '\n' + '\n'
-###				wTweet = wTweet + "[Caution] Sorry, The list " + gVal.ARR_ListFavo[wKey]['list_name'] + " is not allowed to follow." + '\n'
 				wTweet = "@" + wListRes['Responce'][wID]['screen_name'] + '\n'
 				wTweet = wTweet + "[ご注意] ユーザ " + gVal.ARR_ListFavo[wKey]['screen_name'] + " のリスト " + gVal.ARR_ListFavo[wKey]['list_name'] + " はフォロー禁止です。" + '\n'
 				wTweet = wTweet + "[Caution] Excuse me. The list " + gVal.ARR_ListFavo[wKey]['list_name'] + " for user " + gVal.ARR_ListFavo[wKey]['screen_name'] + " is unfollowable."
@@ -1452,7 +1398,6 @@ class CLS_TwitterMain():
 			CLS_OSIF.sPrn( wStr )
 			#############################
 			# Twitterからリストの登録ユーザ一覧を取得
-###			wListRes = gVal.OBJ_Tw_IF.GetListMember( gVal.ARR_ListFavo[wKey]['list_name'], gVal.ARR_ListFavo[wKey]['screen_name'] )
 			wListRes = gVal.OBJ_Tw_IF.GetListMember(
 			   inListName=gVal.ARR_ListFavo[wKey]['list_name'],
 			   inScreenName=gVal.ARR_ListFavo[wKey]['screen_name'] )
@@ -1508,10 +1453,14 @@ class CLS_TwitterMain():
 		for wExeWord in gVal.ARR_ExeWordKeys :
 			if inWord.find( wExeWord )>=0 :
 				if gVal.ARR_ExeWord[wExeWord]['report']==True :
-					CLS_OSIF.sPrn( wStr )
+###					CLS_OSIF.sPrn( wStr )
 					### 報告対象の表示と、ログに記録(テストログ)
 					wRes['Reason'] = "●報告対象の文字除外: id=" + inData['screen_name'] + " word=" + inWord
 					gVal.OBJ_L.Log( "X", wRes )
+				else:
+					### 報告対象の表示と、ログに記録(テストログ)
+					wRes['Reason'] = "  文字除外: id=" + inData['screen_name'] + " word=" + inWord
+					gVal.OBJ_L.Log( "T", wRes )
 				
 				### 除外
 				wRes['Result'] = True

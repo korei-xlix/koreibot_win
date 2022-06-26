@@ -141,8 +141,15 @@ class gVal() :
 		"forListFavoSec"			: 86400,			#   リストいいねまでの期間   1日  60x60x24
 ###		"forListFavoMyFollowSec"	: 86400,			#   リストいいね フォロー者への期間   1日  (60x60x24)x1
 ###		"forListFavoNoFollowSec"	: 345600,			#   リストいいね フォロー外への期間   4日  (60x60x24)x4
-		"forListFavoMyFollowSec"	: 14400,			#   リストいいね フォロー者への期間   4時間  60x60x4
-		"forListFavoNoFollowSec"	: 259200,			#   リストいいね フォロー外への期間   3日  (60x60x24)x3
+###		"forListFavoMyFollowSec"	: 14400,			#   リストいいね フォロー者への期間   4時間  60x60x4
+###		"forListFavoNoFollowSec"	: 259200,			#   リストいいね フォロー外への期間   3日  (60x60x24)x3
+		"forListFavoReturnFavoSec"		: 3600,			#   リストいいね お返しいいねへの期間   1時間  60x60x1
+		"forListFavoFollowerFavoSec"	: 259200,		#   リストいいね フォロワー支援いいねへの期間   3日  (60x60x24)x3
+		
+		"forListFavoOverTweetSec"		: 259200,		#   リストいいね 外部いいね ツイート期間外   3日  (60x60x24)x3
+		"forListFavoOverMyFollowSec"	: 14400,		#   リストいいね 外部いいね フォロー者への期間   4時間  60x60x4
+		"forListFavoOverNoFollowSec"	: 432000,		#   リストいいね 外部いいね フォロー外への期間   5日  (60x60x24)x5
+		
 		"forListFavoAutoRemoveSec"	: 604800,			#   リストいいね 自動リムーブまでの期間   7日  (60x60x24)x7
 		"forCheckAutoRemoveSec"		: 86400,			#   自動リムーブチェック期間 1日 (60x60x24)x1
 		"forOverListFavoCount"		: 3,				#   外部いいね数(1ユーザ)
