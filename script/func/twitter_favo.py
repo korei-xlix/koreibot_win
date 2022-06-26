@@ -105,7 +105,8 @@ class CLS_TwitterFavo():
 			wARR_TwData[wID]['created_at'] = wTime['TimeDate']
 			
 			###期間を過ぎているか
-			wGetLag = CLS_OSIF.sTimeLag( str(wARR_TwData[wID]['created_at']), inThreshold=gVal.DEF_STR_TLNUM['forReactionTweetSec'] )
+###			wGetLag = CLS_OSIF.sTimeLag( str(wARR_TwData[wID]['created_at']), inThreshold=gVal.DEF_STR_TLNUM['forReactionTweetSec'] )
+			wGetLag = CLS_OSIF.sTimeLag( str(wARR_TwData[wID]['created_at']), inThreshold=gVal.DEF_STR_TLNUM['forRemFavoSec'] )
 			if wGetLag['Result']!=True :
 				wRes['Reason'] = "sTimeLag failed(1)"
 				gVal.OBJ_L.Log( "B", wRes )
@@ -658,7 +659,7 @@ class CLS_TwitterFavo():
 			
 			#############################
 			# 自動いいね
-			wResFavo = self.AutoFavo( wARR_Users[wUserKey], wARR_DBData, inMode=self.DEF_AUTOFAVO_FOLLOWER_FAVO )
+			wResFavo = self.AutoFavo( wARR_FollowData[wUserID], wARR_DBData, inMode=self.DEF_AUTOFAVO_FOLLOWER_FAVO )
 			if wResFavo['Result']!=True :
 				wRes['Reason'] = "Twitter Error"
 				gVal.OBJ_L.Log( "B", wRes )
@@ -851,7 +852,8 @@ class CLS_TwitterFavo():
 					continue
 			
 			### 範囲時間内のツイートか
-			wGetLag = CLS_OSIF.sTimeLag( str( wTweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forReactionTweetSec'] )
+###			wGetLag = CLS_OSIF.sTimeLag( str( wTweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forReactionTweetSec'] )
+			wGetLag = CLS_OSIF.sTimeLag( str( wTweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forListFavoAutoFavoTweetSec'] )
 			if wGetLag['Result']!=True :
 				wRes['Reason'] = "sTimeLag failed"
 				gVal.OBJ_L.Log( "B", wRes )
