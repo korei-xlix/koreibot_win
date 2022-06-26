@@ -302,7 +302,7 @@ class CLS_TwitterFavo():
 				continue
 			
 			wStr = "******************************" + '\n'
-			wStr = wStr + "●いいね支援  処理中リスト: @" + wARR_ListFavo_noFolow[wKey]['screen_name'] + "/ " + wARR_ListFavo_noFolow[wKey]['list_name'] + '\n'
+			wStr = wStr + "●いいね支援  処理中リスト: @" + gVal.ARR_ListFavo[wKey]['screen_name'] + "/ " + gVal.ARR_ListFavo[wKey]['list_name'] + '\n'
 			CLS_OSIF.sPrn( wStr )
 			
 			#############################
@@ -618,7 +618,8 @@ class CLS_TwitterFavo():
 			return wRes
 		if wTweetRes['Responce']==True :
 			### いいね済み
-			wStr = "●お返しいいね中止(いいね済ユーザ): " + inData['screen_name'] + '\n' ;
+###			wStr = "●お返しいいね中止(いいね済ユーザ): " + inData['screen_name'] + '\n' ;
+			wStr = "●自動いいね中止(いいね済ユーザ): " + inData['screen_name'] + '\n' ;
 			CLS_OSIF.sPrn( wStr )
 			
 			wRes['Result'] = True
@@ -682,7 +683,8 @@ class CLS_TwitterFavo():
 			if wGetLag['Beyond']==False :
 				### 規定内は処理しない
 ###				wStr = "●お返しいいね中止(いいね期間内): " + inData['screen_name'] + " timedate=" + str(wARR_DBData['lfavo_date']) + '\n' ;
-				wStr = "●お返しいいね中止(いいね期間内): " + inData['screen_name'] + " timedate=" + str(inData['lfavo_date']) + '\n' ;
+###				wStr = "●お返しいいね中止(いいね期間内): " + inData['screen_name'] + " timedate=" + str(inData['lfavo_date']) + '\n' ;
+				wStr = "●自動いいね中止(いいね期間内): " + inData['screen_name'] + " timedate=" + str(inData['lfavo_date']) + '\n' ;
 				CLS_OSIF.sPrn( wStr )
 				
 				wRes['Result'] = True
@@ -698,7 +700,8 @@ class CLS_TwitterFavo():
 			return wRes
 		if len(wTweetRes['Responce'])==0 :
 			### ツイートが取得できないのでスキップ
-			wStr = "●お返しいいね中止(ツイートなし): " + inData['screen_name'] + '\n' ;
+###			wStr = "●お返しいいね中止(ツイートなし): " + inData['screen_name'] + '\n' ;
+			wStr = "●自動いいね中止(ツイートなし): " + inData['screen_name'] + '\n' ;
 			CLS_OSIF.sPrn( wStr )
 			
 			wRes['Result'] = True
@@ -775,7 +778,8 @@ class CLS_TwitterFavo():
 		#############################
 		# いいねツイートなしはおわり
 		if wFavoID==None :
-			wStr = "●お返しいいね中止(対象なし): " + inData['screen_name'] + '\n' ;
+###			wStr = "●お返しいいね中止(対象なし): " + inData['screen_name'] + '\n' ;
+			wStr = "●自動いいね中止(対象なし): " + inData['screen_name'] + '\n' ;
 			CLS_OSIF.sPrn( wStr )
 			
 			wRes['Result'] = True
@@ -791,7 +795,13 @@ class CLS_TwitterFavo():
 		
 		wStr = "--------------------" + '\n' ;
 		if wSubRes['Responce']['Run']==True :
-			wTextReason = "〇自動いいね 実施: user=" + inData['screen_name'] + " id=" + str(wFavoID)
+###			wTextReason = "〇自動いいね 実施: user=" + inData['screen_name'] + " id=" + str(wFavoID)
+			if inFollowerFavo==True :
+				### フォロワー支援いいね
+				wTextReason = "〇自動いいね（フォロワー支援） 実施: user=" + inData['screen_name'] + " id=" + str(wFavoID)
+			else:
+				### お返しいいね
+				wTextReason = "〇自動いいね（お返し） 実施: user=" + inData['screen_name'] + " id=" + str(wFavoID)
 			gVal.OBJ_L.Log( "T", wRes, wTextReason )
 			
 			wRes['Responce']['flg_favo_run'] = True		#いいね済み
