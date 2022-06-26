@@ -586,6 +586,15 @@ class CLS_TwitterMain():
 				wRes['Reason'] = "ListFavo"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
+		
+		#############################
+		# フォロワー支援
+		wSubRes = self.OBJ_TwitterFavo.FollowerFavo()
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "FollowerFavo"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
 		#############################
 		# いいね情報送信
 		wSubRes = self.OBJ_TwitterFollower.SendFavoDate()

@@ -19,6 +19,12 @@ class CLS_TwitterFavo():
 	ARR_OverFavoUserID = {}
 	
 
+										###自動いいね 処理モード
+	DEF_AUTOFAVO_RETURN_FAVO = 1		#    お返しいいね
+	DEF_AUTOFAVO_FOLLOWER_FAVO = 19		#    フォロワー支援
+
+
+
 #####################################################
 # Init
 #####################################################
@@ -193,8 +199,8 @@ class CLS_TwitterFavo():
 		wResult = {
 			"Over_TweetNum"	: 0,
 			"Over_RunFavo"	: 0,
-			"unfollow_ObjUser"	: 0,
-			"unfollow_RunFavo"	: 0
+###			"unfollow_ObjUser"	: 0,
+###			"unfollow_RunFavo"	: 0
 		}
 		#############################
 		# 取得開始の表示
@@ -288,90 +294,91 @@ class CLS_TwitterFavo():
 					### いいね済み扱いはスキップ
 					wFLG_ZanCountSkip = True
 		
-		#############################
-		# フォロー、フォロワー含まないリストへの
-		# フォロワーへのいいね支援
-		for wKey in wKeylist :
-			### 無効ならスキップ
-			if gVal.ARR_ListFavo[wKey]['valid']!=True :
-				continue
-			
-			### フォロー、フォロワー含む場合 スキップ
-			###   上の外部いいねで処理済
-			if gVal.ARR_ListFavo[wKey]['follow']==True :
-				continue
-			
-			wStr = "******************************" + '\n'
-			wStr = wStr + "●いいね支援  処理中リスト: @" + gVal.ARR_ListFavo[wKey]['screen_name'] + "/ " + gVal.ARR_ListFavo[wKey]['list_name'] + '\n'
-			CLS_OSIF.sPrn( wStr )
-			
-			#############################
-			# Twitterからリストの登録ユーザ一覧を取得
-			wListRes = gVal.OBJ_Tw_IF.GetListMember(
-			   inListName=gVal.ARR_ListFavo[wKey]['list_name'],
-			   inScreenName=gVal.ARR_ListFavo[wKey]['screen_name'] )
-			
-			if wListRes['Result']!=True :
-				wRes['Reason'] = "Twitter API Error(GetListMember): " + wListRes['Reason']
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			if len(wListRes['Responce'])==0 :
-				### 登録者なしはスキップ
-				continue
-			wARR_Users = wListRes['Responce']
-			
-			wResult['unfollow_ObjUser'] += len( wARR_Users )
-			
-			###ウェイト初期化
-			self.OBJ_Parent.Wait_Init( inZanNum=len( wARR_Users ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
-			
-			wFLG_ZanCountSkip = False
-			wKeylistUser = list( wARR_Users.keys() )
-			for wUserKey in wKeylistUser :
-				###ウェイトカウントダウン
-				if self.OBJ_Parent.Wait_Next( inZanCountSkip=wFLG_ZanCountSkip )==False :
-					break	###ウェイト中止
-				wFLG_ZanCountSkip = False
-				
-				wUserID = str(wARR_Users[wUserKey]['id'])
-				
-				### フォロワーではない場合、スキップ
-				if gVal.OBJ_Tw_IF.CheckFollower( wUserID)!=True :
-					wFLG_ZanCountSkip = True
-					continue
-				
-				#############################
-				# DBからいいね情報を取得する(1個)
-				wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
-				if wDBRes['Result']!=True :
-					###失敗
-					wRes['Reason'] = "GetFavoDataOne is failed"
-					gVal.OBJ_L.Log( "B", wRes )
-					return wRes
-				### DB未登録ならスキップ
-				if wDBRes['Responce']==None :
-					continue
-				wARR_DBData = wDBRes['Responce']
-				
-				#############################
-				# 自動いいね
-				wResFavo = self.AutoFavo( wARR_Users[wUserKey], wARR_DBData, inFollowerFavo=True )
-				if wResFavo['Result']!=True :
-					wRes['Reason'] = "Twitter Error"
-					gVal.OBJ_L.Log( "B", wRes )
-					continue
-				
-				if wResFavo['Responce']['flg_favo_run']==True :
-					### いいね実施数をカウント
-					wResult['unfollow_RunFavo'] += 1
-				else:
-					### いいねを実実行しなければループ待機スキップする
-					wFLG_ZanCountSkip = True
-				
-				if wResFavo['Responce']['flg_favo']==True :
-					### いいね済み扱いはスキップ
-					wFLG_ZanCountSkip = True
-		
+###		#############################
+###		# フォロー、フォロワー含まないリストへの
+###		# フォロワーへのいいね支援
+###		for wKey in wKeylist :
+###			### 無効ならスキップ
+###			if gVal.ARR_ListFavo[wKey]['valid']!=True :
+###				continue
+###			
+###			### フォロー、フォロワー含む場合 スキップ
+###			###   上の外部いいねで処理済
+###			if gVal.ARR_ListFavo[wKey]['follow']==True :
+###				continue
+###			
+###			wStr = "******************************" + '\n'
+###			wStr = wStr + "●いいね支援  処理中リスト: @" + gVal.ARR_ListFavo[wKey]['screen_name'] + "/ " + gVal.ARR_ListFavo[wKey]['list_name'] + '\n'
+###			CLS_OSIF.sPrn( wStr )
+###			
+###			#############################
+###			# Twitterからリストの登録ユーザ一覧を取得
+###			wListRes = gVal.OBJ_Tw_IF.GetListMember(
+###			   inListName=gVal.ARR_ListFavo[wKey]['list_name'],
+###			   inScreenName=gVal.ARR_ListFavo[wKey]['screen_name'] )
+###			
+###			if wListRes['Result']!=True :
+###				wRes['Reason'] = "Twitter API Error(GetListMember): " + wListRes['Reason']
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			if len(wListRes['Responce'])==0 :
+###				### 登録者なしはスキップ
+###				continue
+###			wARR_Users = wListRes['Responce']
+###			
+###			wResult['unfollow_ObjUser'] += len( wARR_Users )
+###			
+###			###ウェイト初期化
+###			self.OBJ_Parent.Wait_Init( inZanNum=len( wARR_Users ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
+###			
+###			wFLG_ZanCountSkip = False
+###			wKeylistUser = list( wARR_Users.keys() )
+###			for wUserKey in wKeylistUser :
+###				###ウェイトカウントダウン
+###				if self.OBJ_Parent.Wait_Next( inZanCountSkip=wFLG_ZanCountSkip )==False :
+###					break	###ウェイト中止
+###				wFLG_ZanCountSkip = False
+###				
+###				wUserID = str(wARR_Users[wUserKey]['id'])
+###				
+###				### フォロワーではない場合、スキップ
+###				if gVal.OBJ_Tw_IF.CheckFollower( wUserID)!=True :
+###					wFLG_ZanCountSkip = True
+###					continue
+###				
+###				#############################
+###				# DBからいいね情報を取得する(1個)
+###				wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
+###				if wDBRes['Result']!=True :
+###					###失敗
+###					wRes['Reason'] = "GetFavoDataOne is failed"
+###					gVal.OBJ_L.Log( "B", wRes )
+###					return wRes
+###				### DB未登録ならスキップ
+###				if wDBRes['Responce']==None :
+###					continue
+###				wARR_DBData = wDBRes['Responce']
+###				
+###				#############################
+###				# 自動いいね
+####			wResFavo = self.AutoFavo( wARR_Users[wUserKey], wARR_DBData, inFollowerFavo=True )
+###				wResFavo = self.AutoFavo( wARR_Users[wUserKey], wARR_DBData, inMode=self.DEF_AUTOFAVO_FOLLOWER_FAVO )
+###				if wResFavo['Result']!=True :
+###					wRes['Reason'] = "Twitter Error"
+###					gVal.OBJ_L.Log( "B", wRes )
+###					continue
+###				
+###				if wResFavo['Responce']['flg_favo_run']==True :
+###					### いいね実施数をカウント
+###					wResult['unfollow_RunFavo'] += 1
+###				else:
+###					### いいねを実実行しなければループ待機スキップする
+###					wFLG_ZanCountSkip = True
+###				
+###				if wResFavo['Responce']['flg_favo']==True :
+###					### いいね済み扱いはスキップ
+###					wFLG_ZanCountSkip = True
+###		
  		#############################
 		# 取得結果の表示
 		wStr = ""
@@ -381,8 +388,8 @@ class CLS_TwitterFavo():
 ###		wStr = wStr + "いいね実施数    : " + str( wFavoTweet )+ '\n'
 		wStr = wStr + "外部 ツイート総数  : " + str( wResult['Over_TweetNum'] )+ '\n'
 		wStr = wStr + "外部 いいね実施数  : " + str( wResult['Over_RunFavo'] )+ '\n'
-		wStr = wStr + "支援 対象ユーザ数  : " + str( wResult['unfollow_ObjUser'] )+ '\n'
-		wStr = wStr + "支援 いいね実施数  : " + str( wResult['unfollow_RunFavo'] )+ '\n'
+###		wStr = wStr + "支援 対象ユーザ数  : " + str( wResult['unfollow_ObjUser'] )+ '\n'
+###		wStr = wStr + "支援 いいね実施数  : " + str( wResult['unfollow_RunFavo'] )+ '\n'
 		CLS_OSIF.sPrn( wStr )
 		
 		#############################
@@ -408,8 +415,8 @@ class CLS_TwitterFavo():
 		wResult = {
 			"Over_TweetNum"	: 0,
 			"Over_RunFavo"	: 0,
-			"unfollow_ObjUser"	: 0,
-			"unfollow_RunFavo"	: 0
+##			"unfollow_ObjUser"	: 0,
+##			"unfollow_RunFavo"	: 0
 		}
 		#############################
 		# 取得開始の表示
@@ -495,80 +502,81 @@ class CLS_TwitterFavo():
 				### いいね済み扱いはスキップ
 				wFLG_ZanCountSkip = True
 		
-		#############################
-		# フォロー、フォロワー含まないリストへの
-		# フォロワーへのいいね支援
-		if gVal.ARR_ListFavo[inIndex]['follow']==False :
-			wStr = "******************************" + '\n'
-			wStr = wStr + "●いいね支援  処理中リスト: @" + wARR_ListFavo_noFolow[inIndex]['screen_name'] + "/ " + wARR_ListFavo_noFolow[inIndex]['list_name'] + '\n'
-			CLS_OSIF.sPrn( wStr )
-			
-			#############################
-			# Twitterからリストの登録ユーザ一覧を取得
-			wListRes = gVal.OBJ_Tw_IF.GetListMember(
-			   inListName=gVal.ARR_ListFavo[inIndex]['list_name'],
-			   inScreenName=gVal.ARR_ListFavo[inIndex]['screen_name'] )
-			
-			if wListRes['Result']!=True :
-				wRes['Reason'] = "Twitter API Error(GetListMember): " + wListRes['Reason']
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			if len(wListRes['Responce'])>0 :
-				### 登録者あり
-				wARR_Users = wListRes['Responce']
-				
-				wResult['unfollow_ObjUser'] += len( wARR_Users )
-				
-				###ウェイト初期化
-				self.OBJ_Parent.Wait_Init( inZanNum=len( wARR_Users ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
-				
-				wFLG_ZanCountSkip = False
-				wKeylistUser = list( wARR_Users.keys() )
-				for wUserKey in wKeylistUser :
-					###ウェイトカウントダウン
-					if self.OBJ_Parent.Wait_Next( inZanCountSkip=wFLG_ZanCountSkip )==False :
-						break	###ウェイト中止
-					wFLG_ZanCountSkip = False
-					
-					wUserID = str(wARR_Users[wUserKey]['id'])
-					
-					### フォロワーではない場合、スキップ
-					if gVal.OBJ_Tw_IF.CheckFollower( wUserID)!=True :
-						wFLG_ZanCountSkip = True
-						continue
-					
-					#############################
-					# DBからいいね情報を取得する(1個)
-					wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
-					if wDBRes['Result']!=True :
-						###失敗
-						wRes['Reason'] = "GetFavoDataOne is failed"
-						gVal.OBJ_L.Log( "B", wRes )
-						return wRes
-					### DB未登録ならスキップ
-					if wDBRes['Responce']==None :
-						continue
-					wARR_DBData = wDBRes['Responce']
-					
-					#############################
-					# 自動いいね
-					wResFavo = self.AutoFavo( wARR_Users[wUserKey], wARR_DBData, inFollowerFavo=True )
-					if wResFavo['Result']!=True :
-						wRes['Reason'] = "Twitter Error"
-						gVal.OBJ_L.Log( "B", wRes )
-						continue
-					
-					if wResFavo['Responce']['flg_favo_run']==True :
-						### いいね実施数をカウント
-						wResult['unfollow_RunFavo'] += 1
-					else:
-						### いいねを実実行しなければループ待機スキップする
-						wFLG_ZanCountSkip = True
-					
-					if wResFavo['Responce']['flg_favo']==True :
-						### いいね済み扱いはスキップ
-						wFLG_ZanCountSkip = True
-		
+###		#############################
+###		# フォロー、フォロワー含まないリストへの
+###		# フォロワーへのいいね支援
+###		if gVal.ARR_ListFavo[inIndex]['follow']==False :
+###			wStr = "******************************" + '\n'
+###			wStr = wStr + "●いいね支援  処理中リスト: @" + wARR_ListFavo_noFolow[inIndex]['screen_name'] + "/ " + wARR_ListFavo_noFolow[inIndex]['list_name'] + '\n'
+###			CLS_OSIF.sPrn( wStr )
+###			
+###			#############################
+###			# Twitterからリストの登録ユーザ一覧を取得
+###			wListRes = gVal.OBJ_Tw_IF.GetListMember(
+###			   inListName=gVal.ARR_ListFavo[inIndex]['list_name'],
+###			   inScreenName=gVal.ARR_ListFavo[inIndex]['screen_name'] )
+###			
+###			if wListRes['Result']!=True :
+###				wRes['Reason'] = "Twitter API Error(GetListMember): " + wListRes['Reason']
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			if len(wListRes['Responce'])>0 :
+###				### 登録者あり
+###				wARR_Users = wListRes['Responce']
+###				
+###				wResult['unfollow_ObjUser'] += len( wARR_Users )
+###				
+###				###ウェイト初期化
+###				self.OBJ_Parent.Wait_Init( inZanNum=len( wARR_Users ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
+###				
+###				wFLG_ZanCountSkip = False
+###				wKeylistUser = list( wARR_Users.keys() )
+###				for wUserKey in wKeylistUser :
+###					###ウェイトカウントダウン
+###					if self.OBJ_Parent.Wait_Next( inZanCountSkip=wFLG_ZanCountSkip )==False :
+###						break	###ウェイト中止
+###					wFLG_ZanCountSkip = False
+###					
+###					wUserID = str(wARR_Users[wUserKey]['id'])
+###					
+###					### フォロワーではない場合、スキップ
+###					if gVal.OBJ_Tw_IF.CheckFollower( wUserID)!=True :
+###						wFLG_ZanCountSkip = True
+###						continue
+###					
+###					#############################
+###					# DBからいいね情報を取得する(1個)
+###					wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
+###					if wDBRes['Result']!=True :
+###						###失敗
+###						wRes['Reason'] = "GetFavoDataOne is failed"
+###						gVal.OBJ_L.Log( "B", wRes )
+###						return wRes
+###					### DB未登録ならスキップ
+###					if wDBRes['Responce']==None :
+###						continue
+###					wARR_DBData = wDBRes['Responce']
+###					
+###					#############################
+###					# 自動いいね
+####				wResFavo = self.AutoFavo( wARR_Users[wUserKey], wARR_DBData, inFollowerFavo=True )
+###					wResFavo = self.AutoFavo( wARR_Users[wUserKey], wARR_DBData, inMode=self.DEF_AUTOFAVO_FOLLOWER_FAVO )
+###					if wResFavo['Result']!=True :
+###						wRes['Reason'] = "Twitter Error"
+###						gVal.OBJ_L.Log( "B", wRes )
+###						continue
+###					
+###					if wResFavo['Responce']['flg_favo_run']==True :
+###						### いいね実施数をカウント
+###						wResult['unfollow_RunFavo'] += 1
+###					else:
+###						### いいねを実実行しなければループ待機スキップする
+###						wFLG_ZanCountSkip = True
+###					
+###					if wResFavo['Responce']['flg_favo']==True :
+###						### いいね済み扱いはスキップ
+###						wFLG_ZanCountSkip = True
+###		
 		#############################
 		# 取得結果の表示
 		wStr = ""
@@ -578,8 +586,102 @@ class CLS_TwitterFavo():
 ###		wStr = wStr + "いいね実施数    : " + str( wFavoTweet )+ '\n'
 		wStr = wStr + "外部 ツイート総数  : " + str( wResult['Over_TweetNum'] )+ '\n'
 		wStr = wStr + "外部 いいね実施数  : " + str( wResult['Over_RunFavo'] )+ '\n'
-		wStr = wStr + "支援 対象ユーザ数  : " + str( wResult['unfollow_ObjUser'] )+ '\n'
-		wStr = wStr + "支援 いいね実施数  : " + str( wResult['unfollow_RunFavo'] )+ '\n'
+###		wStr = wStr + "支援 対象ユーザ数  : " + str( wResult['unfollow_ObjUser'] )+ '\n'
+###		wStr = wStr + "支援 いいね実施数  : " + str( wResult['unfollow_RunFavo'] )+ '\n'
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# 正常終了
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# フォロワーいいね
+#####################################################
+	def FollowerFavo( self, inFLG_FirstDisp=True ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterFavo"
+		wRes['Func']  = "FollowerFavo"
+		
+		wResult = {
+			"UserNum"	: 0,
+			"RunFavo"	: 0
+		}
+		#############################
+		# 取得開始の表示
+		if inFLG_FirstDisp==True :
+			wResDisp = CLS_MyDisp.sViewHeaderDisp( "フォロワーいいね実行中" )
+		
+		#############################
+		# フォロー情報取得
+		wARR_FollowData = gVal.OBJ_Tw_IF.GetFollowerData()
+		wResult['UserNum'] = len( wARR_FollowData )
+		
+		###ウェイト初期化
+		self.OBJ_Parent.Wait_Init( inZanNum=len( wARR_FollowData ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
+		
+		#############################
+		# フォロー、フォロワー含まないリストへの
+		# フォロワーへのいいね支援
+		wFLG_ZanCountSkip = False
+		wKeylist = list( wARR_FollowData.keys() )
+		for wUserID in wKeylist :
+			###ウェイトカウントダウン
+			if self.OBJ_Parent.Wait_Next( inZanCountSkip=wFLG_ZanCountSkip )==False :
+				break	###ウェイト中止
+			wFLG_ZanCountSkip = False
+			
+			wUserID = str(wUserID)
+			
+			### フォロワーでなければ スキップ
+			if wARR_FollowData[wUserID]['follower']!=True :
+				wFLG_ZanCountSkip = True
+				continue
+			
+			#############################
+			# DBからいいね情報を取得する(1個)
+			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
+			if wDBRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "GetFavoDataOne is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			### DB未登録ならスキップ
+			if wDBRes['Responce']==None :
+				continue
+			wARR_DBData = wDBRes['Responce']
+			
+			#############################
+			# 自動いいね
+			wResFavo = self.AutoFavo( wARR_Users[wUserKey], wARR_DBData, inMode=self.DEF_AUTOFAVO_FOLLOWER_FAVO )
+			if wResFavo['Result']!=True :
+				wRes['Reason'] = "Twitter Error"
+				gVal.OBJ_L.Log( "B", wRes )
+				continue
+			
+			if wResFavo['Responce']['flg_favo_run']==True :
+				### いいね実施数をカウント
+				wResult['RunFavo'] += 1
+			else:
+				### いいねを実実行しなければループ待機スキップする
+				wFLG_ZanCountSkip = True
+			
+			if wResFavo['Responce']['flg_favo']==True :
+				### いいね済み扱いはスキップ
+				wFLG_ZanCountSkip = True
+		
+ 		#############################
+		# 取得結果の表示
+		wStr = ""
+		if inFLG_FirstDisp==False :
+			wStr = "------------------------------" + '\n'
+		wStr = wStr + "支援 対象ユーザ数  : " + str( wResult['UserNum'] )+ '\n'
+		wStr = wStr + "支援 いいね実施数  : " + str( wResult['RunFavo'] )+ '\n'
 		CLS_OSIF.sPrn( wStr )
 		
 		#############################
@@ -594,7 +696,8 @@ class CLS_TwitterFavo():
 #####################################################
 ###	def AutoFavo( self, inData ):
 ###	def AutoFavo( self, inUser, inData ):
-	def AutoFavo( self, inUser, inData, inFollowerFavo=False ):
+###	def AutoFavo( self, inUser, inData, inFollowerFavo=False ):
+	def AutoFavo( self, inUser, inData, inMode=DEF_AUTOFAVO_RETURN_FAVO ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -665,9 +768,16 @@ class CLS_TwitterFavo():
 ###			wLFavoDateLen = gVal.DEF_STR_TLNUM['forListFavoMyFollowSec']
 ###		else:
 ###			wLFavoDateLen = gVal.DEF_STR_TLNUM['forListFavoNoFollowSec']
-		if inFollowerFavo==True :
+###		if inFollowerFavo==True :
+		if inMode==self.DEF_AUTOFAVO_FOLLOWER_FAVO :
 			### フォロワー支援いいね
-			wLFavoDateLen = gVal.DEF_STR_TLNUM['forListFavoFollowerFavoSec']
+###			wLFavoDateLen = gVal.DEF_STR_TLNUM['forListFavoFollowerFavoSec']
+			if gVal.OBJ_Tw_IF.CheckMyFollow( wUserID)==True :
+				### 相互フォロー者へ
+				wLFavoDateLen = gVal.DEF_STR_TLNUM['forListFavoMyFollowFavoSec']
+			else:
+				### 片フォロワーへ
+				wLFavoDateLen = gVal.DEF_STR_TLNUM['forListFavoFollowerFavoSec']
 		else:
 			### お返しいいね
 			wLFavoDateLen = gVal.DEF_STR_TLNUM['forListFavoReturnFavoSec']
@@ -796,7 +906,8 @@ class CLS_TwitterFavo():
 		wStr = "--------------------" + '\n' ;
 		if wSubRes['Responce']['Run']==True :
 ###			wTextReason = "〇自動いいね 実施: user=" + inData['screen_name'] + " id=" + str(wFavoID)
-			if inFollowerFavo==True :
+###			if inFollowerFavo==True :
+			if inMode==self.DEF_AUTOFAVO_FOLLOWER_FAVO :
 				### フォロワー支援いいね
 				wTextReason = "〇自動いいね（フォロワー支援） 実施: user=" + inData['screen_name'] + " id=" + str(wFavoID)
 			else:

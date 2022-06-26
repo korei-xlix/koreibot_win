@@ -144,6 +144,7 @@ class gVal() :
 ###		"forListFavoMyFollowSec"	: 14400,			#   リストいいね フォロー者への期間   4時間  60x60x4
 ###		"forListFavoNoFollowSec"	: 259200,			#   リストいいね フォロー外への期間   3日  (60x60x24)x3
 		"forListFavoReturnFavoSec"		: 3600,			#   リストいいね お返しいいねへの期間   1時間  60x60x1
+		"forListFavoMyFollowFavoSec"	: 14400,		#   リストいいね フォロー者いいねへの期間       4時間  60x60x4
 		"forListFavoFollowerFavoSec"	: 259200,		#   リストいいね フォロワー支援いいねへの期間   3日  (60x60x24)x3
 		
 		"forListFavoOverTweetSec"		: 259200,		#   リストいいね 外部いいね ツイート期間外   3日  (60x60x24)x3
