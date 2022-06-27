@@ -38,7 +38,10 @@ class CLS_BotCtrl():
 ###		
 ###		elif wArg[1]=="add" :	#データ追加モードの場合
 ###			if len(wArg)!=3 :
-		if wArg[1]=="add" :	#データ追加モードの場合
+###		if wArg[1]=="add" :	#データ追加モードの場合
+								#データ追加モード or 禁止ワード追加モードの場合
+		if wArg[1]=="add" or  \
+		   wArg[1]=="word" :
 			if len(wArg)!=4 :
 				wRes['Reason'] = "データ追加モード: 引数が足りません"
 				CLS_OSIF.sErr( wRes )

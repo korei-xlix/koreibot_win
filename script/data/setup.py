@@ -161,7 +161,8 @@ class CLS_Setup():
 #####################################################
 # データ追加モード
 #####################################################
-	def Add( self, inPassWD=None, inDBInit=False ):
+###	def Add( self, inPassWD=None, inDBInit=False ):
+	def Add( self, inWordOnly=False, inDBInit=False ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -169,7 +170,11 @@ class CLS_Setup():
 		wRes['Class'] = "CLS_Setup"
 		wRes['Func']  = "Add"
 		
-		CLS_OSIF.sPrn( "追加データをデータベースに追加します" + '\n' )
+###		CLS_OSIF.sPrn( "追加データをデータベースに追加します" + '\n' )
+		if inWordOnly==False :
+			CLS_OSIF.sPrn( "〇 追加データをデータベースに追加します" + '\n' )
+		else:
+			CLS_OSIF.sPrn( "● 禁止ワードをデータベースに追加します" + '\n' )
 		
 		#############################
 		# データアーカイブのあるフォルダの存在チェック
@@ -204,21 +209,22 @@ class CLS_Setup():
 			CLS_OSIF.sErr( wRes )
 			return False
 		
-		#    禁止ユーザ
-		wFilePath = str( gVal.STR_SystemInfo['EXT_FilePath'] ) + gVal.DEF_STR_FILE['Melt_ExcWordArc_path'] + gVal.DEF_STR_FILE['Melt_ExcUser']
-		wARR_ExcUser = []
-		if CLS_File.sReadFile( wFilePath, outLine=wARR_ExcUser )!=True :
-			wRes['Reason'] = "解凍ファイルが見つかりません: path=" + wFilePath
-			CLS_OSIF.sErr( wRes )
-			return False
-		
-		#    リストいいね指定ファイル
-		wFilePath = str( gVal.STR_SystemInfo['EXT_FilePath'] ) + gVal.DEF_STR_FILE['Melt_ExcWordArc_path'] + gVal.DEF_STR_FILE['Melt_ListFavo']
-		wARR_ListFavo = []
-		if CLS_File.sReadFile( wFilePath, outLine=wARR_ListFavo )!=True :
-			wRes['Reason'] = "解凍ファイルが見つかりません: path=" + wFilePath
-			CLS_OSIF.sErr( wRes )
-			return False
+		if inWordOnly==False :
+			#    禁止ユーザ
+			wFilePath = str( gVal.STR_SystemInfo['EXT_FilePath'] ) + gVal.DEF_STR_FILE['Melt_ExcWordArc_path'] + gVal.DEF_STR_FILE['Melt_ExcUser']
+			wARR_ExcUser = []
+			if CLS_File.sReadFile( wFilePath, outLine=wARR_ExcUser )!=True :
+				wRes['Reason'] = "解凍ファイルが見つかりません: path=" + wFilePath
+				CLS_OSIF.sErr( wRes )
+				return False
+			
+			#    リストいいね指定ファイル
+			wFilePath = str( gVal.STR_SystemInfo['EXT_FilePath'] ) + gVal.DEF_STR_FILE['Melt_ExcWordArc_path'] + gVal.DEF_STR_FILE['Melt_ListFavo']
+			wARR_ListFavo = []
+			if CLS_File.sReadFile( wFilePath, outLine=wARR_ListFavo )!=True :
+				wRes['Reason'] = "解凍ファイルが見つかりません: path=" + wFilePath
+				CLS_OSIF.sErr( wRes )
+				return False
 		
 		###解凍したフォルダ削除
 		if CLS_File.sRmtree( wMelt_ExcWordArc_Path )!=True :
@@ -236,7 +242,8 @@ class CLS_Setup():
 		#############################
 		# データベースを初期化する
 		# ※初期化しないほうが便利
-		if inDBInit==True :
+###		if inDBInit==True :
+		if inDBInit==True and inWordOnly==False :
 			self.__create_TBL_EXC_WORD( gVal.OBJ_DB_IF.OBJ_DB )
 		
 		#############################
@@ -245,18 +252,18 @@ class CLS_Setup():
 		if wSubRes['Result']!=True :
 			return False
 		
-		#############################
-		# 禁止ユーザの設定
-		wSubRes = gVal.OBJ_DB_IF.SetExeUser( wARR_ExcUser )
-		if wSubRes['Result']!=True :
-			return False
-		
-		#############################
-		# リストいいね指定の設定
-###		wSubRes = gVal.OBJ_DB_IF.SetOtherListFavo( wARR_ListFavo )
-		wSubRes = gVal.OBJ_DB_IF.SetListFavo( wARR_ListFavo )
-		if wSubRes['Result']!=True :
-			return False
+		if inWordOnly==False :
+			#############################
+			# 禁止ユーザの設定
+			wSubRes = gVal.OBJ_DB_IF.SetExeUser( wARR_ExcUser )
+			if wSubRes['Result']!=True :
+				return False
+			
+			#############################
+			# リストいいね指定の設定
+			wSubRes = gVal.OBJ_DB_IF.SetListFavo( wARR_ListFavo )
+			if wSubRes['Result']!=True :
+				return False
 		
 		#############################
 		# DBを閉じる
