@@ -1465,6 +1465,19 @@ class CLS_TwitterFavo():
 			return wRes
 		
 		#############################
+		# g: フォロワー支援
+		elif inWord=="\\g" :
+			wSubRes = self.FollowerFavo()
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "FollowerFavo"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
 		# チェック
 		
 		wARR_Comm = str(inWord).split("-")

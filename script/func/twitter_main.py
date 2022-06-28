@@ -392,14 +392,17 @@ class CLS_TwitterMain():
 			
 			wMyFollow = None
 			wFollower = None
+			wFavoUpdate = False
 			#############################
 			# フォロー者検出
 			if wARR_DBData['myfollow']!=wFollowerData[wID]['myfollow'] :
 				if wFollowerData[wID]['myfollow']==True :
 					if str(wARR_DBData['myfollow_date'])==gVal.OBJ_DB_IF.DEF_TIMEDATE :
 						wStr = "〇新規フォロー者"
+						wFavoUpdate = True
 					else:
 						wStr = "△再フォロー者"
+						wFavoUpdate = True
 				else:
 					wStr = "●リムーブ者"
 				
@@ -430,7 +433,8 @@ class CLS_TwitterMain():
 			# 変更ありの場合
 			#   DBへ反映
 			if wMyFollow!=None or wFollower!=None :
-				wSubRes = gVal.OBJ_DB_IF.UpdateFavoDataFollower( wID, wMyFollow, wFollower )
+###				wSubRes = gVal.OBJ_DB_IF.UpdateFavoDataFollower( wID, wMyFollow, wFollower )
+				wSubRes = gVal.OBJ_DB_IF.UpdateFavoDataFollower( wID, wMyFollow, wFollower, wFavoUpdate )
 				if wSubRes['Result']!=True :
 					###失敗
 					wRes['Reason'] = "UpdateFavoDataFollower is failed"

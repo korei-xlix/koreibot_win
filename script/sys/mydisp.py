@@ -174,8 +174,11 @@ class CLS_MyDisp():
 		
 		###インプリ：最終いいね受信日
 		elif "[@USERADMIN-FAVO_DATE@]"==inLine :
+###			if inData['flg_db_set']==False or \
+###			   inData['favo_date']==None :
 			if inData['flg_db_set']==False or \
-			   inData['favo_date']==None :
+			   ( inData['favo_date']==None or inData['favo_date']==gVal.OBJ_DB_IF.DEF_TIMEDATE ) or \
+			   inData['favo_cnt']==0 :
 				wStr = "－－－"
 			else:
 				wStr = str( inData['favo_date'] )
@@ -183,8 +186,10 @@ class CLS_MyDisp():
 		
 		###インプリ：最終リスト通知日
 		elif "[@USERADMIN-LIST_DATE@]"==inLine :
+###			if inData['flg_db_set']==False or \
+###			   inData['list_date']==None :
 			if inData['flg_db_set']==False or \
-			   inData['list_date']==None :
+			   ( inData['list_date']==None or inData['list_date']==gVal.OBJ_DB_IF.DEF_TIMEDATE ) :
 				wStr = "－－－"
 			else:
 				wStr = str( inData['list_date'] )
@@ -192,8 +197,10 @@ class CLS_MyDisp():
 		
 		###インプリ：最終いいね実施日
 		elif "[@USERADMIN-LIST_FAVO_DATE@]"==inLine :
+###			if inData['flg_db_set']==False or \
+###			   inData['lfavo_date']==None :
 			if inData['flg_db_set']==False or \
-			   inData['lfavo_date']==None :
+			   ( inData['lfavo_date']==None or inData['lfavo_date']==gVal.OBJ_DB_IF.DEF_TIMEDATE ) :
 				wStr = "－－－"
 			else:
 				wStr = str( inData['lfavo_date'] )

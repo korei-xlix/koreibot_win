@@ -1890,7 +1890,8 @@ class CLS_DB_IF() :
 		return wRes
 
 	#####################################################
-	def UpdateFavoDataFollower( self, inID, inFLG_MyFollow=None, inFLG_Follower=None ):
+###	def UpdateFavoDataFollower( self, inID, inFLG_MyFollow=None, inFLG_Follower=None ):
+	def UpdateFavoDataFollower( self, inID, inFLG_MyFollow=None, inFLG_Follower=None, inFLG_FavoUpdate=False ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -1919,8 +1920,17 @@ class CLS_DB_IF() :
 		#############################
 		# フォロー者、フォロワーとも更新
 		if inFLG_MyFollow!=None and inFLG_Follower!=None :
-			wQuery = "update tbl_favouser_data set " + \
-					"myfollow = " + str(inFLG_MyFollow) + ", " + \
+###			wQuery = "update tbl_favouser_data set " + \
+###					"myfollow = " + str(inFLG_MyFollow) + ", " + \
+###					"myfollow_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "', " + \
+###					"follower = " + str(inFLG_MyFollow) + ", " + \
+###					"follower_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
+###					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
+###					" and id = '" + str(inID) + "' ;"
+			wQuery = "update tbl_favouser_data set "
+			if inFLG_FavoUpdate==True :
+				wQuery = wQuery + "favo_date = '" + str( gVal.STR_SystemInfo['TimeDate'] ) + "', "
+			wQuery = wQuery + "myfollow = " + str(inFLG_MyFollow) + ", " + \
 					"myfollow_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "', " + \
 					"follower = " + str(inFLG_MyFollow) + ", " + \
 					"follower_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
@@ -1930,8 +1940,15 @@ class CLS_DB_IF() :
 		#############################
 		# フォロー者のみ更新
 		elif inFLG_MyFollow!=None :
-			wQuery = "update tbl_favouser_data set " + \
-					"myfollow = " + str(inFLG_MyFollow) + ", " + \
+###			wQuery = "update tbl_favouser_data set " + \
+###					"myfollow = " + str(inFLG_MyFollow) + ", " + \
+###					"myfollow_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
+###					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
+###					" and id = '" + str(inID) + "' ;"
+			wQuery = "update tbl_favouser_data set "
+			if inFLG_FavoUpdate==True :
+				wQuery = wQuery + "favo_date = '" + str( gVal.STR_SystemInfo['TimeDate'] ) + "', "
+			wQuery = wQuery + "myfollow = " + str(inFLG_MyFollow) + ", " + \
 					"myfollow_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
 					" and id = '" + str(inID) + "' ;"
