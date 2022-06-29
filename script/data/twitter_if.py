@@ -2426,6 +2426,40 @@ class CLS_Twitter_IF() :
 			return wRes
 		wARR_SubsList = wSubRes['Responce']
 		
+		wListFavo_Keylist = list( gVal.ARR_ListFavo.keys() )
+		wFLG_RemoveRun = False
+		#############################
+		# 自分が自動リムーブ設定対象のリストに登録されてるか
+		#   =されていれば自動リムーブ対象
+		#   =されてなければ対象外
+		for wKey in wARR_SubsList :
+			if wARR_SubsList[wKey]['me']==False :
+				###自分じゃなければスキップ
+				continue
+			
+			for wListFavoKey in wListFavo_Keylist :
+				if gVal.ARR_ListFavo[wListFavoKey]['screen_name']!=gVal.STR_UserInfo['Account'] :
+					###自分のリスト設定じゃなければスキップ
+					continue
+				if gVal.ARR_ListFavo[wListFavoKey]['list_name']!=wARR_SubsList[wKey]['name'] :
+					###対象のリスト設定じゃなければスキップ
+					continue
+				###対象リストが自動リムーブ設定されてるか
+				if gVal.ARR_ListFavo[wListFavoKey]['auto_rem']==True :
+					### 自動リムーブ設定されてる =リムーブ対象
+					wFLG_RemoveRun = True
+				break
+			
+			###自動リムーブ対象ならループを抜ける
+			if wFLG_RemoveRun==True :
+				break
+		
+		### 自動リムーブ対象じゃなければ終了
+		if wFLG_RemoveRun!=True :
+			wRes['Result'] = True
+			return wRes
+		
+		# ※自動リムーブ確定
 		#############################
 		# 自分のリストだけ登録解除していく
 		for wKey in wARR_SubsList :
@@ -2437,7 +2471,13 @@ class CLS_Twitter_IF() :
 				wRes['Reason'] = "Twitter API Error(RemoveUserList): " + wSubRes['Reason'] + " : list=" + wARR_SubsList[wKey]['name'] + " user=" + inUser['screen_name']
 				gVal.OBJ_L.Log( "B", wRes )
 				continue
+###			wFLG_RemoveRun = True
 		
+###		### 解除してなければ対象じゃない
+###		if wFLG_RemoveRun!=True :
+###			wRes['Result'] = True
+###			return wRes
+###		
 		#############################
 		# 自動リムーブリストにID追加
 		wSubRes = self.OBJ_Twitter.AddUserList( gVal.STR_UserInfo['ArListName'], wID )

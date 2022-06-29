@@ -461,12 +461,12 @@ class CLS_Setup():
 					"follower_date TIMESTAMP " + \
 					" ) ;"
 		
-##					"twitterid   記録したユーザ(Twitter ID)
-###					"regdate     登録日
-###					"id          Twitter ID
-###					"screen_name Twitter ユーザ名(英語)
-###					"senddate    最終送信日
-###					"sended      送信済か (False=送信対象)
+##					"twitterid     記録したユーザ(Twitter ID)
+###					"regdate       登録日
+###					"id            Twitter ID
+###					"screen_name   Twitter ユーザ名(英語)
+###					"senddate      最終送信日
+###					"sended        送信済か (False=送信対象)
 ###					"send_cnt      送信回数(累計)
 ###					"favo_cnt      いいね回数(累計)
 ###					"now_favo_cnt  いいね回数(前回記録～現在まで)

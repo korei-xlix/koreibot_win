@@ -393,6 +393,7 @@ class CLS_TwitterMain():
 			wMyFollow = None
 			wFollower = None
 			wFavoUpdate = False
+			wDetectRemove = False
 			#############################
 			# フォロー者検出
 			if wARR_DBData['myfollow']!=wFollowerData[wID]['myfollow'] :
@@ -422,6 +423,7 @@ class CLS_TwitterMain():
 						wStr = "△再フォローされた"
 				else:
 					wStr = "●リムーブされた"
+					wDetectRemove = True
 				
 				wFollower = wFollowerData[wID]['follower']
 #				wStr = wStr + ": " + wFollowerData[wID]['screen_name']
@@ -442,6 +444,15 @@ class CLS_TwitterMain():
 					return wRes
 				
 				wRes['Responce'] = True
+			
+			#############################
+			# リムーブされたら自動リムーブする
+			if wDetectRemove==True :
+				wSubRes = self.OBJ_TwitterFollower.AutoRemove( wID )
+				if wSubRes['Result']!=True :
+					wRes['Reason'] = "AutoRemove is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
 		
 		#############################
 		# リムーブ もしくは ブロックでTwitterから完全リムーブされたか
