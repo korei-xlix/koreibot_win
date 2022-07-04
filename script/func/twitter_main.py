@@ -513,12 +513,18 @@ class CLS_TwitterMain():
 			
 			#############################
 			# 変更ありの場合
-			#   DBへ反映
+			#   DBへ反映して自動リムーブする
 			if wMyFollow!=None or wFollower!=None :
 				wSubRes = gVal.OBJ_DB_IF.UpdateFavoDataFollower( wID, wMyFollow, wFollower )
 				if wSubRes['Result']!=True :
 					###失敗
 					wRes['Reason'] = "UpdateFavoDataFollower is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				
+				wSubRes = self.OBJ_TwitterFollower.AutoRemove( wID )
+				if wSubRes['Result']!=True :
+					wRes['Reason'] = "AutoRemove is failed"
 					gVal.OBJ_L.Log( "B", wRes )
 					return wRes
 				
@@ -649,6 +655,21 @@ class CLS_TwitterMain():
 #####################################################
 	def UserAdmin(self):
 		wRes = self.OBJ_TwitterAdmin.UserAdmin()
+		return wRes
+
+
+
+#####################################################
+# ユーザ自動削除
+#####################################################
+	def RunAutoUserRemove(self):
+		#############################
+		# Twitter情報取得
+		wFavoRes = self.GetTwitterInfo()
+		if wFavoRes['Result']!=True :
+			return wFavoRes
+		
+		wRes = self.OBJ_TwitterAdmin.RunAutoUserRemove()
 		return wRes
 
 
@@ -1358,24 +1379,29 @@ class CLS_TwitterMain():
 				wTweet = wTweet + "[ご注意] ユーザ " + gVal.ARR_ListFavo[wKey]['screen_name'] + " のリスト " + gVal.ARR_ListFavo[wKey]['list_name'] + " はフォロー禁止です。" + '\n'
 				wTweet = wTweet + "[Caution] Excuse me. The list " + gVal.ARR_ListFavo[wKey]['list_name'] + " for user " + gVal.ARR_ListFavo[wKey]['screen_name'] + " is unfollowable."
 				
-				#############################
-				# ツイート送信
-				wTweetRes = gVal.OBJ_Tw_IF.Tweet( wTweet )
-				if wTweetRes['Result']!=True :
-					if wTweetRes['StatusCode']=="403" :
-						wStr = "●警告に対応してないユーザ: " + wListRes['Responce'][wID]['screen_name']
-						CLS_OSIF.sPrn( wStr )
+				if gVal.DEF_STR_TLNUM['sendListUsersCaution']==True :
+					#############################
+					# ツイート送信
+					wTweetRes = gVal.OBJ_Tw_IF.Tweet( wTweet )
+					if wTweetRes['Result']!=True :
+						if wTweetRes['StatusCode']=="403" :
+							wStr = "●警告に対応してないユーザ: " + wListRes['Responce'][wID]['screen_name']
+							CLS_OSIF.sPrn( wStr )
+						else:
+							wRes['Reason'] = "Twitter API Error(3): " + wTweetRes['Reason']
+							gVal.OBJ_L.Log( "B", wRes )
+							return wRes
 					else:
-						wRes['Reason'] = "Twitter API Error(3): " + wTweetRes['Reason']
-						gVal.OBJ_L.Log( "B", wRes )
-						return wRes
+						### ログに記録
+						wRes['Reason'] = "●リスト登録への警告: " + wListRes['Responce'][wID]['screen_name']
+						gVal.OBJ_L.Log( "X", wRes )
 				else:
 					### ログに記録
-					wRes['Reason'] = "●リスト登録への警告: " + wListRes['Responce'][wID]['screen_name']
+					wRes['Reason'] = "●リスト登録への警告(Twitter未送信): " + wListRes['Responce'][wID]['screen_name']
 					gVal.OBJ_L.Log( "X", wRes )
-					
-					### IDを警告済に追加
-					gVal.ARR_CautionUserID.append( wID )
+				
+				### IDを警告済に追加
+				gVal.ARR_CautionUserID.append( wID )
 		
 		wStr = "チェック終了" + '\n'
 		CLS_OSIF.sPrn( wStr )
@@ -1437,6 +1463,10 @@ class CLS_TwitterMain():
 			wKeylistUser = list( wListRes['Responce'].keys() )
 			for wID in wKeylistUser :
 				wID = str(wID)
+				
+				###自分は除外する
+				if str(gVal.STR_UserInfo['id'])==wID :
+					continue
 				
 				#############################
 				# 自動リムーブ

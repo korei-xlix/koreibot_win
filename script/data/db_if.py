@@ -1890,7 +1890,6 @@ class CLS_DB_IF() :
 		return wRes
 
 	#####################################################
-###	def UpdateFavoDataFollower( self, inID, inFLG_MyFollow=None, inFLG_Follower=None ):
 	def UpdateFavoDataFollower( self, inID, inFLG_MyFollow=None, inFLG_Follower=None, inFLG_FavoUpdate=False ):
 		#############################
 		# 応答形式の取得
@@ -1917,48 +1916,118 @@ class CLS_DB_IF() :
 		#############################
 		# 更新
 		
-		#############################
-		# フォロー者、フォロワーとも更新
-		if inFLG_MyFollow!=None and inFLG_Follower!=None :
-###			wQuery = "update tbl_favouser_data set " + \
-###					"myfollow = " + str(inFLG_MyFollow) + ", " + \
+###		#############################
+###		# フォロー者、フォロワーとも更新
+###		if inFLG_MyFollow!=None and inFLG_Follower!=None :
+###			wQuery = "update tbl_favouser_data set "
+###			if inFLG_FavoUpdate==True :
+###				wQuery = wQuery + "favo_date = '" + str( gVal.STR_SystemInfo['TimeDate'] ) + "', "
+###			wQuery = wQuery + "myfollow = " + str(inFLG_MyFollow) + ", " + \
 ###					"myfollow_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "', " + \
 ###					"follower = " + str(inFLG_MyFollow) + ", " + \
 ###					"follower_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
 ###					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
 ###					" and id = '" + str(inID) + "' ;"
+###		
+###		#############################
+###		# フォロー者のみ更新
+###		elif inFLG_MyFollow!=None :
+###			wQuery = "update tbl_favouser_data set "
+###			if inFLG_FavoUpdate==True :
+###				wQuery = wQuery + "favo_date = '" + str( gVal.STR_SystemInfo['TimeDate'] ) + "', "
+###			wQuery = wQuery + "myfollow = " + str(inFLG_MyFollow) + ", " + \
+###					"myfollow_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
+###					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
+###					" and id = '" + str(inID) + "' ;"
+###		
+###		#############################
+###		# フォロワーのみ更新
+###		else :
+###			wQuery = "update tbl_favouser_data set " + \
+###					"follower = " + str(inFLG_Follower) + ", " + \
+###					"follower_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
+###					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
+###					" and id = '" + str(inID) + "' ;"
+		
+		#############################
+		# フォロー者・フォロワー なし→あり
+		if inFLG_MyFollow==True and inFLG_Follower==True :
 			wQuery = "update tbl_favouser_data set "
 			if inFLG_FavoUpdate==True :
 				wQuery = wQuery + "favo_date = '" + str( gVal.STR_SystemInfo['TimeDate'] ) + "', "
-			wQuery = wQuery + "myfollow = " + str(inFLG_MyFollow) + ", " + \
+			wQuery = wQuery + "myfollow = True, " + \
 					"myfollow_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "', " + \
-					"follower = " + str(inFLG_MyFollow) + ", " + \
+					"follower = True, " + \
 					"follower_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
 					" and id = '" + str(inID) + "' ;"
 		
 		#############################
-		# フォロー者のみ更新
-		elif inFLG_MyFollow!=None :
-###			wQuery = "update tbl_favouser_data set " + \
-###					"myfollow = " + str(inFLG_MyFollow) + ", " + \
-###					"myfollow_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
-###					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
-###					" and id = '" + str(inID) + "' ;"
+		# フォロー者・フォロワー あり→なし
+		elif inFLG_MyFollow==False and inFLG_Follower==False :
+			wQuery = "update tbl_favouser_data set " + \
+					"myfollow = False, " + \
+					"follower = False " + \
+					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
+					" and id = '" + str(inID) + "' ;"
+		
+		#############################
+		# フォロー者 なし→あり
+		# フォロワー あり→なし
+		elif inFLG_MyFollow==True and inFLG_Follower==False :
 			wQuery = "update tbl_favouser_data set "
 			if inFLG_FavoUpdate==True :
 				wQuery = wQuery + "favo_date = '" + str( gVal.STR_SystemInfo['TimeDate'] ) + "', "
-			wQuery = wQuery + "myfollow = " + str(inFLG_MyFollow) + ", " + \
+			wQuery = wQuery + "myfollow = True, " + \
+					"myfollow_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "', " + \
+					"follower = False " + \
+					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
+					" and id = '" + str(inID) + "' ;"
+		
+		#############################
+		# フォロー者 あり→なし
+		# フォロワー なし→あり
+		elif inFLG_MyFollow==False and inFLG_Follower==True :
+			wQuery = "update tbl_favouser_data set " + \
+					"myfollow = False, " + \
+					"follower = True, " + \
+					"follower_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
+					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
+					" and id = '" + str(inID) + "' ;"
+		
+		#############################
+		# フォロー者 なし→あり
+		elif inFLG_MyFollow==True :
+			wQuery = "update tbl_favouser_data set "
+			if inFLG_FavoUpdate==True :
+				wQuery = wQuery + "favo_date = '" + str( gVal.STR_SystemInfo['TimeDate'] ) + "', "
+			wQuery = wQuery + "myfollow = True, " + \
 					"myfollow_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
 					" and id = '" + str(inID) + "' ;"
 		
 		#############################
-		# フォロワーのみ更新
+		# フォロー者 あり→なし
+		elif inFLG_MyFollow==False :
+			wQuery = "update tbl_favouser_data set " + \
+					"myfollow = False " + \
+					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
+					" and id = '" + str(inID) + "' ;"
+		
+		#############################
+		# フォロワー なし→あり
+		elif inFLG_Follower==True :
+			wQuery = "update tbl_favouser_data set " + \
+					"follower = True, " + \
+					"follower_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
+					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
+					" and id = '" + str(inID) + "' ;"
+		
+		#############################
+		# フォロワー あり→なし
 		else :
 			wQuery = "update tbl_favouser_data set " + \
-					"follower = " + str(inFLG_Follower) + ", " + \
-					"follower_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
+					"follower = False " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
 					" and id = '" + str(inID) + "' ;"
 		

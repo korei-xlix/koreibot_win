@@ -25,19 +25,12 @@ class gVal() :
 
 	STR_SystemInfo = {
 		"Client_Name"	: "これーぼっと",
-###		"ProjectName"	: "",
 		"github"		: "",
 		"Admin"			: "",
-###		"TwitterURL"	: "",
-###		"Update"		: "",
-###		"Version"		: "",
-###		
 		"PythonVer"		: 0,
 		"HostName"		: "",
 		
 		"TimeDate"		: None,
-###		"NextDay"		: False,
-###		"Weekend"		: False,
 		"RateTimeDate"	: None,
 			# 前回実行日時
 		"RateLockTD"	: None,
@@ -64,7 +57,6 @@ class gVal() :
 		
 		"ListName"	: "",			#リスト通知 リスト名
 		"ListDate"	: None,			#リスト通知日時
-###		"LFavoName"	: "",			#リストいいね リスト名
 		"LFavoDate"	: None,			#リストいいね日時
 		
 		"ArListName": "",			#自動リムーブ先リスト
@@ -115,13 +107,9 @@ class gVal() :
 # Timeline調整数
 	DEF_STR_TLNUM = {
 														# いいね管理
-###		"forFavoRemSec"		: 172800,					#   いいね解除時間 2日 (60x60x24)x2
 		"favoTweetLine"		: 40,						#   いいね時 対象ユーザツイート取得ライン数
-###		"favoCancelNum"		: 20,						#   いいね時 連続スキップでキャンセル
 		"favoCancelNum"		: 8,						#   いいね時 連続スキップでキャンセル
-###		"autoRepFavoSec"	: 172800,					#   自動おかえしいいね時間 2日 (60x60x24)x2
 		"autoRepFavo"		: True,						#   自動おかえしいいね True=有効
-###		"getUserTimeLine"	: 40,						#   相手ユーザ取得タイムライン数
 		"getUserTimeLine"	: 80,						#   相手ユーザ取得タイムライン数
 		
 														# 周回待ち要
@@ -133,23 +121,16 @@ class gVal() :
 														# リアクションチェック
 		"reactionTweetLine"			: 40,				#   リアクションチェック時の自ツイート取得ライン数
 		"reactionTweetLine_Short"	: 8,				#   リアクションチェック時の自ツイート取得ライン数(ショート時)
-###		"forReactionSec"			: 10800,			#   リアクションまでの期間   3時間  60x60x3
 		"forReactionSec"			: 3600,				#   リアクションまでの期間   1時間  60x60
 		"forReactionTweetSec"		: 172800,			#   リアクションに反応するツイート期間 2日 (60x60x24)x2
 		
 														# リストいいね
-		"forListFavoSec"			: 86400,			#   リストいいねまでの期間   1日  60x60x24
-###		"forListFavoMyFollowSec"	: 86400,			#   リストいいね フォロー者への期間   1日  (60x60x24)x1
-###		"forListFavoNoFollowSec"	: 345600,			#   リストいいね フォロー外への期間   4日  (60x60x24)x4
-###		"forListFavoMyFollowSec"	: 14400,			#   リストいいね フォロー者への期間   4時間  60x60x4
-###		"forListFavoNoFollowSec"	: 259200,			#   リストいいね フォロー外への期間   3日  (60x60x24)x3
+		"forListFavoSec"				: 86400,		#   リストいいねまでの期間   1日  60x60x24
 		"forListFavoAutoFavoTweetSec"	: 28800,		#   リストいいね 自動いいね ツイート期間外   8時間  60x60x8
 		"forListFavoReturnFavoSec"		: 3600,			#   リストいいね お返しいいねへの期間   1時間  60x60x1
 		"forListFavoMyFollowFavoSec"	: 14400,		#   リストいいね フォロー者いいねへの期間       4時間  60x60x4
-###		"forListFavoFollowerFavoSec"	: 259200,		#   リストいいね フォロワー支援いいねへの期間   3日  (60x60x24)x3
 		"forListFavoFollowerFavoSec"	: 432000,		#   リストいいね フォロワー支援いいねへの期間   5日  (60x60x24)x5
 		
-###		"forListFavoOverTweetSec"		: 259200,		#   リストいいね 外部いいね ツイート期間外   3日  (60x60x24)x3
 		"forListFavoOverTweetSec"		: 28800,		#   リストいいね 外部いいね ツイート期間外   8時間  60x60x8
 		"forListFavoOverMyFollowSec"	: 14400,		#   リストいいね 外部いいね フォロー者への期間   4時間  60x60x4
 		"forListFavoOverNoFollowSec"	: 432000,		#   リストいいね 外部いいね フォロー外への期間   5日  (60x60x24)x5
@@ -160,23 +141,24 @@ class gVal() :
 		"forCheckAutoRemoveSec"		: 86400,			#   自動リムーブチェック期間 1日 (60x60x24)x1
 		"forOverListFavoCount"		: 3,				#   外部いいね数(1ユーザ)
 		
+		"forAutoUserRemoveSec"		: 2592000,			# ユーザ削除までの期間  30日 (60x60x24)x30
+		
 														# いいね送信
-###		"favoSendsSec"		: 10,						# いいね送信までの期間      7日 (60x60x24)x7
 		"favoSendsSec"		: 604800,					# いいね送信までの期間      7日 (60x60x24)x7
 		"favoDataDelSec"	: 7776000,					# いいね情報削除までの期間  90日 (60x60x24)x90
-###		"favoSendsCnt"		: 1,						# いいね送信対象 いいね回数
-###		"favoSendsCnt"		: 2,						# いいね送信対象 いいね回数
 		"favoSendsCnt"		: 3,						# いいね送信対象 いいね回数
 		
 														# ユーザ管理
-		"forGetUserSec"		: 600,						#   ユーザ取得間隔  10分  60x10
+		"forGetUserSec"			: 600,					#   ユーザ取得間隔  10分  60x10
 		"forFollowerConfirmSec"	: 86400,				#   フォロワー状態の更新 期間   1日  (60x60x24)x1
 		
 														# キーワードいいね
-###		"KeywordTweetLen"		: 40,					#   キーワードいいねツイート取得数
-		"KeywordTweetLen"		: 80,					#   キーワードいいねツイート取得数
-		"forKeywordTweetSec"	: 28800,				#   キーワードいいね いいね期間   8時間  60x60x8
+		"KeywordTweetLen"			: 80,				#   キーワードいいねツイート取得数
+		"forKeywordTweetSec"		: 28800,			#   キーワードいいね いいね期間   8時間  60x60x8
 		"forKeywordObjectTweetSec"	: 86400,			#   キーワードいいね 対象いいね期間   1日  (60x60x24)x1
+		
+		"sendListUsersCaution"		: True,				# リスト登録チェック時警告を送信するか  True=送信
+#		"sendListUsersCaution"		: False,			# リスト登録チェック時警告を送信するか  True=送信
 		
 		"resetAPISec"		: 900,						# APIリセット周期 15分 60x15
 		"forLockLimSec"		: 120,						# 排他保持時間     2分 60x2 
@@ -186,20 +168,8 @@ class gVal() :
 	}
 
 #############################
-# リアクション禁止
-###	DEF_STR_NOT_REACTION = [
-###		"korei_xlix",
-###		"korei_dev",
-###		"korei_comm",
-###		"korei_send",
-###		"galaxy_fleet"
-###	]
-
-#############################
 # ファイルパス
 #   ファイルは語尾なし、フォルダは_path
-###	DEF_DATAPATH = "data/"
-###
 	DEF_STR_FILE = {
 									# readme.md ファイルパス
 		"Readme"				: "readme.md",
@@ -240,8 +210,7 @@ class gVal() :
 	DEF_LOCK_WAITCNT  = 30									#  待ち時間: DEF_LOCK_LOOPTIME * DEF_LOCK_WAITCNT
 	DEF_TEST_MODE     = "bottest"							#テストモード(引数文字)
 	DEF_DATA_BOUNDARY = "|,|"
-
-###	DEF_SCREEN_NAME_SIZE = 24
+	
 	DEF_SCREEN_NAME_SIZE = 16
 
 
@@ -256,10 +225,8 @@ class gVal() :
 	
 	ARR_ExeWord = {}										# 除外文字データ
 	ARR_ExeWordKeys = []
-###	ARR_ExeWordKey = []
 	ARR_ListFavo = {}										# リストいいね指定
 	ARR_NotReactionUser = {}								# リアクション禁止ユーザ
-
 	ARR_SearchData = {}										# 検索データ
 	ARR_CautionUserID = []									# 警告済ユーザID
 

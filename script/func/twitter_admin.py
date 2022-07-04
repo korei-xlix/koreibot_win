@@ -708,7 +708,7 @@ class CLS_TwitterAdmin():
 		# コンソールを表示
 		wStr = "禁止ユーザ " + str( inName ) + " を削除します"
 		CLS_OSIF.sPrn( wStr )
-		wWord = CLS_OSIF.sInp( "  \\y=YES / other=中止=> " )
+		wWord = CLS_OSIF.sInp( "  y=YES / other=中止=> " )
 		if wWord!="y" :
 			wRes['Result'] = True
 			return wRes
@@ -735,7 +735,7 @@ class CLS_TwitterAdmin():
 #####################################################
 # トレンドタグ設定
 #####################################################
-	def SetListName(self):
+	def SetTrendTag(self):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -996,6 +996,111 @@ class CLS_TwitterAdmin():
 			
 			wStr = "●設定を解除しました" + '\n'
 			CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# ユーザ自動削除
+#####################################################
+	def RunAutoUserRemove(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "RunAutoUserRemove"
+		
+		#############################
+		# 入力画面表示
+		wStr = "活動力が低いフォロワーを自動削除します。"
+		CLS_OSIF.sPrn( wStr )
+		wWord = CLS_OSIF.sInp( "  y=YES / other=中止=> " )
+		if wWord!="y" :
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# フォロー情報 取得
+		wFollowerData = gVal.OBJ_Tw_IF.GetFollowerData()
+		
+		#############################
+		# 以下に該当するユーザをブロックリムーブしていく
+		# ・片フォロワー
+		# ・ツイート数=0 か 最後のツイートが規定期間外
+		wKeylist = list( wFollowerData.keys() )
+		for wID in wKeylist :
+			wUserID = str(wID)
+			
+			### フォロー者はスキップ
+			if wFollowerData[wID]['myfollow']==True :
+				continue
+			### フォロワーでない場合はスキップ
+			if wFollowerData[wID]['follower']==False :
+				continue
+			
+			### ツイート数0超の場合
+			###   規定期間チェックする
+			### ツイート数0の場合
+			###   対象確定
+			if wFollowerData[wID]['statuses_count']>0 :
+				
+				# タイムラインを取得する
+				#   最初の1ツイートの日時を最新の活動日とする
+				wTweetRes = gVal.OBJ_Tw_IF.GetTL( inTLmode="user", inFLG_Rep=False, inFLG_Rts=True,
+					 inID=wID, inCount=1 )
+				if wTweetRes['Result']!=True :
+					wRes['Reason'] = "Twitter Error: GetTL"
+					gVal.OBJ_L.Log( "B", wRes )
+					continue
+				
+				###日時の変換をして、設定
+				wTime = CLS_OSIF.sGetTimeformat_Twitter( wTweetRes['Responce'][0]['created_at'] )
+				if wTime['Result']!=True :
+					wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wTweetRes['Responce'][0]['created_at'])
+					gVal.OBJ_L.Log( "B", wRes )
+					continue
+				
+				wGetLag = CLS_OSIF.sTimeLag( str( wTime['TimeDate'] ), inThreshold=gVal.DEF_STR_TLNUM['forAutoUserRemoveSec'] )
+				if wGetLag['Result']!=True :
+					wRes['Reason'] = "sTimeLag failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					continue
+				if wGetLag['Beyond']==False :
+					### 規定内 =許容内の日数なのでスキップ
+					continue
+			
+			# ※リムーブ確定
+			#############################
+			# ブロック→リムーブ実行
+			wTweetRes = gVal.OBJ_Tw_IF.BlockRemove( wUserID )
+			if wTweetRes['Result']!=True :
+				wRes['Reason'] = "Twitter API Error: BlockRemove" + wTweetRes['Reason']
+				gVal.OBJ_L.Log( "B", wRes )
+				continue
+			
+			#############################
+			# ログに記録
+			wStr = "▼自動削除"
+			wRes['Reason'] = wStr + ": " + wFollowerData[wID]['screen_name']
+			gVal.OBJ_L.Log( "U", wRes )
+			
+			wRes['Responce'] = True		#自動リムーブ実行
+			#############################
+			# DBに反映
+			wSubRes = gVal.OBJ_DB_IF.UpdateFavoDataFollower( wUserID, inFLG_MyFollow=False )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "UpdateFavoDataFollower is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				continue
+		
+		wStr = "〇自動削除が完了しました" + '\n'
+		CLS_OSIF.sPrn( wStr )
 		
 		#############################
 		# 完了

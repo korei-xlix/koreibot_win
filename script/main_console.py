@@ -368,8 +368,15 @@ class CLS_Main_Console() :
 		wRes['Func']  = "sRunSystemConfig"
 		
 		#############################
+		# ユーザ自動削除
+		if inCommand=="\\rm" :
+			cls.OBJ_TwitterMain.RunAutoUserRemove()
+		
+	#####################################################
+		#############################
 		# トレンドタグ設定
-		if inCommand=="\\t" :
+###		if inCommand=="\\t" :
+		elif inCommand=="\\t" :
 			cls.OBJ_TwitterMain.SetTrendTag()
 		
 		#############################

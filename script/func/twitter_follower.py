@@ -542,8 +542,8 @@ class CLS_TwitterFollower():
 #####################################################
 # 自動リムーブ
 #####################################################
-###	def AutoRemove( self, inUser ):
-	def AutoRemove( self, inUser, inFLG_Force=False ):
+	def AutoRemove( self, inUser ):
+###	def AutoRemove( self, inUser, inFLG_Force=False ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -553,114 +553,207 @@ class CLS_TwitterFollower():
 		
 		wRes['Responce'] = False	#自動リムーブ実行有無
 		
+		wUserID = str(inUser['id'])
+		
 		#############################
 		# 自動リムーブが無効ならここで終わる
 		if gVal.STR_UserInfo['ArListName']=="" :
 			wRes['Result'] = True
 			return wRes
 		
-		wUserID = str(inUser['id'])
-		#############################
-		# フォロー者か
-		if gVal.OBJ_Tw_IF.CheckMyFollow( wUserID )==False :
-			### フォロー者じゃなければ終了
-			wRes['Result'] = True
-			return wRes
+###		wUserID = str(inUser['id'])
+###		#############################
+###		# フォロー者か
+###		if gVal.OBJ_Tw_IF.CheckMyFollow( wUserID )==False :
+###			### フォロー者じゃなければ終了
+###			wRes['Result'] = True
+###			return wRes
+###		
+###		###強制じゃなければ判定を実施
+###		if inFLG_Force==False :
+###			#############################
+###			# DBからいいね情報を取得する(1個)
+###			#   新規の場合、DB登録だけで終わる
+###			wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
+###			if wSubRes['Result']!=True :
+###				###失敗
+###				wRes['Reason'] = "GetFavoDataOne is failed"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			### DB未登録
+###			if wSubRes['Responce']==None :
+###				###DBに登録する
+###				wSetRes = gVal.OBJ_DB_IF.InsertFavoData( inUser )
+###				if wSetRes['Result']!=True :
+###					###失敗
+###					wRes['Reason'] = "InsertFavoData is failed"
+###					gVal.OBJ_L.Log( "B", wRes )
+###					return wRes
+###				
+###				wStr = "〇DBに登録: user=" + inUser['screen_name'] + '\n'
+###				CLS_OSIF.sPrn( wStr )
+###				wRes['Result'] = True
+###				return wRes
+###			
+###			wARR_DBData = wSubRes['Responce']
+###			
+###			#############################
+###			# 期間比較値
+###			# いいねありの場合、
+###			#   =いいね日時
+###			# いいねなしの場合、
+###			#   =登録日時
+###			if str(wARR_DBData['favo_date'])!=gVal.OBJ_DB_IF.DEF_TIMEDATE :
+###				### いいねあり= いいね日時
+###				wCompTimeDate = str(wARR_DBData['favo_date'])
+###			else:
+###				### いいねなし= 登録日時
+###				wCompTimeDate = str(wARR_DBData['regdate'])
+###			
+###			#############################
+###			# 自動リムーブ期間か
+###			wGetLag = CLS_OSIF.sTimeLag( wCompTimeDate, inThreshold=gVal.DEF_STR_TLNUM['forListFavoAutoRemoveSec'] )
+###			if wGetLag['Result']!=True :
+###				wRes['Reason'] = "sTimeLag failed(1)"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			if wGetLag['Beyond']==False :
+###				###期間内= 自動リムーブ対象外
+###				wRes['Result'] = True
+###				return wRes
+###		
+###		#############################
+###		# 自動リムーブリストに登録
+###		# (他のリスト登録は全削除)
+###		wTweetRes = gVal.OBJ_Tw_IF.AutoRemove_AddUser( inUser )
+###		if wTweetRes['Result']!=True :
+###			wRes['Reason'] = "AutoRemove_AddUser is failed"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		if wTweetRes['Responce']!=True :
+###			##自動リムーブ対象外
+###			wStr = "●自動リムーブ中止(設定対象外): user=" + inUser['screen_name'] + '\n'
+###			CLS_OSIF.sPrn( wStr )
+###			
+###			wRes['Result'] = True
+###			return wRes
+###		
+###		# ※リムーブ確定
+###		#############################
+###		# リムーブ実行
+###		wTweetRes = gVal.OBJ_Tw_IF.Remove( wUserID )
+###		if wTweetRes['Result']!=True :
+###			wRes['Reason'] = "Twitter API Error: Remove" + wTweetRes['Reason']
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		#############################
+###		# ログに記録
+###		wStr = "▼自動リムーブ"
+###		wRes['Reason'] = wStr + ": " + inUser['screen_name']
+###		gVal.OBJ_L.Log( "U", wRes )
 		
-		###強制じゃなければ判定を実施
-		if inFLG_Force==False :
-			#############################
-			# DBからいいね情報を取得する(1個)
-			#   新規の場合、DB登録だけで終わる
-			wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
-			if wSubRes['Result']!=True :
-				###失敗
-				wRes['Reason'] = "GetFavoDataOne is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			### DB未登録
-			if wSubRes['Responce']==None :
-				###DBに登録する
-				wSetRes = gVal.OBJ_DB_IF.InsertFavoData( inUser )
-				if wSetRes['Result']!=True :
-					###失敗
-					wRes['Reason'] = "InsertFavoData is failed"
+###		wFLG_MyFollow = None
+###		wFLG_Follower = None
+		
+		wARR_DBData = None
+		#############################
+		# DBからいいね情報を取得する(1個)
+		#   新規の場合、DB登録だけで終わる
+		wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "GetFavoDataOne is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		### DB未登録
+		if wSubRes['Responce']==None :
+			wStr = "▽DB未登録ユーザに対する自動リムーブ検出"
+			wRes['Reason'] = wStr + ": " + inUser['screen_name']
+			gVal.OBJ_L.Log( "X", wRes )
+		else:
+			wARR_DBData = wSubRes['Responce']
+		
+		wFLG_Remove = False
+		#############################
+		# フォロー者の場合
+		#   Twitterからリムーブする
+		if gVal.OBJ_Tw_IF.CheckMyFollow( wUserID )==True :
+			if wARR_DBData!=None :
+				#############################
+				# 期間比較値
+				# いいねありの場合、
+				#   =いいね日時
+				# いいねなしの場合、
+				#   =登録日時
+				if str(wARR_DBData['favo_date'])!=gVal.OBJ_DB_IF.DEF_TIMEDATE :
+					### いいねあり= いいね日時
+					wCompTimeDate = str(wARR_DBData['favo_date'])
+				else:
+					### いいねなし= 登録日時
+					wCompTimeDate = str(wARR_DBData['regdate'])
+				
+				#############################
+				# 自動リムーブ期間か
+				wGetLag = CLS_OSIF.sTimeLag( wCompTimeDate, inThreshold=gVal.DEF_STR_TLNUM['forListFavoAutoRemoveSec'] )
+				if wGetLag['Result']!=True :
+					wRes['Reason'] = "sTimeLag failed(1)"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				if wGetLag['Beyond']==True :
+					###期間外= 自動リムーブ対象
+					wFLG_Remove = True
+			else:
+				wFLG_Remove = True
+			
+			if wFLG_Remove==True :
+				#############################
+				# リムーブ実行
+				wTweetRes = gVal.OBJ_Tw_IF.Remove( wUserID )
+				if wTweetRes['Result']!=True :
+					wRes['Reason'] = "Twitter API Error: Remove" + wTweetRes['Reason']
 					gVal.OBJ_L.Log( "B", wRes )
 					return wRes
 				
-				wStr = "〇DBに登録: user=" + inUser['screen_name'] + '\n'
-				CLS_OSIF.sPrn( wStr )
-				wRes['Result'] = True
-				return wRes
-			
-			wARR_DBData = wSubRes['Responce']
-			
+				#############################
+				# ログに記録
+				wStr = "▼自動リムーブ"
+				wRes['Reason'] = wStr + ": " + inUser['screen_name']
+				gVal.OBJ_L.Log( "U", wRes )
+				
+				#############################
+				# DBに反映
+				wSubRes = gVal.OBJ_DB_IF.UpdateFavoDataFollower( wUserID, inFLG_MyFollow=False )
+				if wSubRes['Result']!=True :
+					###失敗
+					wRes['Reason'] = "UpdateFavoDataFollower is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				
+				wRes['Responce'] = True		#自動リムーブ実行
+		
+		wFLG_ListRemove_Only = False
+		#############################
+		# 自動リムーブしていれば
+		#   リスト解除→自動リムーブリストへ
+		# 自動リムーブしていなければ
+		#   リスト解除のみ
+		if wFLG_Remove==False :
+			wFLG_ListRemove_Only = True
+		
+		#############################
+		# フォロワーじゃなければ
+		# リスト解除
+		if wFLG_Remove==True or \
+		   gVal.OBJ_Tw_IF.CheckFollower( wUserID )==False :
 			#############################
-			# 期間比較値
-			# いいねありの場合、
-			#   =いいね日時
-			# いいねなしの場合、
-			#   =登録日時
-			if str(wARR_DBData['favo_date'])!=gVal.OBJ_DB_IF.DEF_TIMEDATE :
-				### いいねあり= いいね日時
-				wCompTimeDate = str(wARR_DBData['favo_date'])
-			else:
-				### いいねなし= 登録日時
-				wCompTimeDate = str(wARR_DBData['regdate'])
-			
-			#############################
-			# 自動リムーブ期間か
-			wGetLag = CLS_OSIF.sTimeLag( wCompTimeDate, inThreshold=gVal.DEF_STR_TLNUM['forListFavoAutoRemoveSec'] )
-			if wGetLag['Result']!=True :
-				wRes['Reason'] = "sTimeLag failed(1)"
+			# 自動リムーブリストに登録
+			# (他のリスト登録は全削除)
+			wTweetRes = gVal.OBJ_Tw_IF.AutoRemove_AddUser( inUser, wFLG_ListRemove_Only )
+			if wTweetRes['Result']!=True :
+				wRes['Reason'] = "AutoRemove_AddUser is failed"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
-			if wGetLag['Beyond']==False :
-				###期間内= 自動リムーブ対象外
-				wRes['Result'] = True
-				return wRes
-		
-###		# ※リムーブ確定
-		#############################
-		# 自動リムーブリストに登録
-		# (他のリスト登録は全削除)
-		wTweetRes = gVal.OBJ_Tw_IF.AutoRemove_AddUser( inUser )
-		if wTweetRes['Result']!=True :
-			wRes['Reason'] = "AutoRemove_AddUser is failed"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		if wTweetRes['Responce']!=True :
-			##自動リムーブ対象外
-			wStr = "●自動リムーブ中止(設定対象外): user=" + inUser['screen_name'] + '\n'
-			CLS_OSIF.sPrn( wStr )
-			
-			wRes['Result'] = True
-			return wRes
-		
-		# ※リムーブ確定
-		#############################
-		# リムーブ実行
-		wTweetRes = gVal.OBJ_Tw_IF.Remove( wUserID )
-		if wTweetRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error: Remove" + wTweetRes['Reason']
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# ログに記録
-		wStr = "▼自動リムーブ"
-		wRes['Reason'] = wStr + ": " + inUser['screen_name']
-		gVal.OBJ_L.Log( "U", wRes )
-		
-		wRes['Responce'] = True		#自動リムーブ実行
-		#############################
-		# DBに反映
-		wSubRes = gVal.OBJ_DB_IF.UpdateFavoDataFollower( wUserID, inFLG_MyFollow=False )
-		if wSubRes['Result']!=True :
-			###失敗
-			wRes['Reason'] = "UpdateFavoDataFollower is failed"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
 		
 		#############################
 		# 正常終了
