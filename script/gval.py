@@ -129,6 +129,8 @@ class gVal() :
 		"forListFavoAutoFavoTweetSec"	: 28800,		#   リストいいね 自動いいね ツイート期間外   8時間  60x60x8
 		"forListFavoReturnFavoSec"		: 3600,			#   リストいいね お返しいいねへの期間   1時間  60x60x1
 		"forListFavoMyFollowFavoSec"	: 14400,		#   リストいいね フォロー者いいねへの期間       4時間  60x60x4
+		
+		"forListFavoFollowerSec"		: 86400,		#   フォロワー支援いいねまでの期間   1日  60x60x24
 		"forListFavoFollowerFavoSec"	: 432000,		#   リストいいね フォロワー支援いいねへの期間   5日  (60x60x24)x5
 		
 		"forListFavoOverTweetSec"		: 28800,		#   リストいいね 外部いいね ツイート期間外   8時間  60x60x8

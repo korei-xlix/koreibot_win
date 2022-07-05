@@ -609,6 +609,24 @@ class CLS_TwitterFavo():
 		wRes['Class'] = "CLS_TwitterFavo"
 		wRes['Func']  = "FollowerFavo"
 		
+		#############################
+		# 取得可能時間か？
+		if self.OBJ_Parent.CHR_RunFollowerFavoDate!=None :
+			### 範囲時間内のツイートか
+			wGetLag = CLS_OSIF.sTimeLag( str( self.OBJ_Parent.CHR_RunFollowerFavoDate ), inThreshold=gVal.DEF_STR_TLNUM['forListFavoFollowerSec'] )
+			if wGetLag['Result']!=True :
+				wRes['Reason'] = "sTimeLag failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if wGetLag['Beyond']==False :
+				### 規定以内は除外
+				wStr = "●フォロワー支援いいね期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
+				CLS_OSIF.sPrn( wStr )
+				wRes['Result'] = True
+				return wRes
+		
+		self.OBJ_Parent.CHR_RunFollowerFavoDate = None	#一度クリアしておく(異常時再取得するため)
+		
 		wResult = {
 			"UserNum"	: 0,
 			"RunFavo"	: 0
@@ -616,7 +634,7 @@ class CLS_TwitterFavo():
 		#############################
 		# 取得開始の表示
 		if inFLG_FirstDisp==True :
-			wResDisp = CLS_MyDisp.sViewHeaderDisp( "フォロワーいいね実行中" )
+			wResDisp = CLS_MyDisp.sViewHeaderDisp( "フォロワー支援いいね実行中" )
 		
 		#############################
 		# フォロー情報取得
@@ -684,6 +702,10 @@ class CLS_TwitterFavo():
 		wStr = wStr + "支援 対象ユーザ数  : " + str( wResult['UserNum'] )+ '\n'
 		wStr = wStr + "支援 いいね実施数  : " + str( wResult['RunFavo'] )+ '\n'
 		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# 現時刻をメモる
+		self.OBJ_Parent.CHR_RunFollowerFavoDate = str(gVal.STR_SystemInfo['TimeDate'])
 		
 		#############################
 		# 正常終了

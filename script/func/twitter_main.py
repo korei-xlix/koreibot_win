@@ -25,6 +25,7 @@ class CLS_TwitterMain():
 
 	CHR_GetReactionDate = None
 	CHR_GetListFavoDate = None
+	CHR_RunFollowerFavoDate = None
 	ARR_ReacrionUserID = []
 ###	ARR_FavoUserID = []
 
