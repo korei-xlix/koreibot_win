@@ -253,8 +253,9 @@ class CLS_TwitterAdmin():
 		#############################
 		# 正常終了
 ###		CLS_OSIF.sPrn( "リムーブが正常終了しました" )
-		wRes['Reason'] = "●リムーブ者: " + self.STR_UserAdminInfo['screen_name']
-		gVal.OBJ_L.Log( "U", wRes )
+###		wRes['Reason'] = "●リムーブ者: " + self.STR_UserAdminInfo['screen_name']
+###		gVal.OBJ_L.Log( "U", wRes )
+		gVal.OBJ_L.Log( "R", wRes, "●リムーブ者: " + self.STR_UserAdminInfo['screen_name'] )
 		
 		wRes['Result'] = True
 		return wRes
@@ -310,8 +311,9 @@ class CLS_TwitterAdmin():
 		#############################
 		# 正常終了
 ###		CLS_OSIF.sPrn( "リムーブが正常終了しました" )
-		wRes['Reason'] = "●関係リセットによるリムーブ: " + self.STR_UserAdminInfo['screen_name']
-		gVal.OBJ_L.Log( "U", wRes )
+###		wRes['Reason'] = "●関係リセットによるリムーブ: " + self.STR_UserAdminInfo['screen_name']
+###		gVal.OBJ_L.Log( "U", wRes )
+		gVal.OBJ_L.Log( "R", wRes, "●関係リセットによるリムーブ: " + self.STR_UserAdminInfo['screen_name'] )
 		
 		wRes['Result'] = True
 		return wRes
@@ -1085,9 +1087,10 @@ class CLS_TwitterAdmin():
 			
 			#############################
 			# ログに記録
-			wStr = "▼自動削除"
-			wRes['Reason'] = wStr + ": " + wFollowerData[wID]['screen_name']
-			gVal.OBJ_L.Log( "U", wRes )
+###			wStr = "▼自動削除"
+###			wRes['Reason'] = wStr + ": " + wFollowerData[wID]['screen_name']
+###			gVal.OBJ_L.Log( "U", wRes )
+			gVal.OBJ_L.Log( "R", wRes, "●自動削除によるリムーブ: " + wFollowerData[wID]['screen_name'] )
 			
 			wRes['Responce'] = True		#自動リムーブ実行
 			#############################

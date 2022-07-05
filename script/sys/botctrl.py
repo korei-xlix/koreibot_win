@@ -145,8 +145,9 @@ class CLS_BotCtrl():
 			gVal.OBJ_DB_IF.Close()
 			return
 		elif wLock['Responce']!=None :
-			wRes['Reason'] = "排他中"
-			gVal.OBJ_L.Log( "R", wRes )
+###			wRes['Reason'] = "排他中"
+###			gVal.OBJ_L.Log( "R", wRes )
+			gVal.OBJ_L.Log( "S", wRes, "排他中" )
 			
 			CLS_OSIF.sPrn( "処理待機中です。CTRL+Cで中止することもできます。" )
 			CLS_OSIF.sPrn( wLock['Reason'] + '\n' )
@@ -223,8 +224,9 @@ class CLS_BotCtrl():
 		   wChgDict[0]['favodate']==None :
 			wChgDict[0]['favodate'] = str(wTD['TimeDate'])
 			wResDB = gVal.OBJ_DB_IF.UpdateFavoDate( str(wTD['TimeDate']) )
-			wRes['Reason'] = "いいね日時を初期化しました"
-			gVal.OBJ_L.Log( "R", wRes )
+###			wRes['Reason'] = "いいね日時を初期化しました"
+###			gVal.OBJ_L.Log( "R", wRes )
+			gVal.OBJ_L.Log( "N", wRes, "いいね日時初期化" )
 		gVal.STR_UserInfo['FavoDate'] = wChgDict[0]['favodate']
 		
 		#############################
@@ -273,11 +275,13 @@ class CLS_BotCtrl():
 		#############################
 		# ログに記録する
 		if gVal.FLG_Test_Mode==False :
-			wRes['Reason'] = "実行"
+###			wRes['Reason'] = "実行"
+			gVal.OBJ_L.Log( "S", wRes, "bot実行" )
 		else:
 			# テストモード
-			wRes['Reason'] = "実行(テストモード)"
-		gVal.OBJ_L.Log( "R", wRes )
+###			wRes['Reason'] = "実行(テストモード)"
+			gVal.OBJ_L.Log( "S", wRes, "bot実行(テストモード)" )
+###		gVal.OBJ_L.Log( "R", wRes )
 		
 		#############################
 		# テスト終了
@@ -362,8 +366,9 @@ class CLS_BotCtrl():
 				cls.sUnlock()	#一度解除する
 				
 				#ログに記録する
-				wRes['Reason'] = "排他解除"
-				gVal.OBJ_L.Log( "R", wRes )
+###				wRes['Reason'] = "排他解除"
+###				gVal.OBJ_L.Log( "R", wRes )
+				gVal.OBJ_L.Log( "S", wRes, "排他解除" )
 				wRes['Reason'] = None
 			
 			else :

@@ -410,8 +410,9 @@ class CLS_TwitterMain():
 				wMyFollow = wFollowerData[wID]['myfollow']
 #				wStr = wStr + ": " + wFollowerData[wID]['screen_name']
 #				CLS_OSIF.sPrn( wStr + '\n' )
-				wRes['Reason'] = wStr + ": " + wFollowerData[wID]['screen_name']
-				gVal.OBJ_L.Log( "U", wRes )
+###				wRes['Reason'] = wStr + ": " + wFollowerData[wID]['screen_name']
+###				gVal.OBJ_L.Log( "U", wRes )
+				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'] )
 			
 			#############################
 			# フォロワー検出
@@ -428,8 +429,9 @@ class CLS_TwitterMain():
 				wFollower = wFollowerData[wID]['follower']
 #				wStr = wStr + ": " + wFollowerData[wID]['screen_name']
 #				CLS_OSIF.sPrn( wStr + '\n' )
-				wRes['Reason'] = wStr + ": " + wFollowerData[wID]['screen_name']
-				gVal.OBJ_L.Log( "U", wRes )
+###				wRes['Reason'] = wStr + ": " + wFollowerData[wID]['screen_name']
+###				gVal.OBJ_L.Log( "U", wRes )
+				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'] )
 			
 			#############################
 			# 変更ありの場合
@@ -499,8 +501,9 @@ class CLS_TwitterMain():
 				wStr = "●リムーブ者"
 				
 				wMyFollow = False
-				wRes['Reason'] = wStr + ": " + wARR_RateFavoDate[wID]['screen_name']
-				gVal.OBJ_L.Log( "U", wRes )
+###				wRes['Reason'] = wStr + ": " + wARR_RateFavoDate[wID]['screen_name']
+###				gVal.OBJ_L.Log( "U", wRes )
+				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wARR_RateFavoDate[wID]['screen_name'] )
 			
 			#############################
 			# リムーブされた
@@ -508,8 +511,9 @@ class CLS_TwitterMain():
 				wStr = "●リムーブされた"
 				
 				wFollower = False
-				wRes['Reason'] = wStr + ": " + wARR_RateFavoDate[wID]['screen_name']
-				gVal.OBJ_L.Log( "U", wRes )
+###				wRes['Reason'] = wStr + ": " + wARR_RateFavoDate[wID]['screen_name']
+###				gVal.OBJ_L.Log( "U", wRes )
+				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wARR_RateFavoDate[wID]['screen_name'] )
 			
 			#############################
 			# 変更ありの場合
@@ -522,7 +526,7 @@ class CLS_TwitterMain():
 					gVal.OBJ_L.Log( "B", wRes )
 					return wRes
 				
-				wSubRes = self.OBJ_TwitterFollower.AutoRemove( wID )
+				wSubRes = self.OBJ_TwitterFollower.AutoRemove( wARR_RateFavoDate[wID] )
 				if wSubRes['Result']!=True :
 					wRes['Reason'] = "AutoRemove is failed"
 					gVal.OBJ_L.Log( "B", wRes )
@@ -1294,8 +1298,9 @@ class CLS_TwitterMain():
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			
-			wTextReason = "●リスト通知クリア"
-			gVal.OBJ_L.Log( "T", wRes, wTextReason )
+###			wTextReason = "●リスト通知クリア"
+###			gVal.OBJ_L.Log( "T", wRes, wTextReason )
+			gVal.OBJ_L.Log( "S", wRes, "●リスト通知クリア" )
 		
 		wRes['Result'] = True
 		return wRes
@@ -1393,12 +1398,14 @@ class CLS_TwitterMain():
 							return wRes
 					else:
 						### ログに記録
-						wRes['Reason'] = "●リスト登録への警告: " + wListRes['Responce'][wID]['screen_name']
-						gVal.OBJ_L.Log( "X", wRes )
+###						wRes['Reason'] = "●リスト登録への警告: " + wListRes['Responce'][wID]['screen_name']
+###						gVal.OBJ_L.Log( "X", wRes )
+						gVal.OBJ_L.Log( "U", wRes, "●リスト登録への警告: " + wListRes['Responce'][wID]['screen_name'] )
 				else:
 					### ログに記録
-					wRes['Reason'] = "●リスト登録への警告(Twitter未送信): " + wListRes['Responce'][wID]['screen_name']
-					gVal.OBJ_L.Log( "X", wRes )
+###					wRes['Reason'] = "●リスト登録への警告(Twitter未送信): " + wListRes['Responce'][wID]['screen_name']
+###					gVal.OBJ_L.Log( "X", wRes )
+					gVal.OBJ_L.Log( "U", wRes, "●リスト登録への警告(Twitter未送信): " + wListRes['Responce'][wID]['screen_name'] )
 				
 				### IDを警告済に追加
 				gVal.ARR_CautionUserID.append( wID )
@@ -1509,12 +1516,14 @@ class CLS_TwitterMain():
 				if gVal.ARR_ExeWord[wExeWord]['report']==True :
 ###					CLS_OSIF.sPrn( wStr )
 					### 報告対象の表示と、ログに記録(テストログ)
-					wRes['Reason'] = "●報告対象の文字除外: id=" + inData['screen_name'] + " word=" + inWord
-					gVal.OBJ_L.Log( "X", wRes )
+###					wRes['Reason'] = "●報告対象の文字除外: id=" + inData['screen_name'] + " word=" + inWord
+###					gVal.OBJ_L.Log( "X", wRes )
+					gVal.OBJ_L.Log( "T", wRes, "●報告対象の文字除外: id=" + inData['screen_name'] + " word=" + inWord )
 				else:
 					### 報告対象の表示と、ログに記録(テストログ)
-					wRes['Reason'] = "  文字除外: id=" + inData['screen_name'] + " word=" + inWord
-					gVal.OBJ_L.Log( "T", wRes )
+###					wRes['Reason'] = "  文字除外: id=" + inData['screen_name'] + " word=" + inWord
+###					gVal.OBJ_L.Log( "T", wRes )
+					gVal.OBJ_L.Log( "T", wRes, "文字除外: id=" + inData['screen_name'] + " word=" + inWord )
 				
 				### 除外
 				wRes['Result'] = True
@@ -1546,8 +1555,9 @@ class CLS_TwitterMain():
 			if gVal.ARR_NotReactionUser[inName]['report']==True :
 				CLS_OSIF.sPrn( wStr )
 				### 報告対象の表示と、ログに記録(テストログ)
-				wRes['Reason'] = "●禁止ユーザ: user=" + inName + " reason=" + inReason
-				gVal.OBJ_L.Log( "X", wRes )
+###				wRes['Reason'] = "●禁止ユーザ: user=" + inName + " reason=" + inReason
+###				gVal.OBJ_L.Log( "X", wRes )
+				gVal.OBJ_L.Log( "U", wRes, "●禁止ユーザ: user=" + inName + " reason=" + inReason )
 			
 			### 除外
 			wRes['Result'] = True

@@ -404,8 +404,9 @@ class CLS_TwitterFollower():
 		# ログに記録
 ###		wRes['Reason'] = "Send FavoInfo at twitter"
 ###		gVal.OBJ_L.Log( "T", wRes )
-		wTextReason = "いいね情報送信(Twitter)"
-		gVal.OBJ_L.Log( "T", wRes, wTextReason )
+###		wTextReason = "いいね情報送信(Twitter)"
+###		gVal.OBJ_L.Log( "T", wRes, wTextReason )
+		gVal.OBJ_L.Log( "T", wRes, "いいね情報送信(Twitter)" )
 		
 		#############################
 		# 送信済 いいね情報を更新する
@@ -717,9 +718,10 @@ class CLS_TwitterFollower():
 				
 				#############################
 				# ログに記録
-				wStr = "▼自動リムーブ"
-				wRes['Reason'] = wStr + ": " + inUser['screen_name']
-				gVal.OBJ_L.Log( "U", wRes )
+###				wStr = "▼自動リムーブ"
+###				wRes['Reason'] = wStr + ": " + inUser['screen_name']
+###				gVal.OBJ_L.Log( "U", wRes )
+				gVal.OBJ_L.Log( "R", wRes, "●自動リムーブ: " + inUser['screen_name'] )
 				
 				#############################
 				# DBに反映

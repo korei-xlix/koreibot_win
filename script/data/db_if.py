@@ -403,8 +403,9 @@ class CLS_DB_IF() :
 ###			CLS_OSIF.sPrn( wStr )
 			#############################
 			# ログ記録
-			wRes['Reason'] = "Insert UserData : " + inUserData['Account']
-			gVal.OBJ_L.Log( "T", wRes )
+###			wRes['Reason'] = "Insert UserData : " + inUserData['Account']
+###			gVal.OBJ_L.Log( "T", wRes )
+			gVal.OBJ_L.Log( "N", wRes, "DB: Insert UserData : " + inUserData['Account'] )
 		
 		#############################
 		# 登録されていればキーを更新する
@@ -1661,8 +1662,9 @@ class CLS_DB_IF() :
 		
 		#############################
 		# ログ記録
-		wRes['Reason'] = "Insert FavoData : " + wScreenName
-		gVal.OBJ_L.Log( "T", wRes )
+###		wRes['Reason'] = "Insert FavoData : " + wScreenName
+###		gVal.OBJ_L.Log( "T", wRes )
+		gVal.OBJ_L.Log( "N", wRes, "DB: Insert FavoData: " + wScreenName )
 		
 		#############################
 		# 正常
@@ -2159,8 +2161,9 @@ class CLS_DB_IF() :
 ###			wRes['Reason'] = "Delete FavoData : " + wScreenName
 ###			wRes['Reason'] = "Delete FavoData : " + str( wARR_RateFavoData['screen_name'] )
 ###			gVal.OBJ_L.Log( "T", wRes )
-			wTextReason = "Delete FavoData : " + str( wARR_RateFavoData['screen_name'] )
-			gVal.OBJ_L.Log( "T", wRes, wTextReason )
+###			wTextReason = "Delete FavoData : " + str( wARR_RateFavoData['screen_name'] )
+###			gVal.OBJ_L.Log( "T", wRes, wTextReason )
+			gVal.OBJ_L.Log( "N", wRes, "DB: Delete FavoData: " + str( wARR_RateFavoData['screen_name'] ) )
 		
 		#############################
 		# 正常
@@ -2551,8 +2554,9 @@ class CLS_DB_IF() :
 		
 		#############################
 		# ログ記録
-		wRes['Reason'] = "Delete SearchWord : index=" + str(wIndex) + " word=" + str( wWord )
-		gVal.OBJ_L.Log( "T", wRes )
+###		wRes['Reason'] = "Delete SearchWord : index=" + str(wIndex) + " word=" + str( wWord )
+###		gVal.OBJ_L.Log( "T", wRes )
+		gVal.OBJ_L.Log( "N", wRes, "DB: Delete SearchWord: index=" + str(wIndex) + " word=" + str( wWord ) )
 		
 		wRes['Result'] = True
 		return wRes

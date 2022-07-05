@@ -491,7 +491,8 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# ログ
-		gVal.OBJ_L.Log( "R", wRes, "Twitter規制解除＆再接続" )
+###		gVal.OBJ_L.Log( "R", wRes, "Twitter規制解除＆再接続" )
+		gVal.OBJ_L.Log( "S", wRes, "Twitter規制解除＆再接続" )
 		
 		#############################
 		# 完了

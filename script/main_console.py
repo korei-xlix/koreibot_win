@@ -75,8 +75,9 @@ class CLS_Main_Console() :
 			if wCommand.find("\\q")>=0 or wCommand=="exit" :
 				#############################
 				# 終了
-				wRes['Reason'] = "コンソール停止"
-				gVal.OBJ_L.Log( "R", wRes )
+###				wRes['Reason'] = "コンソール停止"
+###				gVal.OBJ_L.Log( "R", wRes )
+				gVal.OBJ_L.Log( "S", wRes, "コンソール停止" )
 				CLS_BotCtrl.sBotEnd()	#bot停止
 				break
 				#############################
@@ -521,7 +522,8 @@ class CLS_Main_Console() :
 			wRes['Reason'] = "Set Traffic failed: reason" + CLS_OSIF.sCatErr( wResTraffic )
 			return wRes
 		if wResTraffic['Responce']==True :
-			CLS_OSIF.sPrn( "トラヒック情報が切り替わりました。" )
+###			CLS_OSIF.sPrn( "トラヒック情報が切り替わりました。" )
+			gVal.OBJ_L.Log( "S", wRes, "〇トラヒック情報切り替え" )
 			wRes['Responce'] = False	#画面クリアさせない
 			cls.FLG_MainDispClear = False	#画面クリアさせない
 		

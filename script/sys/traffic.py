@@ -130,8 +130,9 @@ class CLS_Traffic():
 		
 ###		wRes['Reason'] = "Insert Traffic: " + str(wARR_TD[0])
 ###		gVal.OBJ_L.Log( "T", wRes )
-		wTextReason = "Insert Traffic: " + str(wARR_TD[0])
-		gVal.OBJ_L.Log( "T", wRes, wTextReason )
+###		wTextReason = "Insert Traffic: " + str(wARR_TD[0])
+###		gVal.OBJ_L.Log( "T", wRes, wTextReason )
+		gVal.OBJ_L.Log( "N", wRes, "DB: Insert Traffic: " + str(wARR_TD[0]) )
 		
 		#############################
 		# 正常終了
