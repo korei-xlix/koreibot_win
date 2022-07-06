@@ -49,8 +49,6 @@ class CLS_TwitterKeyword():
 	def GetKeywordFavoInfo(self):
 		
 		self.STR_KeywordFavoInfo = {
-###			"str_keyword"		: None,			# キーワード
-###			
 			"max_searchnum"		: gVal.DEF_STR_TLNUM['KeywordTweetLen'],
 			"searchnum"			: 0,
 			"usernum"			: 0,
@@ -61,78 +59,6 @@ class CLS_TwitterKeyword():
 		return
 
 
-
-#####################################################
-# キーワードいいね
-#####################################################
-###	def KeywordFavo(self):
-###		#############################
-###		# 応答形式の取得
-###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-###		wRes = CLS_OSIF.sGet_Resp()
-###		wRes['Class'] = "CLS_TwitterAdmin"
-###		wRes['Func']  = "KeywordFavo"
-###		
-###		#############################
-###		# コンソールを表示
-###		while True :
-###			
-###			#############################
-###			# キーワードいいね メイン画面
-###			wWord = self.__view_KeywordFavo()
-###			
-###			if wWord=="\\q" :
-###				###終了
-###				break
-###			if wWord=="" :
-###				###未入力は再度入力
-###				continue
-###			
-###			wResSearch = self.__run_KeywordFavo( wWord )
-###			if wResSearch['Result']!=True :
-###				break
-###		
-###		wRes['Result'] = True
-###		return wRes
-###
-###	#####################################################
-###	# キーワードいいね 画面表示
-###	#####################################################
-###	def __view_KeywordFavo(self):
-###		wResDisp = CLS_MyDisp.sViewDisp( inDisp="KeywordConsole", inIndex=-1, inData=self.STR_KeywordFavoInfo )
-###		if wResDisp['Result']==False :
-###			gVal.OBJ_L.Log( "D", wResDisp )
-###			return "\\q"	#失敗=強制終了
-###		
-###		wWord = CLS_OSIF.sInp( "コマンド？=> " )
-###		return wWord
-###
-###	#####################################################
-###	# キーワードいいね 実行
-###	#####################################################
-###	def __run_KeywordFavo( self, inWord ):
-###		#############################
-###		# 応答形式の取得
-###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-###		wRes = CLS_OSIF.sGet_Resp()
-###		wRes['Class'] = "CLS_TwitterKeyword"
-###		wRes['Func']  = "__run_KeywordFavo"
-###		
-###		#############################
-###		# コマンド：検索実行
-###		if inWord=="\\g" :
-###			wRes = self.RunKeywordSearchFavo()
-###			wRes['Result'] = True
-###		
-###		#############################
-###		# 文字列設定
-###		else :
-###			self.STR_KeywordFavoInfo['str_keyword'] = str( inWord )
-###			CLS_OSIF.sPrn( "文字列を設定しました" + '\n' )
-###			wRes['Result'] = True
-###		
-###		CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
-###		return wRes
 
 #####################################################
 # キーワードいいね
@@ -251,7 +177,6 @@ class CLS_TwitterKeyword():
 		# s: 検索ワード追加
 		elif inWord=="\\s" :
 			self.__set_KeywordFavo()
-###			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
 			wRes['Result'] = True
 			return wRes
 		
@@ -312,7 +237,6 @@ class CLS_TwitterKeyword():
 		# コマンドなし: 指定の番号のリストの設定変更をする
 		if wCom==None :
 			self.__valid_KeywordFavo( wGetIndex )
-###			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
 			wRes['Result'] = True
 			return wRes
 		
@@ -320,7 +244,6 @@ class CLS_TwitterKeyword():
 		# n: センシティブツイートを含める
 		elif wCom=="n" :
 			self.__sensitive_KeywordFavo( wGetIndex )
-###			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
 			wRes['Result'] = True
 			return wRes
 		
@@ -572,15 +495,6 @@ class CLS_TwitterKeyword():
 		wRes['Class'] = "CLS_TwitterKeyword"
 		wRes['Func']  = "RunKeywordSearchFavo"
 		
-###		#############################
-###		# 検索文字列が None ではない
-###		if self.STR_KeywordFavoInfo['str_keyword']==None or \
-###		   self.STR_KeywordFavoInfo['str_keyword']=="" :
-###			### ありえない？
-###			wRes['Reason'] = "str_keyword is None"
-###			gVal.OBJ_L.Log( "D", wRes )
-###			return wRes
-		
 		self.STR_KeywordFavoInfo['searchnum'] = 0
 		self.STR_KeywordFavoInfo['usernum']      = len( self.ARR_KeywordFavoUser )
 		self.STR_KeywordFavoInfo['now_usernum']  = 0
@@ -603,9 +517,6 @@ class CLS_TwitterKeyword():
 		
 		#############################
 		# 正常終了
-###		wStr = "------------------------------" + '\n'
-###		wStr = wStr + "検索ツイート数  : " + str( len(wTweetRes['Responce']) )+ '\n'
-###		wStr = wStr + "いいね実施数    : " + str( wFavoNum )+ '\n'
 		wStr = '\n' + "キーワードいいねが正常終了しました" + '\n'
 		CLS_OSIF.sPrn( wStr )
 		wRes['Result'] = True
@@ -620,18 +531,8 @@ class CLS_TwitterKeyword():
 		wRes['Class'] = "CLS_TwitterKeyword"
 		wRes['Func']  = "RunKeywordSearchFavo_single"
 		
-##		#############################
-##		# 無効なら終わる
-##		if gVal.ARR_SearchData[inIndex]['valid']!=True :
-##			wStr = '\n' + "検索が無効です" + '\n'
-##			CLS_OSIF.sPrn( wStr )
-##			wRes['Result'] = True
-##			return wRes
-		
-#		self.STR_KeywordFavoInfo['searchnum'] = 0
 		self.STR_KeywordFavoInfo['usernum']      = len( self.ARR_KeywordFavoUser )
 		self.STR_KeywordFavoInfo['now_usernum']  = 0
-#		self.STR_KeywordFavoInfo['favo_usernum'] = 0
 		
 		CLS_OSIF.sPrn( "抽出したツイートをいいねしていきます。しばらくお待ちください......" )
 		#############################
@@ -670,7 +571,6 @@ class CLS_TwitterKeyword():
 			return wRes
 		
 		### 抽出ツイート数
-###		self.STR_KeywordFavoInfo['searchnum'] = len( wTweetRes['Responce'] )
 		wHitCnt = len( wTweetRes['Responce'] )
 		
 		###ウェイト初期化
@@ -724,7 +624,6 @@ class CLS_TwitterKeyword():
 				CLS_OSIF.sPrn( wStr )
 				continue
 			### リプライは除外(ツイートの先頭が @文字=リプライ)
-###			if wTweet['text'].find("@")==0 :
 			if wTweet['text'].find("@")>=0 :
 				wStr = "●抽出除外(リプライ): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
 				CLS_OSIF.sPrn( wStr )
@@ -739,8 +638,6 @@ class CLS_TwitterKeyword():
 			
 			#############################
 			# 禁止ユーザは除外
-###			if wTweet['user']['screen_name'] in gVal.ARR_NotReactionUser :
-###				continue
 			wUserRes = self.OBJ_Parent.CheckExtUser( wTweet['user']['screen_name'], "検索実行中" )
 			if wUserRes['Result']!=True :
 				wRes['Reason'] = "CheckExtUser failed"
@@ -750,12 +647,6 @@ class CLS_TwitterKeyword():
 				### 禁止あり=除外
 				continue
 			
-###			#############################
-###			# フォロー者、フォロワーを除外
-###			if gVal.OBJ_Tw_IF.CheckMyFollow( wUserID)==True or \
-###			   gVal.OBJ_Tw_IF.CheckFollower( wUserID)==True :
-###				continue
-###			
 			### 範囲時間内のツイートか
 			wGetLag = CLS_OSIF.sTimeLag( str( wTweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forKeywordObjectTweetSec'] )
 			if wGetLag['Result']!=True :
@@ -810,8 +701,6 @@ class CLS_TwitterKeyword():
 			
 			#############################
 			# ログに記録
-###			wRes['Reason'] = "〇Run Favorite: user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
-###			gVal.OBJ_L.Log( "T", wRes )
 			wTextReason = "〇検索いいね実施: user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
 			gVal.OBJ_L.Log( "T", wRes, wTextReason )
 			
@@ -831,13 +720,6 @@ class CLS_TwitterKeyword():
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-###		#############################
-###		# 正常終了
-###		wStr = "------------------------------" + '\n'
-###		wStr = wStr + "検索ツイート数  : " + str( len(wTweetRes['Responce']) )+ '\n'
-###		wStr = wStr + "いいね実施数    : " + str( wFavoNum )+ '\n'
-###		wStr = wStr + '\n' + "キーワードいいねが正常終了しました" + '\n'
-###		CLS_OSIF.sPrn( wStr )
 		wRes['Result'] = True
 		return wRes
 

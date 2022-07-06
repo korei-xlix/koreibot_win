@@ -40,7 +40,6 @@ class CLS_TwitterFollower():
 #####################################################
 # リアクションチェック
 #####################################################
-###	def ReactionCheck(self):
 	def ReactionCheck( self, inFLG_Short=False ):
 		#############################
 		# 応答形式の取得
@@ -68,7 +67,6 @@ class CLS_TwitterFollower():
 		self.OBJ_Parent.CHR_GetReactionDate = None	#一度クリアしておく(異常時再取得するため)
 		#############################
 		# 取得開始の表示
-###		wResDisp = CLS_MyDisp.sViewHeaderDisp( "リアクションチェック中" )
 		if inFLG_Short==False :
 			wResDisp = CLS_MyDisp.sViewHeaderDisp( "リアクションチェック中（通常）" )
 			wCount = gVal.DEF_STR_TLNUM['reactionTweetLine']
@@ -78,8 +76,6 @@ class CLS_TwitterFollower():
 		
 		#############################
 		# 自分の直近のツイートを取得
-###		wTweetRes = gVal.OBJ_Tw_IF.GetTL( inTLmode="user", inFLG_Rep=False, inFLG_Rts=False,
-###			 inID=gVal.STR_UserInfo['id'], inCount=gVal.DEF_STR_TLNUM['reactionTweetLine'] )
 		wTweetRes = gVal.OBJ_Tw_IF.GetTL( inTLmode="user", inFLG_Rep=False, inFLG_Rts=False,
 			 inID=gVal.STR_UserInfo['id'], inCount=wCount )
 		if wTweetRes['Result']!=True :
@@ -134,7 +130,6 @@ class CLS_TwitterFollower():
 		###ウェイト初期化
 		self.OBJ_Parent.Wait_Init( inZanNum=len( wSubRes['Responce'] ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
 		
-###		wKeylist = list( wSubRes['Responce'] )
 		wKeylist = list( wSubRes['Responce'].keys() )
 		for wReplyID in wKeylist :
 			###ウェイトカウントダウン
@@ -221,7 +216,6 @@ class CLS_TwitterFollower():
 		if wGetLag['Beyond']==False :
 			###期間内
 			###  次へ
-###			wStr = "●いいね送信期間外 処理スキップ" + '\n'
 			wStr = "●いいね送信期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
 			CLS_OSIF.sPrn( wStr )
 			wRes['Result'] = True
@@ -282,7 +276,6 @@ class CLS_TwitterFollower():
 			wTrendTag = '\n' + "#" + gVal.STR_UserInfo['TrendTag']
 		
 		wFLG_Header = False
-###		wKeylist = list( wARR_RateFavoDate )
 		wKeylist = list( wARR_RateFavoDate.keys() )
 		for wID in wKeylist :
 			wID = str( wID )
@@ -294,9 +287,6 @@ class CLS_TwitterFollower():
 				wSendCnt += 1
 				#############################
 				# 1行設定
-###				wLine = "@" + wARR_RateFavoDate[wID]['screen_name'] + " : " + \
-###				        str(wARR_RateFavoDate[wID]['now_favo_cnt']) + \
-###				        "(" + str(wARR_RateFavoDate[wID]['favo_cnt']) + ")" + '\n'
 				wLine = wARR_RateFavoDate[wID]['screen_name'] + " : " + \
 				        str(wARR_RateFavoDate[wID]['now_favo_cnt']) + \
 				        "(" + str(wARR_RateFavoDate[wID]['favo_cnt']) + ")" + '\n'
@@ -356,7 +346,6 @@ class CLS_TwitterFollower():
 			for wTweet in wTweetRes['Responce'] :
 				wID = str(wTweet['id'])
 				
-###				if wTweet['text'].find( wTrendHeader )==0 :
 				if wTweet['text'].find( wTrendHeader_Pattern )==0 :
 					###日時の変換
 					wTime = CLS_OSIF.sGetTimeformat_Twitter( wTweet['created_at'] )
@@ -402,10 +391,6 @@ class CLS_TwitterFollower():
 		
 		#############################
 		# ログに記録
-###		wRes['Reason'] = "Send FavoInfo at twitter"
-###		gVal.OBJ_L.Log( "T", wRes )
-###		wTextReason = "いいね情報送信(Twitter)"
-###		gVal.OBJ_L.Log( "T", wRes, wTextReason )
 		gVal.OBJ_L.Log( "T", wRes, "いいね情報送信(Twitter)" )
 		
 		#############################
@@ -437,114 +422,9 @@ class CLS_TwitterFollower():
 
 
 #####################################################
-# フォロワー状態の更新 確認
-#####################################################
-###	def FollowerConfirm(self):
-###		#############################
-###		# 応答形式の取得
-###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-###		wRes = CLS_OSIF.sGet_Resp()
-###		wRes['Class'] = "CLS_TwitterFollower"
-###		wRes['Func']  = "FollowerConfirm"
-###		
-###		#############################
-###		# DBのいいね情報取得
-###		wQuery = "select id, screen_name, myfollow, myfollow_date, follower, follower_date " + \
-###					"from tbl_favouser_data where " + \
-###					"twitterid = '" + gVal.STR_UserInfo['Account'] + "' " + \
-###					";"
-###		
-###		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
-###		if wResDB['Result']!=True :
-###			wRes['Reason'] = "Run Query is failed"
-###			gVal.OBJ_L.Log( "B", wRes )
-###			return wRes
-###		
-###		#############################
-###		# 辞書型に整形
-###		wARR_DBData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
-###		
-###		#############################
-###		# 添え字をIDに差し替える
-###		wARR_DBData = gVal.OBJ_DB_IF.ChgDataID( wARR_DBData )
-###		
-###		#############################
-###		# データなし
-###		if len(wARR_DBData)==0 :
-###			wStr = "いいね情報がないため処理が継続できません。" + '\n'
-###			CLS_OSIF.sPrn( wStr )
-###			wRes['Result'] = True
-###			return wRes
-###		
-###		#############################
-###		# 画面クリア
-###		CLS_OSIF.sDispClr()
-###		
-###		#############################
-###		# ヘッダ表示
-###		wStr = "--------------------" + '\n'
-###		wStr = wStr + " フォロワー状態の更新 確認" + '\n'
-###		wStr = wStr + "--------------------" + '\n'
-###		CLS_OSIF.sPrn( wStr )
-###		
-###		wKeylist = list( wARR_DBData.keys() )
-###		for wID in wKeylist :
-###			wID = str(wID)
-###			
-###			wUpdate = False
-###			#############################
-###			# 規定以内のフォロー者か
-###			wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData[wID]['myfollow_date'] ), inThreshold=gVal.DEF_STR_TLNUM['forFollowerConfirmSec'] )
-###			if wGetLag['Result']!=True :
-###				wRes['Reason'] = "sTimeLag failed"
-###				gVal.OBJ_L.Log( "B", wRes )
-###				return wRes
-###			if wGetLag['Beyond']==False :
-###				### 規定内=更新あり
-###				if wARR_DBData[wID]['myfollow']==True :
-###					wStr = "○フォロー者　　: " + wARR_DBData[wID]['screen_name']
-###				else:
-###					if str( wARR_DBData[wID]['myfollow_date'] )!=gVal.OBJ_DB_IF.DEF_TIMEDATE :
-###						wStr = "●リムーブ者　　: " + wARR_DBData[wID]['screen_name']
-###				CLS_OSIF.sPrn( wStr )
-###				wUpdate = True
-###			
-###			#############################
-###			# 規定以内のフォロワーか
-###			wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData[wID]['follower_date'] ), inThreshold=gVal.DEF_STR_TLNUM['forFollowerConfirmSec'] )
-###			if wGetLag['Result']!=True :
-###				wRes['Reason'] = "sTimeLag failed"
-###				gVal.OBJ_L.Log( "B", wRes )
-###				return wRes
-###			if wGetLag['Beyond']==False :
-###				### 規定内=更新あり
-###				if wARR_DBData[wID]['follower']==True :
-###					wStr = "○フォロワー獲得: " + wARR_DBData[wID]['screen_name']
-###				else:
-###					if str( wARR_DBData[wID]['follower_date'] )!=gVal.OBJ_DB_IF.DEF_TIMEDATE :
-###						wStr = "●リムーブされた: " + wARR_DBData[wID]['screen_name']
-###				CLS_OSIF.sPrn( wStr )
-###				wUpdate = True
-###			
-###			### 更新があれば1行開ける
-###			if wUpdate==True :
-###				CLS_OSIF.sPrn( "" )
-###		
-###		#############################
-###		# 正常終了
-###		wRes['Result'] = True
-###		return wRes
-###
-###
-###
-
-
-
-#####################################################
 # 自動リムーブ
 #####################################################
 	def AutoRemove( self, inUser ):
-###	def AutoRemove( self, inUser, inFLG_Force=False ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -561,101 +441,6 @@ class CLS_TwitterFollower():
 		if gVal.STR_UserInfo['ArListName']=="" :
 			wRes['Result'] = True
 			return wRes
-		
-###		wUserID = str(inUser['id'])
-###		#############################
-###		# フォロー者か
-###		if gVal.OBJ_Tw_IF.CheckMyFollow( wUserID )==False :
-###			### フォロー者じゃなければ終了
-###			wRes['Result'] = True
-###			return wRes
-###		
-###		###強制じゃなければ判定を実施
-###		if inFLG_Force==False :
-###			#############################
-###			# DBからいいね情報を取得する(1個)
-###			#   新規の場合、DB登録だけで終わる
-###			wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
-###			if wSubRes['Result']!=True :
-###				###失敗
-###				wRes['Reason'] = "GetFavoDataOne is failed"
-###				gVal.OBJ_L.Log( "B", wRes )
-###				return wRes
-###			### DB未登録
-###			if wSubRes['Responce']==None :
-###				###DBに登録する
-###				wSetRes = gVal.OBJ_DB_IF.InsertFavoData( inUser )
-###				if wSetRes['Result']!=True :
-###					###失敗
-###					wRes['Reason'] = "InsertFavoData is failed"
-###					gVal.OBJ_L.Log( "B", wRes )
-###					return wRes
-###				
-###				wStr = "〇DBに登録: user=" + inUser['screen_name'] + '\n'
-###				CLS_OSIF.sPrn( wStr )
-###				wRes['Result'] = True
-###				return wRes
-###			
-###			wARR_DBData = wSubRes['Responce']
-###			
-###			#############################
-###			# 期間比較値
-###			# いいねありの場合、
-###			#   =いいね日時
-###			# いいねなしの場合、
-###			#   =登録日時
-###			if str(wARR_DBData['favo_date'])!=gVal.OBJ_DB_IF.DEF_TIMEDATE :
-###				### いいねあり= いいね日時
-###				wCompTimeDate = str(wARR_DBData['favo_date'])
-###			else:
-###				### いいねなし= 登録日時
-###				wCompTimeDate = str(wARR_DBData['regdate'])
-###			
-###			#############################
-###			# 自動リムーブ期間か
-###			wGetLag = CLS_OSIF.sTimeLag( wCompTimeDate, inThreshold=gVal.DEF_STR_TLNUM['forListFavoAutoRemoveSec'] )
-###			if wGetLag['Result']!=True :
-###				wRes['Reason'] = "sTimeLag failed(1)"
-###				gVal.OBJ_L.Log( "B", wRes )
-###				return wRes
-###			if wGetLag['Beyond']==False :
-###				###期間内= 自動リムーブ対象外
-###				wRes['Result'] = True
-###				return wRes
-###		
-###		#############################
-###		# 自動リムーブリストに登録
-###		# (他のリスト登録は全削除)
-###		wTweetRes = gVal.OBJ_Tw_IF.AutoRemove_AddUser( inUser )
-###		if wTweetRes['Result']!=True :
-###			wRes['Reason'] = "AutoRemove_AddUser is failed"
-###			gVal.OBJ_L.Log( "B", wRes )
-###			return wRes
-###		if wTweetRes['Responce']!=True :
-###			##自動リムーブ対象外
-###			wStr = "●自動リムーブ中止(設定対象外): user=" + inUser['screen_name'] + '\n'
-###			CLS_OSIF.sPrn( wStr )
-###			
-###			wRes['Result'] = True
-###			return wRes
-###		
-###		# ※リムーブ確定
-###		#############################
-###		# リムーブ実行
-###		wTweetRes = gVal.OBJ_Tw_IF.Remove( wUserID )
-###		if wTweetRes['Result']!=True :
-###			wRes['Reason'] = "Twitter API Error: Remove" + wTweetRes['Reason']
-###			gVal.OBJ_L.Log( "B", wRes )
-###			return wRes
-###		
-###		#############################
-###		# ログに記録
-###		wStr = "▼自動リムーブ"
-###		wRes['Reason'] = wStr + ": " + inUser['screen_name']
-###		gVal.OBJ_L.Log( "U", wRes )
-		
-###		wFLG_MyFollow = None
-###		wFLG_Follower = None
 		
 		wARR_DBData = None
 		#############################
@@ -718,9 +503,6 @@ class CLS_TwitterFollower():
 				
 				#############################
 				# ログに記録
-###				wStr = "▼自動リムーブ"
-###				wRes['Reason'] = wStr + ": " + inUser['screen_name']
-###				gVal.OBJ_L.Log( "U", wRes )
 				gVal.OBJ_L.Log( "R", wRes, "●自動リムーブ: " + inUser['screen_name'] )
 				
 				#############################
