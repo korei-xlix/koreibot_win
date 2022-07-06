@@ -751,6 +751,18 @@ class CLS_TwitterFavo():
 			wRes['Result'] = True
 			return wRes
 		
+		#############################
+		# 禁止ユーザは除外
+		wUserRes = self.OBJ_Parent.CheckExtUser( inData['screen_name'], "自動いいね中止" )
+		if wUserRes['Result']!=True :
+			wRes['Reason'] = "CheckExtUser failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		if wUserRes['Responce']==False :
+			### 禁止あり=除外
+			wRes['Result'] = True
+			return wRes
+		
 ###		wNewUser = False
 ###		#############################
 ###		# DBからいいね情報を取得する(1個)

@@ -1519,12 +1519,14 @@ class CLS_TwitterMain():
 					### 報告対象の表示と、ログに記録(テストログ)
 ###					wRes['Reason'] = "●報告対象の文字除外: id=" + inData['screen_name'] + " word=" + inWord
 ###					gVal.OBJ_L.Log( "X", wRes )
-					gVal.OBJ_L.Log( "T", wRes, "●報告対象の文字除外: id=" + inData['screen_name'] + " word=" + inWord )
+###					gVal.OBJ_L.Log( "T", wRes, "●報告対象の文字除外: id=" + inData['screen_name'] + " word=" + inWord )
+					gVal.OBJ_L.Log( "N", wRes, "●報告対象の文字除外: id=" + inData['screen_name'] + " word=" + inWord )
 				else:
 					### 報告対象の表示と、ログに記録(テストログ)
 ###					wRes['Reason'] = "  文字除外: id=" + inData['screen_name'] + " word=" + inWord
 ###					gVal.OBJ_L.Log( "T", wRes )
-					gVal.OBJ_L.Log( "T", wRes, "文字除外: id=" + inData['screen_name'] + " word=" + inWord )
+###					gVal.OBJ_L.Log( "T", wRes, "文字除外: id=" + inData['screen_name'] + " word=" + inWord )
+					gVal.OBJ_L.Log( "N", wRes, "文字除外: id=" + inData['screen_name'] + " word=" + inWord )
 				
 				### 除外
 				wRes['Result'] = True
@@ -1558,7 +1560,8 @@ class CLS_TwitterMain():
 				### 報告対象の表示と、ログに記録(テストログ)
 ###				wRes['Reason'] = "●禁止ユーザ: user=" + inName + " reason=" + inReason
 ###				gVal.OBJ_L.Log( "X", wRes )
-				gVal.OBJ_L.Log( "U", wRes, "●禁止ユーザ: user=" + inName + " reason=" + inReason )
+###				gVal.OBJ_L.Log( "U", wRes, "●禁止ユーザ: user=" + inName + " reason=" + inReason )
+				gVal.OBJ_L.Log( "N", wRes, "●禁止ユーザ: user=" + inName + " reason=" + inReason )
 			
 			### 除外
 			wRes['Result'] = True

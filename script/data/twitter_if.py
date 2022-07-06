@@ -2474,8 +2474,9 @@ class CLS_Twitter_IF() :
 				gVal.OBJ_L.Log( "B", wRes )
 				continue
 			
-			wStr = "●リスト解除: list=" + wARR_SubsList[wKey]['name'] + " user=" + inUser['screen_name']
-			CLS_OSIF.sPrn( wStr )
+###			wStr = "●リスト解除: list=" + wARR_SubsList[wKey]['name'] + " user=" + inUser['screen_name']
+###			CLS_OSIF.sPrn( wStr )
+			gVal.OBJ_L.Log( "U", wRes, "●リスト解除: list=" + wARR_SubsList[wKey]['name'] + " user=" + inUser['screen_name'] )
 		
 		#############################
 		# 自動リムーブリストにID追加
@@ -2486,8 +2487,9 @@ class CLS_Twitter_IF() :
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			
-			wStr = "〇リスト追加: list=" + gVal.STR_UserInfo['ArListName'] + " user=" + inUser['screen_name']
-			CLS_OSIF.sPrn( wStr )
+###			wStr = "〇リスト追加: list=" + gVal.STR_UserInfo['ArListName'] + " user=" + inUser['screen_name']
+###			CLS_OSIF.sPrn( wStr )
+			gVal.OBJ_L.Log( "U", wRes, "〇リスト追加: list=" + gVal.STR_UserInfo['ArListName'] + " user=" + inUser['screen_name'] )
 			
 			wRes['Responce'] = True		#追加
 		
