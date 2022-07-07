@@ -2337,6 +2337,34 @@ class CLS_Twitter_IF() :
 
 
 #####################################################
+# リスト取得
+#####################################################
+	def GetLists( self, inScreenName=None ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_Twitter_IF"
+		wRes['Func']  = "GetLists"
+		
+		#############################
+		# リスト取得
+		wSubRes = self.OBJ_Twitter.GetLists( inScreenName=inScreenName )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+###			wStr = wStr + str(wARR_List[wIndex]['id']) + " : "
+###			wStr = wStr + str(wARR_List[wIndex]['me']) + " : " 
+###			wStr = wStr + str(wARR_List[wIndex]['name']) + '\n'
+		
+		wRes['Responce'] = wSubRes['Responce']
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
 # リスト表示
 #####################################################
 	def ViewList_User( self, inScreenName=None ):

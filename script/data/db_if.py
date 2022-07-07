@@ -1322,7 +1322,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# グローバルに保存する
-		gVal.ARR_CautionTweet = wARR_Data
+		gVal.ARR_CautionTweet = wARR_DBData
 		
 		#############################
 		# =正常

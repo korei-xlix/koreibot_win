@@ -324,13 +324,16 @@ class CLS_Main_Console() :
 ###			wSubRes = gVal.OBJ_Tw_IF.ViewList_User( "korei_comm" )
 
 ######		
-			wTweetRes = gVal.OBJ_Tw_IF.Tweet( "てすとついーと２" )
-
-			wTweetRes = gVal.OBJ_Tw_IF.GetSearch( inQuery="てすとついーと２" )
-
-			print(str( wTweetRes ))
-
+#			wTweetRes = gVal.OBJ_Tw_IF.Tweet( "てすとついーと２" )
+#			wTweetRes = gVal.OBJ_Tw_IF.GetSearch( inQuery="てすとついーと２" )
+#			print(str( wTweetRes ))
 ######		
+			wSubRes = gVal.OBJ_Tw_IF.GetLists( "korei_xlix" )
+			print(str( wSubRes ))
+######		
+
+
+
 		
 	#####################################################
 		#############################

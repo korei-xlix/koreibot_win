@@ -2826,10 +2826,15 @@ class CLS_Twitter_Use():
 			if wROW['user']['name']!=self.STR_TWITTERdata['TwitterID'] :
 				wFLG_Me = False
 			
+			wCellUser = {
+				"id"			: wROW['user']['id'],
+				"screen_name"	: wROW['user']['screen_name']
+			}
 			wCell = {
 				"id"		: wROW['id'],
 				"name"		: wROW['name'],
-				"me"		: wFLG_Me
+				"me"		: wFLG_Me,
+				"user"		: wCellUser
 			}
 			wARR_List.update({ wIndex : wCell })
 			wIndex += 1
@@ -2942,10 +2947,15 @@ class CLS_Twitter_Use():
 			if wROW['user']['name']!=self.STR_TWITTERdata['TwitterID'] :
 				wFLG_Me = False
 			
+			wCellUser = {
+				"id"			: wROW['user']['id'],
+				"screen_name"	: wROW['user']['screen_name']
+			}
 			wCell = {
 				"id"		: wROW['id'],
 				"name"		: wROW['name'],
-				"me"		: wFLG_Me
+				"me"		: wFLG_Me,
+				"user"		: wCellUser
 			}
 			wARR_List.update({ wIndex : wCell })
 			wIndex += 1

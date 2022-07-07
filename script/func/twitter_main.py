@@ -1292,6 +1292,130 @@ class CLS_TwitterMain():
 		CLS_OSIF.sPrn( wStr )
 		
 		#############################
+		# 所有リストの登録者のうち、フォロワーじゃない人にフォローを促す
+		wStr = "全リストの登録ユーザチェック中..."
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# リストの取得
+		wGetListsRes = gVal.OBJ_Tw_IF.GetLists( gVal.STR_UserInfo['Account'] )
+		if wGetListsRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error(31): " + wGetListsRes['Reason']
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		wARR_Lists = wGetListsRes['Responce']
+		
+		wListFavo_Keylist = list( gVal.ARR_ListFavo.keys() )
+		wKeylist = list( wARR_Lists.keys() )
+		for wKey in wKeylist :
+			### 自分のリスト以外はスキップ
+			if wARR_Lists[wKey]['me']==False :
+				continue
+			
+			### リストいいね登録中
+			###   警告ありのものはスキップ(上で処理済)
+			wFLG_ListFavo_Caution = False
+			for wListFavoKey in wListFavo_Keylist :
+				if wARR_Lists[wKey]['user']['screen_name']==gVal.ARR_ListFavo[wListFavoKey]['screen_name'] and \
+				   wARR_Lists[wKey]['name']==gVal.ARR_ListFavo[wListFavoKey]['list_name'] :
+					if gVal.ARR_ListFavo[wListFavoKey]['caution']==True :
+						wFLG_ListFavo_Caution = True
+					break
+			
+			if wFLG_ListFavo_Caution==True :
+				### リストいいねで警告対象のリストはスキップ
+				continue
+			
+			wStr = "〇チェック中リスト: " + wARR_Lists[wKey]['name']
+			CLS_OSIF.sPrn( wStr )
+			#############################
+			# Twitterからリストの登録ユーザ一覧を取得
+			wListRes = gVal.OBJ_Tw_IF.GetListSubscribers(
+			   inListName=wARR_Lists[wKey]['name'],
+			   inScreenName=wARR_Lists[wKey]['user']['screen_name'] )
+			
+			if wListRes['Result']!=True :
+				wRes['Reason'] = "Twitter API Error(GetListSubscribers(2)): " + wListRes['Reason']
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if len(wListRes['Responce'])==0 :
+				### 登録者なしはスキップ
+				continue
+			
+			wARR_ListUsers = wListRes['Responce']
+			
+			wKeylistUser = list( wARR_ListUsers.keys() )
+			for wID in wKeylistUser :
+				wID = str(wID)
+				
+				### 警告済はスキップ
+				if wID in gVal.ARR_CautionTweet :
+					continue
+				### 自分には警告しない
+				if str(gVal.STR_UserInfo['id'])==wID  :
+					continue
+				### フォロワーはスキップ
+				if gVal.OBJ_Tw_IF.CheckFollower( wID )==True  :
+					continue
+				### 禁止ユーザはスキップ
+				wUserRes = self.CheckExtUser( wARR_ListUsers[wID]['screen_name'], "フォロワー以外のリスト登録者", inFLG_Log=False )
+				if wUserRes['Result']!=True :
+					wRes['Reason'] = "CheckExtUser failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					continue
+				if wUserRes['Responce']==False :
+					### 禁止あり=除外
+					continue
+				
+				# ※警告確定
+				#############################
+				# 警告ツイートを作成
+				wTweet = "@" + wARR_ListUsers[wID]['screen_name'] + '\n'
+				wTweet = wTweet + "[お願い] リスト " + wARR_Lists[wKey]['name'] + " をフォローするには当アカウント " + gVal.STR_UserInfo['Account'] + " もフォローしてください。" + '\n'
+				wTweet = wTweet + "[Request] To follow the list " + wARR_Lists[wKey]['name'] + ", please also follow this account " + gVal.STR_UserInfo['Account'] + "."
+				
+				wTweetID = "(none)"
+				if gVal.DEF_STR_TLNUM['sendListUsersCaution']==True :
+					#############################
+					# ツイート送信
+					wTweetRes = gVal.OBJ_Tw_IF.Tweet( wTweet )
+					if wTweetRes['Result']!=True :
+						wRes['Reason'] = "Twitter API Error(38): " + wTweetRes['Reason']
+						gVal.OBJ_L.Log( "B", wRes )
+						continue
+					else:
+##						### Tweet完了まで10秒遅延待機
+##						CLS_OSIF.sSleep(10)
+##						
+						### ツイートIDを取得する
+						wTweetRes = gVal.OBJ_Tw_IF.GetSearch( wTweet )
+						if wTweetRes['Result']!=True :
+							wRes['Reason'] = "Twitter API Error(48): " + wTweetRes['Reason']
+							gVal.OBJ_L.Log( "B", wRes )
+							continue
+						if len(wTweetRes['Responce'])!=1 :
+							wRes['Reason'] = "Twitter is not one screen_name=" + wARR_ListUsers[wID]['screen_name']
+							gVal.OBJ_L.Log( "B", wRes )
+							continue
+						wTweetID = str( wTweetRes['Responce'][0]['id'] )
+						
+						### ログに記録
+						gVal.OBJ_L.Log( "U", wRes, "●非フォロワーのリスト登録者: " + wARR_ListUsers[wID]['screen_name'] )
+				else:
+					### ログに記録
+					gVal.OBJ_L.Log( "U", wRes, "●非フォロワーのリスト登録者(Twitter未送信): " + wARR_ListUsers[wID]['screen_name'] )
+				
+				### IDを警告済に追加
+				wSubRes = gVal.OBJ_DB_IF.SetCautionTweet( wARR_ListUsers[wID], wTweetID )
+				if wSubRes['Result']!=True :
+					wRes['Reason'] = "SetCautionTweet is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					continue
+		
+		wStr = "チェック終了" + '\n'
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
 		# 自動リムーブが無効ならここで終わる
 		if gVal.STR_UserInfo['ArListName']=="" :
 			wRes['Result'] = True
@@ -1413,7 +1537,8 @@ class CLS_TwitterMain():
 #####################################################
 # 禁止ユーザチェック
 #####################################################
-	def CheckExtUser( self, inName, inReason ):
+###	def CheckExtUser( self, inName, inReason ):
+	def CheckExtUser( self, inName, inReason, inFLG_Log=True ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -1430,8 +1555,9 @@ class CLS_TwitterMain():
 				wRes['Result'] = True
 				return wRes
 			
-			if gVal.ARR_NotReactionUser[inName]['report']==True :
-				CLS_OSIF.sPrn( wStr )
+###			if gVal.ARR_NotReactionUser[inName]['report']==True :
+			if gVal.ARR_NotReactionUser[inName]['report']==True and inFLG_Log==True :
+###				CLS_OSIF.sPrn( wStr )
 				### 報告対象の表示と、ログに記録(テストログ)
 				gVal.OBJ_L.Log( "N", wRes, "●禁止ユーザ: user=" + inName + " reason=" + inReason )
 			
