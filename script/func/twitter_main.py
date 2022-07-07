@@ -1382,6 +1382,11 @@ class CLS_TwitterMain():
 		#############################
 		# 禁止ユーザかチェック
 		if inName in gVal.ARR_NotReactionUser :
+			if gVal.ARR_NotReactionUser[inName]['vip']==True :
+				### VIPは除外する
+				wRes['Result'] = True
+				return wRes
+			
 			if gVal.ARR_NotReactionUser[inName]['report']==True :
 				CLS_OSIF.sPrn( wStr )
 				### 報告対象の表示と、ログに記録(テストログ)
