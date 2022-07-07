@@ -1101,6 +1101,64 @@ class CLS_TwitterAdmin():
 
 
 #####################################################
+# 警告ツイート削除
+#####################################################
+	def RemoveCautionTweet(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "RemoveCautionTweet"
+		
+		#############################
+		# 期間が過ぎた警告ツイートを削除していく
+		wKeylist = list( gVal.ARR_CautionTweet.keys() )
+		for wID in wKeylist :
+			wID = str(wID)
+			
+			#############################
+			# 規定の期間を過ぎたか
+			wGetLag = CLS_OSIF.sTimeLag( str( gVal.ARR_CautionTweet[wID]['regdate'] ), inThreshold=gVal.DEF_STR_TLNUM['forDeleteCautionTweetSec'] )
+			if wGetLag['Result']!=True :
+				wRes['Reason'] = "sTimeLag failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				continue
+			if wGetLag['Beyond']==False :
+				### 規定内 =許容内の日数なのでスキップ
+				continue
+			
+			# ※削除確定
+			#############################
+			# Twitterにツイートしていたら、ツイートを削除
+			if gVal.ARR_CautionTweet[wID]['tweet_id']!="(none)" :
+				wTweetRes = gVal.OBJ_Tw_IF.DelTweet( gVal.ARR_CautionTweet[wID]['tweet_id'] )
+				if wTweetRes['Result']!=True :
+					wRes['Reason'] = "Twitter API Error: DelTweet" + wTweetRes['Reason']
+					gVal.OBJ_L.Log( "B", wRes )
+#					continue
+			
+			#############################
+			# ログに記録
+			gVal.OBJ_L.Log( "T", wRes, "●警告ツイート削除: id=" + gVal.ARR_CautionTweet[wID]['tweet_id'] + " screen_name=" + gVal.ARR_CautionTweet[wID]['screen_name'] )
+			
+			#############################
+			# DBに反映
+			wSubRes = gVal.OBJ_DB_IF.DeleteCautionTweet( gVal.ARR_CautionTweet[wID] )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "DeleteCautionTweet is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				continue
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
 # システム情報の表示
 #####################################################
 	def View_Sysinfo(self):

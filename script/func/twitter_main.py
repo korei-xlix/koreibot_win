@@ -149,6 +149,14 @@ class CLS_TwitterMain():
 			return wRes
 		
 		#############################
+		# 警告ツイート読み込み
+		wResSub = gVal.OBJ_DB_IF.GetCautionTweet()
+		if wResSub['Result']!=True :
+			wRes['Reason'] = "GetCautionTweet failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
 		# 検索ワード読み込み
 		wResSub = gVal.OBJ_DB_IF.GetSearchWord()
 		if wResSub['Result']!=True :
@@ -625,6 +633,16 @@ class CLS_TwitterMain():
 			wSubRes = self.OBJ_TwitterKeyword.RunKeywordSearchFavo()
 			if wSubRes['Result']!=True :
 				wRes['Reason'] = "RunKeywordSearchFavo"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+		
+		#############################
+		# 警告ツイートの削除
+		if inFLG_Short==False :
+			wSubRes = self.OBJ_TwitterAdmin.RemoveCautionTweet()
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "RemoveCautionTweet is failed"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 		
