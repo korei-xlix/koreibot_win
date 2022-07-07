@@ -559,11 +559,13 @@ class CLS_Setup():
 					"regdate     TIMESTAMP," + \
 					"screen_name TEXT  NOT NULL, " + \
 					"report      BOOL  DEFAULT false," + \
+					"vip         BOOL  DEFAULT false," + \
 					" PRIMARY KEY ( screen_name ) ) ;"
 		
 ##					"regdate     DB登録日時
 ##					"screen_name 禁止ユーザ名
 ##					"report      true= 通報対象
+##					"vip         true= 監視外(ログ記録なし)
 		
 		inOBJ_DB.RunQuery( wQuery )
 		return

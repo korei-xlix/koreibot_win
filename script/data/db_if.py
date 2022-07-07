@@ -693,7 +693,8 @@ class CLS_DB_IF() :
 			wCell = {
 				"list_number"	: wListNo,
 				"screen_name"	: wKey,
-				"report"		: wARR_DBData[wIndex]['report']
+				"report"		: wARR_DBData[wIndex]['report'],
+				"vip"			: wARR_DBData[wIndex]['vip']
 			}
 			wARR_ExeUser.update({ wKey : wCell })
 			wListNo += 1
@@ -762,10 +763,12 @@ class CLS_DB_IF() :
 			### 通報設定ありか
 			#      先頭が @@@ の場合
 			wReport = False
+			wVip    = True
 			wIfind = wLine.find("@@@")
 			if wIfind==0 :
 				wLine = wLine.replace( "@@@", "" )
 				wReport = True
+				wVip    = False
 			
 			### ダブり登録は除外
 			if wLine in wARR_Word :
@@ -777,7 +780,8 @@ class CLS_DB_IF() :
 			wCell = {
 				"list_number"	: wListNo,
 				"screen_name"	: wLine,
-				"report"		: wReport
+				"report"		: wReport,
+				"vip"			: wVip
 			}
 			wARR_Word.update({ wLine : wCell })
 			wListNo += 1
@@ -801,7 +805,8 @@ class CLS_DB_IF() :
 				wQuery = "insert into tbl_exc_user values (" + \
 						"'" + str(wTD['TimeDate']) + "', " + \
 						"'" + wKey + "', " + \
-						str(wARR_Word[wKey]['report']) + " " + \
+						str(wARR_Word[wKey]['report']) + ", " + \
+						str(wARR_Word[wKey]['vip']) + " " + \
 						") ;"
 			
 			#############################
@@ -905,6 +910,7 @@ class CLS_DB_IF() :
 		wQuery = "insert into tbl_exc_user values (" + \
 				"'" + str(wTD['TimeDate']) + "', " + \
 				"'" + str(inName) + "', " + \
+				"False, " + \
 				"False " + \
 				") ;"
 		
@@ -933,7 +939,8 @@ class CLS_DB_IF() :
 		wCell = {
 			"list_number"	: wListNo,
 			"screen_name"	: str(inName),
-			"report"		: False
+			"report"		: False,
+			"vip"			: False
 		}
 		gVal.ARR_NotReactionUser.update({ str(inName) : wCell })
 		
@@ -943,7 +950,8 @@ class CLS_DB_IF() :
 		return wRes
 
 	#####################################################
-	def UpdateExeUser( self, inName ):
+###	def UpdateExeUser( self, inName ):
+	def UpdateExeUser( self, inName, inReport=None, inVIP=None ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -966,15 +974,39 @@ class CLS_DB_IF() :
 			return wRes
 		
 		#############################
-		# 設定の自動切換え
-		wReport = False
-		if gVal.ARR_NotReactionUser[inName]['report']==False :
-			wReport = True
+		# 入力チェック
+		if inReport==None and inVIP==None :
+			wRes['Reason'] = "input error: screen name=" + str(inName)
+			CLS_OSIF.sErr( wRes )
+			return wRes
+		
+###		#############################
+###		# 設定の自動切換え
+###		wReport = False
+###		if gVal.ARR_NotReactionUser[inName]['report']==False :
+###			wReport = True
+###		
+###		wVipt = False
+###		if gVal.ARR_NotReactionUser[inName]['vip']==False :
+###			wVip = True
+###		
+		#############################
+		# 現設定値のロード
+		wFLR_Rep = gVal.ARR_NotReactionUser[inName]['report']
+		wFLR_VIP = gVal.ARR_NotReactionUser[inName]['vip']
+		
+		#############################
+		# 設定値の変更
+		if inReport!=None :
+			wFLR_Rep = inReport
+		if inVIP!=None :
+			wFLR_VIP = inVIP
 		
 		#############################
 		# 変更する
 		wQuery = "update tbl_exc_user set " + \
-				"report = " + str( wReport ) + " " + \
+				"report = " + str( wFLR_Rep ) + ", " + \
+				"vip = " + str( wFLR_VIP ) + " " + \
 				"where screen_name = '" + inName + "' " + \
 				";"
 		
@@ -990,7 +1022,9 @@ class CLS_DB_IF() :
 		
 		#############################
 		# データ変更
-		gVal.ARR_NotReactionUser[inName]['report'] = wReport
+###		gVal.ARR_NotReactionUser[inName]['report'] = wReport
+		gVal.ARR_NotReactionUser[inName]['report'] = wFLR_Rep
+		gVal.ARR_NotReactionUser[inName]['vip']    = wFLR_VIP
 		
 		#############################
 		# =正常

@@ -39,7 +39,6 @@ class CLS_TwitterAdmin():
 		
 		self.OBJ_Parent = parentObj
 		self.GetUserAdminInfo()
-###		gVal.STR_UserAdminInfo = self.GetUserAdminInfo()
 		return
 
 
@@ -72,7 +71,6 @@ class CLS_TwitterAdmin():
 			"send_cnt"			: 0,
 			"favo_cnt"			: 0,
 			"now_favo_cnt"		: 0,
-###			"favo_id"			: None,
 			"favo_date"			: None,
 			"list_date"			: None,
 			
@@ -99,9 +97,6 @@ class CLS_TwitterAdmin():
 		# コンソールを表示
 		while True :
 			
-###			gVal.STR_UserAdminInfo['screen_name'] = None
-###			gVal.STR_UserAdminInfo['id']          = -1
-###			
 			self.STR_UserAdminInfo['flg_set'] = False
 			#############################
 			# 画面クリア
@@ -130,7 +125,6 @@ class CLS_TwitterAdmin():
 			
 			#############################
 			# ユーザ情報を取得する
-###			wUserinfoRes = self.GetUserInfo( wTwitterID )
 			wUserinfoRes = self.__get_UserAdmin( wTwitterID )
 			if wUserinfoRes['Result']!=True :
 				wRes['Reason'] = "__get_UserAdmin is failed: " + wUserinfoRes['Reason']
@@ -163,7 +157,6 @@ class CLS_TwitterAdmin():
 	# ユーザ管理 画面表示
 	#####################################################
 	def __view_UserAdmin(self):
-###		wResDisp = CLS_MyDisp.sViewDisp( "UserAdminConsole", -1 )
 		wResDisp = CLS_MyDisp.sViewDisp( inDisp="UserAdminConsole", inIndex=-1, inData=self.STR_UserAdminInfo )
 		if wResDisp['Result']==False :
 			gVal.OBJ_L.Log( "B", wResDisp )
@@ -230,7 +223,6 @@ class CLS_TwitterAdmin():
 		CLS_OSIF.sPrn( "リムーブ処理をおこなってます。しばらくお待ちください......" )
 		#############################
 		# リムーブする
-###		wSubRes = self.OBJ_Parent.RelRemove( self.STR_UserAdminInfo )
 		wSubRes = gVal.OBJ_Tw_IF.Remove( self.STR_UserAdminInfo['id'] )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "RelRemove is failed: " + wSubRes['Reason']
@@ -241,20 +233,14 @@ class CLS_TwitterAdmin():
 		
 		#############################
 		# 情報反映
-###		wSubRes = self.GetUserInfo( inScreenName=gVal.STR_UserAdminInfo['screen_name'] )
-###		wSubRes = self.__get_UserAdmin( inScreenName=gVal.STR_UserAdminInfo['screen_name'] )
 		wSubRes = self.__get_UserAdmin( inScreenName=self.STR_UserAdminInfo['screen_name'] )
 		if wSubRes['Result']!=True :
-###			wRes['Reason'] = "GetUserInfo is failed"
 			wRes['Reason'] = "__get_UserAdmin is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
 		#############################
 		# 正常終了
-###		CLS_OSIF.sPrn( "リムーブが正常終了しました" )
-###		wRes['Reason'] = "●リムーブ者: " + self.STR_UserAdminInfo['screen_name']
-###		gVal.OBJ_L.Log( "U", wRes )
 		gVal.OBJ_L.Log( "R", wRes, "●リムーブ者: " + self.STR_UserAdminInfo['screen_name'] )
 		
 		wRes['Result'] = True
@@ -276,7 +262,6 @@ class CLS_TwitterAdmin():
 		CLS_OSIF.sPrn( "リムーブ処理をおこなってます。しばらくお待ちください......" )
 		#############################
 		# ブロック＆リムーブする
-###		wSubRes = self.OBJ_Parent.BlockRemove( gVal.STR_UserAdminInfo )
 		wSubRes = gVal.OBJ_Tw_IF.BlockRemove( self.STR_UserAdminInfo['id'] )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "BlockRemove is failed: " + wSubRes['Reason']
@@ -300,8 +285,6 @@ class CLS_TwitterAdmin():
 		
 		#############################
 		# 情報反映
-###		gVal.STR_UserAdminInfo = self.GetUserAdminInfo( inScreenName=gVal.STR_UserAdminInfo['screen_name'] )
-###		self.GetUserAdminInfo()
 		wSubRes = self.__get_UserAdmin( inScreenName=self.STR_UserAdminInfo['screen_name'] )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "__get_UserAdmin is failed"
@@ -310,9 +293,6 @@ class CLS_TwitterAdmin():
 		
 		#############################
 		# 正常終了
-###		CLS_OSIF.sPrn( "リムーブが正常終了しました" )
-###		wRes['Reason'] = "●関係リセットによるリムーブ: " + self.STR_UserAdminInfo['screen_name']
-###		gVal.OBJ_L.Log( "U", wRes )
 		gVal.OBJ_L.Log( "R", wRes, "●関係リセットによるリムーブ: " + self.STR_UserAdminInfo['screen_name'] )
 		
 		wRes['Result'] = True
@@ -349,7 +329,6 @@ class CLS_TwitterAdmin():
 #####################################################
 # ユーザ情報取得
 #####################################################
-###	def GetUserInfo( self, inScreenName ):
 	def __get_UserAdmin( self, inScreenName ):
 		#############################
 		# 応答形式の取得
@@ -361,7 +340,6 @@ class CLS_TwitterAdmin():
 		wRes['Responce'] = False
 		#############################
 		# 退避枠初期化
-###		gVal.STR_UserAdminInfo = self.GetUserAdminInfo()
 		self.GetUserAdminInfo()
 		
 		#############################
@@ -408,20 +386,6 @@ class CLS_TwitterAdmin():
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-###		#############################
-###		# ブロック検知が更新されてたら
-###		# DBに反映する
-###		if wARR_DBData['rc_blockby']!=wFollowInfoRes['Responce']['blocked_by'] :
-###			wQuery = "update tbl_follower_data set " + \
-###						"rc_blockby = " + str( wFollowInfoRes['Responce']['blocked_by'] ) + " " + \
-###						"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
-###						" and id = '" + str(wID) + "' ;"
-###			
-###			wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
-###			if wResDB['Result']!=True :
-###				wRes['Reason'] = "Run Query is failed"
-###				gVal.OBJ_L.Log( "B", wRes )
-###		
 		#############################
 		# 退避に情報を反映する
 		
@@ -518,7 +482,20 @@ class CLS_TwitterAdmin():
 			wStr = wStr + wListData + ": "
 			
 			### 通報 有効/無効
+###			if gVal.ARR_NotReactionUser[wI]['report']==True :
+			if gVal.ARR_NotReactionUser[wI]['vip']==True :
+				wStr = wStr + "[－]"
+			elif gVal.ARR_NotReactionUser[wI]['report']==True :
+				wStr = wStr + "[〇]"
+			else:
+				wStr = wStr + "[  ]"
+			wStr = wStr + "  "
+			
+			### VIP 有効/無効
+###			if gVal.ARR_NotReactionUser[wI]['vip']==True :
 			if gVal.ARR_NotReactionUser[wI]['report']==True :
+				wStr = wStr + "[－]"
+			elif gVal.ARR_NotReactionUser[wI]['vip']==True :
 				wStr = wStr + "[〇]"
 			else:
 				wStr = wStr + "[  ]"
@@ -594,23 +571,57 @@ class CLS_TwitterAdmin():
 		#############################
 		# コマンドなし: 通報の設定変更をする
 		if wCom==None :
-			self.__report_ExcuteUser( wGetIndex )
+###			self.__report_ExcuteUser( wGetIndex )
+			wFLG_Update = False
+			if gVal.ARR_NotReactionUser[wGetIndex]['report']==False :
+				### VIP ONの場合は排他する
+				if gVal.ARR_NotReactionUser[wGetIndex]['vip']==True :
+					CLS_OSIF.sPrn( "VIP ONのため通報設定にできません" )
+					CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+					wRes['Result'] = True
+					return wRes
+				
+				wFLG_Update = True
+			
+			wSubRes = gVal.OBJ_DB_IF.UpdateExeUser( wGetIndex, inReport=wFLG_Update )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "UpdateExeUser is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
 ###			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
 			wRes['Result'] = True
 			return wRes
 		
 		#############################
-		# c: 検索ワード変更
-		elif wCom=="c" :
-			self.__change_KeywordFavo( wGetIndex )
-			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+		# c: VIP 有効/無効
+		elif wCom=="p" :
+###			self.__change_KeywordFavo( wGetIndex )
+			wFLG_Update = False
+			if gVal.ARR_NotReactionUser[wGetIndex]['vip']==False :
+				### 通報 ONの場合は排他する
+				if gVal.ARR_NotReactionUser[wGetIndex]['report']==True :
+					CLS_OSIF.sPrn( "通報 ONのため通報設定にできません" )
+					CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+					wRes['Result'] = True
+					return wRes
+				
+				wFLG_Update = True
+			
+			wSubRes = gVal.OBJ_DB_IF.UpdateExeUser( wGetIndex, inVIP=wFLG_Update )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "UpdateExeUser is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+###			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
 			wRes['Result'] = True
 			return wRes
 		
 		#############################
-		# d: 検索ワード削除
+		# d: 禁止ユーザ削除
 		elif wCom=="d" :
-			self.__delete_KeywordFavo( wGetIndex )
+			self.__delete_ExcuteUser( wGetIndex )
 			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
 			wRes['Result'] = True
 			return wRes
@@ -670,41 +681,41 @@ class CLS_TwitterAdmin():
 		wRes['Result'] = True
 		return wRes
 
+###	#####################################################
+###	# 検索ワード 有効/無効
+###	#####################################################
+###	def __report_ExcuteUser( self, inName ):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_TwitterAdmin"
+###		wRes['Func']  = "__valid_KeywordFavo"
+###		
+###		#############################
+###		# 実行の確認
+###		wSubRes = gVal.OBJ_DB_IF.UpdateExeUser( inName )
+###		if wSubRes['Result']!=True :
+###			###失敗
+###			wRes['Reason'] = "UpdateExeUser is failed"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		#############################
+###		# 完了
+###		wRes['Result'] = True
+###		return wRes
+###
 	#####################################################
-	# 検索ワード 有効/無効
+	# 禁止ユーザ削除
 	#####################################################
-	def __report_ExcuteUser( self, inName ):
+	def __delete_ExcuteUser( self, inName ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
 		wRes = CLS_OSIF.sGet_Resp()
 		wRes['Class'] = "CLS_TwitterAdmin"
-		wRes['Func']  = "__valid_KeywordFavo"
-		
-		#############################
-		# 実行の確認
-		wSubRes = gVal.OBJ_DB_IF.UpdateExeUser( inName )
-		if wSubRes['Result']!=True :
-			###失敗
-			wRes['Reason'] = "UpdateExeUser is failed"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# 完了
-		wRes['Result'] = True
-		return wRes
-
-	#####################################################
-	# 検索ワード削除
-	#####################################################
-	def __delete_KeywordFavo( self, inName ):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_TwitterAdmin"
-		wRes['Func']  = "__delete_KeywordFavo"
+		wRes['Func']  = "__delete_ExcuteUser"
 		
 		#############################
 		# コンソールを表示
@@ -851,12 +862,6 @@ class CLS_TwitterAdmin():
 		if wInputName!="\\n" :
 			#############################
 			# リストがTwitterにあるか確認
-###			wSubRes = gVal.OBJ_Tw_IF.GetList()
-###			if wSubRes['Result']!=True :
-###				wRes['Reason'] = "Twitter is failed(GetList)"
-###				gVal.OBJ_L.Log( "B", wRes )
-###				return wRes
-###			
 			wSubRes = gVal.OBJ_Tw_IF.CheckList( inListName=wInputName )
 			if wSubRes['Result']!=True :
 				wRes['Reason'] = "CheckList is failed"
@@ -877,14 +882,6 @@ class CLS_TwitterAdmin():
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			
-###			#############################
-###			# リスト通知 リストとユーザの更新
-###			wSubRes = self.OBJ_Parent.UpdateListIndUser( inUpdate=True )
-###			if wSubRes['Result']!=True :
-###				wRes['Reason'] = "UpdateListIndUser error"
-###				gVal.OBJ_L.Log( "B", wRes )
-###				return wRes
-###			
 			wStr = "〇設定が完了しました" + '\n'
 			CLS_OSIF.sPrn( wStr )
 		
@@ -953,12 +950,6 @@ class CLS_TwitterAdmin():
 		if wInputName!="\\n" :
 			#############################
 			# リストがTwitterにあるか確認
-###			wSubRes = gVal.OBJ_Tw_IF.GetList()
-###			if wSubRes['Result']!=True :
-###				wRes['Reason'] = "Twitter is failed(GetList)"
-###				gVal.OBJ_L.Log( "B", wRes )
-###				return wRes
-###			
 			wSubRes = gVal.OBJ_Tw_IF.CheckList( inListName=wInputName )
 			if wSubRes['Result']!=True :
 				wRes['Reason'] = "CheckList is failed"
@@ -1087,9 +1078,6 @@ class CLS_TwitterAdmin():
 			
 			#############################
 			# ログに記録
-###			wStr = "▼自動削除"
-###			wRes['Reason'] = wStr + ": " + wFollowerData[wID]['screen_name']
-###			gVal.OBJ_L.Log( "U", wRes )
 			gVal.OBJ_L.Log( "R", wRes, "●自動削除によるリムーブ: " + wFollowerData[wID]['screen_name'] )
 			
 			wRes['Responce'] = True		#自動リムーブ実行
@@ -1131,8 +1119,6 @@ class CLS_TwitterAdmin():
 		wSTR_SystemInfo = {
 			"now_TimeDate"		: None,
 			
-###			"id"				: gVal.STR_UserInfo['Account'],
-###			"screen_name"		: str(gVal.STR_UserInfo['id']),
 			"id"				: str(gVal.STR_UserInfo['id']),
 			"screen_name"		: gVal.STR_UserInfo['Account'],
 			
