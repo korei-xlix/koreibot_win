@@ -1369,48 +1369,90 @@ class CLS_TwitterMain():
 				
 				# ※警告確定
 				#############################
-				# 警告ツイートを作成
-				wTweet = "@" + wARR_ListUsers[wID]['screen_name'] + '\n'
-				wTweet = wTweet + "[お願い] リスト " + wARR_Lists[wKey]['name'] + " をフォローするには当アカウント " + gVal.STR_UserInfo['Account'] + " もフォローしてください。" + '\n'
-				wTweet = wTweet + "[Request] To follow the list " + wARR_Lists[wKey]['name'] + ", please also follow this account " + gVal.STR_UserInfo['Account'] + "."
-				
-				wTweetID = "(none)"
-				if gVal.DEF_STR_TLNUM['sendListUsersCaution']==True :
-					#############################
-					# ツイート送信
-					wTweetRes = gVal.OBJ_Tw_IF.Tweet( wTweet )
-					if wTweetRes['Result']!=True :
-						wRes['Reason'] = "Twitter API Error(38): " + wTweetRes['Reason']
-						gVal.OBJ_L.Log( "B", wRes )
-						continue
-					else:
-##						### Tweet完了まで10秒遅延待機
-##						CLS_OSIF.sSleep(10)
-##						
-						### ツイートIDを取得する
-						wTweetRes = gVal.OBJ_Tw_IF.GetSearch( wTweet )
-						if wTweetRes['Result']!=True :
-							wRes['Reason'] = "Twitter API Error(48): " + wTweetRes['Reason']
-							gVal.OBJ_L.Log( "B", wRes )
-							continue
-						if len(wTweetRes['Responce'])!=1 :
-							wRes['Reason'] = "Twitter is not one screen_name=" + wARR_ListUsers[wID]['screen_name']
-							gVal.OBJ_L.Log( "B", wRes )
-							continue
-						wTweetID = str( wTweetRes['Responce'][0]['id'] )
-						
-						### ログに記録
-						gVal.OBJ_L.Log( "U", wRes, "●非フォロワーのリスト登録者: " + wARR_ListUsers[wID]['screen_name'] )
-				else:
-					### ログに記録
-					gVal.OBJ_L.Log( "U", wRes, "●非フォロワーのリスト登録者(Twitter未送信): " + wARR_ListUsers[wID]['screen_name'] )
-				
-				### IDを警告済に追加
-				wSubRes = gVal.OBJ_DB_IF.SetCautionTweet( wARR_ListUsers[wID], wTweetID )
-				if wSubRes['Result']!=True :
-					wRes['Reason'] = "SetCautionTweet is failed"
+				# Twitterからユーザ情報を取得する
+				wUserInfoRes = gVal.OBJ_Tw_IF.GetUserinfo( inScreenName=wARR_ListUsers[wID]['screen_name'] )
+				if wUserInfoRes['Result']!=True :
+					wRes['Reason'] = "Twitter API Error(GetUserinfo): " + wUserInfoRes['Reason'] + " screen_name=" + wARR_ListUsers[wID]['screen_name']
 					gVal.OBJ_L.Log( "B", wRes )
 					continue
+				
+				#############################
+				# 次のユーザはブロック→リムーブする(リスト強制解除)
+				# ・非フォロワー
+				# ・ツイート数=0
+				# ・鍵アカウント
+				if wUserInfoRes['Responce']['statuses_count']==0 or \
+				   wUserInfoRes['Responce']['protected']==True :
+					wUserInfoRes = gVal.OBJ_Tw_IF.BlockRemove( wID )
+					if wUserInfoRes['Result']!=True :
+						wRes['Reason'] = "Twitter API Error(BlockRemove): " + wUserInfoRes['Reason'] + " screen_name=" + wARR_ListUsers[wID]['screen_name']
+						gVal.OBJ_L.Log( "B", wRes )
+						continue
+					
+					### ログに記録
+					gVal.OBJ_L.Log( "U", wRes, "▼非フォロワーのリスト登録者 追い出し: screen_name=" + wARR_ListUsers[wID]['screen_name'] )
+				
+				#############################
+				# 通常アカウントへは警告ツイートを送信
+				else:
+					wTweetID = "(none)"
+					#############################
+					# 警告の送信が有効の場合
+					if gVal.DEF_STR_TLNUM['sendListUsersCaution']==True :
+						#############################
+						# 警告ツイートを作成
+						wTweet = "@" + wARR_ListUsers[wID]['screen_name'] + '\n'
+						wTweet = wTweet + "[お願い] リスト " + wARR_Lists[wKey]['name'] + " をフォローするには当アカウント " + gVal.STR_UserInfo['Account'] + " もフォローしてください。" + '\n'
+						wTweet = wTweet + "[Request] To follow the list " + wARR_Lists[wKey]['name'] + ", please also follow this account " + gVal.STR_UserInfo['Account'] + "."
+						
+						#############################
+						# ツイート送信
+						wTweetRes = gVal.OBJ_Tw_IF.Tweet( wTweet )
+						if wTweetRes['Result']!=True :
+						###	if wTweetRes['StatusCode']=="403" :
+							wRes['Reason'] = "Twitter API Error(38): " + wTweetRes['Reason']
+							gVal.OBJ_L.Log( "B", wRes )
+							continue
+						else:
+							### Tweet完了→Twitter再取得可能になるまで約10秒遅延待機
+							CLS_OSIF.sSleep(10)
+							
+							#############################
+							# 送信したツイートのパターン生成
+							wNoRet_Tweet = wTweet.replace( "@", "" )
+							wNoRet_Tweet = wNoRet_Tweet.replace( "[", "" )
+							wNoRet_Tweet = wNoRet_Tweet.replace( "]", "" )
+							
+							wTweetRes = gVal.OBJ_Tw_IF.GetSearch( wNoRet_Tweet )
+							if wTweetRes['Result']!=True :
+								wRes['Reason'] = "Twitter API Error(48): " + wTweetRes['Reason']
+								gVal.OBJ_L.Log( "B", wRes )
+								continue
+							
+							#############################
+							# 送信したツイートのツイートIDを取得する
+							if len(wTweetRes['Responce'])==1 :
+								wTweetID = str( wTweetRes['Responce'][0]['id'] )
+							else:
+								### 1ツイート以外はありえない？
+								wRes['Reason'] = "Twitter is dual ttweet, or not one screen_name=" + wARR_ListUsers[wID]['screen_name']
+								gVal.OBJ_L.Log( "D", wRes )
+							
+							### ログに記録
+							gVal.OBJ_L.Log( "U", wRes, "●非フォロワーのリスト登録者: screen_name=" + wARR_ListUsers[wID]['screen_name'] + " tweetid=" + wTweetID )
+					
+					#############################
+					# 警告の送信が有効の場合
+					else:
+						### ログに記録
+						gVal.OBJ_L.Log( "U", wRes, "●非フォロワーのリスト登録者(Twitter未送信): screen_name=" + wARR_ListUsers[wID]['screen_name'] )
+					
+					### IDを警告済に追加
+					wSubRes = gVal.OBJ_DB_IF.SetCautionTweet( wARR_ListUsers[wID], wTweetID )
+					if wSubRes['Result']!=True :
+						wRes['Reason'] = "SetCautionTweet is failed"
+						gVal.OBJ_L.Log( "B", wRes )
+						continue
 		
 		wStr = "チェック終了" + '\n'
 		CLS_OSIF.sPrn( wStr )

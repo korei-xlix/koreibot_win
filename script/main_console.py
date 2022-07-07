@@ -328,8 +328,15 @@ class CLS_Main_Console() :
 #			wTweetRes = gVal.OBJ_Tw_IF.GetSearch( inQuery="てすとついーと２" )
 #			print(str( wTweetRes ))
 ######		
-			wSubRes = gVal.OBJ_Tw_IF.GetLists( "korei_xlix" )
-			print(str( wSubRes ))
+#			wSubRes = gVal.OBJ_Tw_IF.GetLists( "korei_xlix" )
+#			print(str( wSubRes ))
+######		
+#			wTweetRes = gVal.OBJ_Tw_IF.GetSearch( "togenohito " + '\n' + "お願い リスト vtuber をフォローするには当アカウント korei_xlix もフォローしてください。" )
+#			print(str( wTweetRes ))
+######		
+
+		wGetListsRes = gVal.OBJ_Tw_IF.GetLists( gVal.STR_UserInfo['Account'] )
+		print(str( wGetListsRes['Responce'] ))
 ######		
 
 

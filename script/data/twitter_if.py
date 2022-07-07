@@ -570,24 +570,12 @@ class CLS_Twitter_IF() :
 			### Tweetデータから対象引用リツイートを抽出
 			for wTweet in wTweetRes['Responce']['data'] :
 				### 枠の作成
-###				wSTR_CellUser = {}
-###				wSTR_CellUser.update({ "id"				: None })
-###				wSTR_CellUser.update({ "name"			: None })
-###				wSTR_CellUser.update({ "screen_name"	: None })
 				wSTR_CellUser = {
 					"id"			: None,
 					"name"			: None,
 					"screen_name"	: None,
 					"description"	: None
 				}
-###				wSTR_Cell = {}
-###				wSTR_Cell.update({ "type"			: None })
-###				wSTR_Cell.update({ "reply_settings"	: None })
-###				wSTR_Cell.update({ "id"				: None })
-###				wSTR_Cell.update({ "text"			: None })
-###				wSTR_Cell.update({ "created_at"		: None })
-###				wSTR_Cell.update({ "referenced_id"	: None })
-###				wSTR_Cell.update({ "user"	: wSTR_CellUser })
 				wSTR_Cell = {
 					"type"				: None,
 					"reply_settings"	: None,
@@ -641,10 +629,6 @@ class CLS_Twitter_IF() :
 					continue
 				wName = wUser['name'].replace( "'", "''" )
 				
-###				wSTR_Cell = {}
-###				wSTR_Cell.update({ "id"				: wID })
-###				wSTR_Cell.update({ "name"			: wName })
-###				wSTR_Cell.update({ "screen_name"	: wUser['username'] })
 				wSTR_Cell = {
 					"id"			: wID,
 					"name"			: wName,
@@ -674,6 +658,7 @@ class CLS_Twitter_IF() :
 		
 		###返すデータを設定する
 		wResTweet = []
+		wKeylist  = list( wARR_Tweets.keys() )
 		for wID in wKeylist :
 			if wARR_Tweets[wID]['set_data']==True :
 				wResTweet.append( wARR_Tweets[wID] )

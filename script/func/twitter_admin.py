@@ -1134,7 +1134,7 @@ class CLS_TwitterAdmin():
 			if gVal.ARR_CautionTweet[wID]['tweet_id']!="(none)" :
 				wTweetRes = gVal.OBJ_Tw_IF.DelTweet( gVal.ARR_CautionTweet[wID]['tweet_id'] )
 				if wTweetRes['Result']!=True :
-					wRes['Reason'] = "Twitter API Error: DelTweet" + wTweetRes['Reason']
+					wRes['Reason'] = "Twitter API Error: DelTweet" + wTweetRes['Reason'] + " screen_name=" + gVal.ARR_CautionTweet[wID]['screen_name'] + " tweetid=" + gVal.ARR_CautionTweet[wID]['tweet_id']
 					gVal.OBJ_L.Log( "B", wRes )
 #					continue
 			
