@@ -1383,9 +1383,9 @@ class CLS_TwitterMain():
 				# ・鍵アカウント
 				if wUserInfoRes['Responce']['statuses_count']==0 or \
 				   wUserInfoRes['Responce']['protected']==True :
-					wUserInfoRes = gVal.OBJ_Tw_IF.BlockRemove( wID )
-					if wUserInfoRes['Result']!=True :
-						wRes['Reason'] = "Twitter API Error(BlockRemove): " + wUserInfoRes['Reason'] + " screen_name=" + wARR_ListUsers[wID]['screen_name']
+					wBlockRes = gVal.OBJ_Tw_IF.BlockRemove( wID )
+					if wBlockRes['Result']!=True :
+						wRes['Reason'] = "Twitter API Error(BlockRemove): " + wBlockRes['Reason'] + " screen_name=" + wARR_ListUsers[wID]['screen_name']
 						gVal.OBJ_L.Log( "B", wRes )
 						continue
 					

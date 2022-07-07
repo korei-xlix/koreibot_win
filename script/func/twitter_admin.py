@@ -1128,7 +1128,41 @@ class CLS_TwitterAdmin():
 				### 規定内 =許容内の日数なのでスキップ
 				continue
 			
-			# ※削除確定
+			#############################
+			# 警告ユーザが非フォロワーの場合、
+			# かつ 当方リストを保持している場合
+			#   追い出す
+			if gVal.OBJ_Tw_IF.CheckFollower( wID )==False :
+				#############################
+				# リストの取得
+				wGetListsRes = gVal.OBJ_Tw_IF.GetLists( gVal.ARR_CautionTweet[wID]['screen_name'] )
+				if wGetListsRes['Result']!=True :
+					wRes['Reason'] = "Twitter API Error(31): " + wGetListsRes['Reason']
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				wARR_Lists = wGetListsRes['Responce']
+				
+				#############################
+				# 自分のリストを登録しているか
+				wFLG_Me = False
+				wKeylist = list( wARR_Lists.keys() )
+				for wKey in wKeylist :
+					### 自分のリスト以外はスキップ
+					if wARR_Lists[wKey]['me']==True :
+						wFLG_Me = True
+						break
+				if wFLG_Me==True :
+					#############################
+					# 自分のリストを保有したままなので、追い出す
+					wBlockRes = gVal.OBJ_Tw_IF.BlockRemove( wID )
+					if wBlockRes['Result']!=True :
+						wRes['Reason'] = "Twitter API Error(BlockRemove): " + wBlockRes['Reason'] + " screen_name=" + gVal.ARR_CautionTweet[wID]['screen_name']
+						gVal.OBJ_L.Log( "B", wRes )
+						continue
+					
+					### ログに記録
+					gVal.OBJ_L.Log( "U", wRes, "▼非フォロワーのリスト登録者 追い出し: screen_name=" + gVal.ARR_CautionTweet[wID]['screen_name'] )
+			
 			#############################
 			# Twitterにツイートしていたら、ツイートを削除
 			if gVal.ARR_CautionTweet[wID]['tweet_id']!="(none)" :
