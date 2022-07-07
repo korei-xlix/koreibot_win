@@ -1210,7 +1210,8 @@ class CLS_TwitterMain():
 				wID = str(wID)
 				
 				### 警告済はスキップ
-				if wID in gVal.ARR_CautionUserID :
+###				if wID in gVal.ARR_CautionUserID :
+				if wID in gVal.ARR_CautionTweet :
 					continue
 				### 自分には警告しない
 				if str(gVal.STR_UserInfo['id'])==wID  :
@@ -1223,19 +1224,38 @@ class CLS_TwitterMain():
 				wTweet = wTweet + "[ご注意] ユーザ " + gVal.ARR_ListFavo[wKey]['screen_name'] + " のリスト " + gVal.ARR_ListFavo[wKey]['list_name'] + " はフォロー禁止です。" + '\n'
 				wTweet = wTweet + "[Caution] Excuse me. The list " + gVal.ARR_ListFavo[wKey]['list_name'] + " for user " + gVal.ARR_ListFavo[wKey]['screen_name'] + " is unfollowable."
 				
+				wTweetID = "(none)"
 				if gVal.DEF_STR_TLNUM['sendListUsersCaution']==True :
 					#############################
 					# ツイート送信
 					wTweetRes = gVal.OBJ_Tw_IF.Tweet( wTweet )
 					if wTweetRes['Result']!=True :
-						if wTweetRes['StatusCode']=="403" :
-							wStr = "●警告に対応してないユーザ: " + wListRes['Responce'][wID]['screen_name']
-							CLS_OSIF.sPrn( wStr )
-						else:
-							wRes['Reason'] = "Twitter API Error(3): " + wTweetRes['Reason']
-							gVal.OBJ_L.Log( "B", wRes )
-							return wRes
+###						if wTweetRes['StatusCode']=="403" :
+###							wStr = "●警告に対応してないユーザ: " + wListRes['Responce'][wID]['screen_name']
+###							CLS_OSIF.sPrn( wStr )
+###						else:
+###							wRes['Reason'] = "Twitter API Error(3): " + wTweetRes['Reason']
+###							gVal.OBJ_L.Log( "B", wRes )
+###							return wRes
+						wRes['Reason'] = "Twitter API Error(3): " + wTweetRes['Reason']
+						gVal.OBJ_L.Log( "B", wRes )
+						continue
 					else:
+						### Tweet完了まで10秒遅延待機
+						CLS_OSIF.sSleep(10)
+						
+						### ツイートIDを取得する
+						wTweetRes = gVal.GetSearch( wTweet )
+						if wTweetRes['Result']!=True :
+							wRes['Reason'] = "Twitter API Error(4): " + wTweetRes['Reason']
+							gVal.OBJ_L.Log( "B", wRes )
+							continue
+						if len(wTweetRes['Responce'])!=1 :
+							wRes['Reason'] = "Twitter is not one screen_name=" + wListRes['Responce'][wID]['screen_name']
+							gVal.OBJ_L.Log( "B", wRes )
+							continue
+						wTweetID = str( wTweetRes['Responce'][0]['id'] )
+						
 						### ログに記録
 						gVal.OBJ_L.Log( "U", wRes, "●リスト登録への警告: " + wListRes['Responce'][wID]['screen_name'] )
 				else:
@@ -1243,7 +1263,12 @@ class CLS_TwitterMain():
 					gVal.OBJ_L.Log( "U", wRes, "●リスト登録への警告(Twitter未送信): " + wListRes['Responce'][wID]['screen_name'] )
 				
 				### IDを警告済に追加
-				gVal.ARR_CautionUserID.append( wID )
+###				gVal.ARR_CautionUserID.append( wID )
+				wSubRes = gVal.OBJ_DB_IF.SetCautionTweet( wListRes['Responce'][wID], wTweetID )
+				if wSubRes['Result']!=True :
+					wRes['Reason'] = "SetCautionTweet is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					continue
 		
 		wStr = "チェック終了" + '\n'
 		CLS_OSIF.sPrn( wStr )

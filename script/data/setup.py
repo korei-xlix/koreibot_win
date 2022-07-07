@@ -326,6 +326,7 @@ class CLS_Setup():
 		self.__create_TBL_TRAFFIC_DATA( inDBobj )
 		self.__create_TBL_EXC_WORD( inDBobj )
 		self.__create_TBL_EXC_USER( inDBobj )
+		self.__create_TBL_CAUTION_TWEET( inDBobj )
 		self.__create_TBL_SEARCH_WORD( inDBobj )
 		self.__create_TBL_LIST_FAVO( inDBobj )
 		return True
@@ -343,6 +344,8 @@ class CLS_Setup():
 		wQuery = "drop table if exists tbl_exc_word ;"
 		inOBJ_DB.RunQuery( wQuery )
 		wQuery = "drop table if exists tbl_exc_user ;"
+		inOBJ_DB.RunQuery( wQuery )
+		wQuery = "drop table if exists tbl_caution_tweet ;"
 		inOBJ_DB.RunQuery( wQuery )
 		wQuery = "drop table if exists tbl_search_word ;"
 		inOBJ_DB.RunQuery( wQuery )
@@ -566,6 +569,35 @@ class CLS_Setup():
 ##					"screen_name 禁止ユーザ名
 ##					"report      true= 通報対象
 ##					"vip         true= 監視外(ログ記録なし)
+		
+		inOBJ_DB.RunQuery( wQuery )
+		return
+
+
+
+#####################################################
+# テーブル作成: TBL_CAUTION_TWEET
+#####################################################
+	def __create_TBL_CAUTION_TWEET( self, inOBJ_DB, inTBLname="tbl_caution_tweet" ):
+		#############################
+		# テーブルのドロップ
+		wQuery = "drop table if exists " + inTBLname + ";"
+		inOBJ_DB.RunQuery( wQuery )
+		
+		#############################
+		# テーブル枠の作成
+		wQuery = "create table " + inTBLname + "(" + \
+					"twitterid   TEXT  NOT NULL," + \
+					"regdate     TIMESTAMP," + \
+					"tweet_id    TEXT  NOT NULL," + \
+					"id          TEXT  NOT NULL," + \
+					"screen_name TEXT  NOT NULL, " + \
+					" PRIMARY KEY ( id ) ) ;"
+		
+##					"regdate     DB登録日時
+##					"tweet_id    Tweet ID
+##					"id          ユーザID
+##					"screen_name ユーザ名
 		
 		inOBJ_DB.RunQuery( wQuery )
 		return

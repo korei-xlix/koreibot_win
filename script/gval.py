@@ -161,6 +161,9 @@ class gVal() :
 		
 		"sendListUsersCaution"		: True,				# リスト登録チェック時警告を送信するか  True=送信
 #		"sendListUsersCaution"		: False,			# リスト登録チェック時警告を送信するか  True=送信
+		"checkListUnfollower"		: True,				# リスト登録チェック時 フォロワーでないユーザへ警告を送信するか  True=送信
+#		"checkListUnfollower"		: False,			# リスト登録チェック時 フォロワーでないユーザへ警告を送信するか  True=送信
+		"forDeleteCautionTweetSec"	: 172800,			# 警告メッセージを削除する期間  2日 (60x60x24)x2
 		
 		"resetAPISec"		: 900,						# APIリセット周期 15分 60x15
 		"forLockLimSec"		: 120,						# 排他保持時間     2分 60x2 
@@ -230,7 +233,8 @@ class gVal() :
 	ARR_ListFavo = {}										# リストいいね指定
 	ARR_NotReactionUser = {}								# リアクション禁止ユーザ
 	ARR_SearchData = {}										# 検索データ
-	ARR_CautionUserID = []									# 警告済ユーザID
+###	ARR_CautionUserID = []									# 警告済ユーザID
+	ARR_CautionTweet = {}									# 警告ツイート
 
 
 

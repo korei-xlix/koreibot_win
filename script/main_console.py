@@ -321,10 +321,16 @@ class CLS_Main_Console() :
 ##			else:
 ##				print("NG")
 
-			wSubRes = gVal.OBJ_Tw_IF.ViewList_User( "korei_comm" )
+###			wSubRes = gVal.OBJ_Tw_IF.ViewList_User( "korei_comm" )
 
+######		
+			wTweetRes = gVal.OBJ_Tw_IF.Tweet( "てすとついーと２" )
 
+			wTweetRes = gVal.OBJ_Tw_IF.GetSearch( inQuery="てすとついーと２" )
 
+			print(str( wTweetRes ))
+
+######		
 		
 	#####################################################
 		#############################

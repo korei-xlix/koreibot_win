@@ -1084,14 +1084,12 @@ class CLS_DB_IF() :
 #####################################################
 # リストいいね指定
 #####################################################
-###	def GetOtherListFavo(self):
 	def GetListFavo(self):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
 		wRes = CLS_OSIF.sGet_Resp()
 		wRes['Class'] = "CLS_DB_IF"
-###		wRes['Func']  = "GetOtherListFavo"
 		wRes['Func']  = "GetListFavo"
 		
 		#############################
@@ -1119,10 +1117,8 @@ class CLS_DB_IF() :
 			wScreenName = wARR_DBData[wIndex]['screen_name']
 			
 			wCell = {
-###				"screen_name"	: wARR_DBData[wIndex]['screen_name'],
 				"screen_name"	: wScreenName,
 				"list_name"		: wARR_DBData[wIndex]['list_name'],
-###				"list_id"		: wARR_DBData[wIndex]['list_id'],
 				"valid"			: wARR_DBData[wIndex]['valid'],
 				"follow"		: wARR_DBData[wIndex]['follow'],
 				"caution"		: wARR_DBData[wIndex]['caution'],
@@ -1140,14 +1136,12 @@ class CLS_DB_IF() :
 		return wRes
 
 	#####################################################
-###	def SetOtherListFavo( self, inARRData ):
 	def SetListFavo( self, inARRData ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
 		wRes = CLS_OSIF.sGet_Resp()
 		wRes['Class'] = "CLS_DB_IF"
-###		wRes['Func']  = "SetOtherListFavo"
 		wRes['Func']  = "SetListFavo"
 		
 		#############################
@@ -1163,13 +1157,10 @@ class CLS_DB_IF() :
 			
 			wARR_Line = wLine.split(",")
 			### 要素数が少ないのは除外
-###			if len(wARR_Line)!=4 :
-###			if len(wARR_Line)!=5 :
 			if len(wARR_Line)!=6 :
 				continue
 			
 			### データ登録
-###			wFLG_Follow = True if wARR_Line[0]=="***" else False
 			### フォロー/フォロワー含むか
 			wARR_Line[0] = True if wARR_Line[0]=="***" else False
 			### 警告
@@ -1180,22 +1171,9 @@ class CLS_DB_IF() :
 			wARR_Line[3] = True if wARR_Line[3]=="***" else False
 			
 			wCell = {
-###				"screen_name"	: wARR_Line[0],
-###				"id"			: wARR_Line[1],
-###				"list_name"		: wARR_Line[2],
-###				"list_id"		: wARR_Line[3],
-###				"screen_name"	: wARR_Line[1],
-###				"id"			: wARR_Line[2],
-###				"list_name"		: wARR_Line[3],
-###				"list_id"		: wARR_Line[4],
 				"screen_name"	: wARR_Line[4],
-###				"id"			: wARR_Line[5],
 				"list_name"		: wARR_Line[5],
-###				"list_id"		: wARR_Line[7],
 				"valid"			: True,
-###				"follow"		: wFLG_Follow,
-###				"caution"		: False,
-###				"sensitive"		: False,
 				"follow"		: wARR_Line[0],
 				"caution"		: wARR_Line[1],
 				"sensitive"		: wARR_Line[2],
@@ -1243,9 +1221,6 @@ class CLS_DB_IF() :
 					str(wARR_Data[wKey]['auto_rem']) + " " + \
 					") ;"
 			
-###					"'" + str(wARR_Data[wKey]['id']) + "', " + \
-###					"'" + str(wARR_Data[wKey]['list_id']) + "', " + \
-###
 			#############################
 			# クエリの実行
 			wResDB = self.OBJ_DB.RunQuery( wQuery )
@@ -1264,14 +1239,12 @@ class CLS_DB_IF() :
 		return wRes
 
 	#####################################################
-###	def SaveOtherListFavo(self):
 	def SaveListFavo(self):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
 		wRes = CLS_OSIF.sGet_Resp()
 		wRes['Class'] = "CLS_DB_IF"
-###		wRes['Func']  = "SaveOtherListFavo"
 		wRes['Func']  = "SaveListFavo"
 		
 		wUpdate = False
@@ -1295,8 +1268,6 @@ class CLS_DB_IF() :
 					"list_name = '" + gVal.ARR_ListFavo[wKey]['list_name'] + "' " + \
 					";"
 			
-###					"id = '" + gVal.ARR_ListFavo[wKey]['id'] + "' and " + \
-###					"list_id = '" + gVal.ARR_ListFavo[wKey]['list_id'] + "' " + \
 			#############################
 			# クエリの実行
 			wResDB = self.OBJ_DB.RunQuery( wQuery )
@@ -1311,6 +1282,143 @@ class CLS_DB_IF() :
 		
 		if wUpdate==True :
 			CLS_OSIF.sPrn( "リストいいねの設定を更新しました。" )
+		
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# 警告ツイート
+#####################################################
+	def GetCautionTweet(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "GetCautionTweet"
+		
+		#############################
+		# データベースを取得
+		wQuery = "select * from tbl_caution_tweet " + \
+					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "B", wRes )
+			return False
+		
+		#############################
+		# 辞書型に整形
+		wARR_DBData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
+		
+		#############################
+		# 添え字をIDに差し替える
+		wARR_DBData = gVal.OBJ_DB_IF.ChgDataID( wARR_DBData )
+		
+		#############################
+		# グローバルに保存する
+		gVal.ARR_CautionTweet = wARR_Data
+		
+		#############################
+		# =正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def SetCautionTweet( self, inUser, inTweetID ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "SetCautionTweet"
+		
+		wUserID = str( inUser['id'] )
+		
+		#############################
+		# ダブりチェック
+		if wUserID in gVal.ARR_CautionTweet :
+			wRes['Reason'] = "Dual regist user: screen_name=" + str( inUser['screen_name'] )
+			CLS_OSIF.sErr( wRes )
+			return wRes
+		
+		#############################
+		# データの組み立て
+		wCell = {
+			"twitterid"		: gVal.STR_UserInfo['Account'],
+			"regdate"		: str( gVal.STR_SystemInfo['TimeDate'] ),
+			"tweet_id"		: str( inTweetID ),
+			"id"			: wUserID,
+			"screen_name"	: str( inUser['screen_name'] )
+		}
+		
+		#############################
+		# データベースに登録する
+		wQuery = "insert into tbl_caution_tweet values (" + \
+				"'" + wCell['twitterid'] + "', " + \
+				"'" + wCell['regdate'] + "', " + \
+				"'" + wCell['tweet_id'] + "', " + \
+				"'" + wCell['id'] + "', " + \
+				"'" + wCell['screen_name'] + "' " + \
+				") ;"
+		
+		#############################
+		# クエリの実行
+		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			CLS_OSIF.sErr( wRes )
+			return wRes
+		
+		#############################
+		# グローバルを更新する
+		gVal.ARR_CautionTweet.update({ wUserID : wCell })
+		
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def DeleteCautionTweet( self, inUser):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "DeleteCautionTweet"
+		
+		wUserID = str( inUser['id'] )
+		
+		#############################
+		# 登録チェック
+		if wUserID not in gVal.ARR_CautionTweet :
+			wRes['Reason'] = "Not regist user: screen_name=" + str( inUser['screen_name'] )
+			CLS_OSIF.sErr( wRes )
+			return wRes
+		
+		#############################
+		# レコードから削除する
+		wQuery = "delete from tbl_caution_tweet " + \
+					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
+					"id = '" + wUserID + "' ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			CLS_OSIF.sErr( wRes )
+			return False
+		
+		#############################
+		# グローバルを更新する
+		del gVal.ARR_CautionTweet[wUserID]
 		
 		wRes['Result'] = True
 		return wRes
