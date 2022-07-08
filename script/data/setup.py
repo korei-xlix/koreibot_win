@@ -117,15 +117,6 @@ class CLS_Setup():
 			##キャンセル
 			return True
 		
-###		#############################
-###		# ユーザフォルダの存在チェック
-###		if CLS_File.sExist( gVal.DEF_USERDATA_PATH )!=True :
-###			## フォルダがなければ作成する
-###			if CLS_File.sMkdir( gVal.DEF_USERDATA_PATH )!=True :
-###				wRes['Reason'] = "フォルダの作成に失敗しました: path=" + gVal.DEF_USERDATA_PATH
-###				CLS_OSIF.sErr( wRes )
-###				return False
-###		
 		#############################
 		# DBに接続 (接続情報の作成)
 		gVal.OBJ_DB_IF = CLS_DB_IF()
@@ -161,7 +152,6 @@ class CLS_Setup():
 #####################################################
 # データ追加モード
 #####################################################
-###	def Add( self, inPassWD=None, inDBInit=False ):
 	def Add( self, inWordOnly=False, inDBInit=False ):
 		#############################
 		# 応答形式の取得
@@ -170,7 +160,6 @@ class CLS_Setup():
 		wRes['Class'] = "CLS_Setup"
 		wRes['Func']  = "Add"
 		
-###		CLS_OSIF.sPrn( "追加データをデータベースに追加します" + '\n' )
 		if inWordOnly==False :
 			CLS_OSIF.sPrn( "〇 追加データをデータベースに追加します" + '\n' )
 		else:
@@ -242,7 +231,6 @@ class CLS_Setup():
 		#############################
 		# データベースを初期化する
 		# ※初期化しないほうが便利
-###		if inDBInit==True :
 		if inDBInit==True and inWordOnly==False :
 			self.__create_TBL_EXC_WORD( gVal.OBJ_DB_IF.OBJ_DB )
 		
@@ -382,7 +370,6 @@ class CLS_Setup():
 					"lfavdate    TIMESTAMP," + \
 					"arlistname  TEXT," + \
 					" PRIMARY KEY ( twitterid ) ) ;"
-###					"lfavoname   TEXT," + \
 
 ##					"twitterid   記録したユーザ(Twitter ID)
 ##					"apikey      Twitter Devで取ったAPI key

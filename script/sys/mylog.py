@@ -77,17 +77,14 @@ class CLS_Mylog():
 		# ログレベルのチェック
 		wLevel = inLevel
 		if wLevel==None or wLevel=="" :
-###			wLevel = "N"
 			wLevel = "0"
 		###大文字変換
 		try:
 			wLevel = wLevel.upper()
 		except ValueError as err :
-###			wLevel = "N"
 			wLevel = "0"
 		###定義チェック
 		if wLevel not in self.DEF_STR_LEVEL :
-###			wLevel = "N"
 			wLevel = "0"
 		
 		#############################
@@ -176,13 +173,8 @@ class CLS_Mylog():
 		
 		#############################
 		# ログの組み立て
-###		if wLevel=="U" :
-###		if wLevel=="U" or \
-###		if wLevel=="U" or wLevel=="R" or \
-###		   ( wLevel=="T" and inText!=None ) :
 		if ( wLevel=="S" or wLevel=="R" or wLevel=="U" or wLevel=="T" \
 		   and inText!=None ) :
-###			wOutLog = wSTR_Log['Reason']
 			wOutLog = wLevel + ": " + wSTR_Log['Reason']
 		else:
 			wOutLog = wLevel + ": "
@@ -208,12 +200,10 @@ class CLS_Mylog():
 		if wLevel=="A" or wLevel=="X" :
 			### Aクラス、テストログは表示
 			wFLG_View = True
-###		elif wLevel=="R" or wLevel=="T" :
 		elif wLevel=="S" or wLevel=="T" :
 			### 運用ログでテキストが設定されていれば表示
 			if  inText!=None :
 				wFLG_View = True
-###		elif wLevel=="U" :
 		elif wLevel=="R" or wLevel=="U" :
 			### ユーザログは表示
 			wFLG_View = True
@@ -244,7 +234,6 @@ class CLS_Mylog():
 	def __writeFile( self, inTimeDate, inLog, inARR_Data=[] ):
 		#############################
 		# ユーザフォルダの存在チェック
-###		if CLS_File.sExist( gVal.DEF_USERDATA_PATH )!=True :
 		wLogPath = gVal.DEF_STR_FILE['LogBackup_path']
 		if CLS_File.sExist( wLogPath )!=True :
 			###フォルダがなければ諦める
@@ -252,12 +241,7 @@ class CLS_Mylog():
 		
 		#############################
 		# ログフォルダの作成
-###		wLogPath = gVal.DEF_USERDATA_PATH + "log"
 		if CLS_File.sExist( wLogPath )!=True :
-###			###まだ未生成なら作成する
-###			if CLS_File.sMkdir( wLogPath )!=True :
-###				###作れなければ諦める
-###				return False
 			###まだ未生成なら諦める
 			return False
 		
@@ -335,7 +319,6 @@ class CLS_Mylog():
 						"level = 'N' ) and " + \
 						"( lupdate > now() - interval '2 week' ) " + \
 						"order by lupdate DESC ;"
-###						"level = 'R' " + \
 		
 		### wViewMode=E 異常ログ
 		elif wViewMode=="E" :
@@ -350,7 +333,6 @@ class CLS_Mylog():
 						"level = '0' ) and " + \
 						"( lupdate > now() - interval '2 week' ) " + \
 						"order by lupdate DESC ;"
-###						"level = 'N' ) and " + \
 		
 		### wViewMode=U ユーザ操作ログ
 		elif wViewMode=="U" :
@@ -361,7 +343,6 @@ class CLS_Mylog():
 						"level = 'U' ) and " + \
 						"( lupdate > now() - interval '2 week' ) " + \
 						"order by lupdate DESC ;"
-###						"level = 'U' and " + \
 		
 		### wViewMode=A 全ログ
 		else:
@@ -508,9 +489,6 @@ class CLS_Mylog():
 		
 		#############################
 		# ログ消去
-###		wQuery = "delete from tbl_log_data where " + \
-###					"twitterid = '" + gVal.STR_UserInfo['Account'] + "' " + \
-###					";"
 		if inAllClear==True :
 			### 全ログ消去
 			wQuery = "delete from tbl_log_data where " + \
@@ -531,8 +509,6 @@ class CLS_Mylog():
 						"level = 'X' or " + \
 						"level = '0' ) " + \
 						";"
-###						"level = 'R' or " + \
-###						"level = 'N' ) " + \
 		
 		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery, False )
 		if wResDB['Result']!=True :
@@ -552,15 +528,8 @@ class CLS_Mylog():
 # ログ退避 書き出し
 #####################################################
 	def __writeLogFile( self, inTimeDate, inARR_Data=[] ):
-###		#############################
-###		# ユーザフォルダの存在チェック
-###		if CLS_File.sExist( gVal.DEF_USERDATA_PATH )!=True :
-###			###フォルダがなければ諦める
-###			return False
-###		
 		#############################
 		# ログフォルダの作成
-###		wLogPath = gVal.DEF_USERDATA_PATH + "log"
 		wLogPath = gVal.DEF_STR_FILE['LogBackup_path']
 		if CLS_File.sExist( wLogPath )!=True :
 			###まだ未生成なら作成する

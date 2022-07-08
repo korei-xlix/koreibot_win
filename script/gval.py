@@ -234,7 +234,6 @@ class gVal() :
 	ARR_ListFavo = {}										# リストいいね指定
 	ARR_NotReactionUser = {}								# リアクション禁止ユーザ
 	ARR_SearchData = {}										# 検索データ
-###	ARR_CautionUserID = []									# 警告済ユーザID
 	ARR_CautionTweet = {}									# 警告ツイート
 
 

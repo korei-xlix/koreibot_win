@@ -75,8 +75,6 @@ class CLS_Main_Console() :
 			if wCommand.find("\\q")>=0 or wCommand=="exit" :
 				#############################
 				# 終了
-###				wRes['Reason'] = "コンソール停止"
-###				gVal.OBJ_L.Log( "R", wRes )
 				gVal.OBJ_L.Log( "S", wRes, "コンソール停止" )
 				CLS_BotCtrl.sBotEnd()	#bot停止
 				break
@@ -175,48 +173,16 @@ class CLS_Main_Console() :
 			cls.OBJ_TwitterMain.AllRun( inFLG_Short=True )
 		
 	#####################################################
-###		#############################
-###		# トレンドツイート
-###		elif inCommand=="\\tt" :
-###			cls.OBJ_TwitterMain.TrendTweet()
-###		##注意：この機能はTwitter 自動化ルールに抵触してるため
-###		##      機能削除とします
-###		##		https://help.twitter.com/en/rules-and-policies/twitter-automation
-###		
 		#############################
 		# キーワードいいね
 		elif inCommand=="\\kk" :
 			cls.OBJ_TwitterMain.KeywordFavo()
 		
-###	#####################################################
-###		#############################
-###		# Twitter APIの変更
-###		elif inCommand=="\\ca" :
-###			wResAPI = gVal.OBJ_Tw_IF.SetTwitter( gVal.STR_UserInfo['Account'] )
-###			if wResAPI['Result']!=True :
-###				wRes['Reason'] = "Set Twitter API failed: " + wResAPI['Reason']
-###				gVal.OBJ_L.Log( "D", wRes )
-###		
-###		#############################
-###		# トレンドタグ設定
-###		elif inCommand=="\\tc" :
-###			cls.OBJ_TwitterMain.SetTrendTag()
-###		
-###		#############################
-###		# リスト通知設定
-###		elif inCommand=="\\ic" :
-###			cls.OBJ_TwitterMain.SetListInd()
-###		
 		#############################
 		# リストいいね設定
 		elif inCommand=="\\fc" :
 			cls.OBJ_TwitterMain.SetListFavo()
 		
-###		#############################
-###		# リスト通知ユーザ表示
-###		elif inCommand=="\\iv" :
-###			cls.OBJ_TwitterMain.ViewListIndUser()
-###		
 	#####################################################
 		#############################
 		# ユーザ管理
@@ -228,11 +194,6 @@ class CLS_Main_Console() :
 		elif inCommand=="\\uc" :
 			cls.OBJ_TwitterMain.AdminCautionUser()
 		
-###		#############################
-###		# 禁止ユーザ
-###		elif inCommand=="\\ue" :
-###			cls.OBJ_TwitterMain.ExcuteUser()
-###		
 	#####################################################
 		#############################
 		# ログの表示(異常ログ)
@@ -254,16 +215,6 @@ class CLS_Main_Console() :
 		elif inCommand=="\\la" :
 			gVal.OBJ_L.View()
 		
-###		#############################
-###		# ログクリア
-###		elif inCommand=="\\lc" :
-###			gVal.OBJ_L.Clear()
-###		
-###		#############################
-###		# 全ログクリア
-###		elif inCommand=="\\lca" :
-###			gVal.OBJ_L.Clear( inAllClear=True )
-###		
 		#############################
 		# システム情報の表示
 		elif inCommand=="\\v" :
@@ -271,80 +222,16 @@ class CLS_Main_Console() :
 		
 		#############################
 		# トラヒック情報の表示
-###		elif inCommand=="\\vt" :
 		elif inCommand=="\\lt" :
 			wResTraffic = CLS_Traffic.sView()
 			if wResTraffic['Result']!=True :
 				gVal.OBJ_L.Log( "B", wResTraffic )
 		
-		#############################
-		# テスト
-		elif inCommand=="\\test" :
-			
-#			wSubRes = cls.OBJ_TwitterMain.TestRun()
-###			wTime = CLS_OSIF.sGetTimeformat_Twitter( "2021-10-06T12:23:44.000Z" )
-###			print( str(wTime['TimeDate']) )
+#		#############################
+#		# テスト
+#		elif inCommand=="\\test" :
+#			
 #
-###			wSubRes = cls.OBJ_TwitterMain.CircleWeekend()
-#
-#			wSubRes = gVal.OBJ_Tw_IF.GetTweetLookup( "1473387112351559680" )
-#			print( str(wSubRes) )
-##			wTwitterRes = gVal.OBJ_Tw_IF.GetTweetLookup( "1516980757394190337" )
-##			if wTwitterRes['Result']!=True :
-##				wRes['Reason'] = "Twitter API Error: " + wTwitterRes['Reason']
-##				gVal.OBJ_L.Log( "B", wRes )
-##				return wRes
-###			print( wTwitterRes['Responce'] )
-###
-###			print( "zzz: " + str(wTwitterRes['Responce']) )
-##
-##			d = {'k1': 1, 'k2': 2, 'k3': 3}
-##			print( str(d) )
-##			removed_value = d.pop('k1')
-##			print( str(d) )
-###			wSubRes = gVal.OBJ_DB_IF.GetRecordNum( "tbl_favouser_data" )
-###			print( str(wSubRes) )
-
-##			wSubRes = self.OBJ_Twitter.GetListMember( gVal.STR_UserInfo['ListName'] )
-##			if wSubRes['Result']!=True :
-##				wRes['Reason'] = "xxxx: " + wSubRes['Reason']
-##				gVal.OBJ_L.Log( "B", wRes )
-##				return wRes
-
-##			wARR_Dict = {}
-##			wARR_Dict.update({ "test1" : 1 })
-##			wARR_Dict.update({ "test2" : 2 })
-##			wARR_Dict.update({ "test3" : 3 })
-##			wARR_Dict.update({ "test4" : 4 })
-##			if "test2" in wARR_Dict :
-##				print("OK")
-##			else:
-##				print("NG")
-##			
-##			if "test5" in wARR_Dict :
-##				print("OK")
-##			else:
-##				print("NG")
-
-###			wSubRes = gVal.OBJ_Tw_IF.ViewList_User( "korei_comm" )
-
-######		
-#			wTweetRes = gVal.OBJ_Tw_IF.Tweet( "てすとついーと２" )
-#			wTweetRes = gVal.OBJ_Tw_IF.GetSearch( inQuery="てすとついーと２" )
-#			print(str( wTweetRes ))
-######		
-#			wSubRes = gVal.OBJ_Tw_IF.GetLists( "korei_xlix" )
-#			print(str( wSubRes ))
-######		
-#			wTweetRes = gVal.OBJ_Tw_IF.GetSearch( "togenohito " + '\n' + "お願い リスト vtuber をフォローするには当アカウント korei_xlix もフォローしてください。" )
-#			print(str( wTweetRes ))
-######		
-			wGetListsRes = gVal.OBJ_Tw_IF.GetLists( "account" )
-			print(str( wGetListsRes['Responce'] ))
-######		
-
-
-
 		
 	#####################################################
 		#############################
@@ -388,16 +275,10 @@ class CLS_Main_Console() :
 		wRes['Class'] = "CLS_Main_Console"
 		wRes['Func']  = "sRunSystemConfig"
 		
-###		#############################
-###		# ユーザ自動削除
-###		if inCommand=="\\rm" :
-###			cls.OBJ_TwitterMain.RunAutoUserRemove()
-###		
 	#####################################################
 		#############################
 		# トレンドタグ設定
 		if inCommand=="\\t" :
-###		elif inCommand=="\\t" :
 			cls.OBJ_TwitterMain.SetTrendTag()
 		
 		#############################
@@ -542,7 +423,6 @@ class CLS_Main_Console() :
 			wRes['Reason'] = "Set Traffic failed: reason" + CLS_OSIF.sCatErr( wResTraffic )
 			return wRes
 		if wResTraffic['Responce']==True :
-###			CLS_OSIF.sPrn( "トラヒック情報が切り替わりました。" )
 			gVal.OBJ_L.Log( "S", wRes, "〇トラヒック情報切り替え" )
 			wRes['Responce'] = False	#画面クリアさせない
 			cls.FLG_MainDispClear = False	#画面クリアさせない
@@ -560,97 +440,3 @@ class CLS_Main_Console() :
 
 
 
-#####################################################
-# システム情報の表示
-#####################################################
-###	@classmethod
-###	def sView_Sysinfo(cls):
-###		
-###		wStr = "情報収集中......" + '\n' ;
-###		CLS_OSIF.sPrn( wStr )
-###		
-###		#############################
-###		# 枠作成
-###		wSTR_Result = {
-###			"MyFollowNum" : 0,
-###			"FollowerNum" : 0,
-###			"FavoriteNum" : 0,
-###			"FavoUserDBNum" : 0
-###		}
-###		
-###		#############################
-###		# フォロー情報取得
-###		wFollowRes = gVal.OBJ_Tw_IF.GetFollow()
-###		if wFollowRes['Result']!=True :
-###			wRes['Reason'] = "GetFollow is failed"
-###			gVal.OBJ_L.Log( "C", wRes )
-###			return wRes
-###		
-###		wFollowRes = gVal.OBJ_Tw_IF.GetFollowerID()
-###		wSTR_Result['MyFollowNum'] = len( wFollowRes['MyFollowID'] )
-###		wSTR_Result['FollowerNum'] = len( wFollowRes['FollowerID'] )
-###		
-###		#############################
-###		# ふぁぼ一覧 取得
-###		wFavoRes = gVal.OBJ_Tw_IF.GetFavo()
-###		if wFavoRes['Result']!=True :
-###			wRes['Reason'] = "GetFavoData is failed"
-###			gVal.OBJ_L.Log( "C", wRes )
-###			return wRes
-###		
-###		wFavoRes = gVal.OBJ_Tw_IF.GetFavoData()
-###		wSTR_Result['FavoriteNum'] = len( wFavoRes )
-###		
-###		#############################
-###		# いいねDBレコード数の取得
-###		wDBRes = gVal.OBJ_DB_IF.GetRecordNum( "tbl_favouser_data" )
-###		if wDBRes['Result']!=True :
-###			wRes['Reason'] = "GetRecordNum is failed"
-###			gVal.OBJ_L.Log( "C", wRes )
-###			return wRes
-###		
-###		wSTR_Result['FavoUserDBNum'] = wDBRes['Responce']
-###		
-###		#############################
-###		# 画面クリア
-###		CLS_OSIF.sDispClr()
-###		
-###		#############################
-###		# ヘッダ表示
-###		wStr = "--------------------" + '\n'
-###		wStr = wStr + " システム情報" + '\n'
-###		wStr = wStr + "--------------------" + '\n'
-###		
-###		#############################
-###		# 時間の取得
-###		wRes = CLS_OSIF.sGetTime()
-###		if wRes['Result']==True :
-###			wStr = wStr + wRes['TimeDate'] + '\n'
-###		
-###		#############################
-###		# 情報組み立て
-###		wStr = wStr + "Client Name = " + gVal.STR_SystemInfo['Client_Name'] + '\n'
-######		wStr = wStr + "Project Name= " + gVal.STR_SystemInfo['ProjectName'] + '\n'
-###		wStr = wStr + "github      = " + gVal.STR_SystemInfo['github'] + '\n'
-###		wStr = wStr + "Admin       = " + gVal.STR_SystemInfo['Admin'] + '\n'
-###		wStr = wStr + "Twitter URL = " + gVal.STR_SystemInfo['TwitterURL'] + '\n'
-###		wStr = wStr + "Update      = " + gVal.STR_SystemInfo['Update'] + '\n'
-###		wStr = wStr + "Version     = " + gVal.STR_SystemInfo['Version'] + '\n'
-###		
-###		wStr = wStr + "Python      = " + str( gVal.STR_SystemInfo['PythonVer'] )  + '\n'
-###		wStr = wStr + "HostName    = " + gVal.STR_SystemInfo['HostName'] + '\n'
-###		wStr = wStr + '\n'
-###		
-###		wStr = wStr + "Tw MyFollow Num = " + str(wSTR_Result['MyFollowNum']) + '\n'
-###		wStr = wStr + "Tw Follower Num = " + str(wSTR_Result['FollowerNum']) + '\n'
-###		wStr = wStr + "Tw Favorite Num = " + str(wSTR_Result['FavoriteNum']) + '\n'
-###		wStr = wStr + '\n'
-###		wStr = wStr + "FavoUser DB Num = " + str(wSTR_Result['FavoUserDBNum']) + '\n'
-###		
-###		#############################
-###		# コンソールに表示
-###		CLS_OSIF.sPrn( wStr )
-###		return
-###
-###
-###

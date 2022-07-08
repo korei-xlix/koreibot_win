@@ -29,7 +29,6 @@ class CLS_Twitter_IF() :
 	DEF_VAL_FAVO_1DAYSEC = 86400	#いいね1日経過時間  1日 (60x60x24)x1
 
 	ARR_Lists = {}			#リスト一覧
-###	ARR_ListIndUser = {}	#リスト通知のユーザ
 
 
 
@@ -491,7 +490,6 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# ログ
-###		gVal.OBJ_L.Log( "R", wRes, "Twitter規制解除＆再接続" )
 		gVal.OBJ_L.Log( "S", wRes, "Twitter規制解除＆再接続" )
 		
 		#############################
@@ -703,8 +701,6 @@ class CLS_Twitter_IF() :
 		wTweets = {}
 		if "data" in wTweetRes['Responce'] :
 			
-###			wSTR_Cell = {}
-###			wSTR_CellUser = {}
 			wID     = str( wTweetRes['Responce']['data']['id'] )
 			wUserID = str( wTweetRes['Responce']['data']['author_id'] )
 			
@@ -724,14 +720,6 @@ class CLS_Twitter_IF() :
 				return wRes
 			wTimeDate = str( wTimeRes['TimeDate'] )
 		 	
-###			wSTR_CellUser.update({ "id" 			: wUserID })
-###			wSTR_CellUser.update({ "screen_name"	: wScreenName })
-###			
-###			wSTR_Cell.update({ "created_at"		: wTimeDate })
-###			wSTR_Cell.update({ "id"				: wID })
-###			wSTR_Cell.update({ "text"			: wTweetRes['Responce']['data']['text'] })
-###			wSTR_Cell.update({ "user"			: wSTR_CellUser })
-			
 			wSTR_CellUser = {
 				"id" 			: wUserID,
 				"screen_name"	: wScreenName,
@@ -799,12 +787,6 @@ class CLS_Twitter_IF() :
 					continue
 				wTweetID = str( wTweet['referenced_tweets'][0]['id'] )
 				
-###				wSTR_Cell = {}
-###				wSTR_Cell.update({ "id" : wReplyUserID })	#ユーザID
-###				wSTR_Cell.update({ "created_at"    : wTimeDate })
-###				wSTR_Cell.update({ "reply_id"    : wReplyID })
-###				wSTR_Cell.update({ "reply_text"  : wReplyText })
-###				wSTR_Cell.update({ "tweet_id"    : wTweetID })
 				wSTR_Cell = {
 					"id" 			: wReplyUserID,
 					"created_at"    : wTimeDate,
@@ -860,10 +842,6 @@ class CLS_Twitter_IF() :
 				wID = str(wUser['id'])
 				wName = wUser['name'].replace( "'", "''" )
 				
-###				wSTR_Cell = {}
-###				wSTR_Cell.update({ "id"          : wID })
-###				wSTR_Cell.update({ "name"        : wName })
-###				wSTR_Cell.update({ "screen_name" : wUser['username'] })
 				wSTR_Cell = {
 					"id"			: wID,
 					"name"			: wName,
@@ -914,10 +892,6 @@ class CLS_Twitter_IF() :
 				wID = str(wUser['id'])
 				wName = wUser['name'].replace( "'", "''" )
 				
-###				wSTR_Cell = {}
-###				wSTR_Cell.update({ "id"          : wID })
-###				wSTR_Cell.update({ "name"        : wName })
-###				wSTR_Cell.update({ "screen_name" : wUser['username'] })
 				wSTR_Cell = {
 					"id"			: wID,
 					"name"			: wName,
@@ -981,12 +955,6 @@ class CLS_Twitter_IF() :
 						continue
 					
 					wUserID = str( wTweet['author_id'] )
-###					wSTR_Cell.update({ "id"     : wUserID })					#引用したユーザID
-###					wSTR_Cell.update({ "name"        : None })
-###					wSTR_Cell.update({ "screen_name" : None })
-###					wSTR_Cell.update({ "tweet_id"    : str( wTweet['id'] ) })	#引用リツイートID
-###					wSTR_Cell.update({ "text"        : wTweet['text'] })
-###					wSTR_Cell.update({ "set_data"    : True })
 					wSTR_Cell = {
 						"id"			: wUserID,
 						"name"			: None,
@@ -1795,42 +1763,8 @@ class CLS_Twitter_IF() :
 
 
 #####################################################
-# リスト取得
-#####################################################
-###	def GetList( self, inScreenName=None ):
-###		#############################
-###		# 応答形式の取得
-###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-###		wRes = CLS_OSIF.sGet_Resp()
-###		wRes['Class'] = "CLS_Twitter_IF"
-###		wRes['Func']  = "GetList"
-###		
-###		wRes['Responce'] = {}
-###		#############################
-###		# リスト取得
-###		wSubRes = self.OBJ_Twitter.GetLists( inScreenName=inScreenName )
-###		if wSubRes['Result']!=True :
-###			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
-###			gVal.OBJ_L.Log( "B", wRes )
-###			return wRes
-###		
-###		wRes['Responce'] = wSubRes['Responce']
-###		#############################
-###		# 自分の場合、
-###		# グローバルにリストを保存する
-###		if inScreenName==None or inScreenName==gVal.STR_UserInfo['Account'] :
-###			self.ARR_Lists = wSubRes['Responce']
-###		
-###		wRes['Result'] = True
-###		return wRes
-###
-
-
-
-#####################################################
 # リストID取得
 #####################################################
-###	def GetListID( self, inScreenName=None, inListName ):
 	def GetListID( self, inListName, inScreenName=None ):
 		#############################
 		# 応答形式の取得
@@ -1870,8 +1804,6 @@ class CLS_Twitter_IF() :
 #####################################################
 # リストチェック
 #####################################################
-###	def CheckList( self, inListName ):
-###	def CheckList( self, inScreenName=None, inListName ):
 	def CheckList( self, inListName, inScreenName=None ):
 		#############################
 		# 応答形式の取得
@@ -1881,15 +1813,6 @@ class CLS_Twitter_IF() :
 		wRes['Func']  = "CheckList"
 		
 		wRes['Responce'] = False
-###		wFLG_Detect = False
-###		#############################
-###		# リストを取得してなければ取得する
-###		if len(self.ARR_Lists)==0 :
-###			wSubRes = self.GetList()
-###			if wSubRes['Result']!=True :
-###				wRes['Reason'] = "GetList is failed"
-###				gVal.OBJ_L.Log( "B", wRes )
-###				return wRes
 		#############################
 		# リスト取得
 		wSubRes = self.OBJ_Twitter.GetLists( inScreenName=inScreenName )
@@ -1901,11 +1824,8 @@ class CLS_Twitter_IF() :
 		#############################
 		# リストがTwitterにあるか確認
 		wFLG_Detect = False
-###		wKeylist = list( self.ARR_Lists.keys() )
 		wKeylist = list( wSubRes['Responce'].keys() )
-###		for wIndex in wKeylist :
 		for wKey in wKeylist :
-###			if self.ARR_Lists[wIndex]['name']==inListName :
 			if wSubRes['Responce'][wKey]['name']==inListName :
 				wFLG_Detect = True
 				break
@@ -1919,7 +1839,6 @@ class CLS_Twitter_IF() :
 #####################################################
 # リストユーザ取得
 #####################################################
-###	def GetListMember( self, inListName, inListOwner=None ):
 	def GetListMember( self, inListName, inScreenName=None ):
 		#############################
 		# 応答形式の取得
@@ -1929,18 +1848,6 @@ class CLS_Twitter_IF() :
 		wRes['Func']  = "GetListMember"
 		
 		wRes['Responce'] = {}
-###		#############################
-###		# リストがTwitterにあるか確認
-###		wSubRes = self.CheckList( inListName )
-###		if wSubRes['Result']!=True :
-###			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
-###			gVal.OBJ_L.Log( "B", wRes )
-###			return wRes
-###		if wSubRes['Responce']==False :
-###			wRes['Reason'] = "Twitter List not found: " + inListName
-###			gVal.OBJ_L.Log( "B", wRes )
-###			return wRes
-###		
 		#############################
 		# リストがTwitterにあるか確認
 		wSubRes = self.CheckList(
@@ -1960,7 +1867,6 @@ class CLS_Twitter_IF() :
 		# ユーザ一覧を取得する
 		wARR_ListUser = {}
 		
-###		wSubRes = self.OBJ_Twitter.GetListMember( inListName, inListOwner )
 		wSubRes = self.OBJ_Twitter.GetListMember(
 		   inListName=inListName,
 		   inScreenName=inScreenName )
@@ -1988,7 +1894,6 @@ class CLS_Twitter_IF() :
 #####################################################
 # リスト登録者取得
 #####################################################
-###	def GetListSubscribers( self, inListName, inListOwner=None ):
 	def GetListSubscribers( self, inListName, inScreenName=None ):
 		#############################
 		# 応答形式の取得
@@ -1998,18 +1903,6 @@ class CLS_Twitter_IF() :
 		wRes['Func']  = "GetListSubscribers"
 		
 		wRes['Responce'] = {}
-###		#############################
-###		# リストがTwitterにあるか確認
-###		wSubRes = self.CheckList( inListName )
-###		if wSubRes['Result']!=True :
-###			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
-###			gVal.OBJ_L.Log( "B", wRes )
-###			return wRes
-###		if wSubRes['Responce']==False :
-###			wRes['Reason'] = "Twitter List not found: " + inListName
-###			gVal.OBJ_L.Log( "B", wRes )
-###			return wRes
-###		
 		#############################
 		# リストがTwitterにあるか確認
 		wSubRes = self.CheckList(
@@ -2029,7 +1922,6 @@ class CLS_Twitter_IF() :
 		# ユーザ一覧を取得する
 		wARR_ListUser = {}
 		
-###		wSubRes = self.OBJ_Twitter.GetListSubscribers( inListName, inListOwner )
 		wSubRes = self.OBJ_Twitter.GetListSubscribers(
 		   inListName=inListName,
 		   inScreenName=inScreenName )
@@ -2061,20 +1953,14 @@ class CLS_Twitter_IF() :
 #####################################################
 # リスト通知 ユーザ取得
 #####################################################
-###	def GetListIndUser( self, inUpdate=False ):
 	def ListInd_GetUser(self):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
 		wRes = CLS_OSIF.sGet_Resp()
 		wRes['Class'] = "CLS_Twitter_IF"
-###		wRes['Func']  = "GetListIndUser"
 		wRes['Func']  = "ListInd_GetUser"
 		
-###		wRes['Responce'] = {
-###			"Num"		: 0,
-###			"Update"	: False
-###		}
 		wRes['Responce'] = {}
 		#############################
 		# リスト通知が有効か
@@ -2086,7 +1972,6 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# リストがTwitterにあるか確認
-###		wSubRes = self.CheckList( gVal.STR_UserInfo['ListName'] )
 		wSubRes = self.CheckList( inListName=gVal.STR_UserInfo['ListName'] )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "CheckList is failed"
@@ -2097,33 +1982,10 @@ class CLS_Twitter_IF() :
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-###		#############################
-###		# リスト通知のユーザIDが空なら
-###		#   ユーザ一覧を取得する
-###		if len(self.ARR_ListIndUser)==0 or inUpdate==True :
-###			self.ARR_ListIndUser = {}
-###			
-###			wSubRes = self.OBJ_Twitter.GetListMember( gVal.STR_UserInfo['ListName'] )
-###			if wSubRes['Result']!=True :
-###				wRes['Reason'] = "Twitter API Error(GetListMember): " + wSubRes['Reason']
-###				gVal.OBJ_L.Log( "B", wRes )
-###				return wRes
-###			
-###			for wLine in wSubRes['Responce'] :
-###				wCell = {
-###					"id"          : str( wLine['id'] ),
-###					"screen_name" : wLine['screen_name']
-###				}
-###				self.ARR_ListIndUser.update({ str(wLine['id']) : wCell })
-###			
-###			wRes['Responce']['Update'] = True
-###		
-###		wRes['Responce']['Num'] = len( self.ARR_ListIndUser )	#数を返す
 		#############################
 		# リスト通知のユーザ一覧を取得する
 		wARR_ListIndUser = {}
 		
-###		wSubRes = self.OBJ_Twitter.GetListMember( gVal.STR_UserInfo['ListName'] )
 		wSubRes = self.OBJ_Twitter.GetListMember( inListName=gVal.STR_UserInfo['ListName'] )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "Twitter error(GetListMember)"
@@ -2148,7 +2010,6 @@ class CLS_Twitter_IF() :
 #####################################################
 # リスト通知 ユーザチェック
 #####################################################
-###	def CheckListIndUser( self, inID ):
 	def ListInd_CheckUser( self, inID ):
 		#############################
 		# 応答形式の取得
@@ -2157,7 +2018,6 @@ class CLS_Twitter_IF() :
 		wRes['Class'] = "CLS_Twitter_IF"
 		wRes['Func']  = "ListInd_CheckUser"
 		
-###		wFLG_Detect = False
 		wRes['Responce'] = False
 		#############################
 		# リスト通知が有効か
@@ -2177,14 +2037,10 @@ class CLS_Twitter_IF() :
 		wARR_ListUser = wSubRes['Responce']
 		
 		#############################
-###		# リスト通知ユーザがTwitterにあるか確認
-###		if inID in self.ARR_ListIndUser :
 		# リスト通知ユーザに ID が登録されているか
 		if inID in wARR_ListUser :
-###			wFLG_Detect = True
 			wRes['Responce'] = True		#登録あり
 		
-###		wRes['Responce'] = wFLG_Detect
 		wRes['Result'] = True
 		return wRes
 
@@ -2193,7 +2049,6 @@ class CLS_Twitter_IF() :
 #####################################################
 # リスト通知 追加
 #####################################################
-###	def InserttListIndUser( self, inUser ):
 	def ListInd_AddUser( self, inUser ):
 		#############################
 		# 応答形式の取得
@@ -2204,7 +2059,6 @@ class CLS_Twitter_IF() :
 		
 		wID = str( inUser['id'] )
 		
-###		wRes['Responce'] = False	#通知済み
 		wRes['Responce'] = False	#実行
 		#############################
 		# リスト通知が有効か
@@ -2213,30 +2067,6 @@ class CLS_Twitter_IF() :
 			wRes['Reason'] = "List ind is invalid"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		
-###		#############################
-###		# リストがTwitterにあるか確認
-###		wSubRes = self.CheckList( gVal.STR_UserInfo['ListName'] )
-###		if wSubRes['Result']!=True :
-###			wRes['Reason'] = "CheckList is failed: " + wSubRes['Reason']
-###			gVal.OBJ_L.Log( "B", wRes )
-###			return wRes
-###		if wSubRes['Responce']==False :
-###			wRes['Reason'] = "Twitter List not found: " + gVal.STR_UserInfo['ListName']
-###			gVal.OBJ_L.Log( "D", wRes )
-###			return wRes
-###		
-###		#############################
-###		# リスト通知に存在するか？
-###		wSubRes = self.CheckListIndUser( inID=wID )
-###		if wSubRes['Result']!=True :
-###			wRes['Reason'] = "CheckListIndUser is failed: " + wSubRes['Reason']
-###			gVal.OBJ_L.Log( "B", wRes )
-###			return wRes
-###		if wSubRes['Responce']==True :
-###			### リスト通知済み
-###			wRes['Result'] = True
-###			return wRes
 		
 		#############################
 		# リスト通知にユーザが存在するか
@@ -2254,18 +2084,10 @@ class CLS_Twitter_IF() :
 		# リスト通知にID追加
 		wSubRes = self.OBJ_Twitter.AddUserList( gVal.STR_UserInfo['ListName'], wID )
 		if wSubRes['Result']!=True :
-###			wRes['Reason'] = "Twitter API Error(AddUserList): " + wSubRes['Reason'] + " : List Name=" + gVal.STR_UserInfo['ListName'] + " id=" + wID
 			wRes['Reason'] = "Twitter API Error(AddUserList): " + wSubRes['Reason'] + " : list=" + gVal.STR_UserInfo['ListName'] + " user=" + inUser['screen_name']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-###		### 追加
-###		wCell = {
-###			"id"          : wID,
-###			"screen_name" : inUser['screen_name']
-###		}
-###		self.ARR_ListIndUser.update({ wID : wCell })
-###		
 		wRes['Responce'] = True		#新規通知
 		wRes['Result'] = True
 		return wRes
@@ -2275,7 +2097,6 @@ class CLS_Twitter_IF() :
 #####################################################
 # リスト通知 クリア
 #####################################################
-###	def AllClearListInd(self):
 	def ListInd_Clear(self):
 		#############################
 		# 応答形式の取得
@@ -2293,8 +2114,6 @@ class CLS_Twitter_IF() :
 			return wRes
 		
 		#############################
-###		# リスト通知 ユーザの更新
-###		wSubRes = self.GetListIndUser( inUpdate=True )
 		# リスト通知のユーザ取得
 		wSubRes = self.ListInd_GetUser()
 		if wSubRes['Result']!=True :
@@ -2305,17 +2124,14 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# 全クリア
-###		wKeylist = list( self.ARR_ListIndUser.keys() )
 		wKeylist = list( wARR_ListUser.keys() )
 		for wID in wKeylist :
 			wSubRes = self.OBJ_Twitter.RemoveUserList( gVal.STR_UserInfo['ListName'], wID )
 			if wSubRes['Result']!=True :
-###				wRes['Reason'] = "Twitter API Error(RemoveUserList): " + wSubRes['Reason'] + " : List Name=" + gVal.STR_UserInfo['ListName'] + " user id=" + self.ARR_ListIndUser[wID]['screen_name']
 				wRes['Reason'] = "Twitter API Error(RemoveUserList): " + wSubRes['Reason'] + " : list=" + gVal.STR_UserInfo['ListName'] + " user=" + wARR_ListUser[wID]['screen_name']
 				gVal.OBJ_L.Log( "B", wRes )
 				continue
 		
-###		self.ARR_ListIndUser = {}
 		wRes['Result'] = True
 		return wRes
 
@@ -2339,9 +2155,6 @@ class CLS_Twitter_IF() :
 			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-###			wStr = wStr + str(wARR_List[wIndex]['id']) + " : "
-###			wStr = wStr + str(wARR_List[wIndex]['me']) + " : " 
-###			wStr = wStr + str(wARR_List[wIndex]['name']) + '\n'
 		
 		wRes['Responce'] = wSubRes['Responce']
 		wRes['Result'] = True
@@ -2412,7 +2225,6 @@ class CLS_Twitter_IF() :
 #####################################################
 # 自動リムーブリスト 追加
 #####################################################
-###	def AutoRemove_AddUser( self, inUser ):
 	def AutoRemove_AddUser( self, inUser, inFLG_Only=False ):
 		#############################
 		# 応答形式の取得
@@ -2487,8 +2299,6 @@ class CLS_Twitter_IF() :
 				gVal.OBJ_L.Log( "B", wRes )
 				continue
 			
-###			wStr = "●リスト解除: list=" + wARR_SubsList[wKey]['name'] + " user=" + inUser['screen_name']
-###			CLS_OSIF.sPrn( wStr )
 			gVal.OBJ_L.Log( "U", wRes, "●リスト解除: list=" + wARR_SubsList[wKey]['name'] + " user=" + inUser['screen_name'] )
 		
 		#############################
@@ -2500,8 +2310,6 @@ class CLS_Twitter_IF() :
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			
-###			wStr = "〇リスト追加: list=" + gVal.STR_UserInfo['ArListName'] + " user=" + inUser['screen_name']
-###			CLS_OSIF.sPrn( wStr )
 			gVal.OBJ_L.Log( "U", wRes, "〇リスト追加: list=" + gVal.STR_UserInfo['ArListName'] + " user=" + inUser['screen_name'] )
 			
 			wRes['Responce'] = True		#追加

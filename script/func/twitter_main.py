@@ -27,59 +27,8 @@ class CLS_TwitterMain():
 	CHR_GetListFavoDate = None
 	CHR_RunFollowerFavoDate = None
 	ARR_ReacrionUserID = []
-###	ARR_FavoUserID = []
 
 	CHR_AutoRemoveDate = None
-
-
-
-#####################################################
-# TEST
-#####################################################
-	def TestRun(self):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_TwitterMain"
-		wRes['Func']  = "TestRun"
-		
-#		#############################
-#		# リアクションチェック
-#		wSubRes = self.OBJ_TwitterFollower.ReactionCheck()
-#		if wSubRes['Result']!=True :
-#			wRes['Reason'] = "ReactionCheck"
-#			gVal.OBJ_L.Log( "B", wRes )
-#			return wRes
-#		
-#		#############################
-#		# いいね情報送信
-#		wSubRes = self.OBJ_TwitterFollower.SendFavoDate()
-#		if wSubRes['Result']!=True :
-#			wRes['Reason'] = "SendFavoDate"
-#			gVal.OBJ_L.Log( "B", wRes )
-#			return wRes
-		
-###		#############################
-###		# ふぁぼ一覧 取得
-###		wFavoRes = gVal.OBJ_Tw_IF.GetFavo()
-###		if wFavoRes['Result']!=True :
-###			wRes['Reason'] = "GetFavoData is failed"
-###			gVal.OBJ_L.Log( "C", wRes )
-###			return wRes
-###		
-		#############################
-		# リストいいね
-		wSubRes = self.OBJ_TwitterFavo.ListFavo()
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "ListFavo"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# 完了
-		wRes['Result'] = True
-		return wRes
 
 
 
@@ -416,8 +365,6 @@ class CLS_TwitterMain():
 					wStr = "●リムーブ者"
 				
 				wMyFollow = wFollowerData[wID]['myfollow']
-#				wStr = wStr + ": " + wFollowerData[wID]['screen_name']
-#				CLS_OSIF.sPrn( wStr + '\n' )
 				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'] )
 			
 			#############################
@@ -433,8 +380,6 @@ class CLS_TwitterMain():
 					wDetectRemove = True
 				
 				wFollower = wFollowerData[wID]['follower']
-#				wStr = wStr + ": " + wFollowerData[wID]['screen_name']
-#				CLS_OSIF.sPrn( wStr + '\n' )
 				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'] )
 			
 			#############################
@@ -692,21 +637,6 @@ class CLS_TwitterMain():
 
 
 #####################################################
-# ユーザ自動削除
-#####################################################
-###	def RunAutoUserRemove(self):
-###		#############################
-###		# Twitter情報取得
-###		wFavoRes = self.GetTwitterInfo()
-###		if wFavoRes['Result']!=True :
-###			return wFavoRes
-###		
-###		wRes = self.OBJ_TwitterAdmin.RunAutoUserRemove()
-###		return wRes
-###
-###
-
-#####################################################
 # トレンドタグ設定
 #####################################################
 	def SetTrendTag(self):
@@ -768,6 +698,7 @@ class CLS_TwitterMain():
 ###		wRes['Result'] = True
 ###		return wRes
 ###
+###
 
 #####################################################
 # キーワードいいね
@@ -783,30 +714,6 @@ class CLS_TwitterMain():
 		return wRes
 
 
-
-#####################################################
-# トレンドタグ設定
-#####################################################
-###	def SetTrendTag(self):
-###		#############################
-###		# 応答形式の取得
-###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-###		wRes = CLS_OSIF.sGet_Resp()
-###		wRes['Class'] = "CLS_TwitterMain"
-###		wRes['Func']  = "SetTrendTag"
-###		
-###		wSubRes = gVal.OBJ_DB_IF.SetTrendTag()
-###		if wSubRes['Result']!=True :
-###			wRes['Reason'] = "SetTrendTag Error"
-###			gVal.OBJ_L.Log( "B", wRes )
-###			return wRes
-###		
-###		#############################
-###		# 完了
-###		wRes['Result'] = True
-###		return wRes
-###
-###
 
 #####################################################
 # リストいいね設定
@@ -1247,7 +1154,6 @@ class CLS_TwitterMain():
 				wID = str(wID)
 				
 				### 警告済はスキップ
-###				if wID in gVal.ARR_CautionUserID :
 				if wID in gVal.ARR_CautionTweet :
 					continue
 				### 自分には警告しない
@@ -1267,13 +1173,6 @@ class CLS_TwitterMain():
 					# ツイート送信
 					wTweetRes = gVal.OBJ_Tw_IF.Tweet( wTweet )
 					if wTweetRes['Result']!=True :
-###						if wTweetRes['StatusCode']=="403" :
-###							wStr = "●警告に対応してないユーザ: " + wListRes['Responce'][wID]['screen_name']
-###							CLS_OSIF.sPrn( wStr )
-###						else:
-###							wRes['Reason'] = "Twitter API Error(3): " + wTweetRes['Reason']
-###							gVal.OBJ_L.Log( "B", wRes )
-###							return wRes
 						wRes['Reason'] = "Twitter API Error(3): " + wTweetRes['Reason']
 						gVal.OBJ_L.Log( "B", wRes )
 						continue
@@ -1300,7 +1199,6 @@ class CLS_TwitterMain():
 					gVal.OBJ_L.Log( "U", wRes, "●リスト登録への警告(Twitter未送信): " + wListRes['Responce'][wID]['screen_name'] )
 				
 				### IDを警告済に追加
-###				gVal.ARR_CautionUserID.append( wID )
 				wSubRes = gVal.OBJ_DB_IF.SetCautionTweet( wListRes['Responce'][wID], wTweetID )
 				if wSubRes['Result']!=True :
 					wRes['Reason'] = "SetCautionTweet is failed"
@@ -1616,9 +1514,7 @@ class CLS_TwitterMain():
 				wRes['Result'] = True
 				return wRes
 			
-###			if gVal.ARR_NotReactionUser[inName]['report']==True :
 			if gVal.ARR_NotReactionUser[inName]['report']==True and inFLG_Log==True :
-###				CLS_OSIF.sPrn( wStr )
 				### 報告対象の表示と、ログに記録(テストログ)
 				gVal.OBJ_L.Log( "N", wRes, "●禁止ユーザ: user=" + inName + " reason=" + inReason )
 			

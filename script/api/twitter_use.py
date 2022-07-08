@@ -163,11 +163,6 @@ class CLS_Twitter_Use():
 		return
 
 	#####################################################
-###	def __set_API( self, inName, inMAX, outStatus ):
-###		pStatus = outStatus
-###		pStatus.update({ inName : {} })
-###		self.__set_APIcolum( inMAX, pStatus[inName] )
-###		return
 	def __set_API( self, inName, inMAX ):
 		wCell = {
 			"num"	: 0,
@@ -177,15 +172,7 @@ class CLS_Twitter_Use():
 		self.TwStatus['APIrect'].update({ inName : wCell })
 		return
 
-###	#####################################################
-###	def __set_APIcolum( self, inMAX, outStatus ):
-###		pStatus = outStatus
-###		pStatus.update({ "num"    :  0 })
-###		pStatus.update({ "max"    : inMAX })
-###		pStatus.update({ "rect"   : False })
-###		return
-###
-###
+
 
 #####################################################
 # API規制値カウント
@@ -580,7 +567,6 @@ class CLS_Twitter_Use():
 		elif inTLmode=="user" :
 			wAPI = "https://api.twitter.com/1.1/statuses/user_timeline.json"
 			wAPIname = "user_timeline"
-###		elif inTLmode=="list" and isinstance(inListID, int)==True :
 		elif inTLmode=="list" :
 			try:
 				wListID = int(inListID)
@@ -634,7 +620,6 @@ class CLS_Twitter_Use():
 				"include_rts"     : inFLG_Rts,
 				"list_id"         : wListID
 			}
-###				"list_id"         : inListID
 		else :
 			wParams = {
 				"count"           : wCount,
@@ -775,13 +760,6 @@ class CLS_Twitter_Use():
 						]
 		)
 		wTWEET_FIELDS = ",".join(
-###						[
-###							"entities",
-###							"in_reply_to_user_id",
-###							"referenced_tweets",
-###							"reply_settings",
-####						"promoted_metrics"
-###						]
 						[
 							"entities",
 							"in_reply_to_user_id",
@@ -2851,8 +2829,6 @@ class CLS_Twitter_Use():
 		# 正常
 		wRes['Result'] = True
 		return wRes
-
-
 
 
 

@@ -192,7 +192,6 @@ class CLS_TwitterAdmin():
 		#############################
 		# コマンド：ブラウザで表示
 		elif inWord=="\\v" :
-###			wRes = self.__view_Profile()
 			wRes = self.__view_Profile( self.STR_UserAdminInfo['screen_name'] )
 		
 		#############################
@@ -305,7 +304,6 @@ class CLS_TwitterAdmin():
 #####################################################
 # ブラウザ表示
 #####################################################
-###	def __view_Profile(self):
 	def __view_Profile( self, inScreenName ):
 		#############################
 		# 応答形式の取得
@@ -316,7 +314,6 @@ class CLS_TwitterAdmin():
 		
 		#############################
 		# ブラウザ表示
-###		wURL = "https://twitter.com/" + self.STR_UserAdminInfo['screen_name']
 		wURL = "https://twitter.com/" + inScreenName
 		CLS_HTMLIF.sOpenURL( wURL )
 		
@@ -486,7 +483,6 @@ class CLS_TwitterAdmin():
 			wStr = wStr + wListData + ": "
 			
 			### 通報 有効/無効
-###			if gVal.ARR_NotReactionUser[wI]['report']==True :
 			if gVal.ARR_NotReactionUser[wI]['vip']==True :
 				wStr = wStr + "[－]"
 			elif gVal.ARR_NotReactionUser[wI]['report']==True :
@@ -496,7 +492,6 @@ class CLS_TwitterAdmin():
 			wStr = wStr + "  "
 			
 			### VIP 有効/無効
-###			if gVal.ARR_NotReactionUser[wI]['vip']==True :
 			if gVal.ARR_NotReactionUser[wI]['report']==True :
 				wStr = wStr + "[－]"
 			elif gVal.ARR_NotReactionUser[wI]['vip']==True :
@@ -575,7 +570,6 @@ class CLS_TwitterAdmin():
 		#############################
 		# コマンドなし: 通報の設定変更をする
 		if wCom==None :
-###			self.__report_ExcuteUser( wGetIndex )
 			wFLG_Update = False
 			if gVal.ARR_NotReactionUser[wGetIndex]['report']==False :
 				### VIP ONの場合は排他する
@@ -600,7 +594,6 @@ class CLS_TwitterAdmin():
 		#############################
 		# c: VIP 有効/無効
 		elif wCom=="p" :
-###			self.__change_KeywordFavo( wGetIndex )
 			wFLG_Update = False
 			if gVal.ARR_NotReactionUser[wGetIndex]['vip']==False :
 				### 通報 ONの場合は排他する
@@ -685,31 +678,6 @@ class CLS_TwitterAdmin():
 		wRes['Result'] = True
 		return wRes
 
-###	#####################################################
-###	# 検索ワード 有効/無効
-###	#####################################################
-###	def __report_ExcuteUser( self, inName ):
-###		#############################
-###		# 応答形式の取得
-###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-###		wRes = CLS_OSIF.sGet_Resp()
-###		wRes['Class'] = "CLS_TwitterAdmin"
-###		wRes['Func']  = "__valid_KeywordFavo"
-###		
-###		#############################
-###		# 実行の確認
-###		wSubRes = gVal.OBJ_DB_IF.UpdateExeUser( inName )
-###		if wSubRes['Result']!=True :
-###			###失敗
-###			wRes['Reason'] = "UpdateExeUser is failed"
-###			gVal.OBJ_L.Log( "B", wRes )
-###			return wRes
-###		
-###		#############################
-###		# 完了
-###		wRes['Result'] = True
-###		return wRes
-###
 	#####################################################
 	# 禁止ユーザ削除
 	#####################################################
@@ -1014,13 +982,8 @@ class CLS_TwitterAdmin():
 		
 		#############################
 		# 入力画面表示
-###		wStr = "活動力が低いフォロワーを自動削除します。"
 		wStr = "ユーザ自動削除中..."
 		CLS_OSIF.sPrn( wStr )
-###		wWord = CLS_OSIF.sInp( "  y=YES / other=中止=> " )
-###		if wWord!="y" :
-###			wRes['Result'] = True
-###			return wRes
 		
 		#############################
 		# フォロー情報 取得
@@ -1058,7 +1021,6 @@ class CLS_TwitterAdmin():
 			###   規定期間チェックする
 			### ツイート数0の場合
 			###   対象確定
-###				if wFollowerData[wID]['statuses_count']>0 :
 				if wFollowerData[wID]['statuses_count']==0 :
 					wFLG_Detect = True
 				else:
@@ -1084,9 +1046,6 @@ class CLS_TwitterAdmin():
 						wRes['Reason'] = "sTimeLag failed"
 						gVal.OBJ_L.Log( "B", wRes )
 						continue
-###					if wGetLag['Beyond']==False :
-###						### 規定内 =許容内の日数なのでスキップ
-###						continue
 					if wGetLag['Beyond']==True :
 						### 規定外 =許容外の日数なので対象
 						wFLG_Detect = True
@@ -1117,7 +1076,6 @@ class CLS_TwitterAdmin():
 				gVal.OBJ_L.Log( "B", wRes )
 				continue
 		
-###		wStr = "〇自動削除が完了しました" + '\n'
 		wStr = "〇自動削除 完了" + '\n'
 		CLS_OSIF.sPrn( wStr )
 		
@@ -1198,7 +1156,6 @@ class CLS_TwitterAdmin():
 				if wTweetRes['Result']!=True :
 					wRes['Reason'] = "Twitter API Error: DelTweet" + wTweetRes['Reason'] + " screen_name=" + gVal.ARR_CautionTweet[wID]['screen_name'] + " tweetid=" + gVal.ARR_CautionTweet[wID]['tweet_id']
 					gVal.OBJ_L.Log( "B", wRes )
-#					continue
 			
 			#############################
 			# ログに記録
@@ -1501,8 +1458,6 @@ class CLS_TwitterAdmin():
 			wRes['Result'] = True
 			return wRes
 		
-###		wNum = wNum - 1
-###		if wNum<0 or len(gVal.ARR_ListFavo)<=wNum :
 		if wNum<1 or len(self.ARR_CautionList)<wNum :
 			CLS_OSIF.sPrn( "LIST番号が範囲外です" + '\n' )
 			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )

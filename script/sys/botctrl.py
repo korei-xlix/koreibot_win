@@ -32,13 +32,6 @@ class CLS_BotCtrl():
 		#############################
 		# 引数取得
 		wArg = CLS_OSIF.sGetArg()
-###		if len(wArg)==4 :	#テストモード : bottest か
-###			if wArg[3]==gVal.DEF_TEST_MODE :
-###				gVal.FLG_Test_Mode = True
-###		
-###		elif wArg[1]=="add" :	#データ追加モードの場合
-###			if len(wArg)!=3 :
-###		if wArg[1]=="add" :	#データ追加モードの場合
 								#データ追加モード or 禁止ワード追加モードの場合
 		if wArg[1]=="add" or  \
 		   wArg[1]=="word" :
@@ -47,8 +40,6 @@ class CLS_BotCtrl():
 				CLS_OSIF.sErr( wRes )
 				return False
 			
-###			gVal.STR_SystemInfo['RunMode'] = wArg[1]
-###			gVal.STR_SystemInfo['EXT_FilePath'] = wArg[2]
 			gVal.STR_SystemInfo['RunMode'] = wArg[1]
 			gVal.STR_SystemInfo['EXT_FilePath'] = wArg[3]
 			gVal.STR_UserInfo['Account'] = wArg[2]	#ユーザ名
@@ -145,8 +136,6 @@ class CLS_BotCtrl():
 			gVal.OBJ_DB_IF.Close()
 			return
 		elif wLock['Responce']!=None :
-###			wRes['Reason'] = "排他中"
-###			gVal.OBJ_L.Log( "R", wRes )
 			gVal.OBJ_L.Log( "S", wRes, "排他中" )
 			
 			CLS_OSIF.sPrn( "処理待機中です。CTRL+Cで中止することもできます。" )
@@ -214,18 +203,12 @@ class CLS_BotCtrl():
 			# キーを設定
 			gVal.STR_SystemInfo[wGetLine[0]] = wGetLine[1]
 		
-###		#############################
-###		# トレンドタグの取得
-###		gVal.STR_UserInfo['TrendTag'] = wChgDict[0]['trendtag']
-###		
 		#############################
 		# いいね者送信日時(直近)
 		if wChgDict[0]['favodate']=="" or \
 		   wChgDict[0]['favodate']==None :
 			wChgDict[0]['favodate'] = str(wTD['TimeDate'])
 			wResDB = gVal.OBJ_DB_IF.UpdateFavoDate( str(wTD['TimeDate']) )
-###			wRes['Reason'] = "いいね日時を初期化しました"
-###			gVal.OBJ_L.Log( "R", wRes )
 			gVal.OBJ_L.Log( "N", wRes, "いいね日時初期化" )
 		gVal.STR_UserInfo['FavoDate'] = wChgDict[0]['favodate']
 		
@@ -253,11 +236,6 @@ class CLS_BotCtrl():
 			wChgDict[0]['listdate'] = str(wTD['TimeDate'])
 		gVal.STR_UserInfo['ListDate'] = wChgDict[0]['listdate']
 		
-###		#############################
-###		# リストいいね
-###		if wChgDict[0]['lfavoname']==None :
-###			wChgDict[0]['lfavoname'] = ""
-###		gVal.STR_UserInfo['LFavoName'] = wChgDict[0]['lfavoname']
 		#############################
 		# リストいいね日時
 		if wChgDict[0]['lfavdate']=="" or \
@@ -275,13 +253,10 @@ class CLS_BotCtrl():
 		#############################
 		# ログに記録する
 		if gVal.FLG_Test_Mode==False :
-###			wRes['Reason'] = "実行"
 			gVal.OBJ_L.Log( "S", wRes, "bot実行" )
 		else:
 			# テストモード
-###			wRes['Reason'] = "実行(テストモード)"
 			gVal.OBJ_L.Log( "S", wRes, "bot実行(テストモード)" )
-###		gVal.OBJ_L.Log( "R", wRes )
 		
 		#############################
 		# テスト終了
@@ -366,8 +341,6 @@ class CLS_BotCtrl():
 				cls.sUnlock()	#一度解除する
 				
 				#ログに記録する
-###				wRes['Reason'] = "排他解除"
-###				gVal.OBJ_L.Log( "R", wRes )
 				gVal.OBJ_L.Log( "S", wRes, "排他解除" )
 				wRes['Reason'] = None
 			
