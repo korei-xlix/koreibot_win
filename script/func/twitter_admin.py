@@ -18,6 +18,7 @@ class CLS_TwitterAdmin():
 	
 	STR_UserAdminInfo = None
 	
+	ARR_CautionList = {}
 	DEF_VAL_SLEEP = 10			#Twitter処理遅延（秒）
 
 #####################################################
@@ -191,7 +192,8 @@ class CLS_TwitterAdmin():
 		#############################
 		# コマンド：ブラウザで表示
 		elif inWord=="\\v" :
-			wRes = self.__view_Profile()
+###			wRes = self.__view_Profile()
+			wRes = self.__view_Profile( self.STR_UserAdminInfo['screen_name'] )
 		
 		#############################
 		# 不明なコマンド
@@ -303,7 +305,8 @@ class CLS_TwitterAdmin():
 #####################################################
 # ブラウザ表示
 #####################################################
-	def __view_Profile(self):
+###	def __view_Profile(self):
+	def __view_Profile( self, inScreenName ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -313,7 +316,8 @@ class CLS_TwitterAdmin():
 		
 		#############################
 		# ブラウザ表示
-		wURL = "https://twitter.com/" + self.STR_UserAdminInfo['screen_name']
+###		wURL = "https://twitter.com/" + self.STR_UserAdminInfo['screen_name']
+		wURL = "https://twitter.com/" + inScreenName
 		CLS_HTMLIF.sOpenURL( wURL )
 		
 		### Twitter Wait
@@ -1010,12 +1014,13 @@ class CLS_TwitterAdmin():
 		
 		#############################
 		# 入力画面表示
-		wStr = "活動力が低いフォロワーを自動削除します。"
+###		wStr = "活動力が低いフォロワーを自動削除します。"
+		wStr = "ユーザ自動削除中..."
 		CLS_OSIF.sPrn( wStr )
-		wWord = CLS_OSIF.sInp( "  y=YES / other=中止=> " )
-		if wWord!="y" :
-			wRes['Result'] = True
-			return wRes
+###		wWord = CLS_OSIF.sInp( "  y=YES / other=中止=> " )
+###		if wWord!="y" :
+###			wRes['Result'] = True
+###			return wRes
 		
 		#############################
 		# フォロー情報 取得
@@ -1036,36 +1041,58 @@ class CLS_TwitterAdmin():
 			if wFollowerData[wID]['follower']==False :
 				continue
 			
+			wFLG_Detect = False
+			#############################
+			# Twitterからユーザ情報を取得する
+			wUserInfoRes = gVal.OBJ_Tw_IF.GetUserinfo( inScreenName=wFollowerData[wID]['screen_name'] )
+			if wUserInfoRes['Result']!=True :
+				wRes['Reason'] = "Twitter API Error(GetUserinfo): " + wUserInfoRes['Reason'] + " screen_name=" + wFollowerData[wID]['screen_name']
+				gVal.OBJ_L.Log( "B", wRes )
+				continue
+			
+			### 鍵垢は対象
+			if wUserInfoRes['Responce']['protected']==True :
+				wFLG_Detect = True
+			else:
 			### ツイート数0超の場合
 			###   規定期間チェックする
 			### ツイート数0の場合
 			###   対象確定
-			if wFollowerData[wID]['statuses_count']>0 :
-				
-				# タイムラインを取得する
-				#   最初の1ツイートの日時を最新の活動日とする
-				wTweetRes = gVal.OBJ_Tw_IF.GetTL( inTLmode="user", inFLG_Rep=False, inFLG_Rts=True,
-					 inID=wID, inCount=1 )
-				if wTweetRes['Result']!=True :
-					wRes['Reason'] = "Twitter Error: GetTL"
-					gVal.OBJ_L.Log( "B", wRes )
-					continue
-				
-				###日時の変換をして、設定
-				wTime = CLS_OSIF.sGetTimeformat_Twitter( wTweetRes['Responce'][0]['created_at'] )
-				if wTime['Result']!=True :
-					wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wTweetRes['Responce'][0]['created_at'])
-					gVal.OBJ_L.Log( "B", wRes )
-					continue
-				
-				wGetLag = CLS_OSIF.sTimeLag( str( wTime['TimeDate'] ), inThreshold=gVal.DEF_STR_TLNUM['forAutoUserRemoveSec'] )
-				if wGetLag['Result']!=True :
-					wRes['Reason'] = "sTimeLag failed"
-					gVal.OBJ_L.Log( "B", wRes )
-					continue
-				if wGetLag['Beyond']==False :
-					### 規定内 =許容内の日数なのでスキップ
-					continue
+###				if wFollowerData[wID]['statuses_count']>0 :
+				if wFollowerData[wID]['statuses_count']==0 :
+					wFLG_Detect = True
+				else:
+					
+					# タイムラインを取得する
+					#   最初の1ツイートの日時を最新の活動日とする
+					wTweetRes = gVal.OBJ_Tw_IF.GetTL( inTLmode="user", inFLG_Rep=False, inFLG_Rts=True,
+						 inID=wID, inCount=1 )
+					if wTweetRes['Result']!=True :
+						wRes['Reason'] = "Twitter Error: GetTL"
+						gVal.OBJ_L.Log( "B", wRes )
+						continue
+					
+					###日時の変換をして、設定
+					wTime = CLS_OSIF.sGetTimeformat_Twitter( wTweetRes['Responce'][0]['created_at'] )
+					if wTime['Result']!=True :
+						wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wTweetRes['Responce'][0]['created_at'])
+						gVal.OBJ_L.Log( "B", wRes )
+						continue
+					
+					wGetLag = CLS_OSIF.sTimeLag( str( wTime['TimeDate'] ), inThreshold=gVal.DEF_STR_TLNUM['forAutoUserRemoveSec'] )
+					if wGetLag['Result']!=True :
+						wRes['Reason'] = "sTimeLag failed"
+						gVal.OBJ_L.Log( "B", wRes )
+						continue
+###					if wGetLag['Beyond']==False :
+###						### 規定内 =許容内の日数なのでスキップ
+###						continue
+					if wGetLag['Beyond']==True :
+						### 規定外 =許容外の日数なので対象
+						wFLG_Detect = True
+			
+			if wFLG_Detect==False :
+				continue
 			
 			# ※リムーブ確定
 			#############################
@@ -1083,14 +1110,15 @@ class CLS_TwitterAdmin():
 			wRes['Responce'] = True		#自動リムーブ実行
 			#############################
 			# DBに反映
-			wSubRes = gVal.OBJ_DB_IF.UpdateFavoDataFollower( wUserID, inFLG_MyFollow=False )
+			wSubRes = gVal.OBJ_DB_IF.UpdateFavoDataFollower( wUserID, False, False )
 			if wSubRes['Result']!=True :
 				###失敗
 				wRes['Reason'] = "UpdateFavoDataFollower is failed"
 				gVal.OBJ_L.Log( "B", wRes )
 				continue
 		
-		wStr = "〇自動削除が完了しました" + '\n'
+###		wStr = "〇自動削除が完了しました" + '\n'
+		wStr = "〇自動削除 完了" + '\n'
 		CLS_OSIF.sPrn( wStr )
 		
 		#############################
@@ -1187,6 +1215,326 @@ class CLS_TwitterAdmin():
 		
 		#############################
 		# 完了
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# 警告ユーザ追い出し
+#####################################################
+	def RemoveCautionUser( self, inListNum=-1, inFLR_Recheck=False ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "RemoveCautionUser"
+		
+		#############################
+		# 個別追い出し指定
+		if inListNum>=1 :
+			wSubRes = self.__removeCautionUser( inListNum=inListNum )
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "__removeCautionUser is failed" + wSubRes['Reason']
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+		
+		#############################
+		# 全追い出し指定
+		else:
+			wKeylist = list( self.ARR_CautionList.keys() )
+			wListLeng = len( self.ARR_CautionList )
+			wListCnt = 0
+			for wListNum in wKeylist :
+				#############################
+				# 再チェックが有効なら再チェック
+				if inFLR_Recheck==True :
+					wUserID = self.ARR_CautionList[wListNum]['id']
+					#############################
+					# リストの取得
+					wGetListsRes = gVal.OBJ_Tw_IF.GetLists( gVal.ARR_CautionTweet[wUserID]['screen_name'] )
+					if wGetListsRes['Result']!=True :
+						wRes['Reason'] = "Twitter API Error(31): " + wGetListsRes['Reason'] + " screen_name=" + gVal.ARR_CautionTweet[wUserID]['screen_name']
+						gVal.OBJ_L.Log( "D", wRes )
+						
+						wStr = "●Twitterエラーのためスキップ: screen_name=" + gVal.ARR_CautionTweet[wUserID]['screen_name']
+						CLS_OSIF.sPrn( wStr )
+						continue
+					wARR_Lists = wGetListsRes['Responce']
+					
+					#############################
+					# 自分のリストを登録しているか
+					wFLG_Me = False
+					wKeylist = list( wARR_Lists.keys() )
+					for wKey in wKeylist :
+						### 自分のリスト以外はスキップ
+						if wARR_Lists[wKey]['me']==True :
+							wFLG_Me = True
+							break
+					if wFLG_Me==True :
+						### まだ警告状態ならスキップする
+						wStr = "●まだ警告状態のためスキップ: screen_name=" + gVal.ARR_CautionTweet[wUserID]['screen_name']
+						CLS_OSIF.sPrn( wStr )
+						continue
+				
+				#############################
+				# 追い出し
+				wSubRes = self.__removeCautionUser( inListNum=wListNum )
+				if wSubRes['Result']!=True :
+					wRes['Reason'] = "__removeCautionUser is failed" + wSubRes['Reason'] + " screen_name=" + gVal.ARR_CautionTweet[wUserID]['screen_name']
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				
+				wListCnt += 1
+				### まだ処理するデータがあるなら
+				###   約10秒遅延待
+				if wListLeng>wListCnt :
+					CLS_OSIF.sSleep(10)
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def __removeCautionUser( self, inListNum=-1 ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "__removeCautionUser"
+		
+		wUserID = self.ARR_CautionList[inListNum]['id']
+		
+		#############################
+		# 追い出し中表示
+		wStr = "追い出し処理中... : screen_name=" + gVal.ARR_CautionTweet[wUserID]['screen_name']
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# 追い出す
+		wBlockRes = gVal.OBJ_Tw_IF.BlockRemove( wUserID )
+		if wBlockRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error(BlockRemove): " + wBlockRes['Reason'] + " screen_name=" + gVal.ARR_CautionTweet[wUserID]['screen_name']
+			return wRes
+		
+		### ログに記録
+		gVal.OBJ_L.Log( "U", wRes, "▼リスト登録者 追い出し(手動): screen_name=" + gVal.ARR_CautionTweet[wUserID]['screen_name'] )
+		
+		#############################
+		# Twitterにツイートしていたら、ツイートを削除
+		if gVal.ARR_CautionTweet[wUserID]['tweet_id']!="(none)" :
+			wTweetRes = gVal.OBJ_Tw_IF.DelTweet( gVal.ARR_CautionTweet[wUserID]['tweet_id'] )
+			if wTweetRes['Result']!=True :
+				wRes['Reason'] = "Twitter API Error: DelTweet" + wTweetRes['Reason'] + " screen_name=" + gVal.ARR_CautionTweet[wUserID]['screen_name'] + " tweetid=" + gVal.ARR_CautionTweet[wUserID]['tweet_id']
+				return wRes
+		
+		#############################
+		# ログに記録
+		gVal.OBJ_L.Log( "T", wRes, "●警告ツイート削除: id=" + gVal.ARR_CautionTweet[wUserID]['tweet_id'] + " screen_name=" + gVal.ARR_CautionTweet[wUserID]['screen_name'] )
+		
+		#############################
+		# DBに反映
+		wSubRes = gVal.OBJ_DB_IF.DeleteCautionTweet( gVal.ARR_CautionTweet[wUserID] )
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "DeleteCautionTweet is failed"
+			return wRes
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# 警告ユーザ管理
+#####################################################
+	def AdminCautionUser(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterFavo"
+		wRes['Func']  = "AdminCautionUser"
+		
+		#############################
+		# コンソールを表示
+		while True :
+			
+			#############################
+			# データ表示
+			self.__view_CautionUser()
+			
+			#############################
+			# 実行の確認
+			wListNumber = CLS_OSIF.sInp( "コマンド？(\\q=中止)=> " )
+			if wListNumber=="\\q" :
+				###  終わる
+				wRes['Result'] = True
+				return wRes
+			
+			#############################
+			# コマンド処理
+			wCommRes = self.__run_CautionUser( wListNumber )
+			if wCommRes['Result']!=True :
+				wRes['Reason'] = "__run_CautionUser is failed: " + wCommRes['Reason']
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+		
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	# 画面表示
+	#####################################################
+	def __view_CautionUser(self):
+		
+		self.ARR_CautionList = {}
+		wKeylist = list( gVal.ARR_CautionTweet.keys() )
+		wListNum = 1
+		wStr = ""
+		for wID in wKeylist :
+			wID = str(wID)
+			
+			### 編集インデックス用
+			wCellUser = {
+				"id"			: wID,
+				"screen_name"	: gVal.ARR_CautionTweet[wID]['screen_name']
+			}
+			self.ARR_CautionList.update({ wListNum : wCellUser })
+			
+			wStr = wStr + "   : "
+			
+			### リスト番号
+			wListData = str(wListNum)
+			wListNumSpace = 4 - len( wListData )
+			if wListNumSpace>0 :
+				wListData = wListData + " " * wListNumSpace
+			wStr = wStr + wListData + "  "
+			
+			### 警告日
+			wListData = str( gVal.ARR_CautionTweet[wID]['regdate'] )
+			wListData = wListData.split(" ")
+			wListData = wListData[0]
+			wStr = wStr + wListData + "  "
+			
+			### ユーザ名（screen_name）
+			wListData = gVal.ARR_CautionTweet[wID]['screen_name']
+			wListNumSpace = gVal.DEF_SCREEN_NAME_SIZE - len(wListData)
+			if wListNumSpace>0 :
+				wListData = wListData + " " * wListNumSpace
+			wStr = wStr + wListData
+			
+			wStr = wStr + '\n'
+			wListNum += 1
+		
+		wResDisp = CLS_MyDisp.sViewDisp( inDisp="CautionConsole", inIndex=-1, inData=wStr )
+		if wResDisp['Result']==False :
+			gVal.OBJ_L.Log( "D", wResDisp )
+		
+		return
+
+	#####################################################
+	# コマンド処理
+	#####################################################
+	def __run_CautionUser( self, inWord ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterFavo"
+		wRes['Func']  = "__run_CautionUser"
+		
+		#############################
+		# rall: 全追い出し
+		if inWord=="\\rall" :
+			wSubRes = self.RemoveCautionUser()
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "RemoveCautionUser is failed(not recheck)"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# rm: 全再チェック＆追い出し
+		elif inWord=="\\rm" :
+			wSubRes = self.RemoveCautionUser( inFLR_Recheck=True )
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "RemoveCautionUser is failed(recheck)"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# チェック
+		
+		wARR_Comm = str(inWord).split("-")
+		wCom = None
+		if len(wARR_Comm)==1 :
+			wNum = wARR_Comm[0]
+			wCom = None
+		elif len(wARR_Comm)==2 :
+			wNum = wARR_Comm[0]
+			wCom = wARR_Comm[1]
+		else:
+			CLS_OSIF.sPrn( "コマンドの書式が違います" + '\n' )
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		### 整数か
+		try:
+			wNum = int(wNum)
+		except ValueError:
+			CLS_OSIF.sPrn( "LIST番号が整数ではありません" + '\n' )
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+###		wNum = wNum - 1
+###		if wNum<0 or len(gVal.ARR_ListFavo)<=wNum :
+		if wNum<1 or len(self.ARR_CautionList)<wNum :
+			CLS_OSIF.sPrn( "LIST番号が範囲外です" + '\n' )
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# コマンドの分岐
+		
+		#############################
+		# コマンドなし: 指定の番号のリストの設定変更をする
+		if wCom==None :
+			wRes = self.__view_Profile( self.ARR_CautionList[wNum]['screen_name'] )
+		
+		#############################
+		# r: 追い出し(手動)
+		elif wCom=="r" :
+			wSubRes = self.RemoveCautionUser( inListNum=wNum )
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "RemoveCautionUser is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+		
+		#############################
+		# 範囲外のコマンド
+		else:
+			CLS_OSIF.sPrn( "コマンドが違います" + '\n' )
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
 		wRes['Result'] = True
 		return wRes
 

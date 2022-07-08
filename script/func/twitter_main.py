@@ -570,6 +570,16 @@ class CLS_TwitterMain():
 			return wRes
 		
 		#############################
+		# ユーザ自動削除
+		if inFLG_Short==False :
+			wSubRes = self.OBJ_TwitterAdmin.RunAutoUserRemove()
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "RunAutoUserRemove is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+		
+		#############################
 		# いいね解除
 		if inFLG_Short==False :
 			wSubRes = self.OBJ_TwitterFavo.RemFavo()
@@ -673,19 +683,28 @@ class CLS_TwitterMain():
 
 
 #####################################################
-# ユーザ自動削除
+# 警告ユーザ管理
 #####################################################
-	def RunAutoUserRemove(self):
-		#############################
-		# Twitter情報取得
-		wFavoRes = self.GetTwitterInfo()
-		if wFavoRes['Result']!=True :
-			return wFavoRes
-		
-		wRes = self.OBJ_TwitterAdmin.RunAutoUserRemove()
+	def AdminCautionUser(self):
+		wRes = self.OBJ_TwitterAdmin.AdminCautionUser()
 		return wRes
 
 
+
+#####################################################
+# ユーザ自動削除
+#####################################################
+###	def RunAutoUserRemove(self):
+###		#############################
+###		# Twitter情報取得
+###		wFavoRes = self.GetTwitterInfo()
+###		if wFavoRes['Result']!=True :
+###			return wFavoRes
+###		
+###		wRes = self.OBJ_TwitterAdmin.RunAutoUserRemove()
+###		return wRes
+###
+###
 
 #####################################################
 # トレンドタグ設定

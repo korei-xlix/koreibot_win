@@ -223,6 +223,11 @@ class CLS_Main_Console() :
 		elif inCommand=="\\u" :
 			cls.OBJ_TwitterMain.UserAdmin()
 		
+		#############################
+		# 警告ユーザ管理
+		elif inCommand=="\\uc" :
+			cls.OBJ_TwitterMain.AdminCautionUser()
+		
 ###		#############################
 ###		# 禁止ユーザ
 ###		elif inCommand=="\\ue" :
@@ -383,16 +388,16 @@ class CLS_Main_Console() :
 		wRes['Class'] = "CLS_Main_Console"
 		wRes['Func']  = "sRunSystemConfig"
 		
-		#############################
-		# ユーザ自動削除
-		if inCommand=="\\rm" :
-			cls.OBJ_TwitterMain.RunAutoUserRemove()
-		
+###		#############################
+###		# ユーザ自動削除
+###		if inCommand=="\\rm" :
+###			cls.OBJ_TwitterMain.RunAutoUserRemove()
+###		
 	#####################################################
 		#############################
 		# トレンドタグ設定
-###		if inCommand=="\\t" :
-		elif inCommand=="\\t" :
+		if inCommand=="\\t" :
+###		elif inCommand=="\\t" :
 			cls.OBJ_TwitterMain.SetTrendTag()
 		
 		#############################

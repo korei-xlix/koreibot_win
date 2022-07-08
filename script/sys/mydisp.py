@@ -44,9 +44,10 @@ class CLS_MyDisp():
 		###禁止ユーザ画面
 		elif inDisp=="ExcUserConsole" :
 			cls.__dispInp_ExcUser( inLine, wRes, inData )
+		###警告ユーザ管理
+		elif inDisp=="CautionConsole" :
+			cls.__dispInp_CautionUser( inLine, wRes, inData )
 		
-
-
 		###システム情報画面
 		elif inDisp=="SystemViewConsole" :
 			cls.__dispInp_SystemView( inLine, wRes, inData )
@@ -295,15 +296,22 @@ class CLS_MyDisp():
 		pRes['Result'] = True
 		return
 
-
-
-
-
-
-
-
-
-
+	#####################################################
+	# 警告ユーザ画面
+	@classmethod
+	def __dispInp_CautionUser( cls, inLine, outRes, inData=None ):
+		pRes = outRes
+		#############################
+		# インプリメント処理
+		
+		###インプリ：警告ユーザ 一覧
+		if "[@CAUTION-LIST@]"==inLine :
+			pRes['Responce'] = inData
+		
+		#############################
+		# 正常
+		pRes['Result'] = True
+		return
 
 
 
