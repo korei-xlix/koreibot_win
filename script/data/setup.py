@@ -27,7 +27,8 @@ class CLS_Setup():
 #####################################################
 # セットアップ
 #####################################################
-	def Setup( self, inPassWD=None ):
+###	def Setup( self, inPassWD=None ):
+	def Setup( self, inData ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -35,12 +36,13 @@ class CLS_Setup():
 		wRes['Class'] = "CLS_Setup"
 		wRes['Func']  = "Setup"
 		
-		CLS_OSIF.sPrn( "Lucibotをセットアップモードで起動しました" + '\n' )
+		CLS_OSIF.sPrn( "セットアップモードで起動しました" + '\n' )
 		
 		#############################
 		# DBに接続
 		gVal.OBJ_DB_IF = CLS_DB_IF()
-		wSubRes = gVal.OBJ_DB_IF.Connect( inPassWD=inPassWD )
+###		wSubRes = gVal.OBJ_DB_IF.Connect( inPassWD=inPassWD )
+		wSubRes = gVal.OBJ_DB_IF.Connect( inData )
 		if wSubRes['Result']!=True :
 			return False
 		if wSubRes['Responce']!=True :
@@ -100,7 +102,8 @@ class CLS_Setup():
 # 全初期化
 #   作業ファイルとDBを全て初期化する
 #####################################################
-	def AllInit(self):
+###	def AllInit(self):
+	def AllInit( self, inData ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -120,7 +123,8 @@ class CLS_Setup():
 		#############################
 		# DBに接続 (接続情報の作成)
 		gVal.OBJ_DB_IF = CLS_DB_IF()
-		wSubRes = gVal.OBJ_DB_IF.Connect()
+###		wSubRes = gVal.OBJ_DB_IF.Connect()
+		wSubRes = gVal.OBJ_DB_IF.Connect( inData )
 		if wSubRes['Result']!=True :
 			return False
 		
@@ -152,7 +156,8 @@ class CLS_Setup():
 #####################################################
 # データ追加モード
 #####################################################
-	def Add( self, inWordOnly=False, inDBInit=False ):
+###	def Add( self, inWordOnly=False, inDBInit=False ):
+	def Add( self, inData, inWordOnly=False, inDBInit=False ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -224,7 +229,8 @@ class CLS_Setup():
 		#############################
 		# DBに接続 (接続情報の作成)
 		gVal.OBJ_DB_IF = CLS_DB_IF()
-		wSubRes = gVal.OBJ_DB_IF.Connect()
+###		wSubRes = gVal.OBJ_DB_IF.Connect()
+		wSubRes = gVal.OBJ_DB_IF.Connect( inData )
 		if wSubRes['Result']!=True or wSubRes['Responce']!=True :
 			return False
 		
@@ -268,7 +274,8 @@ class CLS_Setup():
 # クリア
 #   一部のDBを初期化する
 #####################################################
-	def Clear(self):
+###	def Clear(self):
+	def Clear( self, inData ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -287,7 +294,8 @@ class CLS_Setup():
 		
 		#############################
 		# DBに接続 (接続情報の作成)
-		wSubRes = gVal.OBJ_DB_IF.Connect()
+###		wSubRes = gVal.OBJ_DB_IF.Connect()
+		wSubRes = gVal.OBJ_DB_IF.Connect( inData )
 		if wSubRes['Result']!=True :
 			return False
 		

@@ -14,7 +14,7 @@ from gval import gVal
 class CLS_DB_IF() :
 #####################################################
 	OBJ_DB = ""				#DBオブジェクト
-	CHR_PassWD = None
+###	CHR_PassWD = None
 	
 	ARR_FollowerDataID = []		#  フォロワー情報ID
 
@@ -33,7 +33,17 @@ class CLS_DB_IF() :
 #####################################################
 # DB接続
 #####################################################
-	def Connect( self, inPassWD=None ):
+###	def Connect( self, inPassWD=None ):
+	def Connect( self, inData ):
+		#############################
+		# inData構造
+		#   = {
+		#		"hostname"	:	"",
+		#		"database"	:	"",
+		#		"username"	:	"",
+		#		"password"	:	""
+		#	}
+		
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -41,32 +51,34 @@ class CLS_DB_IF() :
 		wRes['Class'] = "CLS_DB_IF"
 		wRes['Func']  = "Connect"
 		
-		if self.CHR_PassWD==None :
-			wPassword = inPassWD
-		else:
-			wPassword = self.CHR_PassWD
+###		if self.CHR_PassWD==None :
+###			wPassword = inPassWD
+###		else:
+###			wPassword = self.CHR_PassWD
 		
 		wRes['Responce'] = False
-		#############################
-		# パスワードが未設定なら入力を要求する
-		if wPassword==None :
-			wStr = "データベースに接続します。データベースのパスワードを入力してください。" + '\n'
-			wStr = wStr + "  Hostname=" + gVal.DEF_BD_HOST + " Database=" + gVal.DEF_BD_NAME + " Username=" + gVal.DEF_BD_USER
-			CLS_OSIF.sPrn( wStr )
-			
-			###入力受け付け
-			wPassword = CLS_OSIF.sGpp( "Password: " )
-		
+###		#############################
+###		# パスワードが未設定なら入力を要求する
+###		if wPassword==None :
+###			wStr = "データベースに接続します。データベースのパスワードを入力してください。" + '\n'
+###			wStr = wStr + "  Hostname=" + gVal.DEF_BD_HOST + " Database=" + gVal.DEF_BD_NAME + " Username=" + gVal.DEF_BD_USER
+###			CLS_OSIF.sPrn( wStr )
+###			
+###			###入力受け付け
+###			wPassword = CLS_OSIF.sGpp( "Password: " )
+###		
 		#############################
 		# Postgreオブジェクトの作成
 		self.OBJ_DB = CLS_PostgreSQL_Use()
 		
 		#############################
 		# テスト
-		wResDBconn = self.OBJ_DB.Create( gVal.DEF_BD_HOST, gVal.DEF_BD_NAME, gVal.DEF_BD_USER, wPassword )
+###		wResDBconn = self.OBJ_DB.Create( gVal.DEF_BD_HOST, gVal.DEF_BD_NAME, gVal.DEF_BD_USER, wPassword )
+		wResDBconn = self.OBJ_DB.Create( inData )
 		wResDB = self.OBJ_DB.GetDbStatus()
 		if wResDBconn!=True :
-			wRes['Reason'] = "DBの接続に失敗しました: reason=" + wResDB['Reason']
+###			wRes['Reason'] = "DBの接続に失敗しました: reason=" + wResDB['Reason']
+			wRes['Reason'] = "CLS_DB_IF: Connect: DBの接続に失敗しました: reason=" + wResDB['Reason']
 			CLS_OSIF.sErr( wRes )
 			
 			self.__connectFailView()
@@ -75,7 +87,7 @@ class CLS_DB_IF() :
 		#############################
 		# 結果の確認
 		if wResDB['Init']!=True :
-			wRes['Reason'] = "DBが初期化できてません"
+			wRes['Reason'] = "CLS_DB_IF: Connect: DBが初期化できてません"
 			CLS_OSIF.sErr( wRes )
 			
 			self.__connectFailView()
@@ -83,7 +95,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# 接続は正常
-		self.CHR_PassWD = wPassword		#再ログイン用保存
+###		self.CHR_PassWD = wPassword		#再ログイン用保存
 		CLS_OSIF.sPrn( "データベースへ正常に接続しました。" + '\n' )
 		wRes['Result'] = True
 		
@@ -94,25 +106,33 @@ class CLS_DB_IF() :
 			return False
 		if wSubRes['Responce']!=True :
 			##テーブルがない= 初期化してない
-			CLS_OSIF.sPrn( "テーブルが構築されていません" + '\n' )
+			CLS_OSIF.sPrn( "CLS_DB_IF: Connect: テーブルが構築されていません" + '\n' )
 			
-			self.__connectFailView()
+###			self.__connectFailView()
+			self.__connectFailView(inData)
 			return wRes
 		
 		###全て正常
 		wRes['Responce'] = True
 		return wRes
 
-	def __connectFailView(self):
+###	def __connectFailView(self):
+	def __connectFailView( self, inData ):
 		if gVal.FLG_Test_Mode==False :
 			return	#テストモードでなければ終わる
 		
 		#############################
 		# DB接続情報を表示
+###		wStr =        "******************************" + '\n'
+###		wStr = wStr + "HOST    : " + gVal.DEF_BD_HOST + '\n'
+###		wStr = wStr + "DB NAME : " + gVal.DEF_BD_NAME + '\n'
+###		wStr = wStr + "DB USER : " + gVal.DEF_BD_USER + '\n'
+###		wStr = wStr + "******************************" + '\n'
 		wStr =        "******************************" + '\n'
-		wStr = wStr + "HOST    : " + gVal.DEF_BD_HOST + '\n'
-		wStr = wStr + "DB NAME : " + gVal.DEF_BD_NAME + '\n'
-		wStr = wStr + "DB USER : " + gVal.DEF_BD_USER + '\n'
+		wStr = wStr + "HOST    : " + inData['hostname'] + '\n'
+		wStr = wStr + "DB NAME : " + inData['database'] + '\n'
+		wStr = wStr + "DB USER : " + inData['username'] + '\n'
+		wStr = wStr + "DB PASS : (ナイチョ) " + '\n'
 		wStr = wStr + "******************************" + '\n'
 		CLS_OSIF.sPrn( wStr )
 		return

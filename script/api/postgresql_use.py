@@ -99,17 +99,40 @@ class CLS_PostgreSQL_Use():
 #####################################################
 # 接続情報の作成
 #####################################################
-	def Create( self, inHostname, inDatabase, inUsername, inPassword, inFLG_Close=False ):
+###	def Create( self, inHostname, inDatabase, inUsername, inPassword, inFLG_Close=False ):
+	def Create( self, inData, inFLG_Close=False ):
+		#############################
+		# inData構造
+		#   = {
+		#		"hostname"	:	"",
+		#		"database"	:	"",
+		#		"username"	:	"",
+		#		"password"	:	""
+		#	}
+		
+		#############################
+		# パラメータチェック
+		if "hostname" not in inData or \
+		   "database" not in inData or \
+		   "username" not in inData or \
+		   "password" not in inData :
+			self.DbStatus['Reason'] = "CLS_PostgreSQL_Use: Create: パラメータが足りません: inData=" + str(inData)
+			return False	#失敗
+		
 		#############################
 		# DB状態 全初期化
 		self.__initDbStatus()
 		
 		#############################
 		# 接続情報の仮セット
-		self.STR_DBdata['hostname'] = inHostname
-		self.STR_DBdata['database'] = inDatabase
-		self.STR_DBdata['username'] = inUsername
-		self.STR_DBdata['password'] = inPassword
+###		self.STR_DBdata['hostname'] = inHostname
+###		self.STR_DBdata['database'] = inDatabase
+###		self.STR_DBdata['username'] = inUsername
+###		self.STR_DBdata['password'] = inPassword
+		self.STR_DBdata['hostname'] = inData['hostname']
+		self.STR_DBdata['database'] = inData['database']
+		self.STR_DBdata['username'] = inData['username']
+		self.STR_DBdata['password'] = inData['password']
 		
 		#############################
 		# DB接続テスト

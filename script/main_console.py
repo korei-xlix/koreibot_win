@@ -346,38 +346,44 @@ class CLS_Main_Console() :
 		#     7.Python情報の取得
 		#     8.TESTログ記録
 		wResTest = CLS_BotCtrl.sBotTest()
-		if wResTest!=True :
+###		if wResTest!=True :
+		if wResTest['Result']!=True :
 			return False	###問題あり
 		
 		wCLS_Setup = CLS_Setup()
 		#############################
 		# セットアップモードで実行
 		if gVal.STR_SystemInfo['RunMode']=="setup" :
-			wCLS_Setup.Setup()
+###			wCLS_Setup.Setup()
+			wCLS_Setup.Setup( wResTest['Responce'] )
 			return False	###問題あり
 		
 		#############################
 		# 初期化モードで実行
 		elif gVal.STR_SystemInfo['RunMode']=="init" :
-			wCLS_Setup.AllInit()
+###			wCLS_Setup.AllInit()
+			wCLS_Setup.AllInit( wResTest['Responce'] )
 			return False	###問題あり
 		
 		#############################
 		# データ追加モードで実行
 		elif gVal.STR_SystemInfo['RunMode']=="add" :
-			wCLS_Setup.Add()
+###			wCLS_Setup.Add()
+			wCLS_Setup.Add( wResTest['Responce'] )
 			return False	###問題あり
 		
 		#############################
 		# 禁止ワード追加モードで実行
 		elif gVal.STR_SystemInfo['RunMode']=="word" :
-			wCLS_Setup.Add( inWordOnly=True )
+###			wCLS_Setup.Add( inWordOnly=True )
+			wCLS_Setup.Add( wResTest['Responce'], inWordOnly=True )
 			return False	###問題あり
 		
 		#############################
 		# データクリアモードで実行
 		elif gVal.STR_SystemInfo['RunMode']=="clear" :
-			wCLS_Setup.Clear()
+###			wCLS_Setup.Clear()
+			wCLS_Setup.Clear( wResTest['Responce'] )
 			return False	###問題あり
 		
 		#############################

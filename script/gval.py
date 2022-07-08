@@ -12,9 +12,9 @@ class gVal() :
 
 #############################
 # ※ユーザ自由変更※
-	DEF_BD_HOST         = 'localhost'						#データベースホスト名
-	DEF_BD_NAME         = 'koreibot'						#データベース名
-	DEF_BD_USER         = 'koreibot'						#データベースユーザ名
+###	DEF_BD_HOST         = 'localhost'						#データベースホスト名
+###	DEF_BD_NAME         = 'koreibot'						#データベース名
+###	DEF_BD_USER         = 'koreibot'						#データベースユーザ名
 	DEF_TIMEZONE = 9										# 9=日本時間 最終更新日補正用
 	DEF_MOJI_ENCODE = 'utf-8'								#文字エンコード
 

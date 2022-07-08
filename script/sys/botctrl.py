@@ -29,63 +29,129 @@ class CLS_BotCtrl():
 		wRes['Class'] = "CLS_BotCtrl"
 		wRes['Func']  = "sBotTest"
 		
+		wRes['Responce'] = {
+			"hostname"		: None,
+			"database"		: None,
+			"username"		: None,
+			"password"		: None
+		}
 		#############################
 		# 引数取得
 		wArg = CLS_OSIF.sGetArg()
-								#データ追加モード or 禁止ワード追加モードの場合
-		if wArg[1]=="add" or  \
-		   wArg[1]=="word" :
-			if len(wArg)!=4 :
-				wRes['Reason'] = "データ追加モード: 引数が足りません"
-				CLS_OSIF.sErr( wRes )
-				return False
-			
-			gVal.STR_SystemInfo['RunMode'] = wArg[1]
-			gVal.STR_SystemInfo['EXT_FilePath'] = wArg[3]
-			gVal.STR_UserInfo['Account'] = wArg[2]	#ユーザ名
-			return True
 		
-		elif len(wArg)==2 :	#モード
-			###セットアップモード
-			###全初期化モード
-			###データクリアモード
-			if wArg[1]!="setup" and \
-			   wArg[1]!="init" and \
-			   wArg[1]!="clear" :
-				wRes['Reason'] = "存在しないモードです"
-				CLS_OSIF.sErr( wRes )
-				return False
-			
-			gVal.STR_SystemInfo['RunMode'] = wArg[1]
-			return True
-		
-		elif len(wArg)==4 :	#テストモード : bottest か
-			if wArg[3]==gVal.DEF_TEST_MODE :
-				gVal.FLG_Test_Mode = True
-		
-		elif len(wArg)!=3 :	#引数が足りない
+		if len(wArg)<7 :	#引数が足りない
 			wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません= " + str( wArg )
 			CLS_OSIF.sErr( wRes )
-			return False
+###			return False
+			return wRes
 		
-		gVal.STR_UserInfo['Account'] = wArg[1]	#ユーザ名
-		wPassword                    = wArg[2]	#パスワード
+		#############################
+		# モード、DB情報の取得
+		wRes['Responce']['hostname'] = wArg[2]
+		wRes['Responce']['database'] = wArg[3]
+		wRes['Responce']['username'] = wArg[4]
+		wRes['Responce']['password'] = wArg[5]
+		
+		#############################
+		# add  : データ追加モード
+		# word : 文字追加モード
+		if wArg[1]=="add" or  \
+		   wArg[1]=="word" :
+			if len(wArg)!=8 :
+###				wRes['Reason'] = "データ追加モード: 引数が足りません"
+				wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません(2)= " + str( wArg )
+				CLS_OSIF.sErr( wRes )
+###				return False
+				return wRes
+			
+			gVal.STR_SystemInfo['RunMode']      = wArg[1]
+			gVal.STR_SystemInfo['EXT_FilePath'] = wArg[7]
+			gVal.STR_UserInfo['Account']        = wArg[6]
+###			return True
+			wRes['Result'] = True	#正常
+			return wRes
+		
+		#############################
+		# setup : セットアップモード
+		# init  : 初期化モード
+		# clear : クリアモード
+###		elif len(wArg)==2 :	#モード
+###			###セットアップモード
+###			###全初期化モード
+###			###データクリアモード
+###			if wArg[1]!="setup" and \
+###			   wArg[1]!="init" and \
+###			   wArg[1]!="clear" :
+###				wRes['Reason'] = "存在しないモードです"
+###				CLS_OSIF.sErr( wRes )
+###				return False
+		elif wArg[1]=="setup" or  \
+		   wArg[1]=="word" or \
+		   wArg[1]=="clear" :
+			if len(wArg)!=6 :
+				wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません(3)= " + str( wArg )
+				CLS_OSIF.sErr( wRes )
+				return wRes
+			
+			gVal.STR_SystemInfo['RunMode'] = wArg[1]
+###			return True
+			wRes['Result'] = True	#正常
+			return wRes
+		
+		#############################
+		# test : テストモード
+###		elif len(wArg)==4 :	#テストモード : bottest か
+###			if wArg[3]==gVal.DEF_TEST_MODE :
+		elif wArg[1]==gVal.DEF_TEST_MODE :
+			if len(wArg)!=7 :
+				wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません(4)= " + str( wArg )
+				CLS_OSIF.sErr( wRes )
+				return wRes
+			
+			gVal.FLG_Test_Mode = True
+		
+		#############################
+		# run : 通常モード
+		elif wArg[1]=="run" :
+			if len(wArg)!=7 :
+				wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません(5)= " + str( wArg )
+				CLS_OSIF.sErr( wRes )
+				return wRes
+			
+			gVal.FLG_Test_Mode = False
+		
+###		elif len(wArg)!=3 :	#引数が足りない
+###			wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません= " + str( wArg )
+###			CLS_OSIF.sErr( wRes )
+###			return False
+		
+		else:
+			wRes['Reason'] = "CLS_BotCtrl: sBotTest: コマンドがありません= " + str( wArg )
+			CLS_OSIF.sErr( wRes )
+			return wRes
+		
+###		gVal.STR_UserInfo['Account'] = wArg[1]	#ユーザ名
+###		wPassword                    = wArg[2]	#パスワード
 		gVal.STR_SystemInfo['RunMode'] = "Normal"
+		gVal.STR_UserInfo['Account']   = wArg[6]
 		
 		#############################
 		# DBに接続
 		gVal.OBJ_DB_IF = CLS_DB_IF()
-		wSubRes = gVal.OBJ_DB_IF.Connect( inPassWD=wPassword )
+###		wSubRes = gVal.OBJ_DB_IF.Connect( inPassWD=wPassword )
+		wSubRes = gVal.OBJ_DB_IF.Connect( wRes['Responce'] )
 		if wSubRes['Result']!=True :
-			wRes['Reason'] = "DB接続失敗: reason=" + wResDB['Reason']
+			wRes['Reason'] = "CLS_BotCtrl: sBotTest: DB接続失敗: reason=" + wResDB['Reason']
 			CLS_OSIF.sErr( wRes )
-			return False
+###			return False
+			return wRes
 		if wSubRes['Responce']!=True :
 			##テーブルがない= 初期化してない
-			wRes['Reason'] = "DB未構築"
+			wRes['Reason'] = "CLS_BotCtrl: sBotTest: DB未構築"
 			CLS_OSIF.sErr( wRes )
 			gVal.OBJ_DB_IF.Close()
-			return False
+###			return False
+			return wRes
 		
 		#############################
 		# ログオブジェクトの生成
@@ -109,7 +175,8 @@ class CLS_BotCtrl():
 			wRes['Reason'] = "ユーザが登録されていません =" + gVal.STR_UserInfo['Account']
 			gVal.OBJ_L.Log( "D", wRes )
 			gVal.OBJ_DB_IF.Close()
-			return False
+###			return False
+			return wRes
 		
 		#############################
 		# 辞書型に整形
@@ -134,7 +201,8 @@ class CLS_BotCtrl():
 			wRes['Reason'] = "排他取得失敗: " + wLock['Reason']
 			gVal.OBJ_L.Log( "A", wRes )
 			gVal.OBJ_DB_IF.Close()
-			return
+###			return
+			return wRes
 		elif wLock['Responce']!=None :
 			gVal.OBJ_L.Log( "S", wRes, "排他中" )
 			
@@ -146,7 +214,8 @@ class CLS_BotCtrl():
 				###ウェイト中止
 				CLS_OSIF.sPrn( '\n' + "待機を中止しました。プログラムを停止しました。" )
 				gVal.OBJ_DB_IF.Close()
-				return
+###				return
+				return wRes
 		
 		#############################
 		# Twitterに接続
@@ -156,7 +225,8 @@ class CLS_BotCtrl():
 			wRes['Reason'] = "Twitterの接続失敗: reason=" + wResTwitter['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			cls.sBotEnd()	#bot終了
-			return False
+###			return False
+			return wRes
 		
 		#############################
 		# 時間を取得
@@ -166,7 +236,8 @@ class CLS_BotCtrl():
 			wRes['Reason'] = "PC時間取得失敗"
 			gVal.OBJ_L.Log( "B", wRes )
 			cls.sBotEnd()	#bot終了
-			return
+###			return
+			return wRes
 		### wTD['TimeDate']
 		gVal.STR_SystemInfo['APIrect'] = str(wTD['TimeDate'])
 		
@@ -177,13 +248,15 @@ class CLS_BotCtrl():
 			wRes['Reason'] = "Readme.mdファイルが見つかりません: path=" + gVal.DEF_STR_FILE['Readme']
 			gVal.OBJ_L.Log( "D", wRes )
 			cls.sBotEnd()	#bot終了
-			return False
+###			return False
+			return wRes
 		
 		if len(wReadme)<=1 :
 			wRes['Reason'] = "Readme.mdファイルが空です: path=" + gVal.DEF_STR_FILE['Readme']
 			gVal.OBJ_L.Log( "D", wRes )
 			cls.sBotEnd()	#bot終了
-			return False
+###			return False
+			return wRes
 		
 		for wLine in wReadme :
 			#############################
@@ -260,7 +333,9 @@ class CLS_BotCtrl():
 		
 		#############################
 		# テスト終了
-		return True
+###		return True
+		wRes['Result'] = True	#正常
+		return wRes
 
 
 
