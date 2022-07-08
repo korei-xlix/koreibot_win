@@ -86,7 +86,7 @@ class CLS_BotCtrl():
 ###				CLS_OSIF.sErr( wRes )
 ###				return False
 		elif wArg[1]=="setup" or  \
-		   wArg[1]=="word" or \
+		   wArg[1]=="init" or \
 		   wArg[1]=="clear" :
 			if len(wArg)!=6 :
 				wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません(3)= " + str( wArg )
