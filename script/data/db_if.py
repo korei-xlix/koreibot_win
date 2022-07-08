@@ -315,11 +315,15 @@ class CLS_DB_IF() :
 		wRes['Class'] = "CLS_DB_IF"
 		wRes['Func']  = "CheckUserData"
 		
-		wRes['Responce'] = {}
-		wRes['Responce'].update({
-			"Account"   : None,
-			"detect"    : False
-		})
+###		wRes['Responce'] = {}
+###		wRes['Responce'].update({
+###			"Account"   : None,
+###			"detect"    : False
+###		})
+		wRes['Responce'] = {
+			"Account"	: None,
+			"detect"	: False
+		}
 		
 		#############################
 		# TwitterIDの入力
