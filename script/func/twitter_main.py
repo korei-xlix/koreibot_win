@@ -10,6 +10,7 @@ from twitter_follower import CLS_TwitterFollower
 from twitter_favo import CLS_TwitterFavo
 from twitter_keyword import CLS_TwitterKeyword
 from twitter_admin import CLS_TwitterAdmin
+from test_sample import CLS_Test
 
 from osif import CLS_OSIF
 from traffic import CLS_Traffic
@@ -22,6 +23,7 @@ class CLS_TwitterMain():
 	OBJ_TwitterFavo     = None
 	OBJ_TwitterKeyword  = None
 	OBJ_TwitterAdmin    = None
+	OBJ_Test            = None
 
 	CHR_GetReactionDate = None
 	CHR_GetListFavoDate = None
@@ -33,6 +35,15 @@ class CLS_TwitterMain():
 
 
 #####################################################
+# テスト用
+#####################################################
+	def Test(self):
+		self.OBJ_Test.Test()
+		return
+
+
+
+#####################################################
 # Init
 #####################################################
 	def __init__(self):
@@ -40,6 +51,7 @@ class CLS_TwitterMain():
 		self.OBJ_TwitterFavo     = CLS_TwitterFavo( parentObj=self )
 		self.OBJ_TwitterKeyword  = CLS_TwitterKeyword( parentObj=self )
 		self.OBJ_TwitterAdmin    = CLS_TwitterAdmin( parentObj=self )
+		self.OBJ_Test            = CLS_Test( parentObj=self )
 		return
 
 

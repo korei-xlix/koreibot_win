@@ -227,11 +227,10 @@ class CLS_Main_Console() :
 			if wResTraffic['Result']!=True :
 				gVal.OBJ_L.Log( "B", wResTraffic )
 		
-#		#############################
-#		# テスト
-#		elif inCommand=="\\test" :
-#			
-#
+		#############################
+		# テスト
+		elif inCommand=="\\test" :
+			cls.OBJ_TwitterMain.Test()
 		
 	#####################################################
 		#############################

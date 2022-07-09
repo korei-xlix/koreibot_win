@@ -1,4 +1,42 @@
+#!/usr/bin/python
+# coding: UTF-8
+#####################################################
+# ::Project  : Korei Bot Win
+# ::Admin    : Korei (@korei-xlix)
+# ::github   : https://github.com/korei-xlix/koreibot_win/
+# ::Class    : てすと用
+#####################################################
+from osif import CLS_OSIF
+from mydisp import CLS_MyDisp
+from gval import gVal
+#####################################################
+class CLS_Test():
+#####################################################
+	OBJ_Parent = ""				#親クラス実体
+	
+#####################################################
+# Init
+#####################################################
+	def __init__( self, parentObj=None ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_Test"
+		wRes['Func']  = "__init__"
+		
+		if parentObj==None :
+			###親クラス実体の未設定
+			wRes['Reason'] = "You have not set the parent class entity for parentObj"
+			gVal.OBJ_L.Log( "A", wRes )
+			return
+		
+		self.OBJ_Parent = parentObj
+		return
 
+
+
+#####################################################
 #			wSubRes = cls.OBJ_TwitterMain.TestRun()
 ###			wTime = CLS_OSIF.sGetTimeformat_Twitter( "2021-10-06T12:23:44.000Z" )
 ###			print( str(wTime['TimeDate']) )
@@ -57,14 +95,14 @@
 #			wTweetRes = gVal.OBJ_Tw_IF.GetSearch( "togenohito " + '\n' + "お願い リスト vtuber をフォローするには当アカウント korei_xlix もフォローしてください。" )
 #			print(str( wTweetRes ))
 ######		
-			wGetListsRes = gVal.OBJ_Tw_IF.GetLists( "account" )
-			print(str( wGetListsRes['Responce'] ))
+##			wGetListsRes = gVal.OBJ_Tw_IF.GetLists( "account" )
+##			print(str( wGetListsRes['Responce'] ))
 ######		
 
 #####################################################
 # TEST
 #####################################################
-	def TestRun(self):
+	def Test(self):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
