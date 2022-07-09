@@ -7,16 +7,23 @@
 # ::Class    : ログ処理
 #####################################################
 # 書式:
-#	A:	gVal.OBJ_L.Log( "A", wRes )				致命的エラー: プログラム停止 ロジックエラーなどソフト側の問題
-#	B:	gVal.OBJ_L.Log( "B", wRes )				外部のエラー: プログラム停止か実行不可 外部モジュールやハードの問題
-#	C:	gVal.OBJ_L.Log( "C", wRes )				内部的エラー: プログラムは停止しないが、実行に影響があるレベル
-#	D:	gVal.OBJ_L.Log( "D", wRes )				潜在的エラー: ユーザ入力など予想外 or 後に問題を起こす可能性がある
-#	S:	gVal.OBJ_L.Log( "S", wRes, "<理由>" )	システム    : botの実行、システム変更に関わる動作
-#	R:	gVal.OBJ_L.Log( "R", wRes, "<理由>" )	ユーザ登録  : ユーザ登録、追加、削除、抹消
-#	U:	gVal.OBJ_L.Log( "U", wRes, "<理由>" )	ユーザ変更  : ユーザ変更、個別規制制御など
-#	T:	gVal.OBJ_L.Log( "T", wRes, "<理由>" )	トラヒック  : システムトラヒック集計、ユーザ通信記録
-#	N:	gVal.OBJ_L.Log( "N", wRes, "<理由>" )	その他      : 非表示の情報
-#	X:	gVal.OBJ_L.Log( "X", wRes )				テスト用ログ
+#	A :	gVal.OBJ_L.Log( "A", wRes )				致命的エラー: プログラム停止 ロジックエラーなどソフト側の問題
+#	B :	gVal.OBJ_L.Log( "B", wRes )				内部的エラー: プログラム停止か実行不可 コール先からのエラー
+#	C :	gVal.OBJ_L.Log( "C", wRes )				外部のエラー: プログラム停止か実行不可 外部モジュールやハードの問題
+#	D :	gVal.OBJ_L.Log( "D", wRes )				潜在的エラー: ユーザ入力など予想外 or 後に問題を起こす可能性がある
+#	E :	gVal.OBJ_L.Log( "E", wRes )				不明なエラー: 判断がつかないエラー ありえないルートなど
+#
+#	S:	gVal.OBJ_L.Log( "S", wRes, "<理由>" )	システム    : botの実行、停止、再起動
+#	SC:	gVal.OBJ_L.Log( "SC", wRes, "<理由>" )	システム    : システムの設定変更
+#	SR:	gVal.OBJ_L.Log( "SR", wRes, "<理由>" )	システム    : システムの規制制御、自律制御
+#	R:	gVal.OBJ_L.Log( "R", wRes, "<理由>" )	ユーザ      : ユーザ登録、削除、抹消
+#	RC:	gVal.OBJ_L.Log( "RC", wRes, "<理由>" )	ユーザ      : ユーザ設定変更
+#	RR:	gVal.OBJ_L.Log( "RR", wRes, "<理由>" )	ユーザ      : ユーザ個別の規制制御、自律制御
+#	T:	gVal.OBJ_L.Log( "T", wRes, "<理由>" )	トラヒック  : システムトラヒック、期間トラヒック、通信トラヒック(統計)
+#
+#	P :	gVal.OBJ_L.Log( "P", wRes )				データベース操作
+#	N :	gVal.OBJ_L.Log( "N", wRes, "<理由>" )	非表示の情報
+#	X :	gVal.OBJ_L.Log( "X", wRes )				テスト用ログ
 #
 #####################################################
 
@@ -29,31 +36,39 @@ class CLS_Mylog():
 
 #############################
 # ログレベル 日本語ローカライズ
-#   参考:A～Cは Cコンパイラのレベル2～4レベル基準
 	DEF_STR_LEVEL = {
-		"A"			: "致命的エラー: プログラム停止 ロジックエラーなどソフト側の問題",
-		"B"			: "外部のエラー: プログラム停止か実行不可 外部モジュールやハードの問題",
-		"C"			: "内部的エラー: プログラムは停止しないが、実行に影響があるレベル",
-		"D"			: "潜在的エラー: ユーザ入力など予想外 or 後に問題を起こす可能性がある",
+		"A"			: "",
+		"B"			: "",
+		"C"			: "",
+		"D"			: "",
+		"E"			: "",
 		
-		"S"			: "システム: botの実行、システム変更に関わる動作",
-		"R"			: "ユーザ登録: ユーザ登録、追加、削除、抹消",
-		"U"			: "ユーザ変更: ユーザ変更、個別規制制御など",
-		"T"			: "トラヒック: システムトラヒック集計、ユーザ通信記録",
-		"N"			: "その他: 非表示の情報",
+		"S"			: "",
+		"SC"		: "",
+		"SR"		: "",
+		"R"			: "",
+		"RC"		: "",
+		"RR"		: "",
+		"T"			: "",
 		
-		"X"			: "テスト用ログ",
-		"0"			: "ログレベルのセットミス",
+		"P"			: "",
+		"N"			: "",
+		"X"			: "",
+		
+		"0"			: "",
 		"(dummy)"	: ""
 	}
 
 #############################
 # ログ表示モード
 	DEF_STR_VIEW_LEVEL = {
-		"A"			: "全ログ",
-		"R"			: "運用ログ",
-		"U"			: "ユーザ操作",
-		"E"			: "異常ログ",
+		"F"			: "",		# 全ログ
+		"A"			: "",		# 全ログ(期間)
+		"V"			: "",		# 運用ログ
+		"R"			: "",		# 運用ログ(操作のみ)
+		"T"			: "",		# トラヒック
+		"U"			: "",		# ユーザログ
+		"E"			: "",		# 異常ログ
 		"(dummy)"	: ""
 	}
 
@@ -139,7 +154,7 @@ class CLS_Mylog():
 			###いちおデータベースにも記録する
 			wQuery = "insert into tbl_log_data values (" + \
 						"'" + gVal.STR_UserInfo['Account'] + "'," + \
-						"'B'," + \
+						"'C'," + \
 						"'CLS_Mylog'," + \
 						"'Log'," + \
 						"'CLS_OSIF.sGetTime is failed'," + \
@@ -149,7 +164,7 @@ class CLS_Mylog():
 			wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery, False )
 			if wResDB['Result']!=True :
 				wRes['Reason'] = "Run Query is failed"
-				gVal.OBJ_L.Log( "B", wRes )
+				gVal.OBJ_L.Log( "C", wRes )
 		
 		else:
 			wCHR_TimeDate = str(wTD['TimeDate'])
@@ -168,7 +183,7 @@ class CLS_Mylog():
 		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery, False )
 		if wResDB['Result']!=True :
 			wRes['Reason'] = "Run Query is failed"
-			gVal.OBJ_L.Log( "B", wRes )
+			gVal.OBJ_L.Log( "C", wRes )
 			##以後の記録処理は継続する
 		
 		#############################
@@ -197,23 +212,33 @@ class CLS_Mylog():
 		# コンソールに表示する
 		# = システムログに出る
 		wFLG_View = False
-		if wLevel=="A" or wLevel=="X" :
-			### Aクラス、テストログは表示
+		
+		### A・B・X（致命的エラー・テストログ）
+		###   =表示
+		if wLevel=="A" or wLevel=="B" or wLevel=="X" :
 			wFLG_View = True
-		elif wLevel=="S" or wLevel=="T" :
-			### 運用ログでテキストが設定されていれば表示
+		
+		### S・SC・SR・TS（運用ログ・トラヒック）
+		###   =テキストが設定されていれば表示
+		elif wLevel=="S" or wLevel=="SC" or wLevel=="SR" or wLevel=="T" :
 			if  inText!=None :
 				wFLG_View = True
-		elif wLevel=="R" or wLevel=="U" :
-			### ユーザログは表示
+		
+		### R・RC・RR（ユーザ操作）
+		###   =表示
+		elif wLevel=="R" or wLevel=="RC" or wLevel=="RR" :
 			wFLG_View = True
-		elif wLevel=="N" :
-			### 非表示の情報は非表示
+		
+		### P・N（データベース操作・非表示の情報）
+		###   =非表示
+		elif wLevel=="P" or wLevel=="N" :
 			wFLG_View = False
+		
+		### その他はコントロールオプションに従う
 		else :
-			### その他はコントロールオプションに従う
 			if inViewConsole==True :
 				wFLG_View = True
+		
 		if wFLG_View==True :
 			CLS_OSIF.sPrn( wOutLog )
 			for wLineData in wData :
@@ -307,16 +332,41 @@ class CLS_Mylog():
 		
 		#############################
 		# ログ取得
-		### wViewMode=R 運用ログ
+		### wViewMode=V 運用ログ
+		if wViewMode=="V" :
+			wQuery = "select * from tbl_log_data where " + \
+						"twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
+						"( " + \
+						"level = 'S' or " + \
+						"level = 'SC' or " + \
+						"level = 'SR' or " + \
+						"level = 'RR' or " + \
+						"level = 'T' or " + \
+						"level = 'P' or " + \
+						"level = 'N' " + \
+						") and " + \
+						"( lupdate > now() - interval '2 week' ) " + \
+						"order by lupdate DESC ;"
+		
+		### wViewMode=R 運用ログ(操作のみ)
 		if wViewMode=="R" :
 			wQuery = "select * from tbl_log_data where " + \
 						"twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
 						"( " + \
 						"level = 'S' or " + \
-						"level = 'R' or " + \
-						"level = 'U' or " + \
-						"level = 'T' or " + \
-						"level = 'N' ) and " + \
+						"level = 'SC' or " + \
+						"level = 'SR' or " + \
+						"level = 'RR' or " + \
+						"level = 'N' " + \
+						") and " + \
+						"( lupdate > now() - interval '2 week' ) " + \
+						"order by lupdate DESC ;"
+		
+		### wViewMode=T トラヒック
+		if wViewMode=="T" :
+			wQuery = "select * from tbl_log_data where " + \
+						"twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
+						"level = 'T' and " + \
 						"( lupdate > now() - interval '2 week' ) " + \
 						"order by lupdate DESC ;"
 		
@@ -329,8 +379,10 @@ class CLS_Mylog():
 						"level = 'B' or " + \
 						"level = 'C' or " + \
 						"level = 'D' or " + \
+						"level = 'E' or " + \
 						"level = 'X' or " + \
-						"level = '0' ) and " + \
+						"level = '0' " + \
+						") and " + \
 						"( lupdate > now() - interval '2 week' ) " + \
 						"order by lupdate DESC ;"
 		
@@ -340,14 +392,22 @@ class CLS_Mylog():
 						"twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
 						"( " + \
 						"level = 'R' or " + \
-						"level = 'U' ) and " + \
+						"level = 'RC' " + \
+						") and " + \
 						"( lupdate > now() - interval '2 week' ) " + \
 						"order by lupdate DESC ;"
 		
-		### wViewMode=A 全ログ
-		else:
+		### wViewMode=F 全ログ
+		elif wViewMode=="F" :
 			wQuery = "select * from tbl_log_data where " + \
 						"twitterid = '" + gVal.STR_UserInfo['Account'] + "' " + \
+						"order by lupdate DESC ;"
+		
+		### wViewMode=A 全ログ(期間)
+		else:
+			wQuery = "select * from tbl_log_data where " + \
+						"twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
+						"( lupdate > now() - interval '2 week' ) " + \
 						"order by lupdate DESC ;"
 		
 		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery, False )
@@ -413,7 +473,6 @@ class CLS_Mylog():
 #####################################################
 # ログクリア
 #####################################################
-###	def Clear(self):
 	def Clear( self, inAllClear=False ):
 		#############################
 		# 時間を取得
@@ -499,15 +558,8 @@ class CLS_Mylog():
 			wQuery = "delete from tbl_log_data where " + \
 						"twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
 						"(" + \
-						"level = 'A' or " + \
-						"level = 'B' or " + \
-						"level = 'C' or " + \
-						"level = 'D' or " + \
-						"level = 'S' or " + \
-						"level = 'U' or " + \
-						"level = 'T' or " + \
-						"level = 'X' or " + \
-						"level = '0' ) " + \
+						"not level = 'R' and " + \
+						"not level = 'RC' ) " + \
 						";"
 		
 		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery, False )
