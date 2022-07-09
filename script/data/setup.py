@@ -330,26 +330,26 @@ class CLS_Setup():
 
 	#####################################################
 	def __allDrop( self, inDBobj ):
-		wQuery = "drop table if exists tbl_user_data ;"
-		inOBJ_DB.RunQuery( wQuery )
-		wQuery = "drop table if exists tbl_twitter_data ;"
-		inOBJ_DB.RunQuery( wQuery )
-		wQuery = "drop table if exists tbl_favouser_data ;"
-		inOBJ_DB.RunQuery( wQuery )
-		wQuery = "drop table if exists tbl_log_data ;"
-		inOBJ_DB.RunQuery( wQuery )
-		wQuery = "drop table if exists tbl_traffic_data ;"
-		inOBJ_DB.RunQuery( wQuery )
-		wQuery = "drop table if exists tbl_exc_word ;"
-		inOBJ_DB.RunQuery( wQuery )
-		wQuery = "drop table if exists tbl_exc_user ;"
-		inOBJ_DB.RunQuery( wQuery )
-		wQuery = "drop table if exists tbl_caution_tweet ;"
-		inOBJ_DB.RunQuery( wQuery )
-		wQuery = "drop table if exists tbl_search_word ;"
-		inOBJ_DB.RunQuery( wQuery )
-		wQuery = "drop table if exists tbl_list_favo ;"
-		inOBJ_DB.RunQuery( wQuery )
+		wQy = "drop table if exists tbl_user_data ;"
+		inOBJ_DB.RunQuery( wQy )
+		wQy = "drop table if exists tbl_twitter_data ;"
+		inOBJ_DB.RunQuery( wQy )
+		wQy = "drop table if exists tbl_favouser_data ;"
+		inOBJ_DB.RunQuery( wQy )
+		wQy = "drop table if exists tbl_log_data ;"
+		inOBJ_DB.RunQuery( wQy )
+		wQy = "drop table if exists tbl_traffic_data ;"
+		inOBJ_DB.RunQuery( wQy )
+		wQy = "drop table if exists tbl_exc_word ;"
+		inOBJ_DB.RunQuery( wQy )
+		wQy = "drop table if exists tbl_exc_user ;"
+		inOBJ_DB.RunQuery( wQy )
+		wQy = "drop table if exists tbl_caution_tweet ;"
+		inOBJ_DB.RunQuery( wQy )
+		wQy = "drop table if exists tbl_search_word ;"
+		inOBJ_DB.RunQuery( wQy )
+		wQy = "drop table if exists tbl_list_favo ;"
+		inOBJ_DB.RunQuery( wQy )
 		return True
 
 
@@ -360,38 +360,26 @@ class CLS_Setup():
 	def __create_TBL_USER_DATA( self, inOBJ_DB, inTBLname="tbl_user_data" ):
 		#############################
 		# テーブルのドロップ
-		wQuery = "drop table if exists " + inTBLname + ";"
-		inOBJ_DB.RunQuery( wQuery )
+		wQy = "drop table if exists " + inTBLname + ";"
+		inOBJ_DB.RunQuery( wQy )
 		
 		#############################
 		# テーブル枠の作成
-		wQuery = "create table " + inTBLname + "(" + \
-					"twitterid   TEXT  NOT NULL," + \
-					"regdate     TIMESTAMP," + \
-					"locked      BOOL  DEFAULT false," + \
-					"lupdate     TIMESTAMP," + \
-					"fst_date    TIMESTAMP," + \
-					"end_date    TIMESTAMP," + \
-					"week_date   TIMESTAMP," + \
-					"day_date    TIMESTAMP," + \
-					"trendtag    TEXT," + \
-					"list_id     TEXT," + \
-					"list_name   TEXT," + \
-					" PRIMARY KEY ( twitterid ) ) ;"
-
-##					"twitterid   記録したユーザ(Twitter ID)
-##					"regdate     登録日時
-##					"locked      排他ロック true=ロックON
-##					"lupdate     排他日時
-##					"fst_date    処理開始日時(最終実行)
-##					"end_date    処理終了日時(最終実行)
-##					"week_date   週間 開始日時
-##					"day_date    1日  開始日時
-##					"trendtag    トレンド送信タグ
-##					"list_id     リスト通知 リストID(数値)
-##					"listname    リスト通知 リスト名
-##
-		inOBJ_DB.RunQuery( wQuery )
+		wQy = "create table " + inTBLname + "("
+		wQy = wQy + "twitterid   TEXT  NOT NULL,"		# 記録したユーザ(Twitter ID)
+		wQy = wQy + "regdate     TIMESTAMP,"			# 登録日時
+		wQy = wQy + "locked      BOOL  DEFAULT false,"	# 排他ロック true=ロックON
+		wQy = wQy + "lok_date    TIMESTAMP,"			# 排他日時
+		wQy = wQy + "fst_date    TIMESTAMP,"			# 処理開始日時(最終実行)
+		wQy = wQy + "end_date    TIMESTAMP,"			# 処理終了日時(最終実行)
+		wQy = wQy + "week_date   TIMESTAMP,"			# 週間 開始日時
+		wQy = wQy + "day_date    TIMESTAMP,"			# 1日  開始日時
+		wQy = wQy + "trendtag    TEXT,"					# トレンド送信タグ
+		wQy = wQy + "list_id     TEXT,"					# リスト通知 リストID(数値)
+		wQy = wQy + "list_name   TEXT,"					# リスト通知 リスト名
+		wQy = wQy + " PRIMARY KEY ( twitterid ) ) ;"
+		
+		inOBJ_DB.RunQuery( wQy )
 		return
 
 
@@ -402,28 +390,21 @@ class CLS_Setup():
 	def __create_TBL_TWITTER_DATA( self, inOBJ_DB, inTBLname="tbl_twitter_data" ):
 		#############################
 		# テーブルのドロップ
-		wQuery = "drop table if exists " + inTBLname + ";"
-		inOBJ_DB.RunQuery( wQuery )
+		wQy = "drop table if exists " + inTBLname + ";"
+		inOBJ_DB.RunQuery( wQy )
 		
 		#############################
 		# テーブル枠の作成
-		wQuery = "create table " + inTBLname + "(" + \
-					"twitterid   TEXT  NOT NULL," + \
-					"apikey      TEXT  NOT NULL," + \
-					"apisecret   TEXT  NOT NULL," + \
-					"acctoken    TEXT  NOT NULL," + \
-					"accsecret   TEXT  NOT NULL," + \
-					"bearer      TEXT  NOT NULL " + \
-					" PRIMARY KEY ( twitterid ) ) ;"
-
-##					"twitterid   記録したユーザ(Twitter ID)
-##					"apikey      Twitter Devで取ったAPI key
-##					"apisecret   Twitter Devで取ったAPI secret
-##					"acctoken    Twitter Devで取ったAccess Token Key
-##					"accsecret   Twitter Devで取ったAccess Token secret
-##					"bearer      Twitter Devで取ったbearer
-##
-		inOBJ_DB.RunQuery( wQuery )
+		wQy = "create table " + inTBLname + "("
+		wQy = wQy + "twitterid   TEXT  NOT NULL,"		# 記録したユーザ(Twitter ID)
+		wQy = wQy + "apikey      TEXT  NOT NULL,"		# Twitter Devで取ったAPI key
+		wQy = wQy + "apisecret   TEXT  NOT NULL,"		# Twitter Devで取ったAPI secret
+		wQy = wQy + "acctoken    TEXT  NOT NULL,"		# Twitter Devで取ったAccess Token Key
+		wQy = wQy + "accsecret   TEXT  NOT NULL,"		# Twitter Devで取ったAccess Token secret
+		wQy = wQy + "bearer      TEXT  NOT NULL "		# Twitter Devで取ったbearer
+		wQy = wQy + " PRIMARY KEY ( twitterid ) ) ;"
+		
+		inOBJ_DB.RunQuery( wQy )
 		return
 
 
@@ -434,27 +415,21 @@ class CLS_Setup():
 	def __create_TBL_LOG_DATA( self, inOBJ_DB, inTBLname="tbl_log_data" ):
 		#############################
 		# テーブルのドロップ
-		wQuery = "drop table if exists " + inTBLname + ";"
-		inOBJ_DB.RunQuery( wQuery )
+		wQy = "drop table if exists " + inTBLname + ";"
+		inOBJ_DB.RunQuery( wQy )
 		
 		#############################
 		# テーブル枠の作成
-		wQuery = "create table " + inTBLname + "(" + \
-					"twitterid   TEXT  NOT NULL," + \
-					"level       CHAR(1) DEFAULT '-'," + \
-					"log_class   TEXT  NOT NULL," + \
-					"log_func    TEXT  NOT NULL," + \
-					"reason      TEXT  NOT NULL," + \
-					"lupdate     TIMESTAMP" + \
-					" ) ;"
+		wQy = "create table " + inTBLname + "("
+		wQy = wQy + "twitterid   TEXT  NOT NULL,"		# 記録したユーザ(Twitter ID)
+		wQy = wQy + "regdate     TIMESTAMP,"			# 登録日時
+		wQy = wQy + "level       CHAR(1) DEFAULT '-',"	# ログレベル
+		wQy = wQy + "log_class   TEXT  NOT NULL,"		# ログクラス
+		wQy = wQy + "log_func    TEXT  NOT NULL,"		# ログ関数
+		wQy = wQy + "reason      TEXT  NOT NULL "		# 理由
+		wQy = wQy + " ) ;"
 		
-##					"twitterid   記録したユーザ(Twitter ID)
-##					"level       ログレベル
-##					"log_class   ログクラス
-##					"log_func    ログ関数
-##					"reason      理由
-##					"lupdate     記録日時
-		inOBJ_DB.RunQuery( wQuery )
+		inOBJ_DB.RunQuery( wQy )
 		return
 
 
@@ -465,58 +440,43 @@ class CLS_Setup():
 	def __create_TBL_FAVOUSER_DATA( self, inOBJ_DB, inTBLname="tbl_favouser_data" ):
 		#############################
 		# テーブルのドロップ
-		wQuery = "drop table if exists " + inTBLname + ";"
-		inOBJ_DB.RunQuery( wQuery )
+		wQy = "drop table if exists " + inTBLname + ";"
+		inOBJ_DB.RunQuery( wQy )
 		
 		#############################
 		# テーブル枠の作成
-		wQuery = "create table " + inTBLname + "(" + \
-					"twitterid     TEXT  NOT NULL," + \
-					"regdate       TIMESTAMP," + \
-					"upddate       TIMESTAMP," + \
-					"id            TEXT  NOT NULL," + \
-					"screen_name   TEXT  NOT NULL," + \
-					"level_tag     TEXT  NOT NULL," + \
-					"send_date     TIMESTAMP," + \
-					"send_cnt      INTEGER DEFAULT 0," + \
-					"rfavo_id      TEXT  NOT NULL," + \
-					"rfavo_date    TIMESTAMP," + \
-					"rfavo_cnt     INTEGER DEFAULT 0," + \
-					"rfavo_n_cnt   INTEGER DEFAULT 0," + \
-					"pfavo_id      TEXT  NOT NULL," + \
-					"pfavo_date    TIMESTAMP, " + \
-					"pfavo_cnt     INTEGER DEFAULT 0," + \
-					"list_date     TIMESTAMP," + \
-					"myfollow      BOOL  DEFAULT false," + \
-					"myfollow_date TIMESTAMP, " + \
-					"follower      BOOL  DEFAULT false," + \
-					"follower_date TIMESTAMP, " + \
-					"flg_save      BOOL  DEFAULT false " + \
-					" ) ;"
+		wQy = "create table " + inTBLname + "("
+		wQy = wQy + "twitterid     TEXT  NOT NULL,"		# 記録したユーザ(Twitter ID)
+		wQy = wQy + "regdate       TIMESTAMP,"			# 登録日時
+		wQy = wQy + "upddate       TIMESTAMP,"			# 更新日時(最終)
+		wQy = wQy + "flg_save      BOOL  DEFAULT false "# 自動削除禁止 true=削除しない
 		
-##					"twitterid     記録したユーザ(Twitter ID)
-##					"regdate       登録日時
-##					"upddate       更新日時(最終)
-##					"id            Twitter ID(数値)
-##					"screen_name   Twitter ユーザ名(英語)
-##					"level_tag     レベルタグ(ユーザの親密度 指標)
-##					"send_date     トロフィー送信日時
-##					"send_cnt      トロフィー送信回数(累計)
-##					"rfavo_id      いいね受信(このユーザがいいねした) ツイートID
-##					"rfavo_date    いいね受信日時
-##					"rfavo_cnt     いいね受信回数(総数)
-##					"rfavo_n_cnt   いいね受信回数(今周)
-##					"pfavo_id      いいね送信(このユーザのツイート) ツイートID
-##					"pfavo_date    いいね送信日時
-##					"pfavo_cnt     いいね送信回数(総数)
-##					"list_date     リスト日時
-##					"myfollow      フォロー者 true=フォロー者
-##					"myfollow_date フォロー日時
-##					"follower      フォロワー(被フォロー) true=フォロワー
-##					"follower_date 被フォロー日時
-##					"flg_save      自動削除禁止 true=削除しない
-###
-		inOBJ_DB.RunQuery( wQuery )
+		wQy = wQy + "id            TEXT  NOT NULL,"		# Twitter ID(数値)
+		wQy = wQy + "screen_name   TEXT  NOT NULL,"		# Twitter ユーザ名(英語)
+		wQy = wQy + "level_tag     TEXT  NOT NULL,"		# レベルタグ(ユーザの親密度 指標)
+		
+		wQy = wQy + "send_date     TIMESTAMP,"			# トロフィー送信日時
+		wQy = wQy + "send_cnt      INTEGER DEFAULT 0,"	# トロフィー送信回数(累計)
+		
+		wQy = wQy + "rfavo_id      TEXT  NOT NULL,"		# いいね受信(このユーザがいいねした) ツイートID
+		wQy = wQy + "rfavo_date    TIMESTAMP,"			# いいね受信日時
+		wQy = wQy + "rfavo_cnt     INTEGER DEFAULT 0,"	# いいね受信回数(総数)
+		wQy = wQy + "rfavo_n_cnt   INTEGER DEFAULT 0,"	# いいね受信回数(今周)
+		
+		wQy = wQy + "pfavo_id      TEXT  NOT NULL,"		# いいね送信(このユーザのツイート) ツイートID
+		wQy = wQy + "pfavo_date    TIMESTAMP, "			# いいね送信日時
+		wQy = wQy + "pfavo_cnt     INTEGER DEFAULT 0,"	# いいね送信回数(総数)
+		
+		wQy = wQy + "list_date     TIMESTAMP,"			# リスト日時
+		
+		wQy = wQy + "myfollow      BOOL  DEFAULT false,"# フォロー者 true=フォロー者
+		wQy = wQy + "myfollow_date TIMESTAMP, "			# フォロー日時
+		wQy = wQy + "follower      BOOL  DEFAULT false,"# フォロワー(被フォロー) true=フォロワー
+		wQy = wQy + "follower_date TIMESTAMP, "			# 被フォロー日時
+		wQy = wQy + "memo        TEXT, "				# 自由記載(メモ)
+		wQy = wQy + " ) ;"
+		
+		inOBJ_DB.RunQuery( wQy )
 		return
 
 
@@ -527,36 +487,25 @@ class CLS_Setup():
 	def __create_TBL_LIST_FAVO( self, inOBJ_DB, inTBLname="tbl_list_favo" ):
 		#############################
 		# テーブルのドロップ
-		wQuery = "drop table if exists " + inTBLname + ";"
-		inOBJ_DB.RunQuery( wQuery )
+		wQy = "drop table if exists " + inTBLname + ";"
+		inOBJ_DB.RunQuery( wQy )
 		
 		#############################
 		# テーブル枠の作成
-		wQuery = "create table " + inTBLname + "(" + \
-					"twitterid   TEXT  NOT NULL," + \
-					"id          TEXT  NOT NULL," + \
-					"list_name   TEXT  NOT NULL," + \
-					"user_id     TEXT  NOT NULL," + \
-					"screen_name TEXT  NOT NULL," + \
-					"valid       BOOL  DEFAULT true," + \
-					"follow      BOOL  DEFAULT false, " + \
-					"caution     BOOL  DEFAULT false, " + \
-					"sensitive   BOOL  DEFAULT false, " + \
-					"auto_rem    BOOL  DEFAULT false " + \
-					" ) ;"
+		wQy = "create table " + inTBLname + "("
+		wQy = wQy + "twitterid   TEXT  NOT NULL,"		# 記録したユーザ(Twitter ID)
+		wQy = wQy + "id          TEXT  NOT NULL,"		# Listのid
+		wQy = wQy + "list_name   TEXT  NOT NULL,"		# Listの名前
+		wQy = wQy + "user_id     TEXT  NOT NULL,"		# Listのユーザのid
+		wQy = wQy + "screen_name TEXT  NOT NULL,"		# Listのユーザのscreen_name
+		wQy = wQy + "valid       BOOL  DEFAULT true,"	# 有効か True=有効
+		wQy = wQy + "follow      BOOL  DEFAULT false, "	# フォロー者、フォロワーを含める
+		wQy = wQy + "caution     BOOL  DEFAULT false, "	# リストフォロー時警告を出す
+		wQy = wQy + "sensitive   BOOL  DEFAULT false, "	# センシティブツイートを含める
+		wQy = wQy + "auto_rem    BOOL  DEFAULT false "	# 自動リムーブ有効
+		wQy = wQy + " ) ;"
 		
-##					"twitterid   記録したユーザ(Twitter ID)
-##					"id          Listのid
-##					"list_name   Listの名前
-##					"user_id     Listのユーザのid
-##					"screen_name Listのユーザのscreen_name
-##					"valid       有効か True=有効
-##					"follow      フォロー者、フォロワーを含める
-##					"caution     リストフォロー時警告を出す
-##					"sensitive   センシティブツイートを含める
-##					"auto_rem    自動リムーブ有効
-		
-		inOBJ_DB.RunQuery( wQuery )
+		inOBJ_DB.RunQuery( wQy )
 		return
 
 
@@ -567,22 +516,18 @@ class CLS_Setup():
 	def __create_TBL_EXC_WORD( self, inOBJ_DB, inTBLname="tbl_exc_word" ):
 		#############################
 		# テーブルのドロップ
-		wQuery = "drop table if exists " + inTBLname + ";"
-		inOBJ_DB.RunQuery( wQuery )
+		wQy = "drop table if exists " + inTBLname + ";"
+		inOBJ_DB.RunQuery( wQy )
 		
 		#############################
 		# テーブル枠の作成
-		wQuery = "create table " + inTBLname + "(" + \
-					"regdate     TIMESTAMP," + \
-					"word        TEXT  NOT NULL, " + \
-					"report      BOOL  DEFAULT false," + \
-					" PRIMARY KEY ( word ) ) ;"
+		wQy = "create table " + inTBLname + "("
+		wQy = wQy + "regdate     TIMESTAMP,"			# 登録日時
+		wQy = wQy + "word        TEXT  NOT NULL, "		# 禁止ワード
+		wQy = wQy + "report      BOOL  DEFAULT false,"	# 通報対象か True=対象
+		wQy = wQy + " PRIMARY KEY ( word ) ) ;"
 		
-##					"regdate     DB登録日時
-##					"word        禁止ワード
-##					"report      true= 通報対象
-		
-		inOBJ_DB.RunQuery( wQuery )
+		inOBJ_DB.RunQuery( wQy )
 		return
 
 
@@ -593,28 +538,22 @@ class CLS_Setup():
 	def __create_TBL_EXC_USER( self, inOBJ_DB, inTBLname="tbl_exc_user" ):
 		#############################
 		# テーブルのドロップ
-		wQuery = "drop table if exists " + inTBLname + ";"
-		inOBJ_DB.RunQuery( wQuery )
+		wQy = "drop table if exists " + inTBLname + ";"
+		inOBJ_DB.RunQuery( wQy )
 		
 		#############################
 		# テーブル枠の作成
-		wQuery = "create table " + inTBLname + "(" + \
-					"regdate     TIMESTAMP," + \
-					"screen_name TEXT  NOT NULL, " + \
-					"report      BOOL  DEFAULT false," + \
-					"vip         BOOL  DEFAULT false," + \
-					"rel_date    TIMESTAMP," + \
-					"memo        TEXT, " + \
-					" PRIMARY KEY ( screen_name ) ) ;"
+		wQy = "create table " + inTBLname + "("
+		wQy = wQy + "regdate     TIMESTAMP,"			# 登録日時
+		wQy = wQy + "id          TEXT  NOT NULL, "		# Twitter ID(数値)
+		wQy = wQy + "screen_name TEXT  NOT NULL, "		# Twitter ユーザ名(英語)
+		wQy = wQy + "report      BOOL  DEFAULT false,"	# 通報対象 True=対象
+		wQy = wQy + "vip         BOOL  DEFAULT false,"	# VIP扱い  True=VIP
+		wQy = wQy + "rel_date    TIMESTAMP,"			# 禁止解除日時 (noneは自動解除しない)
+		wQy = wQy + "memo        TEXT, "				# 自由記載(メモ)
+		wQy = wQy + " PRIMARY KEY ( id ) ) ;"
 		
-##					"regdate     DB登録日時
-##					"screen_name 禁止ユーザ名
-##					"report      true= 通報対象
-##					"vip         true= 監視外(ログ記録なし)
-##					"rel_date    禁止解除日時(noneは自動解除しない)
-##					"memo        自由記載(メモ)
-		
-		inOBJ_DB.RunQuery( wQuery )
+		inOBJ_DB.RunQuery( wQy )
 		return
 
 
@@ -625,25 +564,20 @@ class CLS_Setup():
 	def __create_TBL_CAUTION_TWEET( self, inOBJ_DB, inTBLname="tbl_caution_tweet" ):
 		#############################
 		# テーブルのドロップ
-		wQuery = "drop table if exists " + inTBLname + ";"
-		inOBJ_DB.RunQuery( wQuery )
+		wQy = "drop table if exists " + inTBLname + ";"
+		inOBJ_DB.RunQuery( wQy )
 		
 		#############################
 		# テーブル枠の作成
-		wQuery = "create table " + inTBLname + "(" + \
-					"twitterid   TEXT  NOT NULL," + \
-					"regdate     TIMESTAMP," + \
-					"tweet_id    TEXT  NOT NULL," + \
-					"id          TEXT  NOT NULL," + \
-					"screen_name TEXT  NOT NULL, " + \
-					" PRIMARY KEY ( id ) ) ;"
+		wQy = "create table " + inTBLname + "("
+		wQy = wQy + "twitterid   TEXT  NOT NULL,"		# Twitter ID(数値)
+		wQy = wQy + "regdate     TIMESTAMP,"			# 登録日時
+		wQy = wQy + "tweet_id    TEXT  NOT NULL,"		# ツイートID(数値)
+		wQy = wQy + "id          TEXT  NOT NULL,"		# Twitter ID(数値)
+		wQy = wQy + "screen_name TEXT  NOT NULL, "		# Twitter ユーザ名(英語)
+		wQy = wQy + " PRIMARY KEY ( id ) ) ;"
 		
-##					"regdate     DB登録日時
-##					"tweet_id    Tweet ID
-##					"id          ユーザID
-##					"screen_name ユーザ名
-		
-		inOBJ_DB.RunQuery( wQuery )
+		inOBJ_DB.RunQuery( wQy )
 		return
 
 
@@ -654,23 +588,22 @@ class CLS_Setup():
 	def __create_TBL_SEARCH_WORD( self, inOBJ_DB, inTBLname="tbl_search_word" ):
 		#############################
 		# テーブルのドロップ
-		wQuery = "drop table if exists " + inTBLname + ";"
-		inOBJ_DB.RunQuery( wQuery )
+		wQy = "drop table if exists " + inTBLname + ";"
+		inOBJ_DB.RunQuery( wQy )
 		
 		#############################
 		# テーブル枠の作成
-		wQuery = "create table " + inTBLname + "(" + \
-					"twitterid   TEXT  NOT NULL," + \
-					"regdate     TIMESTAMP," + \
-					"id          TEXT  NOT NULL," + \
-					"word        TEXT  NOT NULL, " + \
-					"hit_cnt     INTEGER DEFAULT 0," + \
-					"favo_cnt    INTEGER DEFAULT 0," + \
-					"update_date TIMESTAMP," + \
-					"valid       BOOL  DEFAULT false " + \
-					" ) ;"
+		wQy = "create table " + inTBLname + "("
+		wQy = wQy + "twitterid   TEXT  NOT NULL,"		# Twitter ID(数値)
+		wQy = wQy + "regdate     TIMESTAMP,"			# 登録日時
+		wQy = wQy + "upddate     TIMESTAMP,"			# 検索実行日時
+		wQy = wQy + "valid       BOOL  DEFAULT false, "	# 有効 True=有効
+		wQy = wQy + "word        TEXT  NOT NULL, "		# 検索ワード
+		wQy = wQy + "hit_cnt     INTEGER DEFAULT 0,"	# 検索ヒット数
+		wQy = wQy + "favo_cnt    INTEGER DEFAULT 0 "	# いいね数
+		wQy = wQy + " ) ;"
 		
-		inOBJ_DB.RunQuery( wQuery )
+		inOBJ_DB.RunQuery( wQy )
 		return
 
 
@@ -681,32 +614,57 @@ class CLS_Setup():
 	def __create_TBL_TRAFFIC_DATA( self, inOBJ_DB, inTBLname="tbl_traffic_data" ):
 		#############################
 		# テーブルのドロップ
-		wQuery = "drop table if exists " + inTBLname + ";"
-		inOBJ_DB.RunQuery( wQuery )
+		wQy = "drop table if exists " + inTBLname + ";"
+		inOBJ_DB.RunQuery( wQy )
 		
 		#############################
 		# テーブル枠の作成
-		wQuery = "create table " + inTBLname + "(" + \
-					"twitterid   TEXT  NOT NULL," + \
-					"regdate     TIMESTAMP," + \
-					"update      TIMESTAMP," + \
-					"day         TEXT  NOT NULL," + \
-					"reported  BOOL  DEFAULT false," + \
-					"timeline  INTEGER DEFAULT 0," + \
-					"runbot      INTEGER DEFAULT 0," + \
-					"runapi      INTEGER DEFAULT 0," + \
-					"now_favo    INTEGER DEFAULT 0," + \
-					"get_favo    INTEGER DEFAULT 0," + \
-					"rem_favo    INTEGER DEFAULT 0," + \
-					"get_reaction  INTEGER DEFAULT 0," + \
-					"send_tweet    INTEGER DEFAULT 0," + \
-					"db_req      INTEGER DEFAULT 0," + \
-					"db_ins      INTEGER DEFAULT 0," + \
-					"db_up       INTEGER DEFAULT 0," + \
-					"db_del      INTEGER DEFAULT 0 " + \
-					" ) ;"
+		wQy = "create table " + inTBLname + "("
+		wQy = wQy + "twitterid   TEXT  NOT NULL,"		# Twitter ID(数値)
+		wQy = wQy + "regdate     TIMESTAMP,"			# 登録日時
+		wQy = wQy + "update      TIMESTAMP,"			# 記録日時(更新)
+		wQy = wQy + "day         TEXT  NOT NULL,"		# 記録日
+		wQy = wQy + "reported    BOOL  DEFAULT false,"	# 報告済か True=報告済
+		wQy = wQy + "run         INTEGER DEFAULT 0,"	# bot実行回数
 		
-		inOBJ_DB.RunQuery( wQuery )
+		wQy = wQy + "run_api     INTEGER DEFAULT 0,"	# api実行回数
+		wQy = wQy + "run_ope     INTEGER DEFAULT 0,"	# 自動監視実施回数
+		
+		###### Twittterトラヒック
+		wQy = wQy + "timeline    INTEGER DEFAULT 0,"	# タイムライン取得数(ライン数)
+		
+		wQy = wQy + "myfollow    INTEGER DEFAULT 0,"	# フォロー者数(報告時)
+		wQy = wQy + "p_myfollow  INTEGER DEFAULT 0,"	# フォロー実施数
+		wQy = wQy + "d_myfollow  INTEGER DEFAULT 0,"	# リムーブ実施数
+		
+		wQy = wQy + "follower    INTEGER DEFAULT 0,"	# フォロワー数(報告時)
+		wQy = wQy + "p_follower  INTEGER DEFAULT 0,"	# フォロワー獲得数
+		wQy = wQy + "d_follower  INTEGER DEFAULT 0,"	# 被リムーブ者数
+		
+		wQy = wQy + "r_reaction  INTEGER DEFAULT 0,"	# リアクション受信回数(総数)
+		wQy = wQy + "r_rep       INTEGER DEFAULT 0,"	# リプライ受信回数
+		wQy = wQy + "r_retweet   INTEGER DEFAULT 0,"	# リツイート受信回数
+		wQy = wQy + "r_iret      INTEGER DEFAULT 0,"	# 引用リツイート受信回数
+		wQy = wQy + "r_favo      INTEGER DEFAULT 0,"	# いいね受信回数
+		wQy = wQy + "r_in        INTEGER DEFAULT 0,"	# フォロワーからのアクション受信回数
+		wQy = wQy + "r_out       INTEGER DEFAULT 0,"	# フォロワー以外からのアクション受信回数
+		
+		wQy = wQy + "s_run       INTEGER DEFAULT 0,"	# 検索実施数
+		wQy = wQy + "s_hit       INTEGER DEFAULT 0,"	# 検索ヒット数
+		wQy = wQy + "s_favo      INTEGER DEFAULT 0,"	# 検索時いいね数
+		
+		wQy = wQy + "p_favo      INTEGER DEFAULT 0,"	# いいね実施回数
+		wQy = wQy + "d_favo      INTEGER DEFAULT 0,"	# いいね解除回数
+		wQy = wQy + "p_tweet     INTEGER DEFAULT 0,"	# ツイート送信回数
+		
+		###### DBトラヒック
+		wQy = wQy + "db_req INTEGER DEFAULT 0,"			# DB select回数
+		wQy = wQy + "db_ins INTEGER DEFAULT 0,"			# DB insert回数
+		wQy = wQy + "db_up  INTEGER DEFAULT 0,"			# DB update回数
+		wQy = wQy + "db_del INTEGER DEFAULT 0 "			# DB delete回数
+		wQy = wQy + " ) ;"
+		
+		inOBJ_DB.RunQuery( wQy )
 		return
 
 
