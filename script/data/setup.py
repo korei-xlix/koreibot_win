@@ -622,9 +622,9 @@ class CLS_Setup():
 		wQy = "create table " + inTBLname + "("
 		wQy = wQy + "twitterid   TEXT  NOT NULL,"		# Twitter ID(数値)
 		wQy = wQy + "regdate     TIMESTAMP,"			# 登録日時
-		wQy = wQy + "update      TIMESTAMP,"			# 記録日時(更新)
+		wQy = wQy + "upddate     TIMESTAMP,"			# 記録日時(更新)
 		wQy = wQy + "day         TEXT  NOT NULL,"		# 記録日
-		wQy = wQy + "reported    BOOL  DEFAULT false,"	# 報告済か True=報告済
+###		wQy = wQy + "reported    BOOL  DEFAULT false,"	# 報告済か True=報告済
 		wQy = wQy + "run         INTEGER DEFAULT 0,"	# bot実行回数
 		
 		wQy = wQy + "run_api     INTEGER DEFAULT 0,"	# api実行回数

@@ -422,22 +422,22 @@ class CLS_Main_Console() :
 			return wRes
 		
 		#############################
-		# トラヒック情報の記録
+		# トラヒック情報の記録と報告
 		wResTraffic = CLS_Traffic.sSet()
 		if wResTraffic['Result']!=True :
 			wRes['Reason'] = "Set Traffic failed: reason" + CLS_OSIF.sCatErr( wResTraffic )
 			return wRes
-		if wResTraffic['Responce']==True :
-			gVal.OBJ_L.Log( "S", wRes, "〇トラヒック情報切り替え" )
-			wRes['Responce'] = False	#画面クリアさせない
-			cls.FLG_MainDispClear = False	#画面クリアさせない
-		
-		wResTraffic = CLS_Traffic.sReport()
-		if wResTraffic['Result']!=True :
-			wRes['Reason'] = "sReport failed: reason" + CLS_OSIF.sCatErr( wResTraffic )
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
+###		if wResTraffic['Responce']==True :
+###			gVal.OBJ_L.Log( "S", wRes, "〇トラヒック情報切り替え" )
+###			wRes['Responce'] = False	#画面クリアさせない
+###			cls.FLG_MainDispClear = False	#画面クリアさせない
+###		
+###		wResTraffic = CLS_Traffic.sReport()
+###		if wResTraffic['Result']!=True :
+###			wRes['Reason'] = "sReport failed: reason" + CLS_OSIF.sCatErr( wResTraffic )
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
 		#############################
 		# 正常
 		wRes['Result']   = True

@@ -8,6 +8,7 @@
 #####################################################
 from postgresql_use import CLS_PostgreSQL_Use
 
+from traffic import CLS_Traffic
 from osif import CLS_OSIF
 from gval import gVal
 #####################################################
@@ -169,20 +170,37 @@ class CLS_DB_IF() :
 		if wResDB['Result']!=True :
 			##失敗
 			wRes['Reason'] = "Run Query is failed: RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-			gVal.OBJ_L.Log( "B", wRes )
+			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
 		
 		#############################
-		# トラヒックの計測
+###		# トラヒックの計測
+		# ログ記録とトラヒックの計測
 		if inTraffic==True :
-			gVal.STR_TrafficInfo['db_req'] += 1
+###			gVal.STR_TrafficInfo['db_req'] += 1
+			CLS_Traffic.sP( "db_req" )
 			
 			if wResDB['Command']=="insert" or wResDB['Command']=="create" :
-				gVal.STR_TrafficInfo['db_ins'] += 1
+###				gVal.STR_TrafficInfo['db_ins'] += 1
+				wQy = inQuery.split(" ")
+				wQy = wQy[2]
+				gVal.OBJ_L.Log( "P", wRes, "insert: " + wQy )
+				CLS_Traffic.sP( "db_ins" )
+			
 			elif wResDB['Command']=="update" :
-				gVal.STR_TrafficInfo['db_up'] += 1
+###				gVal.STR_TrafficInfo['db_up'] += 1
+				wQy = inQuery.split(" ")
+				wQy = wQy[1]
+				gVal.OBJ_L.Log( "P", wRes, "update: " + wQy )
+				CLS_Traffic.sP( "db_up" )
+			
 			elif wResDB['Command']=="delete" or wResDB['Command']=="drop" :
-				gVal.STR_TrafficInfo['db_del'] += 1
+###				gVal.STR_TrafficInfo['db_del'] += 1
+				wQy = inQuery.split(" ")
+				wQy = wQy[2]
+				gVal.OBJ_L.Log( "P", wRes, "update: " + wQy )
+				CLS_Traffic.sP( "db_del" )
+			
 		
 		#############################
 		# 正常
@@ -234,16 +252,16 @@ class CLS_DB_IF() :
 		if inTableName==None or inTableName=="" :
 			##失敗
 			wRes['Reason'] = "inTableName is invalid: " + str(inTableName)
-			gVal.OBJ_L.Log( "B", wRes )
+			gVal.OBJ_L.Log( "A", wRes )
 			return wRes
 		
 		#############################
 		# クエリの作成
-		wQuery = "select count(*) from " + inTableName + ";"
+		wQy = "select count(*) from " + inTableName + ";"
 		
 		#############################
 		# 実行
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		
 		#############################
 		# 実行結果の取得
@@ -251,7 +269,7 @@ class CLS_DB_IF() :
 		if wResDB['Result']!=True :
 			##失敗
 			wRes['Reason'] = "Run Query is failed: RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-			gVal.OBJ_L.Log( "B", wRes )
+			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
 		
 		#############################
@@ -261,14 +279,14 @@ class CLS_DB_IF() :
 		except ValueError:
 			##失敗
 			wRes['Reason'] = "Data is failer"
-			gVal.OBJ_L.Log( "B", wRes )
+			gVal.OBJ_L.Log( "A", wRes )
 			return wRes
 		
-		#############################
-		# トラヒックの計測
-		if inTraffic==True :
-			gVal.STR_TrafficInfo['db_req'] += 1
-		
+###		#############################
+###		# トラヒックの計測
+###		if inTraffic==True :
+###			gVal.STR_TrafficInfo['db_req'] += 1
+###		
 		#############################
 		# 正常
 		wRes['Responce'] = wNum
@@ -280,7 +298,8 @@ class CLS_DB_IF() :
 #####################################################
 # チェックデータベース
 #####################################################
-	def CheckDB(self ):
+###	def CheckDB(self ):
+	def CheckDB( self, inTraffic=True ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -297,6 +316,11 @@ class CLS_DB_IF() :
 			wRes['Reason'] = "DBの状態チェック失敗: RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
 			CLS_OSIF.sErr( wRes )
 			return wRes
+		
+		#############################
+		# トラヒックの計測
+		if inTraffic==True :
+			CLS_Traffic.sP( "db_req" )
 		
 		wRes['Responce'] = wResDB['Responce']
 		wRes['Result'] = True
@@ -336,11 +360,11 @@ class CLS_DB_IF() :
 		wRes['Responce']['Account'] = str( wTwitterAccount )
 		#############################
 		# ユーザ登録の確認 and 抽出
-		wQuery = "select * from tbl_user_data where " + \
-					"twitterid = '" + wTwitterAccount + "'" + \
-					";"
+		wQy = "select * from tbl_user_data where "
+		wQy = wQy + "twitterid = '" + wTwitterAccount + "'"
+		wQy = wQy + ";"
 		
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
@@ -375,91 +399,130 @@ class CLS_DB_IF() :
 		wTD = CLS_OSIF.sGetTime()
 		if wTD['Result']!=True :
 			###時間取得失敗  時計壊れた？
-			wStr = "PC時間取得失敗" + '\n'
-			CLS_OSIF.sPrn( wStr )
+###			wStr = "PC時間取得失敗" + '\n'
+			wRes['Reason'] = "PC time get is failer" + '\n'
+###			CLS_OSIF.sPrn( wStr )
+			gVal.OBJ_L.Log( "C", wRes )
 			wTD['TimeDate'] = self.DEF_TIMEDATE
 		
 		#############################
 		# テーブルチェック
-		wQuery = "select * from tbl_user_data where " + \
-					"twitterid = '" + inUserData['Account'] + "'" + \
-					";"
+		wQy = "select * from tbl_user_data where "
+		wQy = wQy + "twitterid = '" + inUserData['Account'] + "'"
+		wQy = wQy + ";"
 		
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
 			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-			CLS_OSIF.sErr( wRes )
+###			CLS_OSIF.sErr( wRes )
+			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
 		
 		#############################
 		# 登録してなければデータベースに登録する
 		if len(wResDB['Responce']['Data'])==0 :
-			wQuery = "insert into tbl_user_data values (" + \
-						"'" + inUserData['Account'] + "'," + \
-						"'" + inUserData['APIkey'] + "'," + \
-						"'" + inUserData['APIsecret'] + "'," + \
-						"'" + inUserData['ACCtoken'] + "'," + \
-						"'" + inUserData['ACCsecret'] + "'," + \
-						"'" + inUserData['Bearer'] + "'," + \
-						"False," + \
-						"'" + str(wTD['TimeDate']) + "'," + \
-						"''," + \
-						"'" + str(wTD['TimeDate']) + "'," + \
-						"''," + \
-						"'" + str(wTD['TimeDate']) + "'," + \
-						"'" + str(wTD['TimeDate']) + "' " + \
-						") ;"
+			wQy = "insert into tbl_user_data values ("
+			wQy = wQy + "'" + inUserData['Account'] + "',"
+			wQy = wQy + "'" + str( wTD['TimeDate'] ) + "',"
+			wQy = wQy + "False,"
+			wQy = wQy + "'" + str( self.DEF_TIMEDATE ) + "',"
+			wQy = wQy + "'" + str( self.DEF_TIMEDATE ) + "',"
+			wQy = wQy + "'" + str( self.DEF_TIMEDATE ) + "',"
+			wQy = wQy + "'" + str( self.DEF_TIMEDATE ) + "',"
+			wQy = wQy + "'" + str( self.DEF_TIMEDATE ) + "',"
+			wQy = wQy + "'', "
+			wQy = wQy + "'', "
+			wQy = wQy + "'' "
+			wQy = wQy + ") ;"
 			
-			wResDB = self.OBJ_DB.RunQuery( wQuery )
-			wResDB = self.OBJ_DB.GetQueryStat()
-			if wResDB['Result']!=True :
-				##失敗
-				wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-				CLS_OSIF.sErr( wRes )
-				return False
-			
-			#############################
-			# ログ記録
-			gVal.OBJ_L.Log( "N", wRes, "DB: Insert UserData : " + inUserData['Account'] )
-		
-		#############################
-		# 登録されていればキーを更新する
-		elif len(wResDB['Responce']['Data'])==1 :
-			wQuery = "update tbl_user_data set " + \
-					"apikey = '"    + inUserData['APIkey'] + "', " + \
-					"apisecret = '" + inUserData['APIsecret'] + "', " + \
-					"acctoken = '"  + inUserData['ACCtoken'] + "', " + \
-					"accsecret = '" + inUserData['ACCsecret'] + "', " + \
-					"bearer = '" + inUserData['Bearer'] + "', " + \
-					"locked = False, " + \
-					"lupdate = '" + str(wTD['TimeDate']) + "' " + \
-					"where twitterid = '" + inUserData['Account'] + "' ;"
-			
-			wResDB = self.OBJ_DB.RunQuery( wQuery )
+			wResDB = self.OBJ_DB.RunQuery( wQy )
 			wResDB = self.OBJ_DB.GetQueryStat()
 			if wResDB['Result']!=True :
 				##失敗
 				wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-				CLS_OSIF.sErr( wRes )
+###				CLS_OSIF.sErr( wRes )
+				gVal.OBJ_L.Log( "C", wRes )
 				return False
 			
-			wStr = "データベースのユーザ " + inUserData['Account'] + " を更新しました。" + '\n'
-			CLS_OSIF.sPrn( wStr )
-		
+			wQy = "insert into tbl_twitter_data values ("
+			wQy = wQy + "'" + inUserData['Account'] + "',"
+			wQy = wQy + "'" + inUserData['APIkey'] + "',"
+			wQy = wQy + "'" + inUserData['APIsecret'] + "',"
+			wQy = wQy + "'" + inUserData['ACCtoken'] + "',"
+			wQy = wQy + "'" + inUserData['ACCsecret'] + "',"
+			wQy = wQy + "'" + inUserData['Bearer'] + "' "
+			wQy = wQy + ") ;"
+			
+			wResDB = self.OBJ_DB.RunQuery( wQy )
+			wResDB = self.OBJ_DB.GetQueryStat()
+			if wResDB['Result']!=True :
+				##失敗
+				wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+###				CLS_OSIF.sErr( wRes )
+				gVal.OBJ_L.Log( "C", wRes )
+				return False
+			
+###			#############################
+###			# ログ記録
+###			gVal.OBJ_L.Log( "N", wRes, "DB: Insert UserData : " + inUserData['Account'] )
+###		
+		#############################
+		# 登録されていればキーを更新する
+		elif len(wResDB['Responce']['Data'])==1 :
+			wQy = "update tbl_twitter_data set "
+			wQy = wQy + "apikey = '"    + inUserData['APIkey'] + "', "
+			wQy = wQy + "apisecret = '" + inUserData['APIsecret'] + "', "
+			wQy = wQy + "acctoken = '"  + inUserData['ACCtoken'] + "', "
+			wQy = wQy + "accsecret = '" + inUserData['ACCsecret'] + "', "
+			wQy = wQy + "bearer = '" + inUserData['Bearer'] + "'  "
+			wQy = wQy + "where twitterid = '" + inUserData['Account'] + "' ;"
+			
+			wResDB = self.OBJ_DB.RunQuery( wQy )
+			wResDB = self.OBJ_DB.GetQueryStat()
+			if wResDB['Result']!=True :
+				##失敗
+				wRes['Reason'] = "Run Query is failed(5): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+				gVal.OBJ_L.Log( "C", wRes )
+				return False
+			
+			wQy = "update tbl_user_data set "
+			wQy = wQy + "locked = False, "
+			wQy = wQy + "lok_date = '" + str(wTD['TimeDate']) + "' "
+			wQy = wQy + "where twitterid = '" + inUserData['Account'] + "' ;"
+			
+			wResDB = self.OBJ_DB.RunQuery( wQy )
+			wResDB = self.OBJ_DB.GetQueryStat()
+			if wResDB['Result']!=True :
+				##失敗
+				wRes['Reason'] = "Run Query is failed(4): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+###				CLS_OSIF.sErr( wRes )
+				gVal.OBJ_L.Log( "C", wRes )
+				return False
+			
+###			wStr = "データベースのユーザ " + inUserData['Account'] + " を更新しました。" + '\n'
+###			CLS_OSIF.sPrn( wStr )
+###		
 		else:
 			###ありえない
-			wStr = "データベースにユーザ " + inUserData['Account'] + " は複数登録されています。" + '\n'
-			CLS_OSIF.sPrn( wStr )
+###			wStr = "データベースにユーザ " + inUserData['Account'] + " は複数登録されています。" + '\n'
+###			CLS_OSIF.sPrn( wStr )
+			wRes['Reason'] = "dual registed user: user=" + str(inUserData['Account'])
+			gVal.OBJ_L.Log( "D", wRes )
 			self.OBJ_DB.Close()
 			return False
 		
+###		#############################
+###		# =正常
+###		wStr = "ユーザデータ " + inUserData['Account'] + " を更新しました。" + '\n'
+###		CLS_OSIF.sPrn( wStr )
+		#############################
+		# ログに記録する
+		gVal.OBJ_L.Log( "SC", wRes, "update user data: user=" + str(inUserData['Account']) )
+		
 		#############################
 		# =正常
-		wStr = "ユーザデータ " + inUserData['Account'] + " を更新しました。" + '\n'
-		CLS_OSIF.sPrn( wStr )
-		
 		wRes['Result'] = True
 		return wRes
 
@@ -478,10 +541,10 @@ class CLS_DB_IF() :
 		
 		#############################
 		# データベースから除外文字を取得
-		wQuery = "select * from tbl_exc_word " + \
+		wQy = "select * from tbl_exc_word " + \
 					";"
 		
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
@@ -536,10 +599,10 @@ class CLS_DB_IF() :
 		
 		#############################
 		# データベースから除外文字を取得
-		wQuery = "select word from tbl_exc_word " + \
+		wQy = "select word from tbl_exc_word " + \
 					";"
 		
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
@@ -585,7 +648,7 @@ class CLS_DB_IF() :
 			# 登録済みの場合
 			#   通報情報を更新する
 			if wKey in wARR_RateWord :
-				wQuery = "update tbl_exc_word set " + \
+				wQy = "update tbl_exc_word set " + \
 						"report = " + str(wARR_Word[wKey]['report']) + " " + \
 						" ;"
 			
@@ -593,7 +656,7 @@ class CLS_DB_IF() :
 			# 登録なしの場合
 			#   新規登録する
 			else :
-				wQuery = "insert into tbl_exc_word values (" + \
+				wQy = "insert into tbl_exc_word values (" + \
 						"'" + str(wTD['TimeDate']) + "', " + \
 						"'" + wKey + "', " + \
 						str(wARR_Word[wKey]['report']) + " " + \
@@ -601,7 +664,7 @@ class CLS_DB_IF() :
 			
 			#############################
 			# クエリの実行
-			wResDB = self.OBJ_DB.RunQuery( wQuery )
+			wResDB = self.OBJ_DB.RunQuery( wQy )
 			wResDB = self.OBJ_DB.GetQueryStat()
 			if wResDB['Result']!=True :
 				##失敗
@@ -640,13 +703,13 @@ class CLS_DB_IF() :
 				continue
 			
 			# ※登録なし：削除確定
-			wQuery = "delete from tbl_exc_word " + \
+			wQy = "delete from tbl_exc_word " + \
 					"where word = '" + wRateKey + "' " + \
 					" ;"
 			
 			#############################
 			# クエリの実行
-			wResDB = self.OBJ_DB.RunQuery( wQuery )
+			wResDB = self.OBJ_DB.RunQuery( wQy )
 			wResDB = self.OBJ_DB.GetQueryStat()
 			if wResDB['Result']!=True :
 				##失敗
@@ -682,10 +745,10 @@ class CLS_DB_IF() :
 		
 		#############################
 		# データベースから禁止ユーザを取得
-		wQuery = "select * from tbl_exc_user " + \
+		wQy = "select * from tbl_exc_user " + \
 					";"
 		
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
@@ -753,10 +816,10 @@ class CLS_DB_IF() :
 		
 		#############################
 		# データベースから禁止ユーザを取得
-		wQuery = "select screen_name from tbl_exc_user " + \
+		wQy = "select screen_name from tbl_exc_user " + \
 					";"
 		
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
@@ -808,7 +871,7 @@ class CLS_DB_IF() :
 			# 登録済みの場合
 			#   通報情報を更新する
 			if wKey in wARR_RateWord :
-				wQuery = "update tbl_exc_word set " + \
+				wQy = "update tbl_exc_word set " + \
 						"report = " + str(wARR_Word[wKey]['report']) + " " + \
 						" ;"
 			
@@ -816,7 +879,7 @@ class CLS_DB_IF() :
 			# 登録なしの場合
 			#   新規登録する
 			else :
-				wQuery = "insert into tbl_exc_user values (" + \
+				wQy = "insert into tbl_exc_user values (" + \
 						"'" + str(wTD['TimeDate']) + "', " + \
 						"'" + wKey + "', " + \
 						str(wARR_Word[wKey]['report']) + ", " + \
@@ -825,7 +888,7 @@ class CLS_DB_IF() :
 			
 			#############################
 			# クエリの実行
-			wResDB = self.OBJ_DB.RunQuery( wQuery )
+			wResDB = self.OBJ_DB.RunQuery( wQy )
 			wResDB = self.OBJ_DB.GetQueryStat()
 			if wResDB['Result']!=True :
 				##失敗
@@ -864,13 +927,13 @@ class CLS_DB_IF() :
 				continue
 			
 			# ※登録なし：削除確定
-			wQuery = "delete from tbl_exc_user " + \
+			wQy = "delete from tbl_exc_user " + \
 					"where screen_name = '" + wRateKey + "' " + \
 					" ;"
 			
 			#############################
 			# クエリの実行
-			wResDB = self.OBJ_DB.RunQuery( wQuery )
+			wResDB = self.OBJ_DB.RunQuery( wQy )
 			wResDB = self.OBJ_DB.GetQueryStat()
 			if wResDB['Result']!=True :
 				##失敗
@@ -921,7 +984,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# 新規登録する
-		wQuery = "insert into tbl_exc_user values (" + \
+		wQy = "insert into tbl_exc_user values (" + \
 				"'" + str(wTD['TimeDate']) + "', " + \
 				"'" + str(inName) + "', " + \
 				"False, " + \
@@ -930,7 +993,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# クエリの実行
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
@@ -1007,7 +1070,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# 変更する
-		wQuery = "update tbl_exc_user set " + \
+		wQy = "update tbl_exc_user set " + \
 				"report = " + str( wFLR_Rep ) + ", " + \
 				"vip = " + str( wFLR_VIP ) + " " + \
 				"where screen_name = '" + inName + "' " + \
@@ -1015,7 +1078,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# クエリの実行
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
@@ -1058,13 +1121,13 @@ class CLS_DB_IF() :
 		
 		#############################
 		# 変更する
-		wQuery = "delete from tbl_exc_user where " + \
+		wQy = "delete from tbl_exc_user where " + \
 					"screen_name = '" + inName + "' " + \
 					";"
 		
 		#############################
 		# クエリの実行
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
@@ -1096,10 +1159,10 @@ class CLS_DB_IF() :
 		
 		#############################
 		# データベースを取得
-		wQuery = "select * from tbl_list_favo " + \
+		wQy = "select * from tbl_list_favo " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
 		
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
@@ -1194,10 +1257,10 @@ class CLS_DB_IF() :
 		
 		#############################
 		# レコードを一旦全消す
-		wQuery = "delete from tbl_list_favo " + \
+		wQy = "delete from tbl_list_favo " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
 		
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
@@ -1212,7 +1275,7 @@ class CLS_DB_IF() :
 		# データベースに登録する
 		wKeylist = list( wARR_Data.keys() )
 		for wKey in wKeylist :
-			wQuery = "insert into tbl_list_favo values (" + \
+			wQy = "insert into tbl_list_favo values (" + \
 					"'" + gVal.STR_UserInfo['Account'] + "', " + \
 					"'" + str(wARR_Data[wKey]['screen_name']) + "', " + \
 					"'" + str(wARR_Data[wKey]['list_name']) + "', " + \
@@ -1225,7 +1288,7 @@ class CLS_DB_IF() :
 			
 			#############################
 			# クエリの実行
-			wResDB = self.OBJ_DB.RunQuery( wQuery )
+			wResDB = self.OBJ_DB.RunQuery( wQy )
 			wResDB = self.OBJ_DB.GetQueryStat()
 			if wResDB['Result']!=True :
 				##失敗
@@ -1259,7 +1322,7 @@ class CLS_DB_IF() :
 				### 更新なしはスキップ
 				continue
 			
-			wQuery = "update tbl_list_favo set " + \
+			wQy = "update tbl_list_favo set " + \
 					"valid = " + str(gVal.ARR_ListFavo[wKey]['valid']) + ", " + \
 					"follow = " + str(gVal.ARR_ListFavo[wKey]['follow']) + ", " + \
 					"caution = " + str(gVal.ARR_ListFavo[wKey]['caution']) + ", " + \
@@ -1272,7 +1335,7 @@ class CLS_DB_IF() :
 			
 			#############################
 			# クエリの実行
-			wResDB = self.OBJ_DB.RunQuery( wQuery )
+			wResDB = self.OBJ_DB.RunQuery( wQy )
 			wResDB = self.OBJ_DB.GetQueryStat()
 			if wResDB['Result']!=True :
 				##失敗
@@ -1303,10 +1366,10 @@ class CLS_DB_IF() :
 		
 		#############################
 		# データベースを取得
-		wQuery = "select * from tbl_caution_tweet " + \
+		wQy = "select * from tbl_caution_tweet " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
 		
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
@@ -1361,7 +1424,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# データベースに登録する
-		wQuery = "insert into tbl_caution_tweet values (" + \
+		wQy = "insert into tbl_caution_tweet values (" + \
 				"'" + wCell['twitterid'] + "', " + \
 				"'" + wCell['regdate'] + "', " + \
 				"'" + wCell['tweet_id'] + "', " + \
@@ -1371,7 +1434,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# クエリの実行
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
@@ -1406,11 +1469,11 @@ class CLS_DB_IF() :
 		
 		#############################
 		# レコードから削除する
-		wQuery = "delete from tbl_caution_tweet " + \
+		wQy = "delete from tbl_caution_tweet " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
 					"id = '" + wUserID + "' ;"
 		
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
@@ -1440,11 +1503,11 @@ class CLS_DB_IF() :
 		
 		#############################
 		# DBに登録する
-		wQuery = "update tbl_user_data set " + \
+		wQy = "update tbl_user_data set " + \
 				"favodate = '" + str(inDate) + "' " + \
 				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
 		
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
@@ -1475,13 +1538,13 @@ class CLS_DB_IF() :
 		wRes['Class'] = "CLS_DB_IF"
 		wRes['Func']  = "SetListName"
 		
-		wQuery = "update tbl_user_data set " + \
+		wQy = "update tbl_user_data set " + \
 				"trendtag = '" + gVal.STR_UserInfo['TrendTag'] + "', " + \
 				"listname = '" + gVal.STR_UserInfo['ListName'] + "', " + \
 				"arlistname = '" + gVal.STR_UserInfo['ArListName'] + "' " + \
 				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
 		
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
@@ -1507,11 +1570,11 @@ class CLS_DB_IF() :
 		
 		wRes['Responce'] = False
 		
-		wQuery = "update tbl_user_data set " + \
+		wQy = "update tbl_user_data set " + \
 				"listdate = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
 				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
 		
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
@@ -1553,11 +1616,11 @@ class CLS_DB_IF() :
 		
 		wRes['Responce'] = False
 		
-		wQuery = "update tbl_user_data set " + \
+		wQy = "update tbl_user_data set " + \
 				"lfavdate = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
 				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
 		
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
@@ -1609,33 +1672,33 @@ class CLS_DB_IF() :
 		
 		#############################
 		# SQLの作成
-		wQuery = "insert into tbl_favouser_data values ("
-		wQuery = wQuery + "'" + gVal.STR_UserInfo['Account'] + "', "
-		wQuery = wQuery + "'" + wTimeDate + "', "
+		wQy = "insert into tbl_favouser_data values ("
+		wQy = wQy + "'" + gVal.STR_UserInfo['Account'] + "', "
+		wQy = wQy + "'" + wTimeDate + "', "
 		
-		wQuery = wQuery + "'" + wID + "', "
-		wQuery = wQuery + "'" + wScreenName + "', "
+		wQy = wQy + "'" + wID + "', "
+		wQy = wQy + "'" + wScreenName + "', "
 		
-		wQuery = wQuery + "'" + wDefTimeDate + "', "
-		wQuery = wQuery + "False, "
-		wQuery = wQuery + "0, "
-		wQuery = wQuery + "0, "
-		wQuery = wQuery + "0, "
-		wQuery = wQuery + "'(none)', "
-		wQuery = wQuery + "'" + wDefTimeDate + "', "
-		wQuery = wQuery + "'" + wDefTimeDate + "', "
-		wQuery = wQuery + "'(none)', "
-		wQuery = wQuery + "'" + wDefTimeDate + "', "
-		wQuery = wQuery + "False, "
-		wQuery = wQuery + "'" + wDefTimeDate + "', "
-		wQuery = wQuery + "False, "
-		wQuery = wQuery + "'" + wDefTimeDate + "' "
+		wQy = wQy + "'" + wDefTimeDate + "', "
+		wQy = wQy + "False, "
+		wQy = wQy + "0, "
+		wQy = wQy + "0, "
+		wQy = wQy + "0, "
+		wQy = wQy + "'(none)', "
+		wQy = wQy + "'" + wDefTimeDate + "', "
+		wQy = wQy + "'" + wDefTimeDate + "', "
+		wQy = wQy + "'(none)', "
+		wQy = wQy + "'" + wDefTimeDate + "', "
+		wQy = wQy + "False, "
+		wQy = wQy + "'" + wDefTimeDate + "', "
+		wQy = wQy + "False, "
+		wQy = wQy + "'" + wDefTimeDate + "' "
 		
-		wQuery = wQuery + ") ;"
+		wQy = wQy + ") ;"
 		
 		#############################
 		# SQLの実行
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
@@ -1667,12 +1730,12 @@ class CLS_DB_IF() :
 		wRes['Responce'] = None
 		#############################
 		# DBのいいね情報取得
-		wQuery = "select * from tbl_favouser_data where " + \
+		wQy = "select * from tbl_favouser_data where " + \
 					"twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
 					"id = '" + str( inID ) + "' " + \
 					";"
 		
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
@@ -1729,7 +1792,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# 更新
-		wQuery = "update tbl_favouser_data set " + \
+		wQy = "update tbl_favouser_data set " + \
 					"sended = " + str(wSended) + ", " + \
 					"screen_name = '" + wScreenName + "', " + \
 					"favo_cnt = " + str( wCnt ) + ", " + \
@@ -1739,7 +1802,7 @@ class CLS_DB_IF() :
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
 					" and id = '" + str(wID) + "' ;"
 		
-		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy )
 		if wResDB['Result']!=True :
 			wRes['Reason'] = "Run Query is failed"
 			gVal.OBJ_L.Log( "B", wRes )
@@ -1789,14 +1852,14 @@ class CLS_DB_IF() :
 		
 		#############################
 		# 更新
-		wQuery = "update tbl_favouser_data set " + \
+		wQy = "update tbl_favouser_data set " + \
 					"screen_name = '" + wScreenName + "', " + \
 					"lfavo_id = '" + wFavoID + "', " + \
 					"lfavo_date = '" + wFavoDate + "' " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
 					" and id = '" + str(wID) + "' ;"
 		
-		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy )
 		if wResDB['Result']!=True :
 			wRes['Reason'] = "Run Query is failed"
 			gVal.OBJ_L.Log( "B", wRes )
@@ -1820,12 +1883,12 @@ class CLS_DB_IF() :
 		wID = inUser['id']
 		#############################
 		# 更新
-		wQuery = "update tbl_favouser_data set " + \
+		wQy = "update tbl_favouser_data set " + \
 					"list_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
 					" and id = '" + str(wID) + "' ;"
 		
-		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy )
 		if wResDB['Result']!=True :
 			wRes['Reason'] = "Run Query is failed"
 			gVal.OBJ_L.Log( "B", wRes )
@@ -1849,7 +1912,7 @@ class CLS_DB_IF() :
 		# 更新
 		if inCnt>=0 :
 			wCnt = inCnt + 1
-			wQuery = "update tbl_favouser_data set " + \
+			wQy = "update tbl_favouser_data set " + \
 						"senddate = '" + str( gVal.STR_SystemInfo['TimeDate'] ) + "', " + \
 						"sended = True, " + \
 						"send_cnt = " + str( wCnt ) + ", " + \
@@ -1857,13 +1920,13 @@ class CLS_DB_IF() :
 						"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
 						" and id = '" + str(inID) + "' ;"
 		else:
-			wQuery = "update tbl_favouser_data set " + \
+			wQy = "update tbl_favouser_data set " + \
 						"sended = True, " + \
 						"now_favo_cnt = 0 " + \
 						"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
 						" and id = '" + str(inID) + "' ;"
 		
-		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy )
 		if wResDB['Result']!=True :
 			wRes['Reason'] = "Run Query is failed"
 			gVal.OBJ_L.Log( "B", wRes )
@@ -1904,10 +1967,10 @@ class CLS_DB_IF() :
 		#############################
 		# フォロー者・フォロワー なし→あり
 		if inFLG_MyFollow==True and inFLG_Follower==True :
-			wQuery = "update tbl_favouser_data set "
+			wQy = "update tbl_favouser_data set "
 			if inFLG_FavoUpdate==True :
-				wQuery = wQuery + "favo_date = '" + str( gVal.STR_SystemInfo['TimeDate'] ) + "', "
-			wQuery = wQuery + "myfollow = True, " + \
+				wQy = wQy + "favo_date = '" + str( gVal.STR_SystemInfo['TimeDate'] ) + "', "
+			wQy = wQy + "myfollow = True, " + \
 					"myfollow_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "', " + \
 					"follower = True, " + \
 					"follower_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
@@ -1917,7 +1980,7 @@ class CLS_DB_IF() :
 		#############################
 		# フォロー者・フォロワー あり→なし
 		elif inFLG_MyFollow==False and inFLG_Follower==False :
-			wQuery = "update tbl_favouser_data set " + \
+			wQy = "update tbl_favouser_data set " + \
 					"myfollow = False, " + \
 					"follower = False " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
@@ -1927,10 +1990,10 @@ class CLS_DB_IF() :
 		# フォロー者 なし→あり
 		# フォロワー あり→なし
 		elif inFLG_MyFollow==True and inFLG_Follower==False :
-			wQuery = "update tbl_favouser_data set "
+			wQy = "update tbl_favouser_data set "
 			if inFLG_FavoUpdate==True :
-				wQuery = wQuery + "favo_date = '" + str( gVal.STR_SystemInfo['TimeDate'] ) + "', "
-			wQuery = wQuery + "myfollow = True, " + \
+				wQy = wQy + "favo_date = '" + str( gVal.STR_SystemInfo['TimeDate'] ) + "', "
+			wQy = wQy + "myfollow = True, " + \
 					"myfollow_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "', " + \
 					"follower = False " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
@@ -1940,7 +2003,7 @@ class CLS_DB_IF() :
 		# フォロー者 あり→なし
 		# フォロワー なし→あり
 		elif inFLG_MyFollow==False and inFLG_Follower==True :
-			wQuery = "update tbl_favouser_data set " + \
+			wQy = "update tbl_favouser_data set " + \
 					"myfollow = False, " + \
 					"follower = True, " + \
 					"follower_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
@@ -1950,10 +2013,10 @@ class CLS_DB_IF() :
 		#############################
 		# フォロー者 なし→あり
 		elif inFLG_MyFollow==True :
-			wQuery = "update tbl_favouser_data set "
+			wQy = "update tbl_favouser_data set "
 			if inFLG_FavoUpdate==True :
-				wQuery = wQuery + "favo_date = '" + str( gVal.STR_SystemInfo['TimeDate'] ) + "', "
-			wQuery = wQuery + "myfollow = True, " + \
+				wQy = wQy + "favo_date = '" + str( gVal.STR_SystemInfo['TimeDate'] ) + "', "
+			wQy = wQy + "myfollow = True, " + \
 					"myfollow_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
 					" and id = '" + str(inID) + "' ;"
@@ -1961,7 +2024,7 @@ class CLS_DB_IF() :
 		#############################
 		# フォロー者 あり→なし
 		elif inFLG_MyFollow==False :
-			wQuery = "update tbl_favouser_data set " + \
+			wQy = "update tbl_favouser_data set " + \
 					"myfollow = False " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
 					" and id = '" + str(inID) + "' ;"
@@ -1969,7 +2032,7 @@ class CLS_DB_IF() :
 		#############################
 		# フォロワー なし→あり
 		elif inFLG_Follower==True :
-			wQuery = "update tbl_favouser_data set " + \
+			wQy = "update tbl_favouser_data set " + \
 					"follower = True, " + \
 					"follower_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
@@ -1978,12 +2041,12 @@ class CLS_DB_IF() :
 		#############################
 		# フォロワー あり→なし
 		else :
-			wQuery = "update tbl_favouser_data set " + \
+			wQy = "update tbl_favouser_data set " + \
 					"follower = False " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
 					" and id = '" + str(inID) + "' ;"
 		
-		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy )
 		if wResDB['Result']!=True :
 			wRes['Reason'] = "Run Query is failed"
 			gVal.OBJ_L.Log( "B", wRes )
@@ -2005,11 +2068,11 @@ class CLS_DB_IF() :
 		
 		#############################
 		# DBのいいね情報取得(IDのみ)
-		wQuery = "select id from tbl_favouser_data where " + \
+		wQy = "select id from tbl_favouser_data where " + \
 					"twitterid = '" + gVal.STR_UserInfo['Account'] + "' " + \
 					";"
 		
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
@@ -2027,12 +2090,12 @@ class CLS_DB_IF() :
 			
 			#############################
 			# DBのいいね情報取得
-			wQuery = "select * from tbl_favouser_data where " + \
+			wQy = "select * from tbl_favouser_data where " + \
 						"twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
 						"id = '" + wID + "' " + \
 						";"
 			
-			wResDB = self.OBJ_DB.RunQuery( wQuery )
+			wResDB = self.OBJ_DB.RunQuery( wQy )
 			wResDB = self.OBJ_DB.GetQueryStat()
 			if wResDB['Result']!=True :
 				##失敗
@@ -2085,12 +2148,12 @@ class CLS_DB_IF() :
 			
 			#############################
 			# DBから削除
-			wQuery = "delete from tbl_favouser_data where " + \
+			wQy = "delete from tbl_favouser_data where " + \
 						"twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
 						"id = '" + wID + "' " + \
 						";"
 			
-			wResDB = self.OBJ_DB.RunQuery( wQuery )
+			wResDB = self.OBJ_DB.RunQuery( wQy )
 			wResDB = self.OBJ_DB.GetQueryStat()
 			if wResDB['Result']!=True :
 				##失敗
@@ -2121,10 +2184,10 @@ class CLS_DB_IF() :
 		
 		#############################
 		# データベースを取得
-		wQuery = "select * from tbl_search_word " + \
+		wQy = "select * from tbl_search_word " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
 		
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
@@ -2205,7 +2268,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# データベースに登録する
-		wQuery = "insert into tbl_search_word values (" + \
+		wQy = "insert into tbl_search_word values (" + \
 				"'" + gVal.STR_UserInfo['Account'] + "', " + \
 				"'" + str( wCell['regdate'] ) + "', " + \
 				"'" + str( wCell['id'] ) + "', " + \
@@ -2219,7 +2282,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# クエリの実行
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
@@ -2265,7 +2328,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# データベースを更新する
-		wQuery = "update tbl_search_word set " + \
+		wQy = "update tbl_search_word set " + \
 					"valid = " + str(gVal.ARR_SearchData[wIndex]['valid']) + " " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
 					"id = '" + wIndex + "' " + \
@@ -2273,7 +2336,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# クエリの実行
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
@@ -2310,7 +2373,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# データベースを更新する
-		wQuery = "update tbl_search_word set " + \
+		wQy = "update tbl_search_word set " + \
 					"sensitive = " + str(gVal.ARR_SearchData[wIndex]['sensitive']) + " " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
 					"id = '" + wIndex + "' " + \
@@ -2318,7 +2381,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# クエリの実行
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
@@ -2352,7 +2415,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# データベースを更新する
-		wQuery = "update tbl_search_word set " + \
+		wQy = "update tbl_search_word set " + \
 					"word = '" + str(gVal.ARR_SearchData[wIndex]['word']) + "' " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
 					"id = '" + wIndex + "' " + \
@@ -2360,7 +2423,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# クエリの実行
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
@@ -2399,7 +2462,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# データベースを更新する
-		wQuery = "update tbl_search_word set " + \
+		wQy = "update tbl_search_word set " + \
 					"hit_cnt = " + str(gVal.ARR_SearchData[wIndex]['hit_cnt']) + ", " + \
 					"favo_cnt = " + str(gVal.ARR_SearchData[wIndex]['favo_cnt']) + ", " + \
 					"update_date = '" + str(gVal.ARR_SearchData[wIndex]['update_date']) + "' " + \
@@ -2409,7 +2472,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# クエリの実行
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
@@ -2431,14 +2494,14 @@ class CLS_DB_IF() :
 		
 		#############################
 		# カウンタを0クリア
-		wQuery = "update tbl_search_word set " + \
+		wQy = "update tbl_search_word set " + \
 				"hit_cnt = 0, " + \
 				"favo_cnt = 0 " + \
 				"where twitterid = '" + inUserData['Account'] + "' ;"
 		
 		#############################
 		# クエリの実行
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
@@ -2468,14 +2531,14 @@ class CLS_DB_IF() :
 		
 		#############################
 		# データベースから削除
-		wQuery = "delete from tbl_search_word " + \
+		wQy = "delete from tbl_search_word " + \
 				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
 				"id = '" + wIndex + "' " + \
 				";"
 		
 		#############################
 		# クエリの実行
-		wResDB = self.OBJ_DB.RunQuery( wQuery )
+		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗

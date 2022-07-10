@@ -65,28 +65,43 @@ class gVal() :
 #############################
 # トラヒック情報
 	STR_TrafficInfo = {
-		"timeline"			: 0,	#取得タイムライン数
-		"runbot"			: 0,	#Bot実行回数  *
-		"runapi"			: 0,	#Twitter API実行回数
+		"upddate"			: None	# 記録日時(更新)
 		
-									#いいね情報
-		"now_favo"			: 0,	#現いいね数
-		"get_favo"			: 0,	#いいね実施数
-		"rem_favo"			: 0,	#いいね解除数
+		"run"				: {0:0,1:"bot実行回数"},
+		"run_api"			: {0:0,1:"api実行回数"},
+		"run_ope"			: {0:0,1:"自動監視実施回数"},
 		
-									#リアクション
-		"get_reaction"		: 0,	#リアクション受信数
+		"timeline"			: {0:0,1:"タイムライン取得数"},
 		
-									#ツイート情報
-		"send_tweet"		: 0,	#ツイート送信数
+		"myfollow"			: {0:0,1:"フォロー者数"},
+		"p_myfollow"		: {0:0,1:"フォロー実施数"},
+		"d_myfollow"		: {0:0,1:"リムーブ実施数"},
 		
-									#データベース情報
-		"db_req"			: 0,	#クエリ要求回数  *
-		"db_ins"			: 0,	#DB挿入回数  *
-		"db_up"				: 0,	#DB更新回数  *
-		"db_del"			: 0,	#DB削除回数  *
+		"follower"			: {0:0,1:"フォロワー数"},
+		"p_follower"		: {0:0,1:"フォロワー獲得数"},
+		"d_follower"		: {0:0,1:"被リムーブ者数"},
 		
-		"update"			: None	#トラヒック更新日時
+		"r_reaction"		: {0:0,1:"リアクション受信回数"},
+		"r_rep"				: {0:0,1:"リプライ受信回数"},
+		"r_retweet"			: {0:0,1:"リツイート受信回数"},
+		"r_iret"			: {0:0,1:"引用リツイ受信回数"},
+		"r_favo"			: {0:0,1:"いいね受信回数"},
+		"r_in"				: {0:0,1:"リアクション受信回数(F内)"},
+		"r_out"				: {0:0,1:"リアクション受信回数(F外)"},
+		
+		"s_run"				: {0:0,1:"検索実施数"},
+		"s_hit"				: {0:0,1:"検索ヒット数"},
+		"s_favo"			: {0:0,1:"検索時いいね数"},
+		
+		"p_favo"			: {0:0,1:"いいね実施回数"},
+		"d_favo"			: {0:0,1:"いいね解除回数"},
+		"p_tweet"			: {0:0,1:"ツイート送信回数"},
+		
+		"db_req"			: {0:0,1:"DB select回数"},
+		"db_ins"			: {0:0,1:"DB insert回数"},
+		"db_up"				: {0:0,1:"DB update回数"},
+		"db_del"			: {0:0,1:"DB delete回数"},
+		
 	}
 
 
@@ -166,6 +181,8 @@ class gVal() :
 #		"checkListUnfollower"		: False,			# リスト登録チェック時 フォロワーでないユーザへ警告を送信するか  True=送信
 		"forDeleteCautionTweetSec"	: 172800,			# 警告メッセージを削除する期間  2日 (60x60x24)x2
 		
+		"trafficReportLimit"		: 30,				# トラヒック報告取得数
+		
 		"resetAPISec"		: 900,						# APIリセット周期 15分 60x15
 		"forLockLimSec"		: 120,						# 排他保持時間     2分 60x2 
 		"logShortLen"		: 100,						# ログ表示 ショートモード
@@ -226,6 +243,8 @@ class gVal() :
 		"ListFavoConsole"		: DEF_DISPPATH + "listfavo_console.disp",
 		"ExcUserConsole"		: DEF_DISPPATH + "excuser_console.disp",
 		"CautionConsole"		: DEF_DISPPATH + "caution_console.disp",
+		
+		"TrafficReport"			: DEF_DISPPATH + "traffic_report.disp",
 		
 		"SystemConfigConsole"	: DEF_DISPPATH + "system_config_console.disp",
 		"SystemViewConsole"		: DEF_DISPPATH + "system_view_console.disp",

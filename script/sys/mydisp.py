@@ -48,6 +48,10 @@ class CLS_MyDisp():
 		elif inDisp=="CautionConsole" :
 			cls.__dispInp_CautionUser( inLine, wRes, inData )
 		
+		###トラヒック報告
+		elif inDisp=="traffic_report.disp" :
+			cls.__dispInp_TrafficReport( inLine, wRes, inData )
+		
 		###システム情報画面
 		elif inDisp=="SystemViewConsole" :
 			cls.__dispInp_SystemView( inLine, wRes, inData )
@@ -397,6 +401,28 @@ class CLS_MyDisp():
 			else:
 				wStr = wStr + "有効(list=" + inData['Sys_ArListName'] + ")"
 			pRes['Responce'] = wStr
+		
+		#############################
+		# 正常
+		pRes['Result'] = True
+		return
+
+
+
+	#####################################################
+	# トラヒック報告
+	@classmethod
+	def __dispInp_TrafficReport( cls, inLine, outRes, inData={} ):
+		pRes = outRes
+		#############################
+		# インプリメント処理
+		
+		###インプリデータチェック
+		if inLine not in inData :
+			return
+		
+		###インプリ
+		pRes['Responce'] = inData[inLine]
 		
 		#############################
 		# 正常
