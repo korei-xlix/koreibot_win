@@ -1392,8 +1392,8 @@ class CLS_DB_IF() :
 		if wResDB['Result']!=True :
 			##失敗
 			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-			gVal.OBJ_L.Log( "B", wRes )
-			return False
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
 		
 		#############################
 		# 辞書型に整形
@@ -1403,12 +1403,17 @@ class CLS_DB_IF() :
 		#############################
 		# 除外文字データを登録する
 		wKeylist = list( wARR_DBData.keys() )
+		wListNo = 1
 		for wIndex in wKeylist :
-			wScreenName = wARR_DBData[wIndex]['screen_name']
-			
+###			wScreenName = wARR_DBData[wIndex]['screen_name']
+###			
+			wID = str( wARR_DBData[wIndex]['id'] )
 			wCell = {
-				"screen_name"	: wScreenName,
+				"list_number"	: wListNo,
+				"id"			: wID,
 				"list_name"		: wARR_DBData[wIndex]['list_name'],
+				"user_id"		: wARR_DBData[wIndex]['user_id'],
+				"screen_name"	: wARR_DBData[wIndex]['screen_name'],
 				"valid"			: wARR_DBData[wIndex]['valid'],
 				"follow"		: wARR_DBData[wIndex]['follow'],
 				"caution"		: wARR_DBData[wIndex]['caution'],
@@ -1416,7 +1421,8 @@ class CLS_DB_IF() :
 				"auto_rem"		: wARR_DBData[wIndex]['auto_rem'],
 				"update"		: False
 			}
-			wARR_Data.update({ wIndex : wCell })
+###			wARR_Data.update({ wIndex : wCell })
+			wARR_Data.update({ wID : wCell })
 		
 		gVal.ARR_ListFavo = wARR_Data
 		
@@ -1434,82 +1440,101 @@ class CLS_DB_IF() :
 		wRes['Class'] = "CLS_DB_IF"
 		wRes['Func']  = "SetListFavo"
 		
-		#############################
-		# 登録データを作成する
-		wARR_Data = {}
-		wIndex = 0
-		for wLine in inARRData :
-			
-			### コメントアウトはスキップ
-			wIfind = wLine.find("#")
-			if wIfind==0 :
-				continue
-			
-			wARR_Line = wLine.split(",")
-			### 要素数が少ないのは除外
-			if len(wARR_Line)!=6 :
-				continue
-			
-			### データ登録
-			### フォロー/フォロワー含むか
-			wARR_Line[0] = True if wARR_Line[0]=="***" else False
-			### 警告
-			wARR_Line[1] = True if wARR_Line[1]=="***" else False
-			### センシティブツ
-			wARR_Line[2] = True if wARR_Line[2]=="***" else False
-			### 自動リムーブ
-			wARR_Line[3] = True if wARR_Line[3]=="***" else False
-			
-			wCell = {
-				"screen_name"	: wARR_Line[4],
-				"list_name"		: wARR_Line[5],
-				"valid"			: True,
-				"follow"		: wARR_Line[0],
-				"caution"		: wARR_Line[1],
-				"sensitive"		: wARR_Line[2],
-				"auto_rem"		: wARR_Line[3],
-				"update"		: False
-			}
-			
-			wARR_Data.update({ wIndex : wCell })
-			wIndex += 1
-		
-		if len(wARR_Data)==0 :
+###		#############################
+###		# 登録データを作成する
+###		wARR_Data = {}
+###		wIndex = 0
+###		for wLine in inARRData :
+###			
+###			### コメントアウトはスキップ
+###			wIfind = wLine.find("#")
+###			if wIfind==0 :
+###				continue
+###			
+###			wARR_Line = wLine.split(",")
+###			### 要素数が少ないのは除外
+###			if len(wARR_Line)!=6 :
+###				continue
+###			
+###			### データ登録
+###			### フォロー/フォロワー含むか
+###			wARR_Line[0] = True if wARR_Line[0]=="***" else False
+###			### 警告
+###			wARR_Line[1] = True if wARR_Line[1]=="***" else False
+###			### センシティブツ
+###			wARR_Line[2] = True if wARR_Line[2]=="***" else False
+###			### 自動リムーブ
+###			wARR_Line[3] = True if wARR_Line[3]=="***" else False
+###			
+###			wCell = {
+###				"screen_name"	: wARR_Line[4],
+###				"list_name"		: wARR_Line[5],
+###				"valid"			: True,
+###				"follow"		: wARR_Line[0],
+###				"caution"		: wARR_Line[1],
+###				"sensitive"		: wARR_Line[2],
+###				"auto_rem"		: wARR_Line[3],
+###				"update"		: False
+###			}
+###			
+###			wARR_Data.update({ wIndex : wCell })
+###			wIndex += 1
+###		
+###		if len(wARR_Data)==0 :
+		if len(inARRData)==0 :
 			##失敗
 			wRes['Reason'] = "get no data"
-			CLS_OSIF.sErr( wRes )
-			return False
+###			CLS_OSIF.sErr( wRes )
+###			return False
+			gVal.OBJ_L.Log( "D", wRes )
+			return wRes
 		
 		#############################
 		# レコードを一旦全消す
-		wQy = "delete from tbl_list_favo " + \
-					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+		wQy = "delete from tbl_list_favo "
+		wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
 		
 		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
 			wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-			CLS_OSIF.sErr( wRes )
-			return False
+###			CLS_OSIF.sErr( wRes )
+###			return False
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
 		
 		wStr = "tbl_list_favo をクリアしました "
 		CLS_OSIF.sPrn( wStr )
 		
 		#############################
 		# データベースに登録する
-		wKeylist = list( wARR_Data.keys() )
+###		wKeylist = list( wARR_Data.keys() )
+		wKeylist = list( inARRData.keys() )
+		wInsertNum = 0
 		for wKey in wKeylist :
-			wQy = "insert into tbl_list_favo values (" + \
-					"'" + gVal.STR_UserInfo['Account'] + "', " + \
-					"'" + str(wARR_Data[wKey]['screen_name']) + "', " + \
-					"'" + str(wARR_Data[wKey]['list_name']) + "', " + \
-					"True, " + \
-					str(wARR_Data[wKey]['follow']) + ", " + \
-					str(wARR_Data[wKey]['caution']) + ", " + \
-					str(wARR_Data[wKey]['sensitive']) + ", " + \
-					str(wARR_Data[wKey]['auto_rem']) + " " + \
-					") ;"
+###			wQy = "insert into tbl_list_favo values ("
+###			wQy = wQy + "'" + gVal.STR_UserInfo['Account'] + "', "
+###			wQy = wQy + "'" + str(wARR_Data[wKey]['screen_name']) + "', "
+###			wQy = wQy + "'" + str(wARR_Data[wKey]['list_name']) + "', "
+###			wQy = wQy + "True, "
+###			wQy = wQy + str(wARR_Data[wKey]['follow']) + ", "
+###			wQy = wQy + str(wARR_Data[wKey]['caution']) + ", "
+###			wQy = wQy + str(wARR_Data[wKey]['sensitive']) + ", "
+###			wQy = wQy + str(wARR_Data[wKey]['auto_rem']) + " "
+###			wQy = wQy + ") ;"
+			wQy = "insert into tbl_list_favo values ("
+			wQy = wQy + "'" + gVal.STR_UserInfo['Account'] + "', "
+			wQy = wQy + "'" + str(inARRData[wKey]['id']) + "', "
+			wQy = wQy + "'" + str(inARRData[wKey]['list_name']) + "', "
+			wQy = wQy + "'" + str(inARRData[wKey]['user_id']) + "', "
+			wQy = wQy + "'" + str(inARRData[wKey]['screen_name']) + "', "
+			wQy = wQy + "True, "
+			wQy = wQy + str(inARRData[wKey]['follow']) + ", "
+			wQy = wQy + str(inARRData[wKey]['caution']) + ", "
+			wQy = wQy + str(inARRData[wKey]['sensitive']) + ", "
+			wQy = wQy + str(inARRData[wKey]['auto_rem']) + " "
+			wQy = wQy + ") ;"
 			
 			#############################
 			# クエリの実行
@@ -1518,12 +1543,18 @@ class CLS_DB_IF() :
 			if wResDB['Result']!=True :
 				##失敗
 				wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-				CLS_OSIF.sErr( wRes )
+				gVal.OBJ_L.Log( "C", wRes )
 				return wRes
+			wInsertNum += 1
 		
 		#############################
 		# グローバルを更新する
 		gVal.ARR_ListFavo = wARR_Data
+		
+		#############################
+		# ログに記録する
+		wStr = "update list favo data: insert=" + str( wInsertNum ) + " and delete data"
+		gVal.OBJ_L.Log( "SC", wRes, wStr )
 		
 		wRes['Result'] = True
 		return wRes
@@ -1537,7 +1568,8 @@ class CLS_DB_IF() :
 		wRes['Class'] = "CLS_DB_IF"
 		wRes['Func']  = "SaveListFavo"
 		
-		wUpdate = False
+###		wUpdate = False
+		wUpdateNum = 0
 		#############################
 		# 更新があれば
 		#   データベースを更新する
@@ -1548,15 +1580,16 @@ class CLS_DB_IF() :
 				continue
 			
 			wQy = "update tbl_list_favo set " + \
-					"valid = " + str(gVal.ARR_ListFavo[wKey]['valid']) + ", " + \
-					"follow = " + str(gVal.ARR_ListFavo[wKey]['follow']) + ", " + \
-					"caution = " + str(gVal.ARR_ListFavo[wKey]['caution']) + ", " + \
-					"sensitive = " + str(gVal.ARR_ListFavo[wKey]['sensitive']) + ", " + \
-					"auto_rem = " + str(gVal.ARR_ListFavo[wKey]['auto_rem']) + " " + \
-					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
-					"screen_name = '" + gVal.ARR_ListFavo[wKey]['screen_name'] + "' and " + \
-					"list_name = '" + gVal.ARR_ListFavo[wKey]['list_name'] + "' " + \
-					";"
+			wQy = wQy + "valid = " + str(gVal.ARR_ListFavo[wKey]['valid']) + ", " + \
+			wQy = wQy + "follow = " + str(gVal.ARR_ListFavo[wKey]['follow']) + ", " + \
+			wQy = wQy + "caution = " + str(gVal.ARR_ListFavo[wKey]['caution']) + ", " + \
+			wQy = wQy + "sensitive = " + str(gVal.ARR_ListFavo[wKey]['sensitive']) + ", " + \
+			wQy = wQy + "auto_rem = " + str(gVal.ARR_ListFavo[wKey]['auto_rem']) + " " + \
+			wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
+###			wQy = wQy + "screen_name = '" + gVal.ARR_ListFavo[wKey]['screen_name'] + "' and " + \
+###			wQy = wQy + "list_name = '" + gVal.ARR_ListFavo[wKey]['list_name'] + "' " + \
+			wQy = wQy + "id = '" + gVal.ARR_ListFavo[wKey]['id'] + "' " + \
+			wQy = wQy + ";"
 			
 			#############################
 			# クエリの実行
@@ -1565,12 +1598,19 @@ class CLS_DB_IF() :
 			if wResDB['Result']!=True :
 				##失敗
 				wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-				CLS_OSIF.sErr( wRes )
+				gVal.OBJ_L.Log( "C", wRes )
 				return wRes
 			
-			wUpdate = True
+###			wUpdate = True
+			wUpdateNum += 1
 		
-		if wUpdate==True :
+		#############################
+		# ログに記録する
+###		if wUpdate==True :
+		if wUpdateNum>0 :
+			wStr = "update list favo data: update=" + str( wUpdateNum )
+			gVal.OBJ_L.Log( "SC", wRes, wStr )
+			
 			CLS_OSIF.sPrn( "リストいいねの設定を更新しました。" )
 		
 		wRes['Result'] = True

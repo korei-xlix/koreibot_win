@@ -325,6 +325,73 @@ class CLS_Setup():
 			
 			#############################
 			# リストいいね指定の設定
+			
+			#############################
+			# 登録データを作成する
+			wARR_Data = {}
+			wListNo = 1
+			for wLine in wARR_ListFavo :
+				
+				### コメントアウトはスキップ
+				wIfind = wLine.find("#")
+				if wIfind==0 :
+					continue
+				
+				wARR_Line = wLine.split(",")
+				### 要素数が少ないのは除外
+				if len(wARR_Line)!=6 :
+					continue
+				
+				### データ登録
+				### フォロー/フォロワー含むか
+				wARR_Line[0] = True if wARR_Line[0]=="***" else False
+				### 警告
+				wARR_Line[1] = True if wARR_Line[1]=="***" else False
+				### センシティブツ
+				wARR_Line[2] = True if wARR_Line[2]=="***" else False
+				### 自動リムーブ
+				wARR_Line[3] = True if wARR_Line[3]=="***" else False
+				
+				wListName   = wARR_Line[5]
+				wScreenName = wARR_Line[4]
+				
+				### Twitterからユーザ情報を取得する
+				wUserInfoRes = gVal.OBJ_Tw_IF.GetUserinfo( inScreenName=wScreenName )
+				if wUserInfoRes['Result']!=True :
+					continue
+				
+				wUserID = str( wUserInfoRes['Responce']['id'] )
+				
+				### Twitterからリスト情報を取得する
+				wListRes = gVal.OBJ_Tw_IF.GetLists( inScreenName=wScreenName )
+				if wListRes['Result']!=True :
+					continue
+				wListID = None
+				for wROW in wListRes['Responce'] :
+					if wROW['name']!=wListName :
+						continue
+					wListID = str( wROW['id'] )
+					break
+				if wListID==None :
+					continue
+				
+				wCell = {
+					"list_number"	: wListNo,
+					"id"			: wListID,
+					"list_name"		: wListName,
+					"user_id"		: wUserID,
+					"screen_name"	: wScreenName,
+					"valid"			: True,
+					"follow"		: wARR_Line[0],
+					"caution"		: wARR_Line[1],
+					"sensitive"		: wARR_Line[2],
+					"auto_rem"		: wARR_Line[3],
+					"update"		: False
+				}
+				
+				wARR_Data.update({ wListID : wCell })
+				wListNo += 1
+			
 			wSubRes = gVal.OBJ_DB_IF.SetListFavo( wARR_ListFavo )
 			if wSubRes['Result']!=True :
 				return False
@@ -645,8 +712,8 @@ class CLS_Setup():
 		wQy = wQy + "regdate     TIMESTAMP,"			# 登録日時
 		wQy = wQy + "tweet_id    TEXT  NOT NULL,"		# ツイートID(数値)
 		wQy = wQy + "id          TEXT  NOT NULL,"		# Twitter ID(数値)
-		wQy = wQy + "screen_name TEXT  NOT NULL, "		# Twitter ユーザ名(英語)
-		wQy = wQy + " PRIMARY KEY ( id ) ) ;"
+		wQy = wQy + "screen_name TEXT  NOT NULL "		# Twitter ユーザ名(英語)
+		wQy = wQy + " ) ;"
 		
 		inOBJ_DB.RunQuery( wQy )
 		return
