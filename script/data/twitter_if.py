@@ -407,7 +407,8 @@ class CLS_Twitter_IF() :
 #####################################################
 # Twitter接続
 #####################################################
-	def Connect( self, inAPIkey, inAPIsecret, inACCtoken, inACCsecret, inBearer ):
+###	def Connect( self, inAPIkey, inAPIsecret, inACCtoken, inACCsecret, inBearer ):
+	def Connect( self, inData ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -416,9 +417,32 @@ class CLS_Twitter_IF() :
 		wRes['Func']  = "Connect"
 		
 		#############################
+		# 入力チェック
+		if "apikey" not in inData or 
+		   "apisecret" not in inData or 
+		   "acctoken" not in inData or 
+		   "accsecret" not in inData or 
+		   "bearer" not in inData :
+			
+###			wRes['Reason'] = "入力チェックエラー: input=" + str(inData)
+			wRes['Reason'] = "入力チェックエラー"
+			gVal.OBJ_L.Log( "B", wRes )
+			
+			self.__connectFailView()
+			return False
+		
+		#############################
 		# Twitter生成→接続
 		self.OBJ_Twitter = CLS_Twitter_Use()
-		wResTwitter_Create = self.OBJ_Twitter.Create( gVal.STR_UserInfo['Account'], inAPIkey, inAPIsecret, inACCtoken, inACCsecret, inBearer )
+###		wResTwitter_Create = self.OBJ_Twitter.Create( gVal.STR_UserInfo['Account'], inAPIkey, inAPIsecret, inACCtoken, inACCsecret, inBearer )
+		wResTwitter_Create = self.OBJ_Twitter.Create(
+			gVal.STR_UserInfo['Account'],
+			inData['apikey'],
+			inData['apisecret'],
+			inData['acctoken'],
+			inData['accsecret'],
+			inData['bearer']
+			)
 		
 		#############################
 		# Twitter状態の取得

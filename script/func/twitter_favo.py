@@ -562,7 +562,8 @@ class CLS_TwitterFavo():
 		
 		#############################
 		# 禁止ユーザは除外
-		wUserRes = self.OBJ_Parent.CheckExtUser( inData['screen_name'], "自動いいね中止" )
+###		wUserRes = self.OBJ_Parent.CheckExtUser( inData['screen_name'], "自動いいね中止" )
+		wUserRes = self.OBJ_Parent.CheckExtUser( inData, "自動いいね中止" )
 		if wUserRes['Result']!=True :
 			wRes['Reason'] = "CheckExtUser failed"
 			gVal.OBJ_L.Log( "B", wRes )
@@ -881,7 +882,8 @@ class CLS_TwitterFavo():
 		# 禁止ユーザは除外
 		wFLG_ExtUser = False
 		### 禁止ユーザか
-		wUserRes = self.OBJ_Parent.CheckExtUser( wSTR_Tweet['user']['screen_name'], "外部いいね中止" )
+###		wUserRes = self.OBJ_Parent.CheckExtUser( wSTR_Tweet['user']['screen_name'], "外部いいね中止" )
+		wUserRes = self.OBJ_Parent.CheckExtUser( wSTR_Tweet['user'], "外部いいね中止" )
 		if wUserRes['Result']!=True :
 			wRes['Reason'] = "CheckExtUser failed"
 			gVal.OBJ_L.Log( "B", wRes )
@@ -892,7 +894,8 @@ class CLS_TwitterFavo():
 		
 		### リツイート、引用リツイートの場合、ソースが禁止ユーザか
 		if wSTR_Tweet['kind']=="retweet" or wSTR_Tweet['kind']=="quoted" :
-			wUserRes = self.OBJ_Parent.CheckExtUser( wSTR_Tweet['src_user']['screen_name'], "外部いいね中止（リツイ元ユーザ）" )
+###			wUserRes = self.OBJ_Parent.CheckExtUser( wSTR_Tweet['src_user']['screen_name'], "外部いいね中止（リツイ元ユーザ）" )
+			wUserRes = self.OBJ_Parent.CheckExtUser( wSTR_Tweet['src_user'], "外部いいね中止（リツイ元ユーザ）" )
 			if wUserRes['Result']!=True :
 				wRes['Reason'] = "CheckExtUser failed"
 				gVal.OBJ_L.Log( "B", wRes )

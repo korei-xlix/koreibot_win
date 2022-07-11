@@ -92,6 +92,15 @@ class CLS_Setup():
 			return False
 		
 		#############################
+		# データ追加
+		if gVal.STR_SystemInfo['EXT_FilePath']!=None or \
+		   gVal.STR_SystemInfo['EXT_FilePath']!="" :
+			wSubRes = self.Add( inData, inDBconn=False )
+			if wSubRes['Result']!=True :
+				gVal.OBJ_DB_IF.Close()
+				return False
+		
+		#############################
 		# 終わり
 		gVal.OBJ_DB_IF.Close()
 		return True
@@ -157,7 +166,8 @@ class CLS_Setup():
 # データ追加モード
 #####################################################
 ###	def Add( self, inWordOnly=False, inDBInit=False ):
-	def Add( self, inData, inWordOnly=False, inDBInit=False ):
+###	def Add( self, inData, inWordOnly=False, inDBInit=False ):
+	def Add( self, inData, inWordOnly=False, inDBconn=True ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -228,17 +238,35 @@ class CLS_Setup():
 		
 		#############################
 		# DBに接続 (接続情報の作成)
-		gVal.OBJ_DB_IF = CLS_DB_IF()
-###		wSubRes = gVal.OBJ_DB_IF.Connect()
-		wSubRes = gVal.OBJ_DB_IF.Connect( inData )
-		if wSubRes['Result']!=True or wSubRes['Responce']!=True :
+		if inDBconn==True :
+			gVal.OBJ_DB_IF = CLS_DB_IF()
+			wSubRes = gVal.OBJ_DB_IF.Connect( inData )
+			if wSubRes['Result']!=True or wSubRes['Responce']!=True :
+				return False
+		
+###		#############################
+###		# データベースを初期化する
+###		# ※初期化しないほうが便利
+###		if inDBInit==True and inWordOnly==False :
+###			self.__create_TBL_EXC_WORD( gVal.OBJ_DB_IF.OBJ_DB )
+###		
+		#############################
+		# Twitterデータ取得
+		wTwitterDataRes = gVal.OBJ_DB_IF.GetTwitterData( gVal.STR_UserInfo['Account'] )
+		if wTwitterDataRes['Result']!=True :
+			wRes['Reason'] = "GetTwitterData is failed"
+			CLS_OSIF.sErr( wRes )
 			return False
 		
 		#############################
-		# データベースを初期化する
-		# ※初期化しないほうが便利
-		if inDBInit==True and inWordOnly==False :
-			self.__create_TBL_EXC_WORD( gVal.OBJ_DB_IF.OBJ_DB )
+		# Twitterに接続
+		gVal.OBJ_Tw_IF = CLS_Twitter_IF()
+		wTwitterRes = gVal.OBJ_Tw_IF.Connect( wTwitterDataRes['Responce'] )
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitterの接続失敗: reason=" + wResTwitter['Reason']
+			gVal.OBJ_L.Log( "B", wRes )
+			CLS_OSIF.sErr( wRes )
+			return False
 		
 		#############################
 		# 除外ユーザ名、文字、プロファイルの設定
@@ -249,7 +277,49 @@ class CLS_Setup():
 		if inWordOnly==False :
 			#############################
 			# 禁止ユーザの設定
-			wSubRes = gVal.OBJ_DB_IF.SetExeUser( wARR_ExcUser )
+			
+			#############################
+			# 登録データを作成する
+			wARR_Word = {}
+			wListNo = 1
+			for wLine in wARR_ExcUser :
+				### 通報設定ありか
+				#      先頭が @@@ の場合
+				wReport = False
+				wVip    = True
+				wIfind = wLine.find("@@@")
+				if wIfind==0 :
+					wLine = wLine.replace( "@@@", "" )
+					wReport = True
+					wVip    = False
+				
+				### ダブり登録は除外
+				if wLine in wARR_Word :
+					continue
+				if wLine=="" or wLine==None :
+					continue
+				
+				### Twitterからユーザ情報を取得する
+				wUserInfoRes = gVal.OBJ_Tw_IF.GetUserinfo( inScreenName=wLine )
+				if wUserInfoRes['Result']!=True :
+					continue
+				
+				wUserID = str( wUserInfoRes['Responce']['id'] )
+				
+				### データ登録
+				wCell = {
+					"list_number"	: wListNo,
+					"id"			: wUserID,
+					"screen_name"	: wLine,
+					"report"		: wReport,
+					"vip"			: wVip,
+					"rel_date"		: "(none)",
+					"memo"			: ""
+				}
+				wARR_Word.update({ wUserID : wCell })
+				wListNo += 1
+			
+			wSubRes = gVal.OBJ_DB_IF.SetExeUser( wARR_Word )
 			if wSubRes['Result']!=True :
 				return False
 			
@@ -261,7 +331,8 @@ class CLS_Setup():
 		
 		#############################
 		# DBを閉じる
-		gVal.OBJ_DB_IF.Close()
+		if inDBconn==True :
+			gVal.OBJ_DB_IF.Close()
 		
 		#############################
 		# 正常終了
@@ -275,42 +346,42 @@ class CLS_Setup():
 #   一部のDBを初期化する
 #####################################################
 ###	def Clear(self):
-	def Clear( self, inData ):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_Setup"
-		wRes['Func']  = "Clear"
-		
-		#############################
-		# 実行の確認
-		wStr = "ログと、キーユーザ検索データ用のデータベースをクリアします。" + '\n'
-		CLS_OSIF.sPrn( wStr )
-		wSelect = CLS_OSIF.sInp( "よろしいですか？(y/N)=> " )
-		if wSelect!="y" :
-			##キャンセル
-			return True
-		
-		#############################
-		# DBに接続 (接続情報の作成)
-###		wSubRes = gVal.OBJ_DB_IF.Connect()
-		wSubRes = gVal.OBJ_DB_IF.Connect( inData )
-		if wSubRes['Result']!=True :
-			return False
-		
-		#############################
-		# DB初期化
-		self.__create_TBL_LOG_DATA( gVal.OBJ_DB_IF.OBJ_DB )
-		
-		#############################
-		# 終わり
-		gVal.OBJ_DB_IF.Close()
-		CLS_OSIF.sPrn( "クリアが正常終了しました。" )
-		
-		return True
-
-
+###	def Clear( self, inData ):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_Setup"
+###		wRes['Func']  = "Clear"
+###		
+###		#############################
+###		# 実行の確認
+###		wStr = "ログと、キーユーザ検索データ用のデータベースをクリアします。" + '\n'
+###		CLS_OSIF.sPrn( wStr )
+###		wSelect = CLS_OSIF.sInp( "よろしいですか？(y/N)=> " )
+###		if wSelect!="y" :
+###			##キャンセル
+###			return True
+###		
+###		#############################
+###		# DBに接続 (接続情報の作成)
+####	wSubRes = gVal.OBJ_DB_IF.Connect()
+###		wSubRes = gVal.OBJ_DB_IF.Connect( inData )
+###		if wSubRes['Result']!=True :
+###			return False
+###		
+###		#############################
+###		# DB初期化
+###		self.__create_TBL_LOG_DATA( gVal.OBJ_DB_IF.OBJ_DB )
+###		
+###		#############################
+###		# 終わり
+###		gVal.OBJ_DB_IF.Close()
+###		CLS_OSIF.sPrn( "クリアが正常終了しました。" )
+###		
+###		return True
+###
+###
 
 #####################################################
 # データベースの初期化

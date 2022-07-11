@@ -40,7 +40,7 @@ class CLS_BotCtrl():
 		wArg = CLS_OSIF.sGetArg()
 		
 		if len(wArg)<7 :	#引数が足りない
-			wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません= " + str( wArg )
+			wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません(1)= " + str( wArg )
 			CLS_OSIF.sErr( wRes )
 ###			return False
 			return wRes
@@ -73,8 +73,8 @@ class CLS_BotCtrl():
 		
 		#############################
 		# setup : セットアップモード
-		# init  : 初期化モード
-		# clear : クリアモード
+###		# init  : 初期化モード
+###		# clear : クリアモード
 ###		elif len(wArg)==2 :	#モード
 ###			###セットアップモード
 ###			###全初期化モード
@@ -85,16 +85,32 @@ class CLS_BotCtrl():
 ###				wRes['Reason'] = "存在しないモードです"
 ###				CLS_OSIF.sErr( wRes )
 ###				return False
-		elif wArg[1]=="setup" or  \
-		   wArg[1]=="init" or \
-		   wArg[1]=="clear" :
-			if len(wArg)!=6 :
+		elif wArg[1]=="setup" :
+###		   wArg[1]=="init" or \
+###		   wArg[1]=="clear" :
+			if len(wArg)!=6 or len(wArg)!=7 :
 				wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません(3)= " + str( wArg )
 				CLS_OSIF.sErr( wRes )
 				return wRes
 			
 			gVal.STR_SystemInfo['RunMode'] = wArg[1]
+			
+			if len(wArg)==7 :
+				gVal.STR_SystemInfo['EXT_FilePath'] = wArg[6]
+			
 ###			return True
+			wRes['Result'] = True	#正常
+			return wRes
+		
+		#############################
+		# init  : 初期化モード
+		elif wArg[1]=="init" :
+			if len(wArg)!=6 :
+				wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません(4)= " + str( wArg )
+				CLS_OSIF.sErr( wRes )
+				return wRes
+			
+			gVal.STR_SystemInfo['RunMode'] = wArg[1]
 			wRes['Result'] = True	#正常
 			return wRes
 		
@@ -104,7 +120,7 @@ class CLS_BotCtrl():
 ###			if wArg[3]==gVal.DEF_TEST_MODE :
 		elif wArg[1]==gVal.DEF_TEST_MODE :
 			if len(wArg)!=7 :
-				wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません(4)= " + str( wArg )
+				wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません(5)= " + str( wArg )
 				CLS_OSIF.sErr( wRes )
 				return wRes
 			
@@ -114,7 +130,7 @@ class CLS_BotCtrl():
 		# run : 通常モード
 		elif wArg[1]=="run" :
 			if len(wArg)!=7 :
-				wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません(5)= " + str( wArg )
+				wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません(6)= " + str( wArg )
 				CLS_OSIF.sErr( wRes )
 				return wRes
 			
@@ -157,38 +173,44 @@ class CLS_BotCtrl():
 		# ログオブジェクトの生成
 		gVal.OBJ_L = CLS_Mylog()
 		
+###		#############################
+###		# テーブルがある
+###		wQuery = "select * from tbl_user_data where " + \
+###					"twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
+###					";"
+###		
+###		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+###		if wResDB['Result']!=True :
+###			wRes['Reason'] = "Run Query is failed"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		#############################
+###		# ユーザ登録の確認
+###		if len(wResDB['Responce']['Data'])==0 :
+###			wRes['Reason'] = "ユーザが登録されていません =" + gVal.STR_UserInfo['Account']
+###			gVal.OBJ_L.Log( "D", wRes )
+###			gVal.OBJ_DB_IF.Close()
+###			return wRes
+###		
+###		#############################
+###		# 辞書型に整形
+###		wChgDict = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
+###		
+###		#############################
+###		# ユーザ登録の抽出
+###		wAPIkey    = wChgDict[0]['apikey']
+###		wAPIsecret = wChgDict[0]['apisecret']
+###		wACCtoken  = wChgDict[0]['acctoken']
+###		wACCsecret = wChgDict[0]['accsecret']
+###		wBearer    = wChgDict[0]['bearer']
 		#############################
-		# テーブルがある
-		wQuery = "select * from tbl_user_data where " + \
-					"twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
-					";"
-		
-		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
-		if wResDB['Result']!=True :
-			wRes['Reason'] = "Run Query is failed"
-			gVal.OBJ_L.Log( "B", wRes )
+		# Twitterデータ取得
+		wTwitterDataRes = gVal.OBJ_DB_IF.GetTwitterData( gVal.STR_UserInfo['Account'] )
+		if wTwitterDataRes['Result']!=True :
+			wRes['Reason'] = "GetTwitterData is failed"
+			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
-		
-		#############################
-		# ユーザ登録の確認
-		if len(wResDB['Responce']['Data'])==0 :
-			wRes['Reason'] = "ユーザが登録されていません =" + gVal.STR_UserInfo['Account']
-			gVal.OBJ_L.Log( "D", wRes )
-			gVal.OBJ_DB_IF.Close()
-###			return False
-			return wRes
-		
-		#############################
-		# 辞書型に整形
-		wChgDict = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
-		
-		#############################
-		# ユーザ登録の抽出
-		wAPIkey    = wChgDict[0]['apikey']
-		wAPIsecret = wChgDict[0]['apisecret']
-		wACCtoken  = wChgDict[0]['acctoken']
-		wACCsecret = wChgDict[0]['accsecret']
-		wBearer    = wChgDict[0]['bearer']
 		
 		#############################
 		# 前回ロック時間の取得(=前回bot実行時間)
@@ -220,7 +242,8 @@ class CLS_BotCtrl():
 		#############################
 		# Twitterに接続
 		gVal.OBJ_Tw_IF = CLS_Twitter_IF()
-		wTwitterRes = gVal.OBJ_Tw_IF.Connect( wAPIkey, wAPIsecret, wACCtoken, wACCsecret, wBearer )
+###		wTwitterRes = gVal.OBJ_Tw_IF.Connect( wAPIkey, wAPIsecret, wACCtoken, wACCsecret, wBearer )
+		wTwitterRes = gVal.OBJ_Tw_IF.Connect( wTwitterDataRes['Responce'] )
 		if wTwitterRes['Result']!=True :
 			wRes['Reason'] = "Twitterの接続失敗: reason=" + wResTwitter['Reason']
 			gVal.OBJ_L.Log( "B", wRes )

@@ -378,13 +378,13 @@ class CLS_Main_Console() :
 			wCLS_Setup.Add( wResTest['Responce'], inWordOnly=True )
 			return False	###問題あり
 		
-		#############################
-		# データクリアモードで実行
-		elif gVal.STR_SystemInfo['RunMode']=="clear" :
-###			wCLS_Setup.Clear()
-			wCLS_Setup.Clear( wResTest['Responce'] )
-			return False	###問題あり
-		
+###		#############################
+###		# データクリアモードで実行
+###		elif gVal.STR_SystemInfo['RunMode']=="clear" :
+####		wCLS_Setup.Clear()
+###			wCLS_Setup.Clear( wResTest['Responce'] )
+###			return False	###問題あり
+###		
 		#############################
 		# =正常
 		return True

@@ -557,7 +557,19 @@ class CLS_TwitterAdmin():
 		
 		#############################
 		# リストのインデックス
-		wGetIndex = gVal.OBJ_DB_IF.GetExeUserName( wNum )
+###		wGetIndex = gVal.OBJ_DB_IF.GetExeUserName( wNum )
+###		if wGetIndex==None :
+###			CLS_OSIF.sPrn( "LIST番号が範囲外です" + '\n' )
+###			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+###			wRes['Result'] = True
+###			return wRes
+		wGetIndex = None
+		wKeylist = list( gVal.ARR_NotReactionUser.keys() )
+		for wID in wKeylist :
+			wID = str(wID)
+			if gVal.ARR_NotReactionUser[wID]['list_number']==wNum :
+				wGetIndex = wID
+				break
 		if wGetIndex==None :
 			CLS_OSIF.sPrn( "LIST番号が範囲外です" + '\n' )
 			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
@@ -662,8 +674,23 @@ class CLS_TwitterAdmin():
 			return wRes
 		
 		#############################
+		# Twitterからユーザ情報を取得する
+		wUserInfoRes = gVal.OBJ_Tw_IF.GetUserinfo( inScreenName=wWord )
+		if wUserInfoRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "GetUserinfo is failed"
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		wUser = {
+			"id"			: str(wUserInfoRes['Responce']['id']),
+			"screen_name"	: wWord
+		}
+		
+		#############################
 		# 実行の確認
-		wSubRes = gVal.OBJ_DB_IF.InsertExeUser( wWord )
+###		wSubRes = gVal.OBJ_DB_IF.InsertExeUser( wWord )
+		wSubRes = gVal.OBJ_DB_IF.InsertExeUser( wUser )
 		if wSubRes['Result']!=True :
 			###失敗
 			wRes['Reason'] = "InsertExeUser is failed"
@@ -681,7 +708,8 @@ class CLS_TwitterAdmin():
 	#####################################################
 	# 禁止ユーザ削除
 	#####################################################
-	def __delete_ExcuteUser( self, inName ):
+###	def __delete_ExcuteUser( self, inName ):
+	def __delete_ExcuteUser( self, inID ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -691,7 +719,8 @@ class CLS_TwitterAdmin():
 		
 		#############################
 		# コンソールを表示
-		wStr = "禁止ユーザ " + str( inName ) + " を削除します"
+###		wStr = "禁止ユーザ " + str( inName ) + " を削除します"
+		wStr = "禁止ユーザ " + str(gVal.ARR_NotReactionUser[inID]['screen_name']) + " を削除します"
 		CLS_OSIF.sPrn( wStr )
 		wWord = CLS_OSIF.sInp( "  y=YES / other=中止=> " )
 		if wWord!="y" :
@@ -700,7 +729,8 @@ class CLS_TwitterAdmin():
 		
 		#############################
 		# 実行の確認
-		wSubRes = gVal.OBJ_DB_IF.DeleteExeUser( inName )
+###		wSubRes = gVal.OBJ_DB_IF.DeleteExeUser( inName )
+		wSubRes = gVal.OBJ_DB_IF.DeleteExeUser( inID )
 		if wSubRes['Result']!=True :
 			###失敗
 			wRes['Reason'] = "DeleteExeUser is failed"

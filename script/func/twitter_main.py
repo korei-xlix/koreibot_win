@@ -918,7 +918,8 @@ class CLS_TwitterMain():
 		
 		#############################
 		# リアクション禁止ユーザか
-		wUserRes = self.CheckExtUser( wARR_DBData['screen_name'], "リアクション検出" )
+###		wUserRes = self.CheckExtUser( wARR_DBData['screen_name'], "リアクション検出" )
+		wUserRes = self.CheckExtUser( wARR_DBData, "リアクション検出" )
 		if wUserRes['Result']!=True :
 			wRes['Reason'] = "CheckExtUser failed"
 			gVal.OBJ_L.Log( "B", wRes )
@@ -1287,7 +1288,8 @@ class CLS_TwitterMain():
 				if gVal.OBJ_Tw_IF.CheckFollower( wID )==True  :
 					continue
 				### 禁止ユーザはスキップ
-				wUserRes = self.CheckExtUser( wARR_ListUsers[wID]['screen_name'], "フォロワー以外のリスト登録者", inFLG_Log=False )
+###				wUserRes = self.CheckExtUser( wARR_ListUsers[wID]['screen_name'], "フォロワー以外のリスト登録者", inFLG_Log=False )
+				wUserRes = self.CheckExtUser( wARR_ListUsers[wID], "フォロワー以外のリスト登録者", inFLG_Log=False )
 				if wUserRes['Result']!=True :
 					wRes['Reason'] = "CheckExtUser failed"
 					gVal.OBJ_L.Log( "B", wRes )
@@ -1509,7 +1511,8 @@ class CLS_TwitterMain():
 # 禁止ユーザチェック
 #####################################################
 ###	def CheckExtUser( self, inName, inReason ):
-	def CheckExtUser( self, inName, inReason, inFLG_Log=True ):
+###	def CheckExtUser( self, inName, inReason, inFLG_Log=True ):
+	def CheckExtUser( self, inData, inReason, inFLG_Log=True ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -1517,18 +1520,24 @@ class CLS_TwitterMain():
 		wRes['Class'] = "CLS_TwitterMain"
 		wRes['Func']  = "CheckExtUser"
 		
+		wUserID = str(inData['id'])
+		
 		wRes['Responce'] = False
 		#############################
 		# 禁止ユーザかチェック
-		if inName in gVal.ARR_NotReactionUser :
-			if gVal.ARR_NotReactionUser[inName]['vip']==True :
+###		if inName in gVal.ARR_NotReactionUser :
+		if wUserID in gVal.ARR_NotReactionUser :
+###			if gVal.ARR_NotReactionUser[inName]['vip']==True :
+			if gVal.ARR_NotReactionUser[wUserID]['vip']==True :
 				### VIPは除外する
 				wRes['Result'] = True
 				return wRes
 			
-			if gVal.ARR_NotReactionUser[inName]['report']==True and inFLG_Log==True :
+###			if gVal.ARR_NotReactionUser[inName]['report']==True and inFLG_Log==True :
+			if gVal.ARR_NotReactionUser[wUserID]['report']==True and inFLG_Log==True :
 				### 報告対象の表示と、ログに記録(テストログ)
-				gVal.OBJ_L.Log( "N", wRes, "●禁止ユーザ: user=" + inName + " reason=" + inReason )
+###				gVal.OBJ_L.Log( "N", wRes, "●禁止ユーザ: user=" + inName + " reason=" + inReason )
+				gVal.OBJ_L.Log( "N", wRes, "●禁止ユーザ: screen_name=" + inData['screen_name'] + " reason=" + inReason )
 			
 			### 除外
 			wRes['Result'] = True

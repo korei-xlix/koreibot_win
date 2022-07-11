@@ -638,7 +638,8 @@ class CLS_TwitterKeyword():
 			
 			#############################
 			# 禁止ユーザは除外
-			wUserRes = self.OBJ_Parent.CheckExtUser( wTweet['user']['screen_name'], "検索実行中" )
+###			wUserRes = self.OBJ_Parent.CheckExtUser( wTweet['user']['screen_name'], "検索実行中" )
+			wUserRes = self.OBJ_Parent.CheckExtUser( wTweet['user'], "検索実行中" )
 			if wUserRes['Result']!=True :
 				wRes['Reason'] = "CheckExtUser failed"
 				gVal.OBJ_L.Log( "B", wRes )

@@ -2,7 +2,7 @@
  禁止ユーザ
 --------------------
 
-   : LIST  通報  VIP    USER NAME
+   : LIST  通報  VIP   削除予定    USER NAME               MEMO
 
 [@EXCUSER-LIST@]
 
@@ -10,10 +10,12 @@
 
 コマンドを入力してください。
 
-    [LIST番号]   : 禁止ユーザ 通報ON/OFF  (コマンドなし)
-    [LIST番号]-p : 禁止ユーザ VIP ON/OFF
-    [LIST番号]-d : 禁止ユーザ 削除
-    [\s]         : 禁止ユーザ 追加
+    [LIST番号]   : 通報ON/OFF  (コマンドなし)
+    [LIST番号]-p : VIP ON/OFF
+    [LIST番号]-d : ユーザ削除
+    [LIST番号]-v : 予約削除
+    [LIST番号]-m : メモ入力
+    [\s]         : ユーザ追加
 
     [\q]        １つ前に戻る
 

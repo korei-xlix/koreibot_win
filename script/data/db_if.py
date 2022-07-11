@@ -444,7 +444,7 @@ class CLS_DB_IF() :
 				wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
 ###				CLS_OSIF.sErr( wRes )
 				gVal.OBJ_L.Log( "C", wRes )
-				return False
+				return wRes
 			
 			wQy = "insert into tbl_twitter_data values ("
 			wQy = wQy + "'" + inUserData['Account'] + "',"
@@ -462,7 +462,7 @@ class CLS_DB_IF() :
 				wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
 ###				CLS_OSIF.sErr( wRes )
 				gVal.OBJ_L.Log( "C", wRes )
-				return False
+				return wRes
 			
 ###			#############################
 ###			# ログ記録
@@ -485,7 +485,7 @@ class CLS_DB_IF() :
 				##失敗
 				wRes['Reason'] = "Run Query is failed(5): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
 				gVal.OBJ_L.Log( "C", wRes )
-				return False
+				return wRes
 			
 			wQy = "update tbl_user_data set "
 			wQy = wQy + "locked = False, "
@@ -499,7 +499,7 @@ class CLS_DB_IF() :
 				wRes['Reason'] = "Run Query is failed(4): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
 ###				CLS_OSIF.sErr( wRes )
 				gVal.OBJ_L.Log( "C", wRes )
-				return False
+				return wRes
 			
 ###			wStr = "データベースのユーザ " + inUserData['Account'] + " を更新しました。" + '\n'
 ###			CLS_OSIF.sPrn( wStr )
@@ -511,7 +511,7 @@ class CLS_DB_IF() :
 			wRes['Reason'] = "dual registed user: user=" + str(inUserData['Account'])
 			gVal.OBJ_L.Log( "D", wRes )
 			self.OBJ_DB.Close()
-			return False
+			return wRes
 		
 ###		#############################
 ###		# =正常
@@ -521,6 +521,67 @@ class CLS_DB_IF() :
 		# ログに記録する
 		gVal.OBJ_L.Log( "SC", wRes, "update user data: user=" + str(inUserData['Account']) )
 		
+		#############################
+		# =正常
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# Twitterデータ取得
+#####################################################
+	def GetTwitterData( self, inAccount ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "GetTwitterData"
+		
+		wRes['Responce'] = {
+			"Account"	: None,
+			"apikey"	: None,
+			"apisecret"	: None,
+			"acctoken"	: None,
+			"accsecret"	: None,
+			"bearer"	: None
+		}
+		
+		#############################
+		# データベースから除外文字を取得
+		wQy = "select * from tbl_twitter_data "
+			wQy = wQy + "where twitterid = '" + str(inAccount) + "' ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQy )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
+		# 辞書型に整形
+		wARR_DBData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
+		
+		#############################
+		# 取得チェック
+		if len( wARR_DBData )!= 1 :
+			##失敗
+			wRes['Reason'] = "Get twitter data is not one: account=" + str(inAccount) + " num=" + str( len( wARR_DBData ) )
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
+		# Twitterデータ取得
+		wRes['Responce']['apikey']    = wARR_DBData[0]['apikey']
+		wRes['Responce']['apisecret'] = wARR_DBData[0]['apisecret']
+		wRes['Responce']['acctoken']  = wARR_DBData[0]['acctoken']
+		wRes['Responce']['accsecret'] = wARR_DBData[0]['accsecret']
+		wRes['Responce']['bearer']    = wARR_DBData[0]['bearer']
+		
+		wRes['Responce']['Account'] = str(inAccount)
 		#############################
 		# =正常
 		wRes['Result'] = True
@@ -541,15 +602,15 @@ class CLS_DB_IF() :
 		
 		#############################
 		# データベースから除外文字を取得
-		wQy = "select * from tbl_exc_word " + \
-					";"
+		wQy = "select * from tbl_exc_word "
+		wQy = wQy + ";"
 		
 		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
 			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-			gVal.OBJ_L.Log( "B", wRes )
+			gVal.OBJ_L.Log( "C", wRes )
 			return False
 		
 		#############################
@@ -593,21 +654,23 @@ class CLS_DB_IF() :
 		wTD = CLS_OSIF.sGetTime()
 		if wTD['Result']!=True :
 			###時間取得失敗  時計壊れた？
-			wStr = "PC時間取得失敗" + '\n'
-			CLS_OSIF.sPrn( wStr )
+###			wStr = "PC時間取得失敗" + '\n'
+###			CLS_OSIF.sPrn( wStr )
+			wRes['Reason'] = "PC time get is failer"
+			gVal.OBJ_L.Log( "C", wRes )
 			wTD['TimeDate'] = self.DEF_TIMEDATE
 		
 		#############################
 		# データベースから除外文字を取得
-		wQy = "select word from tbl_exc_word " + \
-					";"
+		wQy = "select word from tbl_exc_word "
+		wQy = wQy + ";"
 		
 		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
 			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-			gVal.OBJ_L.Log( "B", wRes )
+			gVal.OBJ_L.Log( "C", wRes )
 			return False
 		
 		### リスト型に整形
@@ -648,19 +711,19 @@ class CLS_DB_IF() :
 			# 登録済みの場合
 			#   通報情報を更新する
 			if wKey in wARR_RateWord :
-				wQy = "update tbl_exc_word set " + \
-						"report = " + str(wARR_Word[wKey]['report']) + " " + \
-						" ;"
+				wQy = "update tbl_exc_word set "
+				wQy = wQy + "report = " + str(wARR_Word[wKey]['report']) + " "
+				wQy = wQy + " ;"
 			
 			#############################
 			# 登録なしの場合
 			#   新規登録する
 			else :
-				wQy = "insert into tbl_exc_word values (" + \
-						"'" + str(wTD['TimeDate']) + "', " + \
-						"'" + wKey + "', " + \
-						str(wARR_Word[wKey]['report']) + " " + \
-						") ;"
+				wQy = "insert into tbl_exc_word values ("
+				wQy = wQy + "'" + str(wTD['TimeDate']) + "', "
+				wQy = wQy + "'" + wKey + "', "
+				wQy = wQy + str(wARR_Word[wKey]['report']) + " "
+				wQy = wQy + ") ;"
 			
 			#############################
 			# クエリの実行
@@ -669,7 +732,8 @@ class CLS_DB_IF() :
 			if wResDB['Result']!=True :
 				##失敗
 				wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-				CLS_OSIF.sErr( wRes )
+###				CLS_OSIF.sErr( wRes )
+				gVal.OBJ_L.Log( "C", wRes )
 				return False
 			
 			#############################
@@ -703,9 +767,9 @@ class CLS_DB_IF() :
 				continue
 			
 			# ※登録なし：削除確定
-			wQy = "delete from tbl_exc_word " + \
-					"where word = '" + wRateKey + "' " + \
-					" ;"
+			wQy = "delete from tbl_exc_word "
+			wQy = wQy + "where word = '" + wRateKey + "' "
+			wQy = wQy + " ;"
 			
 			#############################
 			# クエリの実行
@@ -714,7 +778,8 @@ class CLS_DB_IF() :
 			if wResDB['Result']!=True :
 				##失敗
 				wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-				CLS_OSIF.sErr( wRes )
+###				CLS_OSIF.sErr( wRes )
+				gVal.OBJ_L.Log( "C", wRes )
 				return False
 			
 			#############################
@@ -727,6 +792,12 @@ class CLS_DB_IF() :
 		gVal.ARR_ExeWord = wARR_Word
 		gVal.ARR_ExeWordKeys = list( wARR_Word.keys() )
 		
+		#############################
+		# ログに記録する
+		gVal.OBJ_L.Log( "SC", wRes, "update exe word" )
+		
+		#############################
+		# =正常
 		wRes['Result'] = True
 		return wRes
 
@@ -745,35 +816,51 @@ class CLS_DB_IF() :
 		
 		#############################
 		# データベースから禁止ユーザを取得
-		wQy = "select * from tbl_exc_user " + \
-					";"
+		wQy = "select * from tbl_exc_user "
+		wQy = wQy + ";"
 		
 		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
 			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-			gVal.OBJ_L.Log( "B", wRes )
+			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
 		
 		#############################
 		# 辞書型に整形
 		wARR_DBData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
 		
+		#############################
+		# 添え字をIDに差し替える
+		wARR_DBData = gVal.OBJ_DB_IF.ChgDataID( wARR_DBData )
+		
 		wARR_ExeUser = {}
 		#############################
 		# 禁止ユーザデータを登録する
 		wKeylist = list( wARR_DBData.keys() )
 		wListNo = 1
-		for wIndex in wKeylist :
-			wKey = wARR_DBData[wIndex]['screen_name']
+###		for wIndex in wKeylist :
+###			wKey = wARR_DBData[wIndex]['screen_name']
+###			wCell = {
+###				"list_number"	: wListNo,
+###				"screen_name"	: wKey,
+###				"report"		: wARR_DBData[wIndex]['report'],
+###				"vip"			: wARR_DBData[wIndex]['vip']
+###			}
+###			wARR_ExeUser.update({ wKey : wCell })
+###			wListNo += 1
+		for wID in wKeylist :
+			wID = str(wID)
 			wCell = {
 				"list_number"	: wListNo,
-				"screen_name"	: wKey,
+				"id"			: wID,
+				"screen_name"	: wARR_DBData[wIndex]['screen_name'],
 				"report"		: wARR_DBData[wIndex]['report'],
-				"vip"			: wARR_DBData[wIndex]['vip']
+				"vip"			: wARR_DBData[wIndex]['vip'],
+				"memo"			: wARR_DBData[wIndex]['memo']
 			}
-			wARR_ExeUser.update({ wKey : wCell })
+			wARR_ExeUser.update({ wID : wCell })
 			wListNo += 1
 		
 		gVal.ARR_NotReactionUser = wARR_ExeUser
@@ -783,19 +870,19 @@ class CLS_DB_IF() :
 		wRes['Result'] = True
 		return wRes
 
-	#####################################################
-	def GetExeUserName( self, inListNumber=-1 ):
-		wName = None
-		if inListNumber==-1 :
-			return wName
-		
-		wKeylist = list( gVal.ARR_NotReactionUser.keys() )
-		for wKey in wKeylist :
-			if gVal.ARR_NotReactionUser[wKey]['list_number']==inListNumber :
-				wName = gVal.ARR_NotReactionUser[wKey]['screen_name']
-				break
-		return wName
-
+###	#####################################################
+###	def GetExeUserName( self, inListNumber=-1 ):
+###		wName = None
+###		if inListNumber==-1 :
+###			return wName
+###		
+###		wKeylist = list( gVal.ARR_NotReactionUser.keys() )
+###		for wKey in wKeylist :
+###			if gVal.ARR_NotReactionUser[wKey]['list_number']==inListNumber :
+###				wName = gVal.ARR_NotReactionUser[wKey]['screen_name']
+###				break
+###		return wName
+###
 	#####################################################
 	def SetExeUser( self, inARRData ):
 		#############################
@@ -810,81 +897,120 @@ class CLS_DB_IF() :
 		wTD = CLS_OSIF.sGetTime()
 		if wTD['Result']!=True :
 			###時間取得失敗  時計壊れた？
-			wStr = "PC時間取得失敗" + '\n'
-			CLS_OSIF.sPrn( wStr )
+###			wStr = "PC時間取得失敗" + '\n'
+###			CLS_OSIF.sPrn( wStr )
+			wRes['Reason'] = "PC time get is failer"
+			gVal.OBJ_L.Log( "C", wRes )
 			wTD['TimeDate'] = self.DEF_TIMEDATE
 		
 		#############################
 		# データベースから禁止ユーザを取得
-		wQy = "select screen_name from tbl_exc_user " + \
-					";"
+###		wQy = "select screen_name from tbl_exc_user "
+###		wQy = "select id from tbl_exc_user "
+		wQy = "select * from tbl_exc_user "
+		wQy = wQy + ";"
 		
 		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
 			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-			gVal.OBJ_L.Log( "B", wRes )
+			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
 		
-		### リスト型に整形
-		wARR_RateWord = []
-		self.OBJ_DB.ChgList( wResDB['Responce']['Data'], outList=wARR_RateWord )
+###		### リスト型に整形
+###		wARR_RateWord = []
+###		self.OBJ_DB.ChgList( wResDB['Responce']['Data'], outList=wARR_RateWord )
+		#############################
+		# 辞書型に整形
+		wARR_DBData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
 		
 		#############################
-		# 登録データを作成する
-		wARR_Word = {}
-		wListNo = 1
-		for wLine in inARRData :
-			
-			### 通報設定ありか
-			#      先頭が @@@ の場合
-			wReport = False
-			wVip    = True
-			wIfind = wLine.find("@@@")
-			if wIfind==0 :
-				wLine = wLine.replace( "@@@", "" )
-				wReport = True
-				wVip    = False
-			
-			### ダブり登録は除外
-			if wLine in wARR_Word :
-				continue
-			if wLine=="" or wLine==None :
-				continue
-			
-			### データ登録
-			wCell = {
-				"list_number"	: wListNo,
-				"screen_name"	: wLine,
-				"report"		: wReport,
-				"vip"			: wVip
-			}
-			wARR_Word.update({ wLine : wCell })
-			wListNo += 1
+		# 添え字をIDに差し替える
+		wARR_RateWord = gVal.OBJ_DB_IF.ChgDataID( wARR_DBData )
+		wARR_RateWordID = list( wARR_RateWord )
+		
+###		#############################
+###		# 登録データを作成する
+###		wARR_Word = {}
+###		wListNo = 1
+###		for wLine in inARRData :
+###			
+###			### 通報設定ありか
+###			#      先頭が @@@ の場合
+###			wReport = False
+###			wVip    = True
+###			wIfind = wLine.find("@@@")
+###			if wIfind==0 :
+###				wLine = wLine.replace( "@@@", "" )
+###				wReport = True
+###				wVip    = False
+###			
+###			### ダブり登録は除外
+###			if wLine in wARR_Word :
+###				continue
+###			if wLine=="" or wLine==None :
+###				continue
+###			
+###			### データ登録
+###			wCell = {
+###				"list_number"	: wListNo,
+###				"screen_name"	: wLine,
+###				"report"		: wReport,
+###				"vip"			: wVip
+###			}
+###			wARR_Word.update({ wLine : wCell })
+###			wListNo += 1
+###		
+		
+		wResult = {
+			"insert"	: 0,
+			"update"	: 0,
+			"delete"	: 0
+		}
 		
 		#############################
 		# データベースに登録する
-		wKeylist = list( wARR_Word.keys() )
-		for wKey in wKeylist :
+###		wKeylist = list( wARR_Word.keys() )
+###		for wKey in wKeylist :
+		wKeylist = list( inARRData.keys() )
+		for wID in wKeylist :
+			wID = str(wID)
 			#############################
 			# 登録済みの場合
 			#   通報情報を更新する
-			if wKey in wARR_RateWord :
-				wQy = "update tbl_exc_word set " + \
-						"report = " + str(wARR_Word[wKey]['report']) + " " + \
-						" ;"
+###			if wKey in wARR_RateWord :
+			if wID in wARR_RateWordID :
+				wQy = "update tbl_exc_word set "
+###				wQy = wQy + "report = " + str(wARR_Word[wKey]['report']) + ", "
+###				wQy = wQy + "vip = " + str(wARR_Word[wKey]['vip']) + " "
+###				wQy = wQy + "where id = '" + str(wARR_Word[wKey]['id']) + "' " + \
+				wQy = wQy + "report = " + str(inARRData[wID]['report']) + ", "
+				wQy = wQy + "vip = " + str(inARRData[wID]['vip']) + " "
+				wQy = wQy + "where id = '" + str(inARRData[wID]['id']) + "' " + \
+				wQy = wQy + " ;"
+				
+				wResult['update'] += 1
 			
 			#############################
 			# 登録なしの場合
 			#   新規登録する
 			else :
-				wQy = "insert into tbl_exc_user values (" + \
-						"'" + str(wTD['TimeDate']) + "', " + \
-						"'" + wKey + "', " + \
-						str(wARR_Word[wKey]['report']) + ", " + \
-						str(wARR_Word[wKey]['vip']) + " " + \
-						") ;"
+				wQy = "insert into tbl_exc_user values ("
+				wQy = wQy + "'" + str(wTD['TimeDate']) + "', "
+###				wQy = wQy + "'" + wKey + "', "
+###				wQy = wQy + "'" + str(wARR_Word[wKey]['id']) + "', "
+###				wQy = wQy + "'" + str(wARR_Word[wKey]['screen_name']) + "', "
+###				wQy = wQy + str(wARR_Word[wKey]['report']) + ", "
+###				wQy = wQy + str(wARR_Word[wKey]['vip']) + ", "
+				wQy = wQy + "'" + str(inARRData[wID]['id']) + "', "
+				wQy = wQy + "'" + str(inARRData[wID]['screen_name']) + "', "
+				wQy = wQy + str(inARRData[wID]['report']) + ", "
+				wQy = wQy + str(inARRData[wID]['vip']) + ", "
+				wQy = wQy + "'' "
+				wQy = wQy + ") ;"
+				
+				wResult['insert'] += 1
 			
 			#############################
 			# クエリの実行
@@ -893,12 +1019,14 @@ class CLS_DB_IF() :
 			if wResDB['Result']!=True :
 				##失敗
 				wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-				CLS_OSIF.sErr( wRes )
+###				CLS_OSIF.sErr( wRes )
+				gVal.OBJ_L.Log( "C", wRes )
 				return wRes
 			
 			#############################
 			# 実行結果の表示
-			if wKey in wARR_RateWord :
+###			if wKey in wARR_RateWord :
+			if wID in wARR_RateWordID :
 				### 更新
 				wStr = "禁止ユーザ 更新: "
 			else:
@@ -906,30 +1034,39 @@ class CLS_DB_IF() :
 				wStr = "禁止ユーザ 追加: "
 			
 			### 通報有無
-			if wARR_Word[wKey]['report']==True :
+###			if wARR_Word[wKey]['report']==True :
+			if inARRData[wKey]['report']==True :
 				wStr = wStr + " [〇有] "
 			else:
 				wStr = wStr + " [  無] "
 			
 			### 文字
-			wStr = wStr + wKey
+###			wStr = wStr + wKey
+			wStr = wStr + str(inARRData[wID]['screen_name'])
 			
 			CLS_OSIF.sPrn( wStr )
 		
 		#############################
 		# データベースから削除
 		#   登録データにないデータをデータベースから抹消する
-		for wRateKey in wARR_RateWord :
+###		for wRateKey in wARR_RateWord :
+		for wID in wARR_RateWordID :
+			wID = str(wID)
 			#############################
 			# 登録データにある場合
 			#   スキップする
-			if wRateKey in wARR_Word :
+###			if wRateKey in wARR_Word :
+			if wID in inARRData :
 				continue
 			
 			# ※登録なし：削除確定
-			wQy = "delete from tbl_exc_user " + \
-					"where screen_name = '" + wRateKey + "' " + \
-					" ;"
+			wQy = "delete from tbl_exc_user "
+###			wQy = wQy + "where screen_name = '" + wRateKey + "' "
+###			wQy = wQy + "where id = '" + wRateKey + "' "
+			wQy = wQy + "where id = '" + wID + "' "
+			wQy = wQy + " ;"
+			
+			wResult['delete'] += 1
 			
 			#############################
 			# クエリの実行
@@ -938,23 +1075,32 @@ class CLS_DB_IF() :
 			if wResDB['Result']!=True :
 				##失敗
 				wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-				CLS_OSIF.sErr( wRes )
+###				CLS_OSIF.sErr( wRes )
+				gVal.OBJ_L.Log( "C", wRes )
 				return wRes
 			
 			#############################
 			# 実行結果の表示
-			wStr = "禁止ユーザ ×削除×: " + wRateKey
+###			wStr = "禁止ユーザ ×削除×: " + wRateKey
+			wStr = "禁止ユーザ ×削除×: " + wARR_RateWord[wID]['screen_name']
 			CLS_OSIF.sPrn( wStr )
 		
 		#############################
 		# グローバルを更新する
-		gVal.ARR_NotReactionUser = wARR_Word
+###		gVal.ARR_NotReactionUser = wARR_Word
+		gVal.ARR_NotReactionUser = inARRData
+		
+		#############################
+		# ログに記録する
+		wStr = "update exe user data: insert=" + str(wResult['insert']) + " update=" + str(wResult['update']) + " delete=" + str(wResult['delete'])
+		gVal.OBJ_L.Log( "SC", wRes, wStr )
 		
 		wRes['Result'] = True
 		return wRes
 
 	#####################################################
-	def InsertExeUser( self, inName ):
+###	def InsertExeUser( self, inName ):
+	def InsertExeUser( self, inData ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -963,33 +1109,50 @@ class CLS_DB_IF() :
 		wRes['Func']  = "InsertExeUser"
 		
 		#############################
+		# 入力チェック
+		if "id" not in inData or \
+		   "screen_name" not in inData :
+			wRes['Reason'] = "input error: " + str(inData)
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
 		# 時間を取得
 		wTD = CLS_OSIF.sGetTime()
 		if wTD['Result']!=True :
 			###時間取得失敗  時計壊れた？
-			wStr = "PC時間取得失敗" + '\n'
-			CLS_OSIF.sPrn( wStr )
+###			wStr = "PC時間取得失敗" + '\n'
+###			CLS_OSIF.sPrn( wStr )
+			wRes['Reason'] = "PC time get is failer"
+			gVal.OBJ_L.Log( "C", wRes )
 			wTD['TimeDate'] = self.DEF_TIMEDATE
 		
 		#############################
 		# ダブりチェック
-		wKeylist = list( gVal.ARR_NotReactionUser.keys() )
-		wListNo = 1
-		for wKey in wKeylist :
-			### ダブり登録はNG
-			if gVal.ARR_NotReactionUser[wKey]['screen_name']==inName :
+###		wKeylist = list( gVal.ARR_NotReactionUser.keys() )
+###		wListNo = 1
+###		for wKey in wKeylist :
+###			### ダブり登録はNG
+###			if gVal.ARR_NotReactionUser[wKey]['screen_name']==inName :
 				wRes['Reason'] = "Duai Screen_Name: name=" + str(inName)
 				CLS_OSIF.sErr( wRes )
 				return wRes
+		if inData['id'] in gVal.ARR_NotReactionUser :
+			wRes['Reason'] = "Duai Screen_Name: screen_name=" + str(inData['screen_name'])
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
 		
 		#############################
 		# 新規登録する
 		wQy = "insert into tbl_exc_user values (" + \
-				"'" + str(wTD['TimeDate']) + "', " + \
-				"'" + str(inName) + "', " + \
-				"False, " + \
-				"False " + \
-				") ;"
+		wQy = wQy + "'" + str(wTD['TimeDate']) + "', "
+###		wQy = wQy + "'" + str(inName) + "', "
+		wQy = wQy + "'" + str(inData['id']) + "', "
+		wQy = wQy + "'" + str(inData['screen_name']) + "', "
+		wQy = wQy + "False, "
+		wQy = wQy + "False, "
+		wQy = wQy + "'' "
+		wQy = wQy + ") ;"
 		
 		#############################
 		# クエリの実行
@@ -998,7 +1161,8 @@ class CLS_DB_IF() :
 		if wResDB['Result']!=True :
 			##失敗
 			wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-			CLS_OSIF.sErr( wRes )
+###			CLS_OSIF.sErr( wRes )
+			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
 		
 		#############################
@@ -1015,11 +1179,22 @@ class CLS_DB_IF() :
 		# データ登録
 		wCell = {
 			"list_number"	: wListNo,
-			"screen_name"	: str(inName),
+###			"screen_name"	: str(inName),
+			"id"			: str(inData['id']),
+			"screen_name"	: str(inData['screen_name']),
 			"report"		: False,
-			"vip"			: False
+			"vip"			: False,
+			"rel_date"		: "(none)",
+			"memo"			: ""
 		}
-		gVal.ARR_NotReactionUser.update({ str(inName) : wCell })
+###		gVal.ARR_NotReactionUser.update({ str(inName) : wCell })
+		gVal.ARR_NotReactionUser.update({ str(inData['id']) : wCell })
+		
+		#############################
+		# ログに記録する
+		wStr = "update exe user data: insert=1"
+##		 + str(wResult['insert']) + " update=" + str(wResult['update']) + " delete=" + str(wResult['delete'])
+		gVal.OBJ_L.Log( "SC", wRes, wStr )
 		
 		#############################
 		# =正常
@@ -1027,7 +1202,8 @@ class CLS_DB_IF() :
 		return wRes
 
 	#####################################################
-	def UpdateExeUser( self, inName, inReport=None, inVIP=None ):
+###	def UpdateExeUser( self, inName, inReport=None, inVIP=None ):
+	def UpdateExeUser( self, inID, inReport=None, inVIP=None, inRelDate=None, inMemo=None ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -1035,46 +1211,73 @@ class CLS_DB_IF() :
 		wRes['Class'] = "CLS_DB_IF"
 		wRes['Func']  = "UpdateExeUser"
 		
+		wUserID = str(inID)
 		#############################
 		# ダブりチェック
-		wKeylist = list( gVal.ARR_NotReactionUser.keys() )
-		wFLG_Detect = False
-		for wKey in wKeylist :
-			### データあり
-			if gVal.ARR_NotReactionUser[wKey]['screen_name']==inName :
-				wFLG_Detect = True
-				break
-		if wFLG_Detect!=True :
-			wRes['Reason'] = "No data Screen_Name: name=" + str(inName)
-			CLS_OSIF.sErr( wRes )
+###		wKeylist = list( gVal.ARR_NotReactionUser.keys() )
+###		wFLG_Detect = False
+###		for wKey in wKeylist :
+###		for wID in wKeylist :
+###			if str(wID)!=wUserID :
+###				continue
+###			
+###			### データあり
+###			if gVal.ARR_NotReactionUser[wKey]['screen_name']==inName :
+###				wFLG_Detect = True
+###				break
+###			wFLG_Detect = True
+###			break
+###		
+###		if wFLG_Detect!=True :
+		if inID not in gVal.ARR_NotReactionUser
+			### ありえない？
+			wRes['Reason'] = "No data Screen_Name: id=" + str(wUserID)
+			gVal.OBJ_L.Log( "E", wRes )
 			return wRes
 		
 		#############################
 		# 入力チェック
-		if inReport==None and inVIP==None :
-			wRes['Reason'] = "input error: screen name=" + str(inName)
-			CLS_OSIF.sErr( wRes )
+###		if inReport==None and inVIP==None :
+		if inReport==None and inVIP==None and inRelDate==None and inMemo==None :
+			wRes['Reason'] = "input error: screen_name=" + str(gVal.ARR_NotReactionUser[wUserID]['screen_name'])
+			gVal.OBJ_L.Log( "D", wRes )
 			return wRes
 		
 		#############################
 		# 現設定値のロード
-		wFLR_Rep = gVal.ARR_NotReactionUser[inName]['report']
-		wFLR_VIP = gVal.ARR_NotReactionUser[inName]['vip']
+###		wFLR_Rep = gVal.ARR_NotReactionUser[inName]['report']
+###		wFLR_VIP = gVal.ARR_NotReactionUser[inName]['vip']
+		wSTR_Value = {
+			"report"		: gVal.ARR_NotReactionUser[wUserID]['report'],
+			"vip"			: gVal.ARR_NotReactionUser[wUserID]['vip'],
+			"rel_date"		: gVal.ARR_NotReactionUser[wUserID]['rel_date'],
+			"memo"			: gVal.ARR_NotReactionUser[wUserID]['memo']
+		}
 		
 		#############################
 		# 設定値の変更
 		if inReport!=None :
-			wFLR_Rep = inReport
+###			wFLR_Rep = inReport
+			wSTR_Value['report'] = inReport
 		if inVIP!=None :
-			wFLR_VIP = inVIP
+###			wFLR_VIP = inVIP
+			wSTR_Value['vip'] = inVIP
+		if inRelDate!=None :
+			wSTR_Value['rel_date'] = inRelDate
+		if inMemo!=None :
+			wSTR_Value['memo'] = inMemo
 		
 		#############################
 		# 変更する
 		wQy = "update tbl_exc_user set " + \
-				"report = " + str( wFLR_Rep ) + ", " + \
-				"vip = " + str( wFLR_VIP ) + " " + \
-				"where screen_name = '" + inName + "' " + \
-				";"
+###		wQy = wQy + "report = " + str( wFLR_Rep ) + ", " + \
+###		wQy = wQy + "vip = " + str( wFLR_VIP ) + ", " + \
+		wQy = wQy + "report = " + str( wSTR_Value['report'] ) + ", " + \
+		wQy = wQy + "vip = " + str( wSTR_Value['vip'] ) + ", " + \
+		wQy = wQy + "rel_date = '" + str( wSTR_Value['rel_date'] ) + "', " + \
+		wQy = wQy + "memo = '" + str( wSTR_Value['memo'] ) + "' " + \
+		wQy = wQy + "where id = '" + wUserID + "' " + \
+		wQy = wQy + ";"
 		
 		#############################
 		# クエリの実行
@@ -1083,13 +1286,22 @@ class CLS_DB_IF() :
 		if wResDB['Result']!=True :
 			##失敗
 			wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-			CLS_OSIF.sErr( wRes )
-			return False
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
 		
 		#############################
 		# データ変更
-		gVal.ARR_NotReactionUser[inName]['report'] = wFLR_Rep
-		gVal.ARR_NotReactionUser[inName]['vip']    = wFLR_VIP
+###		gVal.ARR_NotReactionUser[inName]['report'] = wFLR_Rep
+###		gVal.ARR_NotReactionUser[inName]['vip']    = wFLR_VIP
+		gVal.ARR_NotReactionUser[wUserID]['report'] = wSTR_Value['report']
+		gVal.ARR_NotReactionUser[wUserID]['vip']    = wSTR_Value['vip']
+		gVal.ARR_NotReactionUser[wUserID]['rel_date'] = wSTR_Value['rel_date']
+		gVal.ARR_NotReactionUser[wUserID]['memo']     = wSTR_Value['memo']
+		
+		#############################
+		# ログに記録する
+		wStr = "update exe user data: update=1"
+		gVal.OBJ_L.Log( "SC", wRes, wStr )
 		
 		#############################
 		# =正常
@@ -1097,7 +1309,8 @@ class CLS_DB_IF() :
 		return wRes
 
 	#####################################################
-	def DeleteExeUser( self, inName ):
+###	def DeleteExeUser( self, inName ):
+	def DeleteExeUser( self, inID ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -1105,25 +1318,32 @@ class CLS_DB_IF() :
 		wRes['Class'] = "CLS_DB_IF"
 		wRes['Func']  = "DeleteExeUser"
 		
+		wUserID = str(inID)
 		#############################
 		# ダブりチェック
-		wKeylist = list( gVal.ARR_NotReactionUser.keys() )
-		wFLG_Detect = False
-		for wKey in wKeylist :
-			### データあり
-			if gVal.ARR_NotReactionUser[wKey]['screen_name']==inName :
-				wFLG_Detect = True
-				break
-		if wFLG_Detect!=True :
-			wRes['Reason'] = "No data Screen_Name: name=" + str(inName)
-			CLS_OSIF.sErr( wRes )
+###		wKeylist = list( gVal.ARR_NotReactionUser.keys() )
+###		wFLG_Detect = False
+###		for wKey in wKeylist :
+###			### データあり
+###			if gVal.ARR_NotReactionUser[wKey]['screen_name']==inName :
+###				wFLG_Detect = True
+###				break
+###		if wFLG_Detect!=True :
+###			wRes['Reason'] = "No data Screen_Name: name=" + str(inName)
+###			CLS_OSIF.sErr( wRes )
+###			return wRes
+		if inID not in gVal.ARR_NotReactionUser
+			### ありえない？
+			wRes['Reason'] = "No data Screen_Name: id=" + str(wUserID)
+			gVal.OBJ_L.Log( "E", wRes )
 			return wRes
 		
 		#############################
 		# 変更する
 		wQy = "delete from tbl_exc_user where " + \
-					"screen_name = '" + inName + "' " + \
-					";"
+###		wQy = wQy + "screen_name = '" + inName + "' " + \
+		wQy = wQy + "id = '" + wUserID + "' " + \
+		wQy = wQy + ";"
 		
 		#############################
 		# クエリの実行
@@ -1132,12 +1352,17 @@ class CLS_DB_IF() :
 		if wResDB['Result']!=True :
 			##失敗
 			wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-			CLS_OSIF.sErr( wRes )
-			return False
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
 		
 		#############################
 		# データ削除
-		del gVal.ARR_NotReactionUser[inName]
+		del gVal.ARR_NotReactionUser[wUserID]
+		
+		#############################
+		# ログに記録する
+		wStr = "update exe user data: delete=1"
+		gVal.OBJ_L.Log( "SC", wRes, wStr )
 		
 		#############################
 		# =正常

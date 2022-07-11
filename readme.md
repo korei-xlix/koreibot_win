@@ -214,19 +214,16 @@ pythonのデフォルトエンコードを確認したり、utf-8に設定する
 	テストモードで起動します。  
 	**開発時に使用ください。**  
 	```
-	# python run.py test  [データベースhostname] [データベースname] [データベースusername] [データベースパスワード] [twitterアカウント名]
+	# python run.py test [データベースhostname] [データベースname] [データベースusername] [データベースパスワード] [twitterアカウント名]
 	```
 
 #### ユーザセットアップ
 	Twitterのアカウントを追加したり、APIを変更する際に使用ください。  
 	```
-	# python run.py setup
-	```
-
-#### ログクリア
-	ログやトラヒックを初期化する際に使用ください。  
-	```
-	# python run.py clear  [データベースhostname] [データベースname] [データベースusername] [データベースパスワード]
+	# python run.py setup [データベースhostname] [データベースname] [データベースusername] [データベースパスワード]
+	
+	一緒にキーワードを追加する場合
+	# python run.py setup [データベースhostname] [データベースname] [データベースusername] [データベースパスワード] [ファイルパス名(相対パス)]
 	```
 
 #### 除外データの追加
@@ -247,18 +244,18 @@ pythonのデフォルトエンコードを確認したり、utf-8に設定する
 	
 	以下のコマンドでデータベースに追加されます。  
 	```
-	# python run.py add  [データベースhostname] [データベースname] [データベースusername] [データベースパスワード] [twitterアカウント名] [ファイルパス名(相対パス)]
+	# python run.py add [データベースhostname] [データベースname] [データベースusername] [データベースパスワード] [twitterアカウント名] [ファイルパス名(相対パス)]
 	```
   
 	以下の場合、禁止ワードのみが追加されます。  
 	```
-	# python run.py word  [データベースhostname] [データベースname] [データベースusername] [データベースパスワード] [twitterアカウント名] [ファイルパス名(相対パス)]
+	# python run.py word [データベースhostname] [データベースname] [データベースusername] [データベースパスワード] [twitterアカウント名] [ファイルパス名(相対パス)]
 	```
 
 #### 全初期化
 	botのデータベースを全て初期化します。アップデートでDBの構成が変更された際に使用ください。  
 	```
-	# python run.py init
+	# python run.py init [データベースhostname] [データベースname] [データベースusername] [データベースパスワード]
 	```
 
 
