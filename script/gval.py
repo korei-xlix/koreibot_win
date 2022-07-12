@@ -52,19 +52,25 @@ class gVal() :
 #############################
 # ユーザ情報
 	STR_UserInfo = {
-		"Account"	: "",			#Twitterアカウント名
-		"id"		: "",			#Twitter ID(番号)
-		"Traffic"	: False,		#Twitterにトラヒックを報告するか
-		"TrendTag"	: "",			#トレンドタグ設定
-###		"FavoDate"	: None,			#いいね者送信日時(直近)
+		"Account"		: "",			#Twitterアカウント名
+		"id"			: "",			#Twitter ID(番号)
 		
-		"ListID"	: None,			#リスト通知 リストID
-		"ListName"	: None,			#リスト通知 リスト名
+		"TrendTag"		: "",			#トレンドタグ設定
+###		"FavoDate"		: None,			#いいね者送信日時(直近)
 		
-		"ListDate"	: None,			#リスト通知日時
-		"LFavoDate"	: None,			#リストいいね日時
+		"ListID"		: None,			#リスト通知 リストID
+		"ListName"		: None,			#リスト通知 リスト名
 		
-		"ArListName": "",			#自動リムーブ先リスト
+		"AutoRemove"	: False,		#自動リムーブ True=有効
+		"rListID"		: None,			#リムーブリスト リストID
+		"rListName"		: None,			#リムーブリスト リスト名
+		
+###		"ListDate"	: None,			#リスト通知日時
+###		"LFavoDate"	: None,			#リストいいね日時
+###		
+###		"ArListName": "",			#自動リムーブ先リスト
+		
+		"Traffic"		: False			#Twitterにトラヒックを報告するか
 	}
 
 #############################

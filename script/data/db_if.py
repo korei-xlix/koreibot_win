@@ -434,7 +434,10 @@ class CLS_DB_IF() :
 			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# 1日  開始日時
 			wQy = wQy + "'" + gVal.DEF_NOTEXT + "', "			# トレンド送信タグ
 			wQy = wQy + "'" + gVal.DEF_NOTEXT + "', "			# リスト通知 リストID(数値)
-			wQy = wQy + "'" + gVal.DEF_NOTEXT + "' "			# リスト通知 リスト名
+			wQy = wQy + "'" + gVal.DEF_NOTEXT + "', "			# リスト通知 リスト名
+			wQy = wQy + "False,"								# 自動リムーブ true=ON
+			wQy = wQy + "'" + gVal.DEF_NOTEXT + "', "			# リムーブリスト リストID(数値)
+			wQy = wQy + "'" + gVal.DEF_NOTEXT + "' "			# リムーブリスト リスト名
 			wQy = wQy + ") ;"
 			
 			wResDB = self.OBJ_DB.RunQuery( wQy )
@@ -1988,6 +1991,9 @@ class CLS_DB_IF() :
 		gVal.STR_UserInfo['TrendTag'] = wARR_DBData[0]['trendtag']
 		gVal.STR_UserInfo['ListID']   = wARR_DBData[0]['list_id']
 		gVal.STR_UserInfo['ListName'] = wARR_DBData[0]['list_name']
+		gVal.STR_UserInfo['AutoRemove'] = wARR_DBData[0]['autoremove']
+		gVal.STR_UserInfo['rListID']    = wARR_DBData[0]['rlist_id']
+		gVal.STR_UserInfo['rListName']  = wARR_DBData[0]['rlist_name']
 		
 		#############################
 		# =正常
@@ -1996,7 +2002,8 @@ class CLS_DB_IF() :
 
 	#####################################################
 ###	def SetListName(self):
-	def SetListName( self, inTrendName=None, inListName=None, inListID=None ):
+###	def SetListName( self, inTrendName=None, inListName=None, inListID=None ):
+	def SetListName( self, inListName, inListID=None ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -2004,14 +2011,96 @@ class CLS_DB_IF() :
 		wRes['Class'] = "CLS_DB_IF"
 		wRes['Func']  = "SetListName"
 		
+###		wQy = "update tbl_user_data set "
+###		if inTrendName!=None :
+###			wQy = wQy + "trendtag = '" + gVal.STR_UserInfo['TrendTag'] + "' "
+###		if inTrendName!=None and inListName!=None :
+###			wQy = wQy + ", "
+###		if inListName!=None :
+###			wQy = wQy + "list_id = '" + gVal.STR_UserInfo['ListName'] + "', "
+###			wQy = wQy + "list_name = '" + gVal.STR_UserInfo['ArListName'] + "' "
+###		
+		#############################
+		# 入力切替
+		wListName = gVal.DEF_NOTEXT
+		wListID   = gVal.DEF_NOTEXT
+		if inListName!=gVal.DEF_NOTEXT :
+			wListName = inListName
+			wListID   = inListID
+		
 		wQy = "update tbl_user_data set "
-		if inTrendName!=None :
-			wQy = wQy + "trendtag = '" + gVal.STR_UserInfo['TrendTag'] + "' "
-		if inTrendName!=None and inListName!=None :
-			wQy = wQy + ", "
-		if inListName!=None :
-			wQy = wQy + "list_id = '" + gVal.STR_UserInfo['ListName'] + "', "
-			wQy = wQy + "list_name = '" + gVal.STR_UserInfo['ArListName'] + "' "
+		wQy = wQy + "list_id = '" + str(wListID) + "', "
+		wQy = wQy + "list_name = '" + str(wListName) + "' "
+		wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQy )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
+		# データをグローバルに反映
+###		if inTrendName!=None :
+###			gVal.STR_UserInfo['TrendTag'] = inTrendName
+###		if inListName!=None :
+###			gVal.STR_UserInfo['ListID']   = inListID
+###			gVal.STR_UserInfo['ListName'] = inListName
+		gVal.STR_UserInfo['ListID']   = wListID
+		gVal.STR_UserInfo['ListName'] = wListName
+		
+###		#############################
+###		# ログに記録する
+###		wStr = "データ更新: list name: screen_name=" + str(gVal.STR_UserInfo['Account']) + " "
+###		if inTrendName!=None :
+###			if inTrendName!=gVal.DEF_NOTEXT :
+###				wStr = "トレンドタグ設定: name=" + str(inTrendName) + " screen_name=" + str(gVal.STR_UserInfo['Account']) + " "
+###			else:
+###				wStr = "トレンドタグ解除: screen_name=" + str(gVal.STR_UserInfo['Account']) + " "
+###			gVal.OBJ_L.Log( "SC", wRes, wStr )
+###		
+###		if inTrendName!=None and inListName!=None :
+###			wStr = wStr + " "
+###		if inListName!=None :
+###			if inListName!=gVal.DEF_NOTEXT :
+###				wStr = "リスト通知設定: list name: name=" + str(inListName) + " screen_name=" + str(gVal.STR_UserInfo['Account']) + " "
+###			else:
+###				wStr = "リスト通知解除: screen_name=" + str(gVal.STR_UserInfo['Account']) + " "
+###			gVal.OBJ_L.Log( "SC", wRes, wStr )
+###		gVal.OBJ_L.Log( "SC", wRes, wStr )
+		
+		#############################
+		# ログに記録する
+		if inListName!=gVal.DEF_NOTEXT :
+			wStr = "リスト通知設定: list name: name=" + str(wListName) + " screen_name=" + str(gVal.STR_UserInfo['Account'])
+		else:
+			wStr = "リスト通知解除: screen_name=" + str(gVal.STR_UserInfo['Account'])
+		gVal.OBJ_L.Log( "SC", wRes, wStr )
+		
+		#############################
+		# 正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def SetTrendTag( self, inTrendName ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "SetTrendTag"
+		
+		#############################
+		# 入力切替
+		wTrendTag = gVal.DEF_NOTEXT
+		if inTrendName!=gVal.DEF_NOTEXT :
+			wTrendTag = inTrendName
+		
+		wQy = "update tbl_user_data set "
+		wQy = wQy + "trendtag = '" + str(wTrendTag) + "' "
 		wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
 		
 		wResDB = self.OBJ_DB.RunQuery( wQy )
@@ -2025,31 +2114,89 @@ class CLS_DB_IF() :
 		#############################
 		# データをグローバルに反映
 		if inTrendName!=None :
-			gVal.STR_UserInfo['TrendTag'] = inTrendName
-		if inListName!=None :
-			gVal.STR_UserInfo['ListID']   = inListID
-			gVal.STR_UserInfo['ListName'] = inListName
+			gVal.STR_UserInfo['TrendTag'] = wTrendTag
 		
 		#############################
 		# ログに記録する
-###		wStr = "データ更新: list name: screen_name=" + str(gVal.STR_UserInfo['Account']) + " "
-		if inTrendName!=None :
-			if inTrendName!=gVal.DEF_NOTEXT :
-				wStr = "トレンドタグ設定: name=" + str(inTrendName) + " screen_name=" + str(gVal.STR_UserInfo['Account']) + " "
+		if inTrendName!=gVal.DEF_NOTEXT :
+			wStr = "トレンドタグ設定: name=" + str(wTrendTag) + " screen_name=" + str(gVal.STR_UserInfo['Account'])
+		else:
+			wStr = "トレンドタグ解除: screen_name=" + str(gVal.STR_UserInfo['Account'])
+		gVal.OBJ_L.Log( "SC", wRes, wStr )
+		
+		#############################
+		# 正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def SetAutoRemove( self, inAutoRemove=None, inListName=None, inListID=None ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "SetAutoRemove"
+		
+		#############################
+		# 入力チェック
+		if inAutoRemove==None and inListName==None :
+			wRes['Reason'] = "input error"
+			gVal.OBJ_L.Log( "A", wRes )
+			return wRes
+		
+		#############################
+		# 入力切替
+		wListName = gVal.DEF_NOTEXT
+		wListID   = gVal.DEF_NOTEXT
+		if inListName!=None and inListName!=gVal.DEF_NOTEXT :
+			wListName = inListName
+			wListID   = inListID
+		
+		wQy = "update tbl_user_data set "
+		if inAutoRemove!=None :
+			wQy = wQy + "autoremove = " + str(inAutoRemove) + " "
+		if inAutoRemove!=None and inListName!=None :
+			wQy = wQy + ", "
+		if inListName!=None :
+			wQy = wQy + "rlist_id = '" + str(wListID) + "', "
+			wQy = wQy + "rlist_name = '" + str(wListName) + "' "
+		wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQy )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
+		# データをグローバルに反映
+		if inAutoRemove!=None :
+			gVal.STR_UserInfo['AutoRemove'] = inAutoRemove
+		if inListName!=None :
+			gVal.STR_UserInfo['rListID']   = wListID
+			gVal.STR_UserInfo['rListName'] = wListName
+		
+		#############################
+		# ログに記録する
+		if inAutoRemove!=None :
+			if inAutoRemove==True :
+				wStr = "自動リムーブ設定: screen_name=" + str(gVal.STR_UserInfo['Account'])
 			else:
-				wStr = "トレンドタグ解除: screen_name=" + str(gVal.STR_UserInfo['Account']) + " "
+				wStr = "自動リムーブ解除: screen_name=" + str(gVal.STR_UserInfo['Account'])
 			gVal.OBJ_L.Log( "SC", wRes, wStr )
 		
-		if inTrendName!=None and inListName!=None :
-			wStr = wStr + " "
 		if inListName!=None :
 			if inListName!=gVal.DEF_NOTEXT :
-				wStr = "リスト通知設定: list name: name=" + str(inListName) + " screen_name=" + str(gVal.STR_UserInfo['Account']) + " "
+				wStr = "リムーブリスト設定: list name: name=" + str(wListName) + " screen_name=" + str(gVal.STR_UserInfo['Account'])
 			else:
-				wStr = "リスト通知解除: screen_name=" + str(gVal.STR_UserInfo['Account']) + " "
+				wStr = "リムーブリスト解除: screen_name=" + str(gVal.STR_UserInfo['Account'])
 			gVal.OBJ_L.Log( "SC", wRes, wStr )
-###		gVal.OBJ_L.Log( "SC", wRes, wStr )
 		
+		#############################
+		# 正常
 		wRes['Result'] = True
 		return wRes
 

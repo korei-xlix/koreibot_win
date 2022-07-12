@@ -818,12 +818,12 @@ class CLS_TwitterAdmin():
 ###			CLS_OSIF.sPrn( wStr )
 		#############################
 		# 設定解除の場合
-		if wInputName!="\\n" :
+		if wInputName=="\\n" :
 			wInputName = gVal.DEF_NOTEXT
 		
 		#############################
 		# DBに設定
-		wSubRes = gVal.OBJ_DB_IF.SetListName( inTrendName=wInputName )
+		wSubRes = gVal.OBJ_DB_IF.SetTrendTag( inTrendName=wInputName )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "SetListName is failed"
 			gVal.OBJ_L.Log( "B", wRes )
@@ -855,6 +855,7 @@ class CLS_TwitterAdmin():
 		wStr = wStr + "---------------------------------------" + '\n'
 		CLS_OSIF.sPrn( wStr )
 		
+		wListID = None
 		#############################
 		# 入力
 		while True :
@@ -870,13 +871,28 @@ class CLS_TwitterAdmin():
 				wRes['Result'] = True
 				return wRes
 			
+			elif wInputName=="\\n" :
+				### 設定解除
+				break
+			
+			#############################
+			# リストがTwitterにあるか確認
+			wSubRes = self.GetListID( inListName=wInputName )
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "GetListID is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				continue
+			if wSubRes['Responce']==None :
+				CLS_OSIF.sPrn( "Twitterにないリストです" + '\n' )
+				continue
+			
 			###ここまでで入力は完了した
+			wListID = wSubRes['Responce'] # ListID
 			break
 		
-		wListID = None
-		#############################
-		# 設定値が設定された場合
-		if wInputName!="\\n" :
+###		#############################
+###		# 設定値が設定された場合
+###		if wInputName!="\\n" :
 ###			#############################
 ###			# リストがTwitterにあるか確認
 ###			wSubRes = gVal.OBJ_Tw_IF.CheckList( inListName=wInputName )
@@ -901,12 +917,10 @@ class CLS_TwitterAdmin():
 ###			
 ###			wStr = "〇設定が完了しました" + '\n'
 ###			CLS_OSIF.sPrn( wStr )
-
-
-		
-		else:
-		#############################
-		# 設定解除
+###		
+###		else:
+###		#############################
+###		# 設定解除
 ###		
 ###			#############################
 ###			# DBに登録する
@@ -920,6 +934,9 @@ class CLS_TwitterAdmin():
 ###			
 ###			wStr = "●設定を解除しました" + '\n'
 ###			CLS_OSIF.sPrn( wStr )
+		#############################
+		# 設定解除
+		if wInputName=="\\n" :
 			wInputName = gVal.DEF_NOTEXT
 		
 		#############################
@@ -929,6 +946,112 @@ class CLS_TwitterAdmin():
 			wRes['Reason'] = "SetListName is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# 自動リムーブ設定
+#####################################################
+	def SetAutoRemove(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "SetAutoRemove"
+		
+		#############################
+		# 入力画面表示
+		wStr = "自動リムーブ設定をおこないます。" + '\n'
+		wStr = wStr + "コマンドかリスト名を入力してください。" + '\n'
+		wStr = wStr + '\n'
+		wStr = wStr + "  other : リムーブ時後に追加したいリスト名" + '\n'
+		wStr = wStr + "  \\n   : リムーブ時のリスト追加解除(追加しない)" + '\n'
+		wStr = wStr + "  \\a   : 自動リムーブ設定のON / OFF 切り替え" + '\n'
+		wStr = wStr + "  \\q   : 戻る (設定は自動セーブ)"  + '\n'
+		wStr = wStr + "---------------------------------------" + '\n'
+		CLS_OSIF.sPrn( wStr )
+		
+		wUpdate = False
+###		wAutoRemove = gVal.STR_UserInfo['AutoRemove']
+		wAutoRemove = None
+		wListID     = gVal.STR_UserInfo['rListID']
+		wListName   = gVal.STR_UserInfo['rListName']
+		#############################
+		# 入力
+		while True :
+			#############################
+			# 現在の設定の表示
+			wStr = "[現在の設定] "
+			wStr = wStr + "自動リムーブ="
+			if wAutoRemove==True :
+				wStr = wStr + "〇ON "
+			else:
+				wStr = wStr + "●OFF "
+			wStr = wStr + "リムーブリスト="
+			wStr = wStr + wListName + '\n'
+			CLS_OSIF.sPrn( wStr )
+			
+			#############################
+			# コマンド入力
+			wInputName = CLS_OSIF.sInp( "   Command ？=> " )
+			
+			if wInputName=="" :
+				CLS_OSIF.sPrn( "リスト名か解除コマンドが未入力です" + '\n' )
+				continue
+			
+			elif wInputName=="\\q" :
+				# 戻る
+				break
+			
+			elif wInputName=="\\a" :
+				### 自動リムーブ設定
+###				wAutoRemove = True if wAutoRemove==True else False	#反転
+				if gVal.STR_UserInfo['AutoRemove']==True and (wAutoRemove==None or wAutoRemove==False) :
+					wAutoRemove = False
+				elif gVal.STR_UserInfo['AutoRemove']==False and wAutoRemove==None :
+					wAutoRemove = True
+				else:
+					wAutoRemove = None
+				continue
+			
+			elif wInputName=="\\n" :
+				### 設定解除
+				wListID   = gVal.DEF_NOTEXT
+				wListName = gVal.DEF_NOTEXT
+				wUpdate = True
+				continue
+			
+			#############################
+			# リストがTwitterにあるか確認
+			wSubRes = self.GetListID( inListName=wInputName )
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "GetListID is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				continue
+			if wSubRes['Responce']==None :
+				CLS_OSIF.sPrn( "Twitterにないリストです" + '\n' )
+				continue
+			
+			###ここまでで入力は完了した
+			wListID   = wSubRes['Responce'] # ListID
+			wListName = wInputName
+			wUpdate = True
+		
+		#############################
+		# 更新ありの場合
+		#   =DBに登録する
+		if wUpdate==True and wAutoRemove!=None :
+			wSubRes = gVal.OBJ_DB_IF.SetAutoRemove( inAutoRemove=wAutoRemove, inListName=wListName, inListID=wListID )
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "SetListName is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
 		
 		#############################
 		# 完了

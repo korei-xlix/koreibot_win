@@ -669,11 +669,11 @@ class CLS_TwitterMain():
 #####################################################
 # 自動リムーブ設定
 #####################################################
-###	def SetAutoRemove(self):
-###		wRes = self.OBJ_TwitterAdmin.SetAutoRemove()
-###		return wRes
-###
-###
+	def SetAutoRemove(self):
+		wRes = self.OBJ_TwitterAdmin.SetAutoRemove()
+		return wRes
+
+
 
 #####################################################
 # 禁止ユーザ

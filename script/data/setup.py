@@ -514,6 +514,9 @@ class CLS_Setup():
 		wQy = wQy + "trendtag    TEXT  NOT NULL,"		# トレンド送信タグ
 		wQy = wQy + "list_id     TEXT  NOT NULL,"		# リスト通知 リストID(数値)
 		wQy = wQy + "list_name   TEXT  NOT NULL,"		# リスト通知 リスト名
+		wQy = wQy + "autoremove  BOOL  DEFAULT false,"	# 自動リムーブ true=ON
+		wQy = wQy + "rlist_id    TEXT  NOT NULL,"		# リムーブリスト リストID(数値)
+		wQy = wQy + "rlist_name  TEXT  NOT NULL,"		# リムーブリスト リスト名
 		wQy = wQy + " PRIMARY KEY ( twitterid ) ) ;"
 		
 		inOBJ_DB.RunQuery( wQy )
