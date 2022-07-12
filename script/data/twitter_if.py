@@ -2278,7 +2278,8 @@ class CLS_Twitter_IF() :
 		wRes['Responce'] = False	#実行
 		#############################
 		# 自動リムーブが有効か
-		if gVal.STR_UserInfo['ArListName']=="" :
+###		if gVal.STR_UserInfo['ArListName']=="" :
+		if gVal.STR_UserInfo['AutoRemove']==False :
 			###リスト通知 =無効
 			wRes['Reason'] = "auto remove is invalid"
 			gVal.OBJ_L.Log( "B", wRes )
@@ -2344,13 +2345,16 @@ class CLS_Twitter_IF() :
 		#############################
 		# 自動リムーブリストにID追加
 		if inFLG_Only==False :
-			wSubRes = self.OBJ_Twitter.AddUserList( gVal.STR_UserInfo['ArListName'], wID )
+###			wSubRes = self.OBJ_Twitter.AddUserList( gVal.STR_UserInfo['ArListName'], wID )
+			wSubRes = self.OBJ_Twitter.AddUserList( gVal.STR_UserInfo['rListName'], wID )
 			if wSubRes['Result']!=True :
-				wRes['Reason'] = "Twitter API Error(AddUserList): " + wSubRes['Reason'] + " : list=" + gVal.STR_UserInfo['ArListName'] + " user=" + inUser['screen_name']
+###				wRes['Reason'] = "Twitter API Error(AddUserList): " + wSubRes['Reason'] + " : list=" + gVal.STR_UserInfo['ArListName'] + " user=" + inUser['screen_name']
+				wRes['Reason'] = "Twitter API Error(AddUserList): " + wSubRes['Reason'] + " : list=" + gVal.STR_UserInfo['rListName'] + " user=" + inUser['screen_name']
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			
-			gVal.OBJ_L.Log( "U", wRes, "〇リスト追加: list=" + gVal.STR_UserInfo['ArListName'] + " user=" + inUser['screen_name'] )
+###			gVal.OBJ_L.Log( "U", wRes, "〇リスト追加: list=" + gVal.STR_UserInfo['ArListName'] + " user=" + inUser['screen_name'] )
+			gVal.OBJ_L.Log( "U", wRes, "〇リスト追加: list=" + gVal.STR_UserInfo['rListName'] + " user=" + inUser['screen_name'] )
 			
 			wRes['Responce'] = True		#追加
 		

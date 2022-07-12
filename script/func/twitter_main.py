@@ -1391,7 +1391,8 @@ class CLS_TwitterMain():
 		
 		#############################
 		# 自動リムーブが無効ならここで終わる
-		if gVal.STR_UserInfo['ArListName']=="" :
+###		if gVal.STR_UserInfo['ArListName']=="" :
+		if gVal.STR_UserInfo['AutoRemove']==False :
 			wRes['Result'] = True
 			return wRes
 		
