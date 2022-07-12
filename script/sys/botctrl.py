@@ -17,6 +17,11 @@ from gval import gVal
 class CLS_BotCtrl():
 #####################################################
 
+	DEF_VAL_DAY  = 86400		# 時間経過: 1日  60x60x24
+	DEF_VAL_WEEK = 604800		# 時間経過: 7日  (60x60x24)x7
+
+
+
 #####################################################
 # Botテスト
 #####################################################
@@ -400,37 +405,45 @@ class CLS_BotCtrl():
 		wRes['Class'] = "CLS_BotCtrl"
 		wRes['Func']  = "sLock"
 		
-		#############################
-		# テーブルがある
-		wQuery = "select * from tbl_user_data where " + \
-					"twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
-					";"
-		
-		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
-		if wResDB['Result']!=True :
-			wRes['Reason'] = "Run Query is failed"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# ユーザ登録の確認
-		if len(wResDB['Responce']['Data'])==0 :
-			wRes['Reason'] = "Not Regist User"
-			return wRes
-		
-		#############################
-		# 辞書型に整形
-		wChgDict = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
-		
+###		#############################
+###		# テーブルがある
+###		wQuery = "select * from tbl_user_data where " + \
+###					"twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
+###					";"
+###		
+###		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+###		if wResDB['Result']!=True :
+###			wRes['Reason'] = "Run Query is failed"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		#############################
+###		# ユーザ登録の確認
+###		if len(wResDB['Responce']['Data'])==0 :
+###			wRes['Reason'] = "Not Regist User"
+###			return wRes
+###		
+###		#############################
+###		# 辞書型に整形
+###		wChgDict = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
+###		
 		#############################
 		# ロックの取得
-		wLocked  = wChgDict[0]['locked']
-		wLUpdate = wChgDict[0]['lupdate']
-		if wLocked==True :
+###		wLocked  = wChgDict[0]['locked']
+###		wLUpdate = wChgDict[0]['lupdate']
+		wLockRes = gVal.OBJ_DB_IF.GetLock( gVal.STR_UserInfo['Account'] )
+		if wLockRes['Result']!=True :
+			wRes['Reason'] = "GetLock is failed"
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+###		if wLocked==True :
+		if wRes['Responce']['locked']==True :
 			### 排他済み
 			
 			# ロック保持時間外かを求める (変換＆差)
-			wGetLag = CLS_OSIF.sTimeLag( str(wLUpdate), inThreshold=gVal.DEF_STR_TLNUM['forLockLimSec'] )
+###			wGetLag = CLS_OSIF.sTimeLag( str(wLUpdate), inThreshold=gVal.DEF_STR_TLNUM['forLockLimSec'] )
+			wGetLag = CLS_OSIF.sTimeLag( str(wRes['Responce']['lok_date']), inThreshold=gVal.DEF_STR_TLNUM['forLockLimSec'] )
 			if wGetLag['Result']!=True :
 				wRes['Reason'] = "sTimeLag failed"
 				return wRes
@@ -451,28 +464,64 @@ class CLS_BotCtrl():
 				return wRes
 		
 		#※排他がかかってない
+###		#############################
+###		# 排他する
+###		
 		#############################
-		# 排他する
-		
 		# 時間を取得
 		wTD = CLS_OSIF.sGetTime()
 		if wTD['Result']!=True :
 			###時間取得失敗  時計壊れた？
-			wRes['Reason'] = "PC時間の取得に失敗しました"
-			gVal.OBJ_L.Log( "B", wRes )
+###			wRes['Reason'] = "PC時間の取得に失敗しました"
+###			gVal.OBJ_L.Log( "B", wRes )
+			wRes['Reason'] = "PC time get is failer"
+			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
 		### wTD['TimeDate']
 		
-		wQuery = "update tbl_user_data set " + \
-				"locked = True, " + \
-				"lupdate = '" + str(wTD['TimeDate']) + "'" + \
-				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+###		wQuery = "update tbl_user_data set " + \
+###				"locked = True, " + \
+###				"lupdate = '" + str(wTD['TimeDate']) + "'" + \
+###				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+###		
+###		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+###		if wResDB['Result']!=True :
+###			wRes['Reason'] = "Run Query is failed"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
 		
-		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
-		if wResDB['Result']!=True :
-			wRes['Reason'] = "Run Query is failed"
-			gVal.OBJ_L.Log( "B", wRes )
+		gVal.STR_SystemInfo['Day']  = False
+		gVal.STR_SystemInfo['Week'] = False
+		#############################
+		# 1日経過か
+		wGetLag = CLS_OSIF.sTimeLag( str(wRes['Responce']['day_date']), inThreshold=cls.DEF_VAL_DAY )
+		if wGetLag['Result']!=True :
+			wRes['Reason'] = "sTimeLag failed"
 			return wRes
+		if wGetLag['Beyond']==True :
+			#反応時間外 =1日経過
+			gVal.STR_SystemInfo['Day'] = True
+		
+		#############################
+		# 1週間経過か
+		wGetLag = CLS_OSIF.sTimeLag( str(wRes['Responce']['week_date']), inThreshold=cls.DEF_VAL_WEEK )
+		if wGetLag['Result']!=True :
+			wRes['Reason'] = "sTimeLag failed"
+			return wRes
+		if wGetLag['Beyond']==True :
+			#反応時間外 =1日経過
+			gVal.STR_SystemInfo['Week'] = True
+		
+		#############################
+		# 排他する
+		wLockRes = gVal.OBJ_DB_IF.SetLock( gVal.STR_UserInfo['Account'], True, wTD['TimeDate'], gVal.STR_SystemInfo['Day'], gVal.STR_SystemInfo['Week'] )
+		if wLockRes['Result']!=True :
+			wRes['Reason'] = "GetLock is failed"
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#ログに記録する
+		gVal.OBJ_L.Log( "S", wRes, "排他開始" )
 		
 		wRes['Result']   = True
 		return wRes	#排他あり
@@ -491,34 +540,42 @@ class CLS_BotCtrl():
 		wRes['Class'] = "CLS_BotCtrl"
 		wRes['Func']  = "sExtLock"
 		
+###		#############################
+###		# テーブルがある
+###		wQuery = "select * from tbl_user_data where " + \
+###					"twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
+###					";"
+###		
+###		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+###		if wResDB['Result']!=True :
+###			wRes['Reason'] = "Run Query is failed"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		#############################
+###		# ユーザ登録の確認
+###		if len(wResDB['Responce']['Data'])==0 :
+###			wRes['Reason'] = "Not Regist User"
+###			gVal.OBJ_L.Log( "D", wRes )
+###			return wRes
+###		
+###		#############################
+###		# 辞書型に整形
+###		wChgDict = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
 		#############################
-		# テーブルがある
-		wQuery = "select * from tbl_user_data where " + \
-					"twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
-					";"
-		
-		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
-		if wResDB['Result']!=True :
-			wRes['Reason'] = "Run Query is failed"
-			gVal.OBJ_L.Log( "B", wRes )
+		# ロックの取得
+		wLockRes = gVal.OBJ_DB_IF.GetLock( gVal.STR_UserInfo['Account'] )
+		if wLockRes['Result']!=True :
+			wRes['Reason'] = "GetLock is failed"
+			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
-		
-		#############################
-		# ユーザ登録の確認
-		if len(wResDB['Responce']['Data'])==0 :
-			wRes['Reason'] = "Not Regist User"
-			gVal.OBJ_L.Log( "D", wRes )
-			return wRes
-		
-		#############################
-		# 辞書型に整形
-		wChgDict = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
 		
 		#############################
 		# ロックの取得
-		wLocked  = wChgDict[0]['locked']
-		wLUpdate = wChgDict[0]['lupdate']
-		if wLocked!=True :
+###		wLocked  = wChgDict[0]['locked']
+###		wLUpdate = wChgDict[0]['lupdate']
+###		if wLocked!=True :
+		if wRes['Responce']['locked']==True :
 			### 排他がかかってない
 			wRes['Reason'] = "Do not lock"
 			gVal.OBJ_L.Log( "D", wRes )
@@ -536,15 +593,25 @@ class CLS_BotCtrl():
 			return wRes
 		### wTD['TimeDate']
 		
-		wQuery = "update tbl_user_data set " + \
-				"lupdate = '" + str(wTD['TimeDate']) + "'" + \
-				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
-		
-		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
-		if wResDB['Result']!=True :
-			wRes['Reason'] = "Run Query is failed"
-			gVal.OBJ_L.Log( "B", wRes )
+###		wQuery = "update tbl_user_data set " + \
+###				"lupdate = '" + str(wTD['TimeDate']) + "'" + \
+###				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+###		
+###		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+###		if wResDB['Result']!=True :
+###			wRes['Reason'] = "Run Query is failed"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+		#############################
+		# 排他する
+		wLockRes = gVal.OBJ_DB_IF.SetLock( gVal.STR_UserInfo['Account'], True, wTD['TimeDate'] )
+		if wLockRes['Result']!=True :
+			wRes['Reason'] = "GetLock is failed"
+			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
+		
+		#ログに記録する
+		gVal.OBJ_L.Log( "S", wRes, "排他延長" )
 		
 		wRes['Result']   = True
 		return wRes
@@ -563,40 +630,50 @@ class CLS_BotCtrl():
 		wRes['Class'] = "CLS_BotCtrl"
 		wRes['Func']  = "sGetLock"
 		
-		wRes['Responce'] = {}
-		wRes['Responce'].update({
+###		wRes['Responce'] = {}
+###		wRes['Responce'].update({
+###			"Locked"    : False,
+###			"Beyond"    : False
+###		})
+		wRes['Responce'] = {
 			"Locked"    : False,
 			"Beyond"    : False
-		})
+		}
 		
-		#############################
-		# テーブルがある
-		wQuery = "select * from tbl_user_data where " + \
-					"twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
-					";"
-		
-		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
-		if wResDB['Result']!=True :
-			wRes['Reason'] = "Run Query is failed"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# ユーザ登録の確認
-		if len(wResDB['Responce']['Data'])==0 :
-			wRes['Reason'] = "Not Regist User"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# 辞書型に整形
-		wChgDict = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
-		
+###		#############################
+###		# テーブルがある
+###		wQuery = "select * from tbl_user_data where " + \
+###					"twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
+###					";"
+###		
+###		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+###		if wResDB['Result']!=True :
+###			wRes['Reason'] = "Run Query is failed"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		#############################
+###		# ユーザ登録の確認
+###		if len(wResDB['Responce']['Data'])==0 :
+###			wRes['Reason'] = "Not Regist User"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		#############################
+###		# 辞書型に整形
+###		wChgDict = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
+
+
+
+
+
 		#############################
 		# ロックの取得
-		wLocked  = wChgDict[0]['locked']
-		wLUpdate = wChgDict[0]['lupdate']
-		if wLocked==True :
+###		wLocked  = wChgDict[0]['locked']
+###		wLUpdate = wChgDict[0]['lupdate']
+###		if wLocked==True :
+
+
 			### 排他がかかってる
 			
 			# ロック保持時間外かを求める (変換＆差)
@@ -644,15 +721,20 @@ class CLS_BotCtrl():
 		
 		#############################
 		# 排他解除する
-		wQuery = "update tbl_user_data set " + \
-				"locked = False " + \
-				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
-		
-		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
-		if wResDB['Result']!=True :
-			wRes['Reason'] = "Run Query is failed"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
+###		wQuery = "update tbl_user_data set " + \
+###				"locked = False " + \
+###				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+###		
+###		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+###		if wResDB['Result']!=True :
+###			wRes['Reason'] = "Run Query is failed"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+
+
+
+
+
 		
 		wRes['Result']   = True
 		return wRes	#排他なし

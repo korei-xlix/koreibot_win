@@ -30,6 +30,9 @@ class gVal() :
 		"PythonVer"		: 0,
 		"HostName"		: "",
 		
+		"Week"			: False,
+		"Day"			: False,
+		
 		"TimeDate"		: None,
 		"RateTimeDate"	: None,
 			# 前回実行日時
@@ -68,6 +71,7 @@ class gVal() :
 		"upddate"			: None	# 記録日時(更新)
 		
 		"run"				: {0:0,1:"bot実行回数"},
+		"run_time"			: {0:0,1:"実行時間"},
 		"run_api"			: {0:0,1:"api実行回数"},
 		"run_ope"			: {0:0,1:"自動監視実施回数"},
 		

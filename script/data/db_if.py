@@ -424,17 +424,16 @@ class CLS_DB_IF() :
 		# 登録してなければデータベースに登録する
 		if len(wResDB['Responce']['Data'])==0 :
 			wQy = "insert into tbl_user_data values ("
-			wQy = wQy + "'" + inUserData['Account'] + "',"
-			wQy = wQy + "'" + str( wTD['TimeDate'] ) + "',"
-			wQy = wQy + "False,"
-			wQy = wQy + "'" + str( self.DEF_TIMEDATE ) + "',"
-			wQy = wQy + "'" + str( self.DEF_TIMEDATE ) + "',"
-			wQy = wQy + "'" + str( self.DEF_TIMEDATE ) + "',"
-			wQy = wQy + "'" + str( self.DEF_TIMEDATE ) + "',"
-			wQy = wQy + "'" + str( self.DEF_TIMEDATE ) + "',"
-			wQy = wQy + "'', "
-			wQy = wQy + "'', "
-			wQy = wQy + "'' "
+			wQy = wQy + "'" + inUserData['Account'] + "',"		# 記録したユーザ(Twitter ID)
+			wQy = wQy + "'" + str( wTD['TimeDate'] ) + "',"		# 登録日時
+			wQy = wQy + "False,"								# 排他ロック true=ロックON
+			wQy = wQy + "'" + str( self.DEF_TIMEDATE ) + "',"	# 排他日時
+			wQy = wQy + "'" + str( self.DEF_TIMEDATE ) + "',"	# 排他解除日時
+			wQy = wQy + "'" + str( self.DEF_TIMEDATE ) + "',"	# 週間 開始日時
+			wQy = wQy + "'" + str( self.DEF_TIMEDATE ) + "',"	# 1日  開始日時
+			wQy = wQy + "'', "									# トレンド送信タグ
+			wQy = wQy + "'', "									# リスト通知 リストID(数値)
+			wQy = wQy + "'' "									# リスト通知 リスト名
 			wQy = wQy + ") ;"
 			
 			wResDB = self.OBJ_DB.RunQuery( wQy )
@@ -551,7 +550,7 @@ class CLS_DB_IF() :
 		#############################
 		# データベースから除外文字を取得
 		wQy = "select * from tbl_twitter_data "
-			wQy = wQy + "where twitterid = '" + str(inAccount) + "' ;"
+		wQy = wQy + "where twitterid = '" + str(inAccount) + "' ;"
 		
 		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
@@ -582,6 +581,153 @@ class CLS_DB_IF() :
 		wRes['Responce']['bearer']    = wARR_DBData[0]['bearer']
 		
 		wRes['Responce']['Account'] = str(inAccount)
+		#############################
+		# =正常
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# 排他ロック取得
+#####################################################
+	def GetLock( self, inAccount ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "GetLock"
+		
+		wRes['Responce'] = {
+			"Account"	: None,
+			"locked"	: None,
+			"lok_date"	: None,
+			"rel_date"	: None,
+			"week_date"	: None,
+			"day_date"	: None
+		}
+		
+		#############################
+		# データ取得
+		wQy = "select locked, lok_date, rel_date, week_date, day_date from tbl_user_data "
+		wQy = wQy + "where twitterid = '" + str(inAccount) + "' ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQy )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
+		# 辞書型に整形
+		wARR_DBData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
+		
+		#############################
+		# 取得チェック
+		if len( wARR_DBData )!= 1 :
+			##失敗
+			wRes['Reason'] = "Get twitter data is not one: account=" + str(inAccount) + " num=" + str( len( wARR_DBData ) )
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
+		# Twitterデータ取得
+		wRes['Responce']['locked']    = wARR_DBData[0]['locked']
+		wRes['Responce']['lok_date']  = wARR_DBData[0]['lok_date']
+		wRes['Responce']['rel_date']  = wARR_DBData[0]['rel_date']
+		wRes['Responce']['week_date'] = wARR_DBData[0]['week_date']
+		wRes['Responce']['day_date']  = wARR_DBData[0]['day_date']
+		
+		wRes['Responce']['Account'] = str(inAccount)
+		#############################
+		# =正常
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# 排他ロック設定
+#####################################################
+	def SetLock( self, inAccount, inLock, inDate, inFLG_Week=False, inFLG_Day=False ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "SetLock"
+		
+		#############################
+		# データ取得
+		wQy = "select locked, lok_date, rel_date, week_date, day_date from tbl_user_data "
+		wQy = wQy + "where twitterid = '" + str(inAccount) + "' ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQy )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
+		# 辞書型に整形
+		wARR_DBData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
+		
+		#############################
+		# 取得チェック
+		if len( wARR_DBData )!= 1 :
+			##失敗
+			wRes['Reason'] = "Get twitter data is not one: account=" + str(inAccount) + " num=" + str( len( wARR_DBData ) )
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
+		# 変更する
+		wQy = "update tbl_exc_user set " + \
+
+
+
+
+
+		wQy = wQy + "report = " + str( wSTR_Value['report'] ) + ", " + \
+		wQy = wQy + "vip = " + str( wSTR_Value['vip'] ) + ", " + \
+		wQy = wQy + "rel_date = '" + str( wSTR_Value['rel_date'] ) + "', " + \
+
+
+		wQy = wQy + "memo = '" + str( wSTR_Value['memo'] ) + "' " + \
+		wQy = wQy + "where twitterid = '" + str(inAccount) + "' ;"
+		wQy = wQy + ";"
+		
+
+#		wQy = wQy + "locked      BOOL  DEFAULT false,"	# 排他ロック true=ロックON
+#		wQy = wQy + "lok_date    TIMESTAMP,"			# 排他日時
+#		wQy = wQy + "rel_date    TIMESTAMP,"			# 排他解除日時
+#		wQy = wQy + "week_date   TIMESTAMP,"			# 週間 開始日時
+#		wQy = wQy + "day_date    TIMESTAMP,"			# 1日  開始日時
+
+
+		#############################
+		# クエリの実行
+		wResDB = self.OBJ_DB.RunQuery( wQy )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+
+
+
+		#############################
+		# ログに記録する
+		wStr = "update exe user data: update=1"
+		gVal.OBJ_L.Log( "SC", wRes, wStr )
+		
 		#############################
 		# =正常
 		wRes['Result'] = True

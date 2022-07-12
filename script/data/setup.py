@@ -508,8 +508,7 @@ class CLS_Setup():
 		wQy = wQy + "regdate     TIMESTAMP,"			# 登録日時
 		wQy = wQy + "locked      BOOL  DEFAULT false,"	# 排他ロック true=ロックON
 		wQy = wQy + "lok_date    TIMESTAMP,"			# 排他日時
-		wQy = wQy + "fst_date    TIMESTAMP,"			# 処理開始日時(最終実行)
-		wQy = wQy + "end_date    TIMESTAMP,"			# 処理終了日時(最終実行)
+		wQy = wQy + "rel_date    TIMESTAMP,"			# 排他解除日時
 		wQy = wQy + "week_date   TIMESTAMP,"			# 週間 開始日時
 		wQy = wQy + "day_date    TIMESTAMP,"			# 1日  開始日時
 		wQy = wQy + "trendtag    TEXT,"					# トレンド送信タグ
@@ -764,6 +763,7 @@ class CLS_Setup():
 		wQy = wQy + "day         TEXT  NOT NULL,"		# 記録日
 ###		wQy = wQy + "reported    BOOL  DEFAULT false,"	# 報告済か True=報告済
 		wQy = wQy + "run         INTEGER DEFAULT 0,"	# bot実行回数
+		wQy = wQy + "run_time    NUMERIC DEFAULT 0,"	# 実行時間
 		
 		wQy = wQy + "run_api     INTEGER DEFAULT 0,"	# api実行回数
 		wQy = wQy + "run_ope     INTEGER DEFAULT 0,"	# 自動監視実施回数
