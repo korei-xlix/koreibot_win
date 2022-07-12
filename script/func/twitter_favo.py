@@ -1424,7 +1424,7 @@ class CLS_TwitterFavo():
 				### 除外
 				continue
 			
-			if str(wDBRes['Responce']['lfavo_date'])==gVal.OBJ_DB_IF.DEF_TIMEDATE or \
+			if str(wDBRes['Responce']['lfavo_date'])==gVal.DEF_TIMEDATE or \
 			   wDBRes['Responce']['lfavo_date']==None :
 				### リストいいねしてないなら除外
 				continue
@@ -1496,9 +1496,9 @@ class CLS_TwitterFavo():
 			wARR_DBData = {
 				"favo_cnt"		: 0,
 				"now_favo_cnt"	: 0,
-				"favo_date"		: gVal.OBJ_DB_IF.DEF_TIMEDATE,
-				"lfavo_date"	: gVal.OBJ_DB_IF.DEF_TIMEDATE,
-				"update_date"	: gVal.OBJ_DB_IF.DEF_TIMEDATE,
+				"favo_date"		: gVal.DEF_TIMEDATE,
+				"lfavo_date"	: gVal.DEF_TIMEDATE,
+				"update_date"	: gVal.DEF_TIMEDATE,
 				"my_tweet"		: False
 			}
 			
@@ -1593,7 +1593,7 @@ class CLS_TwitterFavo():
 			wStr = wStr + wListData + ": "
 			
 			### いいね受信日
-			if str(wARR_DBData['favo_date'])==gVal.OBJ_DB_IF.DEF_TIMEDATE or \
+			if str(wARR_DBData['favo_date'])==gVal.DEF_TIMEDATE or \
 			   str(wARR_DBData['favo_date'])==None :
 				wListData = "----/--/--"
 			else:
@@ -1602,7 +1602,7 @@ class CLS_TwitterFavo():
 			wStr = wStr + wListData + "   "
 			
 			### いいね送信日
-			if str(wARR_DBData['lfavo_date'])==gVal.OBJ_DB_IF.DEF_TIMEDATE or \
+			if str(wARR_DBData['lfavo_date'])==gVal.DEF_TIMEDATE or \
 			   str(wARR_DBData['lfavo_date'])==None :
 				wListData = "----/--/--"
 			else:
@@ -1611,7 +1611,7 @@ class CLS_TwitterFavo():
 			wStr = wStr + wListData + "   "
 			
 			### 最終活動日
-			if str(wARR_DBData['update_date'])==gVal.OBJ_DB_IF.DEF_TIMEDATE :
+			if str(wARR_DBData['update_date'])==gVal.DEF_TIMEDATE :
 				wListData = "----/--/--"
 			else:
 				if wARR_DBData['my_tweet']==True :

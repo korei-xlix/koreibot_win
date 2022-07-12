@@ -182,7 +182,7 @@ class CLS_MyDisp():
 ###			if inData['flg_db_set']==False or \
 ###			   inData['favo_date']==None :
 			if inData['flg_db_set']==False or \
-			   ( inData['favo_date']==None or inData['favo_date']==gVal.OBJ_DB_IF.DEF_TIMEDATE ) or \
+			   ( inData['favo_date']==None or inData['favo_date']==gVal.DEF_TIMEDATE ) or \
 			   inData['favo_cnt']==0 :
 				wStr = "－－－"
 			else:
@@ -194,7 +194,7 @@ class CLS_MyDisp():
 ###			if inData['flg_db_set']==False or \
 ###			   inData['list_date']==None :
 			if inData['flg_db_set']==False or \
-			   ( inData['list_date']==None or inData['list_date']==gVal.OBJ_DB_IF.DEF_TIMEDATE ) :
+			   ( inData['list_date']==None or inData['list_date']==gVal.DEF_TIMEDATE ) :
 				wStr = "－－－"
 			else:
 				wStr = str( inData['list_date'] )
@@ -205,7 +205,7 @@ class CLS_MyDisp():
 ###			if inData['flg_db_set']==False or \
 ###			   inData['lfavo_date']==None :
 			if inData['flg_db_set']==False or \
-			   ( inData['lfavo_date']==None or inData['lfavo_date']==gVal.OBJ_DB_IF.DEF_TIMEDATE ) :
+			   ( inData['lfavo_date']==None or inData['lfavo_date']==gVal.DEF_TIMEDATE ) :
 				wStr = "－－－"
 			else:
 				wStr = str( inData['lfavo_date'] )

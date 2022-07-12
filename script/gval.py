@@ -268,6 +268,9 @@ class gVal() :
 
 	DEF_VAL_DAY  = 86400									# 時間経過: 1日  60x60x24
 	DEF_VAL_WEEK = 604800									# 時間経過: 7日  (60x60x24)x7
+	
+	DEF_TIMEDATE = "1901-01-01 00:00:00"
+	DEF_NOTEXT   = "(none)"
 
 #############################
 # 変数

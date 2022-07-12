@@ -772,7 +772,8 @@ class CLS_TwitterAdmin():
 			wInputName = CLS_OSIF.sInp( "Tag Name ？=> " )
 			
 			if wInputName=="" :
-				CLS_OSIF.sPrn( "リスト名が未入力です" + '\n' )
+###				CLS_OSIF.sPrn( "リスト名が未入力です" + '\n' )
+				CLS_OSIF.sPrn( "タグ名かコマンドが未入力です" + '\n' )
 				continue
 			
 			elif wInputName=="\\q" :
@@ -783,38 +784,50 @@ class CLS_TwitterAdmin():
 			###ここまでで入力は完了した
 			break
 		
+###		#############################
+###		# 設定値が設定された場合
+###		if wInputName!="\\n" :
+###			#############################
+###			# DBに登録する
+###			gVal.STR_UserInfo['TrendTag'] = str(wInputName)
+###			
+###			wSubRes = gVal.OBJ_DB_IF.SetListName()
+###			if wSubRes['Result']!=True :
+###				wRes['Reason'] = "SetListName is failed"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			
+###			wStr = "〇設定が完了しました" + '\n'
+###			CLS_OSIF.sPrn( wStr )
+###		
+###		else:
+###		#############################
+###		# 設定解除
+###		
+###			#############################
+###			# DBに登録する
+###			gVal.STR_UserInfo['TrendTag'] = ""
+###			
+###			wSubRes = gVal.OBJ_DB_IF.SetListName()
+###			if wSubRes['Result']!=True :
+###				wRes['Reason'] = "SetListName is failed"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			
+###			wStr = "●設定を解除しました" + '\n'
+###			CLS_OSIF.sPrn( wStr )
 		#############################
-		# 設定値が設定された場合
+		# 設定解除の場合
 		if wInputName!="\\n" :
-			#############################
-			# DBに登録する
-			gVal.STR_UserInfo['TrendTag'] = str(wInputName)
-			
-			wSubRes = gVal.OBJ_DB_IF.SetListName()
-			if wSubRes['Result']!=True :
-				wRes['Reason'] = "SetListName is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			
-			wStr = "〇設定が完了しました" + '\n'
-			CLS_OSIF.sPrn( wStr )
+			wInputName = gVal.DEF_NOTEXT
 		
-		else:
 		#############################
-		# 設定解除
-		
-			#############################
-			# DBに登録する
-			gVal.STR_UserInfo['TrendTag'] = ""
-			
-			wSubRes = gVal.OBJ_DB_IF.SetListName()
-			if wSubRes['Result']!=True :
-				wRes['Reason'] = "SetListName is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			
-			wStr = "●設定を解除しました" + '\n'
-			CLS_OSIF.sPrn( wStr )
+		# DBに設定
+		wSubRes = gVal.OBJ_DB_IF.SetListName( inTrendName=wInputName )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "SetListName is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
 		
 		#############################
 		# 完了
@@ -848,7 +861,8 @@ class CLS_TwitterAdmin():
 			wInputName = CLS_OSIF.sInp( "List Name ？=> " )
 			
 			if wInputName=="" :
-				CLS_OSIF.sPrn( "リスト名が未入力です" + '\n' )
+###				CLS_OSIF.sPrn( "リスト名が未入力です" + '\n' )
+				CLS_OSIF.sPrn( "リスト名か解除コマンドが未入力です" + '\n' )
 				continue
 			
 			elif wInputName=="\\q" :
@@ -859,50 +873,62 @@ class CLS_TwitterAdmin():
 			###ここまでで入力は完了した
 			break
 		
+		wListID = None
 		#############################
 		# 設定値が設定された場合
 		if wInputName!="\\n" :
-			#############################
-			# リストがTwitterにあるか確認
-			wSubRes = gVal.OBJ_Tw_IF.CheckList( inListName=wInputName )
-			if wSubRes['Result']!=True :
-				wRes['Reason'] = "CheckList is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			if wSubRes['Responce']!=True :
-				wRes['Reason'] = "List name is not found: name=" + str(wInputName)
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			
-			#############################
-			# DBに登録する
-			gVal.STR_UserInfo['ListName'] = str(wInputName)
-			
-			wSubRes = gVal.OBJ_DB_IF.SetListName()
-			if wSubRes['Result']!=True :
-				wRes['Reason'] = "SetListName is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			
-			wStr = "〇設定が完了しました" + '\n'
-			CLS_OSIF.sPrn( wStr )
+###			#############################
+###			# リストがTwitterにあるか確認
+###			wSubRes = gVal.OBJ_Tw_IF.CheckList( inListName=wInputName )
+###			if wSubRes['Result']!=True :
+###				wRes['Reason'] = "CheckList is failed"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			if wSubRes['Responce']!=True :
+###				wRes['Reason'] = "List name is not found: name=" + str(wInputName)
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			
+###			#############################
+###			# DBに登録する
+###			gVal.STR_UserInfo['ListName'] = str(wInputName)
+###			
+###			wSubRes = gVal.OBJ_DB_IF.SetListName()
+###			if wSubRes['Result']!=True :
+###				wRes['Reason'] = "SetListName is failed"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			
+###			wStr = "〇設定が完了しました" + '\n'
+###			CLS_OSIF.sPrn( wStr )
+
+
 		
 		else:
 		#############################
 		# 設定解除
+###		
+###			#############################
+###			# DBに登録する
+###			gVal.STR_UserInfo['ListName'] = ""
+###			
+###			wSubRes = gVal.OBJ_DB_IF.SetListName()
+###			if wSubRes['Result']!=True :
+###				wRes['Reason'] = "SetListName is failed"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			
+###			wStr = "●設定を解除しました" + '\n'
+###			CLS_OSIF.sPrn( wStr )
+			wInputName = gVal.DEF_NOTEXT
 		
-			#############################
-			# DBに登録する
-			gVal.STR_UserInfo['ListName'] = ""
-			
-			wSubRes = gVal.OBJ_DB_IF.SetListName()
-			if wSubRes['Result']!=True :
-				wRes['Reason'] = "SetListName is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			
-			wStr = "●設定を解除しました" + '\n'
-			CLS_OSIF.sPrn( wStr )
+		#############################
+		# DBに登録する
+		wSubRes = gVal.OBJ_DB_IF.SetListName( inListName=wInputName, inListID=wListID )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "SetListName is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
 		
 		#############################
 		# 完了
@@ -914,90 +940,90 @@ class CLS_TwitterAdmin():
 #####################################################
 # 自動リムーブ設定
 #####################################################
-	def SetAutoRemove(self):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_TwitterMain"
-		wRes['Func']  = "SetAutoRemove"
-		
-		#############################
-		# 入力画面表示
-		wStr = "自動リムーブの設定をおこないます。" + '\n'
-		wStr = wStr + "自動リムーブ時に追加するリスト名を入力してください。"
-		wStr = wStr + "  \\q=キャンセル  /  \\n=設定解除  /  other=設定値"
-		wStr = wStr + "---------------------------------------" + '\n'
-		CLS_OSIF.sPrn( wStr )
-		
-		#############################
-		# 入力
-		while True :
-			wInputName = CLS_OSIF.sInp( "List Name ？=> " )
-			
-			if wInputName=="" :
-				CLS_OSIF.sPrn( "リスト名が未入力です" + '\n' )
-				continue
-			
-			elif wInputName=="\\q" :
-				# 完了
-				wRes['Result'] = True
-				return wRes
-			
-			###ここまでで入力は完了した
-			break
-		
-		#############################
-		# 設定値が設定された場合
-		if wInputName!="\\n" :
-			#############################
-			# リストがTwitterにあるか確認
-			wSubRes = gVal.OBJ_Tw_IF.CheckList( inListName=wInputName )
-			if wSubRes['Result']!=True :
-				wRes['Reason'] = "CheckList is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			if wSubRes['Responce']!=True :
-				wRes['Reason'] = "List name is not found: name=" + str(wInputName)
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			
-			#############################
-			# DBに登録する
-			gVal.STR_UserInfo['ArListName'] = str(wInputName)
-			
-			wSubRes = gVal.OBJ_DB_IF.SetListName()
-			if wSubRes['Result']!=True :
-				wRes['Reason'] = "SetListName is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			
-			wStr = "〇設定が完了しました" + '\n'
-			CLS_OSIF.sPrn( wStr )
-		
-		else:
-		#############################
-		# 設定解除
-		
-			#############################
-			# DBに登録する
-			gVal.STR_UserInfo['ArListName'] = ""
-			
-			wSubRes = gVal.OBJ_DB_IF.SetListName()
-			if wSubRes['Result']!=True :
-				wRes['Reason'] = "SetListName is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			
-			wStr = "●設定を解除しました" + '\n'
-			CLS_OSIF.sPrn( wStr )
-		
-		#############################
-		# 完了
-		wRes['Result'] = True
-		return wRes
-
-
+###	def SetAutoRemove(self):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_TwitterMain"
+###		wRes['Func']  = "SetAutoRemove"
+###		
+###		#############################
+###		# 入力画面表示
+###		wStr = "自動リムーブの設定をおこないます。" + '\n'
+###		wStr = wStr + "自動リムーブ時に追加するリスト名を入力してください。"
+###		wStr = wStr + "  \\q=キャンセル  /  \\n=設定解除  /  other=設定値"
+###		wStr = wStr + "---------------------------------------" + '\n'
+###		CLS_OSIF.sPrn( wStr )
+###		
+###		#############################
+###		# 入力
+###		while True :
+###			wInputName = CLS_OSIF.sInp( "List Name ？=> " )
+###			
+###			if wInputName=="" :
+###				CLS_OSIF.sPrn( "リスト名が未入力です" + '\n' )
+###				continue
+###			
+###			elif wInputName=="\\q" :
+###				# 完了
+###				wRes['Result'] = True
+###				return wRes
+###			
+###			###ここまでで入力は完了した
+###			break
+###		
+###		#############################
+###		# 設定値が設定された場合
+###		if wInputName!="\\n" :
+###			#############################
+###			# リストがTwitterにあるか確認
+###			wSubRes = gVal.OBJ_Tw_IF.CheckList( inListName=wInputName )
+###			if wSubRes['Result']!=True :
+###				wRes['Reason'] = "CheckList is failed"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			if wSubRes['Responce']!=True :
+###				wRes['Reason'] = "List name is not found: name=" + str(wInputName)
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			
+###			#############################
+###			# DBに登録する
+###			gVal.STR_UserInfo['ArListName'] = str(wInputName)
+###			
+###			wSubRes = gVal.OBJ_DB_IF.SetListName()
+###			if wSubRes['Result']!=True :
+###				wRes['Reason'] = "SetListName is failed"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			
+###			wStr = "〇設定が完了しました" + '\n'
+###			CLS_OSIF.sPrn( wStr )
+###		
+###		else:
+###		#############################
+###		# 設定解除
+###		
+###			#############################
+###			# DBに登録する
+###			gVal.STR_UserInfo['ArListName'] = ""
+###			
+###			wSubRes = gVal.OBJ_DB_IF.SetListName()
+###			if wSubRes['Result']!=True :
+###				wRes['Reason'] = "SetListName is failed"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			
+###			wStr = "●設定を解除しました" + '\n'
+###			CLS_OSIF.sPrn( wStr )
+###		
+###		#############################
+###		# 完了
+###		wRes['Result'] = True
+###		return wRes
+###
+###
 
 #####################################################
 # ユーザ自動削除

@@ -472,7 +472,7 @@ class CLS_TwitterFollower():
 				#   =いいね日時
 				# いいねなしの場合、
 				#   =登録日時
-				if str(wARR_DBData['favo_date'])!=gVal.OBJ_DB_IF.DEF_TIMEDATE :
+				if str(wARR_DBData['favo_date'])!=gVal.DEF_TIMEDATE :
 					### いいねあり= いいね日時
 					wCompTimeDate = str(wARR_DBData['favo_date'])
 				else:

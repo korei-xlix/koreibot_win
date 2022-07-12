@@ -367,7 +367,7 @@ class CLS_TwitterMain():
 			# フォロー者検出
 			if wARR_DBData['myfollow']!=wFollowerData[wID]['myfollow'] :
 				if wFollowerData[wID]['myfollow']==True :
-					if str(wARR_DBData['myfollow_date'])==gVal.OBJ_DB_IF.DEF_TIMEDATE :
+					if str(wARR_DBData['myfollow_date'])==gVal.DEF_TIMEDATE :
 						wStr = "〇新規フォロー者"
 						wFavoUpdate = True
 					else:
@@ -383,7 +383,7 @@ class CLS_TwitterMain():
 			# フォロワー検出
 			if wARR_DBData['follower']!=wFollowerData[wID]['follower'] :
 				if wFollowerData[wID]['follower']==True :
-					if str(wARR_DBData['follower_date'])==gVal.OBJ_DB_IF.DEF_TIMEDATE :
+					if str(wARR_DBData['follower_date'])==gVal.DEF_TIMEDATE :
 						wStr = "〇新規フォロワー"
 					else:
 						wStr = "△再フォローされた"
@@ -669,11 +669,11 @@ class CLS_TwitterMain():
 #####################################################
 # 自動リムーブ設定
 #####################################################
-	def SetAutoRemove(self):
-		wRes = self.OBJ_TwitterAdmin.SetAutoRemove()
-		return wRes
-
-
+###	def SetAutoRemove(self):
+###		wRes = self.OBJ_TwitterAdmin.SetAutoRemove()
+###		return wRes
+###
+###
 
 #####################################################
 # 禁止ユーザ

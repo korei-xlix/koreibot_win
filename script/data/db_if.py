@@ -19,10 +19,10 @@ class CLS_DB_IF() :
 	
 	ARR_FollowerDataID = []		#  フォロワー情報ID
 
-	DEF_TIMEDATE = "1901-01-01 00:00:00"
-	DEF_NOTEXT   = "(none)"
-
-
+###	DEF_TIMEDATE = "1901-01-01 00:00:00"
+###	DEF_NOTEXT   = "(none)"
+###
+###
 
 #####################################################
 # Init
@@ -404,7 +404,7 @@ class CLS_DB_IF() :
 			wRes['Reason'] = "PC time get is failer" + '\n'
 ###			CLS_OSIF.sPrn( wStr )
 			gVal.OBJ_L.Log( "C", wRes )
-			wTD['TimeDate'] = self.DEF_TIMEDATE
+			wTD['TimeDate'] = gVal.DEF_TIMEDATE
 		
 		#############################
 		# テーブルチェック
@@ -428,13 +428,13 @@ class CLS_DB_IF() :
 			wQy = wQy + "'" + inUserData['Account'] + "',"		# 記録したユーザ(Twitter ID)
 			wQy = wQy + "'" + str( wTD['TimeDate'] ) + "',"		# 登録日時
 			wQy = wQy + "False,"								# 排他ロック true=ロックON
-			wQy = wQy + "'" + str( self.DEF_TIMEDATE ) + "',"	# 排他日時
-			wQy = wQy + "'" + str( self.DEF_TIMEDATE ) + "',"	# 排他解除日時
-			wQy = wQy + "'" + str( self.DEF_TIMEDATE ) + "',"	# 週間 開始日時
-			wQy = wQy + "'" + str( self.DEF_TIMEDATE ) + "',"	# 1日  開始日時
-			wQy = wQy + "'" + self.DEF_NOTEXT + "', "			# トレンド送信タグ
-			wQy = wQy + "'" + self.DEF_NOTEXT + "', "			# リスト通知 リストID(数値)
-			wQy = wQy + "'" + self.DEF_NOTEXT + "' "			# リスト通知 リスト名
+			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# 排他日時
+			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# 排他解除日時
+			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# 週間 開始日時
+			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# 1日  開始日時
+			wQy = wQy + "'" + gVal.DEF_NOTEXT + "', "			# トレンド送信タグ
+			wQy = wQy + "'" + gVal.DEF_NOTEXT + "', "			# リスト通知 リストID(数値)
+			wQy = wQy + "'" + gVal.DEF_NOTEXT + "' "			# リスト通知 リスト名
 			wQy = wQy + ") ;"
 			
 			wResDB = self.OBJ_DB.RunQuery( wQy )
@@ -804,7 +804,7 @@ class CLS_DB_IF() :
 ###			CLS_OSIF.sPrn( wStr )
 			wRes['Reason'] = "PC time get is failer"
 			gVal.OBJ_L.Log( "C", wRes )
-			wTD['TimeDate'] = self.DEF_TIMEDATE
+			wTD['TimeDate'] = gVal.DEF_TIMEDATE
 		
 		#############################
 		# データベースから除外文字を取得
@@ -1047,7 +1047,7 @@ class CLS_DB_IF() :
 ###			CLS_OSIF.sPrn( wStr )
 			wRes['Reason'] = "PC time get is failer"
 			gVal.OBJ_L.Log( "C", wRes )
-			wTD['TimeDate'] = self.DEF_TIMEDATE
+			wTD['TimeDate'] = gVal.DEF_TIMEDATE
 		
 		#############################
 		# データベースから禁止ユーザを取得
@@ -1271,7 +1271,7 @@ class CLS_DB_IF() :
 ###			CLS_OSIF.sPrn( wStr )
 			wRes['Reason'] = "PC time get is failer"
 			gVal.OBJ_L.Log( "C", wRes )
-			wTD['TimeDate'] = self.DEF_TIMEDATE
+			wTD['TimeDate'] = gVal.DEF_TIMEDATE
 		
 		#############################
 		# ダブりチェック
@@ -2032,14 +2032,23 @@ class CLS_DB_IF() :
 		
 		#############################
 		# ログに記録する
-		wStr = "データ更新: list name: screen_name=" + str(gVal.STR_UserInfo['Account']) + " "
+###		wStr = "データ更新: list name: screen_name=" + str(gVal.STR_UserInfo['Account']) + " "
 		if inTrendName!=None :
-			wStr = wStr + "trend_name=" + str(inTrendName)
+			if inTrendName!=gVal.DEF_NOTEXT :
+				wStr = "トレンドタグ設定: name=" + str(inTrendName) + " screen_name=" + str(gVal.STR_UserInfo['Account']) + " "
+			else:
+				wStr = "トレンドタグ解除: screen_name=" + str(gVal.STR_UserInfo['Account']) + " "
+			gVal.OBJ_L.Log( "SC", wRes, wStr )
+		
 		if inTrendName!=None and inListName!=None :
 			wStr = wStr + " "
 		if inListName!=None :
-			wStr = wStr + "list_name=" + str(inListName)
-		gVal.OBJ_L.Log( "SC", wRes, wStr )
+			if inListName!=gVal.DEF_NOTEXT :
+				wStr = "リスト通知設定: list name: name=" + str(inListName) + " screen_name=" + str(gVal.STR_UserInfo['Account']) + " "
+			else:
+				wStr = "リスト通知解除: screen_name=" + str(gVal.STR_UserInfo['Account']) + " "
+			gVal.OBJ_L.Log( "SC", wRes, wStr )
+###		gVal.OBJ_L.Log( "SC", wRes, wStr )
 		
 		wRes['Result'] = True
 		return wRes
@@ -2157,7 +2166,7 @@ class CLS_DB_IF() :
 		#############################
 		# 時間の取得
 		wTimeDate = str( gVal.STR_SystemInfo['TimeDate'] )
-		wDefTimeDate = self.DEF_TIMEDATE
+		wDefTimeDate = gVal.DEF_TIMEDATE
 		
 		#############################
 		# SQLの作成
@@ -2617,11 +2626,11 @@ class CLS_DB_IF() :
 			#     登録日が期間を過ぎてたら削除
 			#   いいね日時 もしくは リストいいね日時 が初期値でない場合
 			#     いいね日時が期間を過ぎてたら削除
-			if str( wARR_RateFavoData['favo_date'] )==self.DEF_TIMEDATE and \
-			   str( wARR_RateFavoData['lfavo_date'] )==self.DEF_TIMEDATE :
+			if str( wARR_RateFavoData['favo_date'] )==gVal.DEF_TIMEDATE and \
+			   str( wARR_RateFavoData['lfavo_date'] )==gVal.DEF_TIMEDATE :
 				wCHR_DelTimeDate = str( wARR_RateFavoData['regdate'] )
 			else:
-				if str( wARR_RateFavoData['favo_date'] )!=self.DEF_TIMEDATE :
+				if str( wARR_RateFavoData['favo_date'] )!=gVal.DEF_TIMEDATE :
 					wCHR_DelTimeDate = str( wARR_RateFavoData['favo_date'] )
 				else:
 					wCHR_DelTimeDate = str( wARR_RateFavoData['lfavo_date'] )

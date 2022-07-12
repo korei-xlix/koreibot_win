@@ -1788,6 +1788,7 @@ class CLS_Twitter_IF() :
 
 #####################################################
 # リストID取得
+#   リストチェックも兼ねる
 #####################################################
 	def GetListID( self, inListName, inScreenName=None ):
 		#############################
@@ -1797,12 +1798,13 @@ class CLS_Twitter_IF() :
 		wRes['Class'] = "CLS_Twitter_IF"
 		wRes['Func']  = "GetListID"
 		
+		wRes['Responce'] = None
 		#############################
 		# リスト取得
 		wSubRes = self.OBJ_Twitter.GetLists( inScreenName=inScreenName )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
-			gVal.OBJ_L.Log( "B", wRes )
+			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
 		
 		#############################
@@ -1815,10 +1817,14 @@ class CLS_Twitter_IF() :
 				break
 		
 		if wListID==None :
-			wRes['Reason'] = "List is not found: user=" + inScreenName + " list=" + inListName
-			gVal.OBJ_L.Log( "C", wRes )
+###			wRes['Reason'] = "List is not found: user=" + inScreenName + " list=" + inListName
+###			gVal.OBJ_L.Log( "C", wRes )
+			### 処理は正常だが、該当リストはない
+			wRes['Result'] = True
 			return wRes
 		
+		#############################
+		# 正常、リストIDを返す
 		wRes['Responce'] = wListID
 		wRes['Result'] = True
 		return wRes
@@ -1828,37 +1834,37 @@ class CLS_Twitter_IF() :
 #####################################################
 # リストチェック
 #####################################################
-	def CheckList( self, inListName, inScreenName=None ):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_Twitter_IF"
-		wRes['Func']  = "CheckList"
-		
-		wRes['Responce'] = False
-		#############################
-		# リスト取得
-		wSubRes = self.OBJ_Twitter.GetLists( inScreenName=inScreenName )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# リストがTwitterにあるか確認
-		wFLG_Detect = False
-		wKeylist = list( wSubRes['Responce'].keys() )
-		for wKey in wKeylist :
-			if wSubRes['Responce'][wKey]['name']==inListName :
-				wFLG_Detect = True
-				break
-		
-		wRes['Responce'] = wFLG_Detect
-		wRes['Result'] = True
-		return wRes
-
-
+###	def CheckList( self, inListName, inScreenName=None ):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_Twitter_IF"
+###		wRes['Func']  = "CheckList"
+###		
+###		wRes['Responce'] = False
+###		#############################
+###		# リスト取得
+###		wSubRes = self.OBJ_Twitter.GetLists( inScreenName=inScreenName )
+###		if wSubRes['Result']!=True :
+###			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		#############################
+###		# リストがTwitterにあるか確認
+###		wFLG_Detect = False
+###		wKeylist = list( wSubRes['Responce'].keys() )
+###		for wKey in wKeylist :
+###			if wSubRes['Responce'][wKey]['name']==inListName :
+###				wFLG_Detect = True
+###				break
+###		
+###		wRes['Responce'] = wFLG_Detect
+###		wRes['Result'] = True
+###		return wRes
+###
+###
 
 #####################################################
 # リストユーザ取得
@@ -1874,7 +1880,10 @@ class CLS_Twitter_IF() :
 		wRes['Responce'] = {}
 		#############################
 		# リストがTwitterにあるか確認
-		wSubRes = self.CheckList(
+###		wSubRes = self.CheckList(
+###		   inListName=inListName,
+###		   inScreenName=inScreenName )
+		wSubRes = self.GetListID(
 		   inListName=inListName,
 		   inScreenName=inScreenName )
 		
@@ -1882,7 +1891,8 @@ class CLS_Twitter_IF() :
 			wRes['Reason'] = "CheckList is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		if wSubRes['Responce']==False :
+###		if wSubRes['Responce']==False :
+		if wSubRes['Responce']==None :
 			wRes['Reason'] = "List is not found: list=" + inListName + " owner=" + str(inScreenName)
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
@@ -1929,7 +1939,10 @@ class CLS_Twitter_IF() :
 		wRes['Responce'] = {}
 		#############################
 		# リストがTwitterにあるか確認
-		wSubRes = self.CheckList(
+###		wSubRes = self.CheckList(
+###		   inListName=inListName,
+###		   inScreenName=inScreenName )
+		wSubRes = self.GetListID(
 		   inListName=inListName,
 		   inScreenName=inScreenName )
 		
@@ -1937,7 +1950,8 @@ class CLS_Twitter_IF() :
 			wRes['Reason'] = "CheckList is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		if wSubRes['Responce']==False :
+###		if wSubRes['Responce']==False :
+		if wSubRes['Responce']==None :
 			wRes['Reason'] = "List is not found: list=" + inListName + " owner=" + str(inScreenName)
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
@@ -1996,12 +2010,14 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# リストがTwitterにあるか確認
-		wSubRes = self.CheckList( inListName=gVal.STR_UserInfo['ListName'] )
+###		wSubRes = self.CheckList( inListName=gVal.STR_UserInfo['ListName'] )
+		wSubRes = self.GetListID( inListName=gVal.STR_UserInfo['ListName'] )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "CheckList is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		if wSubRes['Responce']==False :
+###		if wSubRes['Responce']==False :
+		if wSubRes['Responce']==None :
 			wRes['Reason'] = "Twitter List not found: " + gVal.STR_UserInfo['ListName']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes

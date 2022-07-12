@@ -285,11 +285,11 @@ class CLS_Main_Console() :
 		elif inCommand=="\\i" :
 			cls.OBJ_TwitterMain.SetListName()
 		
-		#############################
-		# 自動リムーブ
-		elif inCommand=="\\r" :
-			cls.OBJ_TwitterMain.SetAutoRemove()
-		
+###		#############################
+###		# 自動リムーブ
+###		elif inCommand=="\\r" :
+###			cls.OBJ_TwitterMain.SetAutoRemove()
+###		
 	#####################################################
 		#############################
 		# 禁止ユーザ
