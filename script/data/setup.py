@@ -511,9 +511,9 @@ class CLS_Setup():
 		wQy = wQy + "rel_date    TIMESTAMP,"			# 排他解除日時
 		wQy = wQy + "week_date   TIMESTAMP,"			# 週間 開始日時
 		wQy = wQy + "day_date    TIMESTAMP,"			# 1日  開始日時
-		wQy = wQy + "trendtag    TEXT,"					# トレンド送信タグ
-		wQy = wQy + "list_id     TEXT,"					# リスト通知 リストID(数値)
-		wQy = wQy + "list_name   TEXT,"					# リスト通知 リスト名
+		wQy = wQy + "trendtag    TEXT  NOT NULL,"		# トレンド送信タグ
+		wQy = wQy + "list_id     TEXT  NOT NULL,"		# リスト通知 リストID(数値)
+		wQy = wQy + "list_name   TEXT  NOT NULL,"		# リスト通知 リスト名
 		wQy = wQy + " PRIMARY KEY ( twitterid ) ) ;"
 		
 		inOBJ_DB.RunQuery( wQy )
@@ -610,7 +610,7 @@ class CLS_Setup():
 		wQy = wQy + "myfollow_date TIMESTAMP, "			# フォロー日時
 		wQy = wQy + "follower      BOOL  DEFAULT false,"# フォロワー(被フォロー) true=フォロワー
 		wQy = wQy + "follower_date TIMESTAMP, "			# 被フォロー日時
-		wQy = wQy + "memo        TEXT, "				# 自由記載(メモ)
+		wQy = wQy + "memo          TEXT, "				# 自由記載(メモ)
 		wQy = wQy + " ) ;"
 		
 		inOBJ_DB.RunQuery( wQy )

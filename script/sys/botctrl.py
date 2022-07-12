@@ -17,11 +17,6 @@ from gval import gVal
 class CLS_BotCtrl():
 #####################################################
 
-	DEF_VAL_DAY  = 86400		# 時間経過: 1日  60x60x24
-	DEF_VAL_WEEK = 604800		# 時間経過: 7日  (60x60x24)x7
-
-
-
 #####################################################
 # Botテスト
 #####################################################
@@ -214,7 +209,7 @@ class CLS_BotCtrl():
 		wTwitterDataRes = gVal.OBJ_DB_IF.GetTwitterData( gVal.STR_UserInfo['Account'] )
 		if wTwitterDataRes['Result']!=True :
 			wRes['Reason'] = "GetTwitterData is failed"
-			gVal.OBJ_L.Log( "C", wRes )
+			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
 		#############################
@@ -261,8 +256,10 @@ class CLS_BotCtrl():
 		wTD = CLS_OSIF.sGetTime()
 		if wTD['Result']!=True :
 			###時間取得失敗  時計壊れた？
-			wRes['Reason'] = "PC時間取得失敗"
-			gVal.OBJ_L.Log( "B", wRes )
+##			wRes['Reason'] = "PC時間取得失敗"
+##			gVal.OBJ_L.Log( "B", wRes )
+			wRes['Reason'] = "PC time get is failer" + '\n'
+			gVal.OBJ_L.Log( "C", wRes )
 			cls.sBotEnd()	#bot終了
 ###			return
 			return wRes
@@ -304,46 +301,53 @@ class CLS_BotCtrl():
 			# キーを設定
 			gVal.STR_SystemInfo[wGetLine[0]] = wGetLine[1]
 		
+###		#############################
+###		# いいね者送信日時(直近)
+###		if wChgDict[0]['favodate']=="" or \
+###		   wChgDict[0]['favodate']==None :
+###			wChgDict[0]['favodate'] = str(wTD['TimeDate'])
+###			wResDB = gVal.OBJ_DB_IF.UpdateFavoDate( str(wTD['TimeDate']) )
+###			gVal.OBJ_L.Log( "N", wRes, "いいね日時初期化" )
+###		gVal.STR_UserInfo['FavoDate'] = wChgDict[0]['favodate']
+###		
+###		#############################
+###		# トレンドタグの取得
+###		if wChgDict[0]['trendtag']==None :
+###			wChgDict[0]['trendtag'] = ""
+###		gVal.STR_UserInfo['TrendTag'] = wChgDict[0]['trendtag']
+###		
+###		#############################
+###		# リスト通知
+###		if wChgDict[0]['listname']==None :
+###			wChgDict[0]['listname'] = ""
+###		gVal.STR_UserInfo['ListName'] = wChgDict[0]['listname']
+###		
+###		#############################
+###		# 自動リムーブ
+###		if wChgDict[0]['arlistname']==None :
+###			wChgDict[0]['arlistname'] = ""
+###		gVal.STR_UserInfo['ArListName'] = wChgDict[0]['arlistname']
+###		
+###		if wChgDict[0]['listdate']=="" or \
+###		   wChgDict[0]['listdate']==None :
+###			### 初期化
+###			wChgDict[0]['listdate'] = str(wTD['TimeDate'])
+###		gVal.STR_UserInfo['ListDate'] = wChgDict[0]['listdate']
+###		
+###		#############################
+###		# リストいいね日時
+###		if wChgDict[0]['lfavdate']=="" or \
+###		   wChgDict[0]['lfavdate']==None :
+###			### 初期化
+###			wChgDict[0]['lfavdate'] = str(wTD['TimeDate'])
+###		gVal.STR_UserInfo['LFavoDate'] = wChgDict[0]['lfavdate']
 		#############################
-		# いいね者送信日時(直近)
-		if wChgDict[0]['favodate']=="" or \
-		   wChgDict[0]['favodate']==None :
-			wChgDict[0]['favodate'] = str(wTD['TimeDate'])
-			wResDB = gVal.OBJ_DB_IF.UpdateFavoDate( str(wTD['TimeDate']) )
-			gVal.OBJ_L.Log( "N", wRes, "いいね日時初期化" )
-		gVal.STR_UserInfo['FavoDate'] = wChgDict[0]['favodate']
-		
-		#############################
-		# トレンドタグの取得
-		if wChgDict[0]['trendtag']==None :
-			wChgDict[0]['trendtag'] = ""
-		gVal.STR_UserInfo['TrendTag'] = wChgDict[0]['trendtag']
-		
-		#############################
-		# リスト通知
-		if wChgDict[0]['listname']==None :
-			wChgDict[0]['listname'] = ""
-		gVal.STR_UserInfo['ListName'] = wChgDict[0]['listname']
-		
-		#############################
-		# 自動リムーブ
-		if wChgDict[0]['arlistname']==None :
-			wChgDict[0]['arlistname'] = ""
-		gVal.STR_UserInfo['ArListName'] = wChgDict[0]['arlistname']
-		
-		if wChgDict[0]['listdate']=="" or \
-		   wChgDict[0]['listdate']==None :
-			### 初期化
-			wChgDict[0]['listdate'] = str(wTD['TimeDate'])
-		gVal.STR_UserInfo['ListDate'] = wChgDict[0]['listdate']
-		
-		#############################
-		# リストいいね日時
-		if wChgDict[0]['lfavdate']=="" or \
-		   wChgDict[0]['lfavdate']==None :
-			### 初期化
-			wChgDict[0]['lfavdate'] = str(wTD['TimeDate'])
-		gVal.STR_UserInfo['LFavoDate'] = wChgDict[0]['lfavdate']
+		# トレンドタグ、リスト通知の取得
+		wListRes = gVal.OBJ_DB_IF.GetListName( gVal.STR_UserInfo['Account'] )
+		if wListRes['Result']!=True :
+			wRes['Reason'] = "GetListName is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
 		
 		#############################
 		# システム情報の取得
@@ -494,7 +498,7 @@ class CLS_BotCtrl():
 		gVal.STR_SystemInfo['Week'] = False
 		#############################
 		# 1日経過か
-		wGetLag = CLS_OSIF.sTimeLag( str(wRes['Responce']['day_date']), inThreshold=cls.DEF_VAL_DAY )
+		wGetLag = CLS_OSIF.sTimeLag( str(wRes['Responce']['day_date']), inThreshold=gVal.DEF_VAL_DAY )
 		if wGetLag['Result']!=True :
 			wRes['Reason'] = "sTimeLag failed"
 			return wRes
@@ -504,7 +508,7 @@ class CLS_BotCtrl():
 		
 		#############################
 		# 1週間経過か
-		wGetLag = CLS_OSIF.sTimeLag( str(wRes['Responce']['week_date']), inThreshold=cls.DEF_VAL_WEEK )
+		wGetLag = CLS_OSIF.sTimeLag( str(wRes['Responce']['week_date']), inThreshold=gVal.DEF_VAL_WEEK )
 		if wGetLag['Result']!=True :
 			wRes['Reason'] = "sTimeLag failed"
 			return wRes
@@ -520,9 +524,9 @@ class CLS_BotCtrl():
 			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
 		
-		#ログに記録する
-		gVal.OBJ_L.Log( "S", wRes, "排他開始" )
-		
+###		#ログに記録する
+###		gVal.OBJ_L.Log( "S", wRes, "排他開始" )
+###		
 		wRes['Result']   = True
 		return wRes	#排他あり
 
@@ -610,9 +614,9 @@ class CLS_BotCtrl():
 			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
 		
-		#ログに記録する
-		gVal.OBJ_L.Log( "S", wRes, "排他延長" )
-		
+###		#ログに記録する
+###		gVal.OBJ_L.Log( "S", wRes, "排他延長" )
+###		
 		wRes['Result']   = True
 		return wRes
 
@@ -662,18 +666,20 @@ class CLS_BotCtrl():
 ###		#############################
 ###		# 辞書型に整形
 ###		wChgDict = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
-
-
-
-
-
+		#############################
+		# ロックの取得
+		wLockRes = gVal.OBJ_DB_IF.GetLock( gVal.STR_UserInfo['Account'] )
+		if wLockRes['Result']!=True :
+			wRes['Reason'] = "GetLock is failed"
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
 		#############################
 		# ロックの取得
 ###		wLocked  = wChgDict[0]['locked']
 ###		wLUpdate = wChgDict[0]['lupdate']
 ###		if wLocked==True :
-
-
+		if wRes['Responce']['locked']==True :
 			### 排他がかかってる
 			
 			# ロック保持時間外かを求める (変換＆差)
@@ -730,12 +736,17 @@ class CLS_BotCtrl():
 ###			wRes['Reason'] = "Run Query is failed"
 ###			gVal.OBJ_L.Log( "B", wRes )
 ###			return wRes
-
-
-
-
-
+		#############################
+		# 排他解除
+		wLockRes = gVal.OBJ_DB_IF.SetLock( gVal.STR_UserInfo['Account'], False, wTD['TimeDate'] )
+		if wLockRes['Result']!=True :
+			wRes['Reason'] = "GetLock is failed"
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
 		
+###		#ログに記録する
+###		gVal.OBJ_L.Log( "S", wRes, "排他解除" )
+###		
 		wRes['Result']   = True
 		return wRes	#排他なし
 

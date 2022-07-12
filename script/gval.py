@@ -56,9 +56,11 @@ class gVal() :
 		"id"		: "",			#Twitter ID(番号)
 		"Traffic"	: False,		#Twitterにトラヒックを報告するか
 		"TrendTag"	: "",			#トレンドタグ設定
-		"FavoDate"	: None,			#いいね者送信日時(直近)
+###		"FavoDate"	: None,			#いいね者送信日時(直近)
 		
-		"ListName"	: "",			#リスト通知 リスト名
+		"ListID"	: None,			#リスト通知 リストID
+		"ListName"	: None,			#リスト通知 リスト名
+		
 		"ListDate"	: None,			#リスト通知日時
 		"LFavoDate"	: None,			#リストいいね日時
 		
@@ -101,7 +103,7 @@ class gVal() :
 		"d_favo"			: {0:0,1:"いいね解除回数"},
 		"p_tweet"			: {0:0,1:"ツイート送信回数"},
 		
-		"db_req"			: {0:0,1:"DB select回数"},
+		"db_req"			: {0:0,1:"DB request回数"},
 		"db_ins"			: {0:0,1:"DB insert回数"},
 		"db_up"				: {0:0,1:"DB update回数"},
 		"db_del"			: {0:0,1:"DB delete回数"},
@@ -264,7 +266,8 @@ class gVal() :
 	
 	DEF_SCREEN_NAME_SIZE = 16
 
-
+	DEF_VAL_DAY  = 86400									# 時間経過: 1日  60x60x24
+	DEF_VAL_WEEK = 604800									# 時間経過: 7日  (60x60x24)x7
 
 #############################
 # 変数

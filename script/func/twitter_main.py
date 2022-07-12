@@ -1098,19 +1098,20 @@ class CLS_TwitterMain():
 		wRes['Class'] = "CLS_TwitterMain"
 		wRes['Func']  = "UpdateListIndUser"
 		
-		#############################
-		# 処理時間の更新
-		wSubRes = gVal.OBJ_DB_IF.UpdateListIndDate()
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "UpdateListIndDate Error"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		wFLG_NextDay = wSubRes['Responce']
-		
+###		#############################
+###		# 処理時間の更新
+###		wSubRes = gVal.OBJ_DB_IF.UpdateListIndDate()
+###		if wSubRes['Result']!=True :
+###			wRes['Reason'] = "UpdateListIndDate Error"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		wFLG_NextDay = wSubRes['Responce']
+###		
 		#############################
 		# 翌日の場合
 		#   リスト通知をクリアする
-		if wFLG_NextDay==True :
+###		if wFLG_NextDay==True :
+		if gVal.STR_SystemInfo['Day']==True :
 			wSubRes = gVal.OBJ_Tw_IF.ListInd_Clear()
 			if wSubRes['Result']!=True :
 				wRes['Reason'] = "AllClearListInd error"

@@ -316,14 +316,14 @@ class CLS_TwitterFollower():
 		if wSendCnt==0 :
 			#############################
 			# 送信者がいない場合
-			#   いいね者送信日時を更新して終わる
-			wSubRes = gVal.OBJ_DB_IF.UpdateFavoDate( str( gVal.STR_SystemInfo['TimeDate'] ) )
-			if wSubRes['Result']!=True :
-				###失敗
-				wRes['Reason'] = "UpdateFavoDate is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			
+###			#   いいね者送信日時を更新して終わる
+###			wSubRes = gVal.OBJ_DB_IF.UpdateFavoDate( str( gVal.STR_SystemInfo['TimeDate'] ) )
+###			if wSubRes['Result']!=True :
+###				###失敗
+###				wRes['Reason'] = "UpdateFavoDate is failed"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			
 			wStr = "●いいね情報 送信者はいませんでした" + '\n'
 			CLS_OSIF.sPrn( wStr )
 			wRes['Result'] = True
@@ -409,13 +409,13 @@ class CLS_TwitterFollower():
 		
 		#############################
 		# いいね者送信日時を更新する
-		wSubRes = gVal.OBJ_DB_IF.UpdateFavoDate( str( gVal.STR_SystemInfo['TimeDate'] ) )
-		if wSubRes['Result']!=True :
-			###失敗
-			wRes['Reason'] = "UpdateFavoDate is failed"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
+###		wSubRes = gVal.OBJ_DB_IF.UpdateFavoDate( str( gVal.STR_SystemInfo['TimeDate'] ) )
+###		if wSubRes['Result']!=True :
+###			###失敗
+###			wRes['Reason'] = "UpdateFavoDate is failed"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
 		wRes['Result'] = True
 		return wRes
 

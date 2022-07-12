@@ -20,6 +20,7 @@ class CLS_DB_IF() :
 	ARR_FollowerDataID = []		#  フォロワー情報ID
 
 	DEF_TIMEDATE = "1901-01-01 00:00:00"
+	DEF_NOTEXT   = "(none)"
 
 
 
@@ -279,7 +280,7 @@ class CLS_DB_IF() :
 		except ValueError:
 			##失敗
 			wRes['Reason'] = "Data is failer"
-			gVal.OBJ_L.Log( "A", wRes )
+			gVal.OBJ_L.Log( "D", wRes )
 			return wRes
 		
 ###		#############################
@@ -431,9 +432,9 @@ class CLS_DB_IF() :
 			wQy = wQy + "'" + str( self.DEF_TIMEDATE ) + "',"	# 排他解除日時
 			wQy = wQy + "'" + str( self.DEF_TIMEDATE ) + "',"	# 週間 開始日時
 			wQy = wQy + "'" + str( self.DEF_TIMEDATE ) + "',"	# 1日  開始日時
-			wQy = wQy + "'', "									# トレンド送信タグ
-			wQy = wQy + "'', "									# リスト通知 リストID(数値)
-			wQy = wQy + "'' "									# リスト通知 リスト名
+			wQy = wQy + "'" + self.DEF_NOTEXT + "', "			# トレンド送信タグ
+			wQy = wQy + "'" + self.DEF_NOTEXT + "', "			# リスト通知 リストID(数値)
+			wQy = wQy + "'" + self.DEF_NOTEXT + "' "			# リスト通知 リスト名
 			wQy = wQy + ") ;"
 			
 			wResDB = self.OBJ_DB.RunQuery( wQy )
@@ -518,7 +519,7 @@ class CLS_DB_IF() :
 ###		CLS_OSIF.sPrn( wStr )
 		#############################
 		# ログに記録する
-		gVal.OBJ_L.Log( "SC", wRes, "update user data: user=" + str(inUserData['Account']) )
+		gVal.OBJ_L.Log( "SC", wRes, "データ更新: user data: user=" + str(inUserData['Account']) )
 		
 		#############################
 		# =正常
@@ -569,7 +570,7 @@ class CLS_DB_IF() :
 		if len( wARR_DBData )!= 1 :
 			##失敗
 			wRes['Reason'] = "Get twitter data is not one: account=" + str(inAccount) + " num=" + str( len( wARR_DBData ) )
-			gVal.OBJ_L.Log( "C", wRes )
+			gVal.OBJ_L.Log( "D", wRes )
 			return wRes
 		
 		#############################
@@ -630,7 +631,7 @@ class CLS_DB_IF() :
 		if len( wARR_DBData )!= 1 :
 			##失敗
 			wRes['Reason'] = "Get twitter data is not one: account=" + str(inAccount) + " num=" + str( len( wARR_DBData ) )
-			gVal.OBJ_L.Log( "C", wRes )
+			gVal.OBJ_L.Log( "D", wRes )
 			return wRes
 		
 		#############################
@@ -660,6 +661,7 @@ class CLS_DB_IF() :
 		wRes['Class'] = "CLS_DB_IF"
 		wRes['Func']  = "SetLock"
 		
+		wRes['Responce'] = 0
 		#############################
 		# データ取得
 		wQy = "select locked, lok_date, rel_date, week_date, day_date from tbl_user_data "
@@ -682,34 +684,26 @@ class CLS_DB_IF() :
 		if len( wARR_DBData )!= 1 :
 			##失敗
 			wRes['Reason'] = "Get twitter data is not one: account=" + str(inAccount) + " num=" + str( len( wARR_DBData ) )
-			gVal.OBJ_L.Log( "C", wRes )
+			gVal.OBJ_L.Log( "D", wRes )
 			return wRes
 		
 		#############################
 		# 変更する
-		wQy = "update tbl_exc_user set " + \
-
-
-
-
-
-		wQy = wQy + "report = " + str( wSTR_Value['report'] ) + ", " + \
-		wQy = wQy + "vip = " + str( wSTR_Value['vip'] ) + ", " + \
-		wQy = wQy + "rel_date = '" + str( wSTR_Value['rel_date'] ) + "', " + \
-
-
-		wQy = wQy + "memo = '" + str( wSTR_Value['memo'] ) + "' " + \
+		wQy = "update tbl_user_data set " + \
+		if inLock==True :
+			wQy = wQy + "lok_date = '" + str( inDate ) + "', " + \
+		else:
+			wQy = wQy + "rel_date = '" + str( inDate ) + "', " + \
+		
+		if inFLG_Week==True :
+			wQy = wQy + "week_date = '" + str( inDate ) + "', " + \
+		if inFLG_Day==True :
+			wQy = wQy + "day_date = '" + str( inDate ) + "', " + \
+		
+		wQy = wQy + "locked = " + str( inLock ) + " " + \
 		wQy = wQy + "where twitterid = '" + str(inAccount) + "' ;"
 		wQy = wQy + ";"
 		
-
-#		wQy = wQy + "locked      BOOL  DEFAULT false,"	# 排他ロック true=ロックON
-#		wQy = wQy + "lok_date    TIMESTAMP,"			# 排他日時
-#		wQy = wQy + "rel_date    TIMESTAMP,"			# 排他解除日時
-#		wQy = wQy + "week_date   TIMESTAMP,"			# 週間 開始日時
-#		wQy = wQy + "day_date    TIMESTAMP,"			# 1日  開始日時
-
-
 		#############################
 		# クエリの実行
 		wResDB = self.OBJ_DB.RunQuery( wQy )
@@ -720,13 +714,19 @@ class CLS_DB_IF() :
 			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
 		
-
-
-
 		#############################
 		# ログに記録する
-		wStr = "update exe user data: update=1"
-		gVal.OBJ_L.Log( "SC", wRes, wStr )
+		if inLock==True :
+			gVal.OBJ_L.Log( "SR", wRes, "排他: locked=True user=" + str(inUserData['Account']) )
+		
+		#############################
+		# 排他解除の場合
+		#   実行時間も返す
+		else:
+			wRunTime = inDate - wARR_DBData['lok_date']
+			gVal.OBJ_L.Log( "SR", wRes, "排他: locked=False user=" + str(inUserData['Account']) + " runtime=" + str(wRunTime) )
+			
+			wRes['Responce'] = wRunTime
 		
 		#############################
 		# =正常
@@ -940,7 +940,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# ログに記録する
-		gVal.OBJ_L.Log( "SC", wRes, "update exe word" )
+		gVal.OBJ_L.Log( "SR", wRes, "データ更新: exe word" )
 		
 		#############################
 		# =正常
@@ -1238,8 +1238,8 @@ class CLS_DB_IF() :
 		
 		#############################
 		# ログに記録する
-		wStr = "update exe user data: insert=" + str(wResult['insert']) + " update=" + str(wResult['update']) + " delete=" + str(wResult['delete'])
-		gVal.OBJ_L.Log( "SC", wRes, wStr )
+		wStr = "データ更新: exe user data: insert=" + str(wResult['insert']) + " update=" + str(wResult['update']) + " delete=" + str(wResult['delete'])
+		gVal.OBJ_L.Log( "RR", wRes, wStr )
 		
 		wRes['Result'] = True
 		return wRes
@@ -1259,7 +1259,7 @@ class CLS_DB_IF() :
 		if "id" not in inData or \
 		   "screen_name" not in inData :
 			wRes['Reason'] = "input error: " + str(inData)
-			gVal.OBJ_L.Log( "B", wRes )
+			gVal.OBJ_L.Log( "A", wRes )
 			return wRes
 		
 		#############################
@@ -1285,7 +1285,7 @@ class CLS_DB_IF() :
 				return wRes
 		if inData['id'] in gVal.ARR_NotReactionUser :
 			wRes['Reason'] = "Duai Screen_Name: screen_name=" + str(inData['screen_name'])
-			gVal.OBJ_L.Log( "B", wRes )
+			gVal.OBJ_L.Log( "D", wRes )
 			return wRes
 		
 		#############################
@@ -1338,9 +1338,9 @@ class CLS_DB_IF() :
 		
 		#############################
 		# ログに記録する
-		wStr = "update exe user data: insert=1"
+		wStr = "データ追加: exe user data: insert=1"
 ##		 + str(wResult['insert']) + " update=" + str(wResult['update']) + " delete=" + str(wResult['delete'])
-		gVal.OBJ_L.Log( "SC", wRes, wStr )
+		gVal.OBJ_L.Log( "RR", wRes, wStr )
 		
 		#############################
 		# =正常
@@ -1376,9 +1376,8 @@ class CLS_DB_IF() :
 ###		
 ###		if wFLG_Detect!=True :
 		if inID not in gVal.ARR_NotReactionUser
-			### ありえない？
 			wRes['Reason'] = "No data Screen_Name: id=" + str(wUserID)
-			gVal.OBJ_L.Log( "E", wRes )
+			gVal.OBJ_L.Log( "D", wRes )
 			return wRes
 		
 		#############################
@@ -1446,8 +1445,8 @@ class CLS_DB_IF() :
 		
 		#############################
 		# ログに記録する
-		wStr = "update exe user data: update=1"
-		gVal.OBJ_L.Log( "SC", wRes, wStr )
+		wStr = "データ更新: exe user data: update=1"
+		gVal.OBJ_L.Log( "RR", wRes, wStr )
 		
 		#############################
 		# =正常
@@ -1479,9 +1478,8 @@ class CLS_DB_IF() :
 ###			CLS_OSIF.sErr( wRes )
 ###			return wRes
 		if inID not in gVal.ARR_NotReactionUser
-			### ありえない？
 			wRes['Reason'] = "No data Screen_Name: id=" + str(wUserID)
-			gVal.OBJ_L.Log( "E", wRes )
+			gVal.OBJ_L.Log( "D", wRes )
 			return wRes
 		
 		#############################
@@ -1507,8 +1505,8 @@ class CLS_DB_IF() :
 		
 		#############################
 		# ログに記録する
-		wStr = "update exe user data: delete=1"
-		gVal.OBJ_L.Log( "SC", wRes, wStr )
+		wStr = "データ削除: exe user data: delete=1"
+		gVal.OBJ_L.Log( "RR", wRes, wStr )
 		
 		#############################
 		# =正常
@@ -1699,7 +1697,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# ログに記録する
-		wStr = "update list favo data: insert=" + str( wInsertNum ) + " and delete data"
+		wStr = "データ更新: list favo data: insert=" + str( wInsertNum ) + " and delete data"
 		gVal.OBJ_L.Log( "SC", wRes, wStr )
 		
 		wRes['Result'] = True
@@ -1754,10 +1752,10 @@ class CLS_DB_IF() :
 		# ログに記録する
 ###		if wUpdate==True :
 		if wUpdateNum>0 :
-			wStr = "update list favo data: update=" + str( wUpdateNum )
+			wStr = "データ更新: list favo data: update=" + str( wUpdateNum )
 			gVal.OBJ_L.Log( "SC", wRes, wStr )
-			
-			CLS_OSIF.sPrn( "リストいいねの設定を更新しました。" )
+###			
+###			CLS_OSIF.sPrn( "リストいいねの設定を更新しました。" )
 		
 		wRes['Result'] = True
 		return wRes
@@ -1777,15 +1775,15 @@ class CLS_DB_IF() :
 		
 		#############################
 		# データベースを取得
-		wQy = "select * from tbl_caution_tweet " + \
-					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+		wQy = "select * from tbl_caution_tweet "
+		wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
 		
 		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
 			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-			gVal.OBJ_L.Log( "B", wRes )
+			gVal.OBJ_L.Log( "C", wRes )
 			return False
 		
 		#############################
@@ -1819,8 +1817,9 @@ class CLS_DB_IF() :
 		#############################
 		# ダブりチェック
 		if wUserID in gVal.ARR_CautionTweet :
+			### ありえない？
 			wRes['Reason'] = "Dual regist user: screen_name=" + str( inUser['screen_name'] )
-			CLS_OSIF.sErr( wRes )
+			gVal.OBJ_L.Log( "E", wRes )
 			return wRes
 		
 		#############################
@@ -1835,13 +1834,13 @@ class CLS_DB_IF() :
 		
 		#############################
 		# データベースに登録する
-		wQy = "insert into tbl_caution_tweet values (" + \
-				"'" + wCell['twitterid'] + "', " + \
-				"'" + wCell['regdate'] + "', " + \
-				"'" + wCell['tweet_id'] + "', " + \
-				"'" + wCell['id'] + "', " + \
-				"'" + wCell['screen_name'] + "' " + \
-				") ;"
+		wQy = "insert into tbl_caution_tweet values ("
+		wQy = wQy + "'" + wCell['twitterid'] + "', "
+		wQy = wQy + "'" + wCell['regdate'] + "', "
+		wQy = wQy + "'" + wCell['tweet_id'] + "', "
+		wQy = wQy + "'" + wCell['id'] + "', "
+		wQy = wQy + "'" + wCell['screen_name'] + "' "
+		wQy = wQy + ") ;"
 		
 		#############################
 		# クエリの実行
@@ -1850,12 +1849,17 @@ class CLS_DB_IF() :
 		if wResDB['Result']!=True :
 			##失敗
 			wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-			CLS_OSIF.sErr( wRes )
+			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
 		
 		#############################
 		# グローバルを更新する
 		gVal.ARR_CautionTweet.update({ wUserID : wCell })
+		
+		#############################
+		# ログに記録する
+		wStr = "データ追加: caution tweet: screen_name=" + str(wCell['screen_name']) + " tweet_id=" + str(wCell['tweet_id'])
+		gVal.OBJ_L.Log( "RR", wRes, wStr )
 		
 		wRes['Result'] = True
 		return wRes
@@ -1875,26 +1879,31 @@ class CLS_DB_IF() :
 		# 登録チェック
 		if wUserID not in gVal.ARR_CautionTweet :
 			wRes['Reason'] = "Not regist user: screen_name=" + str( inUser['screen_name'] )
-			CLS_OSIF.sErr( wRes )
+			gVal.OBJ_L.Log( "D", wRes )
 			return wRes
 		
 		#############################
 		# レコードから削除する
-		wQy = "delete from tbl_caution_tweet " + \
-					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
-					"id = '" + wUserID + "' ;"
+		wQy = "delete from tbl_caution_tweet "
+		wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "' and "
+		wQy = wQy + "id = '" + wUserID + "' ;"
 		
 		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
 			wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-			CLS_OSIF.sErr( wRes )
+			gVal.OBJ_L.Log( "C", wRes )
 			return False
 		
 		#############################
 		# グローバルを更新する
 		del gVal.ARR_CautionTweet[wUserID]
+		
+		#############################
+		# ログに記録する
+		wStr = "データ削除: caution tweet: screen_name=" + str(inUser['screen_name'])
+		gVal.OBJ_L.Log( "RR", wRes, wStr )
 		
 		wRes['Result'] = True
 		return wRes
@@ -1904,44 +1913,90 @@ class CLS_DB_IF() :
 #####################################################
 # いいね者送信日時 更新
 #####################################################
-	def UpdateFavoDate( self, inDate ):
+###	def UpdateFavoDate( self, inDate ):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_DB_IF"
+###		wRes['Func']  = "UpdateFavoDate"
+###		
+###		#############################
+###		# DBに登録する
+###		wQy = "update tbl_user_data set " + \
+###				"favodate = '" + str(inDate) + "' " + \
+###				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+###		
+###		wResDB = self.OBJ_DB.RunQuery( wQy )
+###		wResDB = self.OBJ_DB.GetQueryStat()
+###		if wResDB['Result']!=True :
+###			##失敗
+###			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+###			CLS_OSIF.sErr( wRes )
+###			return False
+###		
+###		#############################
+###		# いいね者送信日時(直近)の更新
+###		gVal.STR_UserInfo['FavoDate'] = inDate
+###		
+###		wStr = "いいね者送信日時(直近)を更新しました。" + '\n'
+###		CLS_OSIF.sPrn( wStr )
+###		
+###		wRes['Result'] = True
+###		return wRes
+###
+###
+
+#####################################################
+# リスト名設定
+#####################################################
+	def GetListName( self, inAccount ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
 		wRes = CLS_OSIF.sGet_Resp()
 		wRes['Class'] = "CLS_DB_IF"
-		wRes['Func']  = "UpdateFavoDate"
+		wRes['Func']  = "GetListName"
 		
 		#############################
-		# DBに登録する
-		wQy = "update tbl_user_data set " + \
-				"favodate = '" + str(inDate) + "' " + \
-				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+		# データ取得
+		wQy = "select trendtag, list_id, list_name from tbl_user_data "
+		wQy = wQy + "where twitterid = '" + str(inAccount) + "' ;"
 		
 		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
 			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-			CLS_OSIF.sErr( wRes )
-			return False
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
 		
 		#############################
-		# いいね者送信日時(直近)の更新
-		gVal.STR_UserInfo['FavoDate'] = inDate
+		# 辞書型に整形
+		wARR_DBData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
 		
-		wStr = "いいね者送信日時(直近)を更新しました。" + '\n'
-		CLS_OSIF.sPrn( wStr )
+		#############################
+		# 取得チェック
+		if len( wARR_DBData )!= 1 :
+			##失敗
+			wRes['Reason'] = "Get list name is not one: account=" + str(inAccount) + " num=" + str( len( wARR_DBData ) )
+			gVal.OBJ_L.Log( "D", wRes )
+			return wRes
 		
+		#############################
+		# データをグローバルに反映
+		gVal.STR_UserInfo['TrendTag'] = wARR_DBData[0]['trendtag']
+		gVal.STR_UserInfo['ListID']   = wARR_DBData[0]['list_id']
+		gVal.STR_UserInfo['ListName'] = wARR_DBData[0]['list_name']
+		
+		#############################
+		# =正常
 		wRes['Result'] = True
 		return wRes
 
-
-
-#####################################################
-# リスト名設定
-#####################################################
-	def SetListName(self):
+	#####################################################
+###	def SetListName(self):
+	def SetListName( self, inTrendName=None, inListName=None, inListID=None ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -1949,19 +2004,42 @@ class CLS_DB_IF() :
 		wRes['Class'] = "CLS_DB_IF"
 		wRes['Func']  = "SetListName"
 		
-		wQy = "update tbl_user_data set " + \
-				"trendtag = '" + gVal.STR_UserInfo['TrendTag'] + "', " + \
-				"listname = '" + gVal.STR_UserInfo['ListName'] + "', " + \
-				"arlistname = '" + gVal.STR_UserInfo['ArListName'] + "' " + \
-				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+		wQy = "update tbl_user_data set "
+		if inTrendName!=None :
+			wQy = wQy + "trendtag = '" + gVal.STR_UserInfo['TrendTag'] + "' "
+		if inTrendName!=None and inListName!=None :
+			wQy = wQy + ", "
+		if inListName!=None :
+			wQy = wQy + "list_id = '" + gVal.STR_UserInfo['ListName'] + "', "
+			wQy = wQy + "list_name = '" + gVal.STR_UserInfo['ArListName'] + "' "
+		wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
 		
 		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
 			wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-			gVal.OBJ_L.Log( "B", wRes )
+			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
+		
+		#############################
+		# データをグローバルに反映
+		if inTrendName!=None :
+			gVal.STR_UserInfo['TrendTag'] = inTrendName
+		if inListName!=None :
+			gVal.STR_UserInfo['ListID']   = inListID
+			gVal.STR_UserInfo['ListName'] = inListName
+		
+		#############################
+		# ログに記録する
+		wStr = "データ更新: list name: screen_name=" + str(gVal.STR_UserInfo['Account']) + " "
+		if inTrendName!=None :
+			wStr = wStr + "trend_name=" + str(inTrendName)
+		if inTrendName!=None and inListName!=None :
+			wStr = wStr + " "
+		if inListName!=None :
+			wStr = wStr + "list_name=" + str(inListName)
+		gVal.OBJ_L.Log( "SC", wRes, wStr )
 		
 		wRes['Result'] = True
 		return wRes
@@ -1971,94 +2049,94 @@ class CLS_DB_IF() :
 #####################################################
 # リスト通知日時更新
 #####################################################
-	def UpdateListIndDate(self):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_DB_IF"
-		wRes['Func']  = "UpdateListInd"
-		
-		wRes['Responce'] = False
-		
-		wQy = "update tbl_user_data set " + \
-				"listdate = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
-				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
-		
-		wResDB = self.OBJ_DB.RunQuery( wQy )
-		wResDB = self.OBJ_DB.GetQueryStat()
-		if wResDB['Result']!=True :
-			##失敗
-			wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-			gVal.OBJ_L.Log( "B", wRes )
-			return False
-		
-		#############################
-		# 日付を跨いだか
-		wNowDate = str(gVal.STR_SystemInfo['TimeDate'])
-		wNowDate = wNowDate.split(" ")
-		wNowDate = wNowDate[0]
-		wRateDate = str(gVal.STR_UserInfo['ListDate'])
-		wRateDate = wRateDate.split(" ")
-		wRateDate = wRateDate[0]
-		if wNowDate!=wRateDate :
-			### 翌日
-			wRes['Responce'] = True
-		gVal.STR_UserInfo['ListDate'] = str(gVal.STR_SystemInfo['TimeDate'])
-		
-		wStr = "リスト通知日時を更新しました。" + '\n'
-		CLS_OSIF.sPrn( wStr )
-		
-		wRes['Result'] = True
-		return wRes
-
-
+###	def UpdateListIndDate(self):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_DB_IF"
+###		wRes['Func']  = "UpdateListInd"
+###		
+###		wRes['Responce'] = False
+###		
+###		wQy = "update tbl_user_data set " + \
+###				"listdate = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
+###				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+###		
+###		wResDB = self.OBJ_DB.RunQuery( wQy )
+###		wResDB = self.OBJ_DB.GetQueryStat()
+###		if wResDB['Result']!=True :
+###			##失敗
+###			wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return False
+###		
+###		#############################
+###		# 日付を跨いだか
+###		wNowDate = str(gVal.STR_SystemInfo['TimeDate'])
+###		wNowDate = wNowDate.split(" ")
+###		wNowDate = wNowDate[0]
+###		wRateDate = str(gVal.STR_UserInfo['ListDate'])
+###		wRateDate = wRateDate.split(" ")
+###		wRateDate = wRateDate[0]
+###		if wNowDate!=wRateDate :
+###			### 翌日
+###			wRes['Responce'] = True
+###		gVal.STR_UserInfo['ListDate'] = str(gVal.STR_SystemInfo['TimeDate'])
+###		
+###		wStr = "リスト通知日時を更新しました。" + '\n'
+###		CLS_OSIF.sPrn( wStr )
+###		
+###		wRes['Result'] = True
+###		return wRes
+###
+###
 
 #####################################################
 # リストいいね 日時更新
 #####################################################
-	def UpdateListFavoDate(self):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_DB_IF"
-		wRes['Func']  = "UpdateListFavoDate"
-		
-		wRes['Responce'] = False
-		
-		wQy = "update tbl_user_data set " + \
-				"lfavdate = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
-				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
-		
-		wResDB = self.OBJ_DB.RunQuery( wQy )
-		wResDB = self.OBJ_DB.GetQueryStat()
-		if wResDB['Result']!=True :
-			##失敗
-			wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
-			gVal.OBJ_L.Log( "B", wRes )
-			return False
-		
-		#############################
-		# 日付を跨いだか
-		wNowDate = str(gVal.STR_SystemInfo['TimeDate'])
-		wNowDate = wNowDate.split(" ")
-		wNowDate = wNowDate[0]
-		wRateDate = str(gVal.STR_UserInfo['LFavoDate'])
-		wRateDate = wRateDate.split(" ")
-		wRateDate = wRateDate[0]
-		if wNowDate!=wRateDate :
-			### 翌日
-			wRes['Responce'] = True
-		gVal.STR_UserInfo['LFavoDate'] = str(gVal.STR_SystemInfo['TimeDate'])
-		
-		wStr = "リストいいね日時を更新しました。" + '\n'
-		CLS_OSIF.sPrn( wStr )
-		
-		wRes['Result'] = True
-		return wRes
-
-
+###	def UpdateListFavoDate(self):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_DB_IF"
+###		wRes['Func']  = "UpdateListFavoDate"
+###		
+###		wRes['Responce'] = False
+###		
+###		wQy = "update tbl_user_data set " + \
+###				"lfavdate = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
+###				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+###		
+###		wResDB = self.OBJ_DB.RunQuery( wQy )
+###		wResDB = self.OBJ_DB.GetQueryStat()
+###		if wResDB['Result']!=True :
+###			##失敗
+###			wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return False
+###		
+###		#############################
+###		# 日付を跨いだか
+###		wNowDate = str(gVal.STR_SystemInfo['TimeDate'])
+###		wNowDate = wNowDate.split(" ")
+###		wNowDate = wNowDate[0]
+###		wRateDate = str(gVal.STR_UserInfo['LFavoDate'])
+###		wRateDate = wRateDate.split(" ")
+###		wRateDate = wRateDate[0]
+###		if wNowDate!=wRateDate :
+###			### 翌日
+###			wRes['Responce'] = True
+###		gVal.STR_UserInfo['LFavoDate'] = str(gVal.STR_SystemInfo['TimeDate'])
+###		
+###		wStr = "リストいいね日時を更新しました。" + '\n'
+###		CLS_OSIF.sPrn( wStr )
+###		
+###		wRes['Result'] = True
+###		return wRes
+###
+###
 
 #####################################################
 # いいね情報

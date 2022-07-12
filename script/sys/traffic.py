@@ -178,6 +178,12 @@ class CLS_Traffic():
 		
 ###		gVal.OBJ_L.Log( "N", wRes, "DB: Insert Traffic: " + str(wARR_TD[0]) )
 ###		
+		
+		#############################
+		# insert分のトラヒックを計上する
+		cls.sP( "db_req" )
+		cls.sP( "db_ins" )
+		
 		#############################
 		# トラヒック切替報告
 		gVal.OBJ_L.Log( "T", wRes, "トラヒック切替: " + wARR_TD )
@@ -319,7 +325,7 @@ class CLS_Traffic():
 		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy, False )
 		if wResDB['Result']!=True :
 			wRes['Reason'] = "Run Query is failed"
-			gVal.OBJ_L.Log( "B", wRes )
+			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
 		
 		#############################
