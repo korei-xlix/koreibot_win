@@ -394,12 +394,21 @@ class CLS_MyDisp():
 			pRes['Responce'] = wStr
 		
 		###インプリ：自動リムーブ
-		elif "[@SYS-ARLISTNAME@]"==inLine :
+		elif "[@SYS-AUTOREMOVE@]"==inLine :
 			wStr = "    自動リムーブ      : "
-			if inData['Sys_ArListName']==None or inData['Sys_ArListName']=="" :
+			if inData['Sys_AutoRemove']==None or inData['Sys_AutoRemove']=="" :
 				wStr = wStr + "無効"
 			else:
-				wStr = wStr + "有効(list=" + inData['Sys_ArListName'] + ")"
+				wStr = wStr + "有効"
+			pRes['Responce'] = wStr
+		
+		###インプリ：リムーブリスト
+		elif "[@SYS-RLISTNAME@]"==inLine :
+			wStr = "    リムーブリスト    : "
+			if inData['Sys_rListName']==None or inData['Sys_rListName']=="" :
+				wStr = wStr + "無効"
+			else:
+				wStr = wStr + "有効(list=" + inData['Sys_rListName'] + ")"
 			pRes['Responce'] = wStr
 		
 		#############################

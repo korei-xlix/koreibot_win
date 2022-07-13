@@ -1712,7 +1712,8 @@ class CLS_TwitterAdmin():
 			"Sys_TrendTag"		: gVal.STR_UserInfo['TrendTag'],
 			"Sys_ListName"		: gVal.STR_UserInfo['ListName'],
 ###			"Sys_ArListName"	: gVal.STR_UserInfo['ArListName'],
-			"Sys_ArListName"	: gVal.STR_UserInfo['rListName'],
+			"Sys_AutoRemove"	: gVal.STR_UserInfo['AutoRemove'],
+			"Sys_rListName"		: gVal.STR_UserInfo['rListName']
 		}
 		
 		#############################
