@@ -515,8 +515,10 @@ class CLS_Setup():
 		wQy = wQy + "list_id     TEXT  NOT NULL,"		# リスト通知 リストID(数値)
 		wQy = wQy + "list_name   TEXT  NOT NULL,"		# リスト通知 リスト名
 		wQy = wQy + "autoremove  BOOL  DEFAULT false,"	# 自動リムーブ true=ON
-		wQy = wQy + "rlist_id    TEXT  NOT NULL,"		# リムーブリスト リストID(数値)
-		wQy = wQy + "rlist_name  TEXT  NOT NULL,"		# リムーブリスト リスト名
+		wQy = wQy + "mlist_id    TEXT  NOT NULL,"		# 相互フォローリスト リストID(数値)
+		wQy = wQy + "mlist_name  TEXT  NOT NULL,"		# 相互フォローリスト リスト名
+		wQy = wQy + "flist_id    TEXT  NOT NULL,"		# 片フォロワーリスト リストID(数値)
+		wQy = wQy + "flist_name  TEXT  NOT NULL,"		# 片フォロワーリスト リスト名
 		wQy = wQy + " PRIMARY KEY ( twitterid ) ) ;"
 		
 		inOBJ_DB.RunQuery( wQy )

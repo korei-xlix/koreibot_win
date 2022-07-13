@@ -1963,7 +1963,10 @@ class CLS_DB_IF() :
 		
 		#############################
 		# データ取得
-		wQy = "select trendtag, list_id, list_name from tbl_user_data "
+		wQy = "select "
+		wQy = wQy + "trendtag, list_id, list_name, "
+		wQy = wQy + "autoremove, mlist_id, mlist_name, flist_id, flist_name "
+		wQy = wQy + "from tbl_user_data, "
 		wQy = wQy + "where twitterid = '" + str(inAccount) + "' ;"
 		
 		wResDB = self.OBJ_DB.RunQuery( wQy )
@@ -1992,8 +1995,10 @@ class CLS_DB_IF() :
 		gVal.STR_UserInfo['ListID']   = wARR_DBData[0]['list_id']
 		gVal.STR_UserInfo['ListName'] = wARR_DBData[0]['list_name']
 		gVal.STR_UserInfo['AutoRemove'] = wARR_DBData[0]['autoremove']
-		gVal.STR_UserInfo['rListID']    = wARR_DBData[0]['rlist_id']
-		gVal.STR_UserInfo['rListName']  = wARR_DBData[0]['rlist_name']
+		gVal.STR_UserInfo['mListID']    = wARR_DBData[0]['mlist_id']
+		gVal.STR_UserInfo['mListName']  = wARR_DBData[0]['mlist_name']
+		gVal.STR_UserInfo['fListID']    = wARR_DBData[0]['flist_id']
+		gVal.STR_UserInfo['fListName']  = wARR_DBData[0]['flist_name']
 		
 		#############################
 		# =正常
@@ -2130,7 +2135,7 @@ class CLS_DB_IF() :
 		return wRes
 
 	#####################################################
-	def SetAutoRemove( self, inAutoRemove=None, inListName=None, inListID=None ):
+	def SetAutoRemove(self):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -2139,28 +2144,13 @@ class CLS_DB_IF() :
 		wRes['Func']  = "SetAutoRemove"
 		
 		#############################
-		# 入力チェック
-		if inAutoRemove==None and inListName==None :
-			wRes['Reason'] = "input error"
-			gVal.OBJ_L.Log( "A", wRes )
-			return wRes
-		
-		#############################
-		# 入力切替
-		wListName = gVal.DEF_NOTEXT
-		wListID   = gVal.DEF_NOTEXT
-		if inListName!=None and inListName!=gVal.DEF_NOTEXT :
-			wListName = inListName
-			wListID   = inListID
+		# フラグ反転
+		wFLG_AutoRemove = True
+		if gVal.STR_UserInfo['AutoRemove']==True :
+			wFLG_AutoRemove = False
 		
 		wQy = "update tbl_user_data set "
-		if inAutoRemove!=None :
-			wQy = wQy + "autoremove = " + str(inAutoRemove) + " "
-		if inAutoRemove!=None and inListName!=None :
-			wQy = wQy + ", "
-		if inListName!=None :
-			wQy = wQy + "rlist_id = '" + str(wListID) + "', "
-			wQy = wQy + "rlist_name = '" + str(wListName) + "' "
+		wQy = wQy + "autoremove = " + str(wFLG_AutoRemove) + " "
 		wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
 		
 		wResDB = self.OBJ_DB.RunQuery( wQy )
@@ -2173,26 +2163,77 @@ class CLS_DB_IF() :
 		
 		#############################
 		# データをグローバルに反映
-		if inAutoRemove!=None :
-			gVal.STR_UserInfo['AutoRemove'] = inAutoRemove
-		if inListName!=None :
-			gVal.STR_UserInfo['rListID']   = wListID
-			gVal.STR_UserInfo['rListName'] = wListName
+		gVal.STR_UserInfo['AutoRemove'] = wFLG_AutoRemove
 		
 		#############################
 		# ログに記録する
-		if inAutoRemove!=None :
-			if inAutoRemove==True :
-				wStr = "自動リムーブ設定: screen_name=" + str(gVal.STR_UserInfo['Account'])
-			else:
-				wStr = "自動リムーブ解除: screen_name=" + str(gVal.STR_UserInfo['Account'])
-			gVal.OBJ_L.Log( "SC", wRes, wStr )
+		if wFLG_AutoRemove==True :
+			wStr = "自動リムーブ設定: screen_name=" + str(gVal.STR_UserInfo['Account'])
+		else:
+			wStr = "自動リムーブ解除: screen_name=" + str(gVal.STR_UserInfo['Account'])
+		gVal.OBJ_L.Log( "SC", wRes, wStr )
 		
-		if inListName!=None :
-			if inListName!=gVal.DEF_NOTEXT :
-				wStr = "リムーブリスト設定: list name: name=" + str(wListName) + " screen_name=" + str(gVal.STR_UserInfo['Account'])
-			else:
-				wStr = "リムーブリスト解除: screen_name=" + str(gVal.STR_UserInfo['Account'])
+		#############################
+		# 正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def SetAutoList( self, inMListName,inFListName, inMListID, inFListID ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "SetAutoRemove"
+		
+		#############################
+		# 入力チェック
+		if inMListName==gVal.DEF_NOTEXT :
+			if inFListName!=gVal.DEF_NOTEXT :
+				wRes['Reason'] = "input error(inMListName=None)"
+				gVal.OBJ_L.Log( "A", wRes )
+				return wRes
+		
+		if inFListName==gVal.DEF_NOTEXT :
+			if inMListName!=gVal.DEF_NOTEXT :
+				wRes['Reason'] = "input error(inFListName=None)"
+				gVal.OBJ_L.Log( "A", wRes )
+				return wRes
+		
+		wQy = "update tbl_user_data set "
+		wQy = wQy + "mlist_id = '" + str(inMListID) + "', "
+		wQy = wQy + "mlist_name = '" + str(inMListName) + "', "
+		wQy = wQy + "flist_id = '" + str(inFListID) + "', "
+		wQy = wQy + "flist_name = '" + str(inFListName) + "' "
+		wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQy )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
+		# データをグローバルに反映
+		gVal.STR_UserInfo['mListID']   = inMListID
+		gVal.STR_UserInfo['mListName'] = inMListName
+		gVal.STR_UserInfo['fListID']   = inFListID
+		gVal.STR_UserInfo['fListName'] = inFListName
+		
+		#############################
+		# ログに記録する
+		if inListName!=gVal.DEF_NOTEXT :
+			wStr = "相互フォローリスト設定: list name: name=" + str(inMListName) + " screen_name=" + str(gVal.STR_UserInfo['Account'])
+			gVal.OBJ_L.Log( "SC", wRes, wStr )
+			wStr = "片フォロワーリスト設定: list name: name=" + str(inFListName) + " screen_name=" + str(gVal.STR_UserInfo['Account'])
+			gVal.OBJ_L.Log( "SC", wRes, wStr )
+		else:
+			wStr = "相互フォローリスト解除: screen_name=" + str(gVal.STR_UserInfo['Account'])
+			gVal.OBJ_L.Log( "SC", wRes, wStr )
+			wStr = "片フォロワーリスト解除: screen_name=" + str(gVal.STR_UserInfo['Account'])
 			gVal.OBJ_L.Log( "SC", wRes, wStr )
 		
 		#############################

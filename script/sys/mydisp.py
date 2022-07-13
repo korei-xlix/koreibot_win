@@ -402,13 +402,22 @@ class CLS_MyDisp():
 				wStr = wStr + "有効"
 			pRes['Responce'] = wStr
 		
-		###インプリ：リムーブリスト
-		elif "[@SYS-RLISTNAME@]"==inLine :
-			wStr = "    リムーブリスト    : "
-			if inData['Sys_rListName']==None or inData['Sys_rListName']=="" :
+		###インプリ：相互フォローリスト
+		elif "[@SYS-MLISTNAME@]"==inLine :
+			wStr = "    相互フォローリスト: "
+			if inData['Sys_mListName']==None or inData['Sys_mListName']=="" :
 				wStr = wStr + "無効"
 			else:
-				wStr = wStr + "有効(list=" + inData['Sys_rListName'] + ")"
+				wStr = wStr + "有効(list=" + inData['Sys_mListName'] + ")"
+			pRes['Responce'] = wStr
+		
+		###インプリ：片フォロワーリスト
+		elif "[@SYS-FLISTNAME@]"==inLine :
+			wStr = "    片フォロワーリスト: "
+			if inData['Sys_fListName']==None or inData['Sys_fListName']=="" :
+				wStr = wStr + "無効"
+			else:
+				wStr = wStr + "有効(list=" + inData['Sys_fListName'] + ")"
 			pRes['Responce'] = wStr
 		
 		#############################

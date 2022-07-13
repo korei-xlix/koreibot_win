@@ -62,8 +62,10 @@ class gVal() :
 		"ListName"		: None,			#リスト通知 リスト名
 		
 		"AutoRemove"	: False,		#自動リムーブ True=有効
-		"rListID"		: None,			#リムーブリスト リストID
-		"rListName"		: None,			#リムーブリスト リスト名
+		"mListID"		: None,			#相互フォローリスト リストID
+		"mListName"		: None,			#相互フォローリスト リスト名
+		"fListID"		: None,			#片フォロワーリスト リストID
+		"fListName"		: None,			#片フォロワーリスト リスト名
 		
 ###		"ListDate"	: None,			#リスト通知日時
 ###		"LFavoDate"	: None,			#リストいいね日時
