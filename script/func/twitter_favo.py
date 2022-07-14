@@ -176,22 +176,33 @@ class CLS_TwitterFavo():
 		
 		#############################
 		# 取得可能時間か？
-		if self.OBJ_Parent.CHR_GetListFavoDate!=None :
-			### 範囲時間内のツイートか
-			wGetLag = CLS_OSIF.sTimeLag( str( self.OBJ_Parent.CHR_GetListFavoDate ), inThreshold=gVal.DEF_STR_TLNUM['forListFavoSec'] )
-			if wGetLag['Result']!=True :
-				wRes['Reason'] = "sTimeLag failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			if wGetLag['Beyond']==False :
-				### 規定以内は除外
-				wStr = "●リストいいね期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
-				CLS_OSIF.sPrn( wStr )
-				wRes['Result'] = True
-				return wRes
+###		if self.OBJ_Parent.CHR_GetListFavoDate!=None :
+###			### 範囲時間内のツイートか
+###			wGetLag = CLS_OSIF.sTimeLag( str( self.OBJ_Parent.CHR_GetListFavoDate ), inThreshold=gVal.DEF_STR_TLNUM['forListFavoSec'] )
+###			if wGetLag['Result']!=True :
+###				wRes['Reason'] = "sTimeLag failed"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			if wGetLag['Beyond']==False :
+###				### 規定以内は除外
+###				wStr = "●リストいいね期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
+###				CLS_OSIF.sPrn( wStr )
+###				wRes['Result'] = True
+###				return wRes
+		wGetLag = CLS_OSIF.sTimeLag( str( gVal.STR_Time['mffavo'] ), inThreshold=gVal.DEF_STR_TLNUM['forListFavoSec'] )
+		if wGetLag['Result']!=True :
+			wRes['Reason'] = "sTimeLag failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		if wGetLag['Beyond']==False :
+			### 規定以内は除外
+			wStr = "●リストいいね期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
+			CLS_OSIF.sPrn( wStr )
+			wRes['Result'] = True
+			return wRes
 		
-		self.OBJ_Parent.CHR_GetListFavoDate = None	#一度クリアしておく(異常時再取得するため)
-		
+###		self.OBJ_Parent.CHR_GetListFavoDate = None	#一度クリアしておく(異常時再取得するため)
+###		
 		self.ARR_FavoUserID = {}
 		self.ARR_OverFavoUserID = {}
 		wResult = {
@@ -295,9 +306,17 @@ class CLS_TwitterFavo():
 		wStr = wStr + "外部 いいね実施数  : " + str( wResult['Over_RunFavo'] )+ '\n'
 		CLS_OSIF.sPrn( wStr )
 		
+###		#############################
+###		# 現時刻をメモる
+###		self.OBJ_Parent.CHR_GetListFavoDate = str(gVal.STR_Time['TimeDate'])
 		#############################
-		# 現時刻をメモる
-		self.OBJ_Parent.CHR_GetListFavoDate = str(gVal.STR_Time['TimeDate'])
+		# 現時間を設定
+		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "mffavo", gVal.STR_Time['TimeDate'] )
+		if wListRes['Result']!=True :
+			wRes['Reason'] = "SetTimeInfo is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		###	gVal.STR_Time['mffavo']
 		
 		#############################
 		# 正常終了
@@ -428,22 +447,33 @@ class CLS_TwitterFavo():
 		
 		#############################
 		# 取得可能時間か？
-		if self.OBJ_Parent.CHR_RunFollowerFavoDate!=None :
-			### 範囲時間内のツイートか
-			wGetLag = CLS_OSIF.sTimeLag( str( self.OBJ_Parent.CHR_RunFollowerFavoDate ), inThreshold=gVal.DEF_STR_TLNUM['forListFavoFollowerSec'] )
-			if wGetLag['Result']!=True :
-				wRes['Reason'] = "sTimeLag failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			if wGetLag['Beyond']==False :
-				### 規定以内は除外
-				wStr = "●フォロワー支援いいね期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
-				CLS_OSIF.sPrn( wStr )
-				wRes['Result'] = True
-				return wRes
+###		if self.OBJ_Parent.CHR_RunFollowerFavoDate!=None :
+###			### 範囲時間内のツイートか
+###			wGetLag = CLS_OSIF.sTimeLag( str( self.OBJ_Parent.CHR_RunFollowerFavoDate ), inThreshold=gVal.DEF_STR_TLNUM['forListFavoFollowerSec'] )
+###			if wGetLag['Result']!=True :
+###				wRes['Reason'] = "sTimeLag failed"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			if wGetLag['Beyond']==False :
+###				### 規定以内は除外
+###				wStr = "●フォロワー支援いいね期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
+###				CLS_OSIF.sPrn( wStr )
+###				wRes['Result'] = True
+###				return wRes
+		wGetLag = CLS_OSIF.sTimeLag( str( gVal.STR_Time['flfavo'] ), inThreshold=gVal.DEF_STR_TLNUM['forListFavoFollowerSec'] )
+		if wGetLag['Result']!=True :
+			wRes['Reason'] = "sTimeLag failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		if wGetLag['Beyond']==False :
+			### 規定以内は除外
+			wStr = "●フォロワー支援いいね期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
+			CLS_OSIF.sPrn( wStr )
+			wRes['Result'] = True
+			return wRes
 		
-		self.OBJ_Parent.CHR_RunFollowerFavoDate = None	#一度クリアしておく(異常時再取得するため)
-		
+###		self.OBJ_Parent.CHR_RunFollowerFavoDate = None	#一度クリアしておく(異常時再取得するため)
+###		
 		wResult = {
 			"UserNum"	: 0,
 			"RunFavo"	: 0
@@ -520,9 +550,17 @@ class CLS_TwitterFavo():
 		wStr = wStr + "支援 いいね実施数  : " + str( wResult['RunFavo'] )+ '\n'
 		CLS_OSIF.sPrn( wStr )
 		
+###		#############################
+###		# 現時刻をメモる
+###		self.OBJ_Parent.CHR_RunFollowerFavoDate = str(gVal.STR_Time['TimeDate'])
 		#############################
-		# 現時刻をメモる
-		self.OBJ_Parent.CHR_RunFollowerFavoDate = str(gVal.STR_Time['TimeDate'])
+		# 現時間を設定
+		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "flfavo", gVal.STR_Time['TimeDate'] )
+		if wListRes['Result']!=True :
+			wRes['Reason'] = "SetTimeInfo is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		###	gVal.STR_Time['flfavo']
 		
 		#############################
 		# 正常終了

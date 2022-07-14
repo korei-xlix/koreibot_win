@@ -52,21 +52,32 @@ class CLS_TwitterFollower():
 		
 		#############################
 		# 取得可能時間か？
-		if self.OBJ_Parent.CHR_GetReactionDate!=None :
-			### 範囲時間内のツイートか
-			wGetLag = CLS_OSIF.sTimeLag( str( self.OBJ_Parent.CHR_GetReactionDate ), inThreshold=gVal.DEF_STR_TLNUM['forReactionSec'] )
-			if wGetLag['Result']!=True :
-				wRes['Reason'] = "sTimeLag failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			if wGetLag['Beyond']==False :
-				### 規定以内は除外
-				wStr = "●リアクション期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
-				CLS_OSIF.sPrn( wStr )
-				wRes['Result'] = True
-				return wRes
+###		if self.OBJ_Parent.CHR_GetReactionDate!=None :
+###			### 範囲時間内のツイートか
+###			wGetLag = CLS_OSIF.sTimeLag( str( self.OBJ_Parent.CHR_GetReactionDate ), inThreshold=gVal.DEF_STR_TLNUM['forReactionSec'] )
+###			if wGetLag['Result']!=True :
+###				wRes['Reason'] = "sTimeLag failed"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			if wGetLag['Beyond']==False :
+###				### 規定以内は除外
+###				wStr = "●リアクション期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
+###				CLS_OSIF.sPrn( wStr )
+###				wRes['Result'] = True
+###				return wRes
+		wGetLag = CLS_OSIF.sTimeLag( str( gVal.STR_Time['reaction'] ), inThreshold=gVal.DEF_STR_TLNUM['forReactionSec'] )
+		if wGetLag['Result']!=True :
+			wRes['Reason'] = "sTimeLag failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		if wGetLag['Beyond']==False :
+			### 規定以内は除外
+			wStr = "●リアクション期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
+			CLS_OSIF.sPrn( wStr )
+			wRes['Result'] = True
+			return wRes
 		
-		self.OBJ_Parent.CHR_GetReactionDate = None	#一度クリアしておく(異常時再取得するため)
+###		self.OBJ_Parent.CHR_GetReactionDate = None	#一度クリアしておく(異常時再取得するため)
 		#############################
 		# 取得開始の表示
 		if inFLG_Short==False :
@@ -192,9 +203,17 @@ class CLS_TwitterFollower():
 				wStr = "〇リプライ検出: " + wUserInfoRes['Responce']['screen_name']
 				CLS_OSIF.sPrn( wStr )
 		
+###		#############################
+###		# 現時刻をメモる
+###		self.OBJ_Parent.CHR_GetReactionDate = str(gVal.STR_Time['TimeDate'])
 		#############################
-		# 現時刻をメモる
-		self.OBJ_Parent.CHR_GetReactionDate = str(gVal.STR_Time['TimeDate'])
+		# 現時間を設定
+		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "reaction", gVal.STR_Time['TimeDate'] )
+		if wListRes['Result']!=True :
+			wRes['Reason'] = "SetTimeInfo is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		###	gVal.STR_Time['reaction']
 		
 		#############################
 		# 正常終了
@@ -216,7 +235,8 @@ class CLS_TwitterFollower():
 		
 		#############################
 		# いいね情報を送信する日時か
-		wGetLag = CLS_OSIF.sTimeLag( str(gVal.STR_UserInfo['FavoDate']), inThreshold=gVal.DEF_STR_TLNUM['favoSendsSec'] )
+###		wGetLag = CLS_OSIF.sTimeLag( str(gVal.STR_UserInfo['FavoDate']), inThreshold=gVal.DEF_STR_TLNUM['favoSendsSec'] )
+		wGetLag = CLS_OSIF.sTimeLag( str(gVal.STR_Time['send_favo']), inThreshold=gVal.DEF_VAL_WEEK )
 		if wGetLag['Result']!=True :
 			wRes['Reason'] = "sTimeLag failed(1)"
 			gVal.OBJ_L.Log( "B", wRes )
@@ -418,8 +438,8 @@ class CLS_TwitterFollower():
 					gVal.OBJ_L.Log( "B", wRes )
 					return wRes
 		
-		#############################
-		# いいね者送信日時を更新する
+###		#############################
+###		# いいね者送信日時を更新する
 ###		wSubRes = gVal.OBJ_DB_IF.UpdateFavoDate( str( gVal.STR_Time['TimeDate'] ) )
 ###		if wSubRes['Result']!=True :
 ###			###失敗
@@ -427,6 +447,15 @@ class CLS_TwitterFollower():
 ###			gVal.OBJ_L.Log( "B", wRes )
 ###			return wRes
 ###		
+		#############################
+		# 現時間を設定
+		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "send_favo", gVal.STR_Time['TimeDate'] )
+		if wListRes['Result']!=True :
+			wRes['Reason'] = "SetTimeInfo is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		###	gVal.STR_Time['send_favo']
+		
 		wRes['Result'] = True
 		return wRes
 

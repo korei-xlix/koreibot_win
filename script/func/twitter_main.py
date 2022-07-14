@@ -209,7 +209,6 @@ class CLS_TwitterMain():
 			return wRes
 		
 		### ※前回から15分経ったので処理実行
-		
 		#############################
 		# Twitter再接続
 		wTwitterRes = gVal.OBJ_Tw_IF.ReConnect()
@@ -522,13 +521,24 @@ class CLS_TwitterMain():
 #####################################################
 # 自動監視
 #####################################################
-	def AllRun( self, inFLG_Short=False ):
+###	def AllRun( self, inFLG_Short=False ):
+	def AllRun(self):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
 		wRes = CLS_OSIF.sGet_Resp()
 		wRes['Class'] = "CLS_TwitterMain"
 		wRes['Func']  = "AllRun"
+		
+		wFLG_Short = False
+		wGetLag = CLS_OSIF.sTimeLag( str( gVal.STR_Time['autorun'] ), inThreshold=gVal.DEF_STR_TLNUM['forAutoAllRunSec'] )
+		if wGetLag['Result']!=True :
+			wRes['Reason'] = "sTimeLag failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		if wGetLag['Beyond']==False :
+			### 規定以内= ショート処理
+			wFLG_Short = True
 		
 		#############################
 		# Twitter情報取得
@@ -540,7 +550,7 @@ class CLS_TwitterMain():
 		
 		#############################
 		# ユーザ自動削除
-		if inFLG_Short==False :
+		if wFLG_Short==False :
 			wSubRes = self.OBJ_TwitterAdmin.RunAutoUserRemove()
 			if wSubRes['Result']!=True :
 				###失敗
@@ -550,7 +560,7 @@ class CLS_TwitterMain():
 		
 		#############################
 		# いいね解除
-		if inFLG_Short==False :
+		if wFLG_Short==False :
 			wSubRes = self.OBJ_TwitterFavo.RemFavo()
 			if wSubRes['Result']!=True :
 				wRes['Reason'] = "RemFavo"
@@ -575,7 +585,7 @@ class CLS_TwitterMain():
 		
 		#############################
 		# リアクションチェック
-		wSubRes = self.OBJ_TwitterFollower.ReactionCheck( inFLG_Short=inFLG_Short )
+		wSubRes = self.OBJ_TwitterFollower.ReactionCheck( inFLG_Short=wFLG_Short )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "ReactionCheck"
 			gVal.OBJ_L.Log( "B", wRes )
@@ -583,7 +593,7 @@ class CLS_TwitterMain():
 		
 		#############################
 		# リストいいね
-		if inFLG_Short==False :
+		if wFLG_Short==False :
 			wSubRes = self.OBJ_TwitterFavo.ListFavo()
 			if wSubRes['Result']!=True :
 				wRes['Reason'] = "ListFavo"
@@ -608,7 +618,7 @@ class CLS_TwitterMain():
 		
 		#############################
 		# 検索ワード実行
-		if inFLG_Short==False :
+		if wFLG_Short==False :
 			wSubRes = self.OBJ_TwitterKeyword.RunKeywordSearchFavo()
 			if wSubRes['Result']!=True :
 				wRes['Reason'] = "RunKeywordSearchFavo"
@@ -617,7 +627,7 @@ class CLS_TwitterMain():
 		
 		#############################
 		# 警告ツイートの削除
-		if inFLG_Short==False :
+		if wFLG_Short==False :
 			wSubRes = self.OBJ_TwitterAdmin.RemoveCautionTweet()
 			if wSubRes['Result']!=True :
 				###失敗
@@ -627,13 +637,22 @@ class CLS_TwitterMain():
 		
 		#############################
 		# 古いいいね情報の削除
-		if inFLG_Short==False :
+		if wFLG_Short==False :
 			wSubRes = gVal.OBJ_DB_IF.DeleteFavoData()
 			if wSubRes['Result']!=True :
 				###失敗
 				wRes['Reason'] = "DeleteFavoData is failed"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
+		
+		#############################
+		# 現時間を設定
+		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "autorun", gVal.STR_Time['TimeDate'] )
+		if wListRes['Result']!=True :
+			wRes['Reason'] = "SetTimeInfo is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		###	gVal.STR_Time['autorun']
 		
 		#############################
 		# 完了
@@ -1110,6 +1129,16 @@ class CLS_TwitterMain():
 		wRes['Class'] = "CLS_TwitterMain"
 		wRes['Func']  = "UpdateListIndUser"
 		
+		wGetLag = CLS_OSIF.sTimeLag( str( gVal.STR_Time['list_clear'] ), inThreshold=gVal.DEF_VAL_DAY )
+		if wGetLag['Result']!=True :
+			wRes['Reason'] = "sTimeLag failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		if wGetLag['Beyond']==False :
+			### 規定以内= 処理しない
+			wRes['Result'] = True
+			return wRes
+		
 ###		#############################
 ###		# 処理時間の更新
 ###		wSubRes = gVal.OBJ_DB_IF.UpdateListIndDate()
@@ -1123,14 +1152,23 @@ class CLS_TwitterMain():
 		# 翌日の場合
 		#   リスト通知をクリアする
 ###		if wFLG_NextDay==True :
-		if gVal.STR_SystemInfo['Day']==True :
-			wSubRes = gVal.OBJ_Tw_IF.ListInd_Clear()
-			if wSubRes['Result']!=True :
-				wRes['Reason'] = "AllClearListInd error"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			
-			gVal.OBJ_L.Log( "S", wRes, "●リスト通知クリア" )
+###		if gVal.STR_SystemInfo['Day']==True :
+		wSubRes = gVal.OBJ_Tw_IF.ListInd_Clear()
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "AllClearListInd error"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		gVal.OBJ_L.Log( "SC", wRes, "リスト通知クリア" )
+		
+		#############################
+		# 現時間を設定
+		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "list_clear", gVal.STR_Time['TimeDate'] )
+		if wListRes['Result']!=True :
+			wRes['Reason'] = "SetTimeInfo is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		###	gVal.STR_Time['list_clear']
 		
 		wRes['Result'] = True
 		return wRes
@@ -1413,22 +1451,34 @@ class CLS_TwitterMain():
 		
 		#############################
 		# 取得可能時間か？
-		if self.CHR_AutoRemoveDate!=None :
-			### 範囲時間内のツイートか
-			wGetLag = CLS_OSIF.sTimeLag( str( self.CHR_AutoRemoveDate ), inThreshold=gVal.DEF_STR_TLNUM['forCheckAutoRemoveSec'] )
-			if wGetLag['Result']!=True :
-				wRes['Reason'] = "sTimeLag failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			if wGetLag['Beyond']==False :
-				### 規定以内は除外
-				wStr = "●自動リムーブチェック期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
-				CLS_OSIF.sPrn( wStr )
-				wRes['Result'] = True
-				return wRes
+###		if self.CHR_AutoRemoveDate!=None :
+###			### 範囲時間内のツイートか
+###			wGetLag = CLS_OSIF.sTimeLag( str( self.CHR_AutoRemoveDate ), inThreshold=gVal.DEF_STR_TLNUM['forCheckAutoRemoveSec'] )
+###			wGetLag = CLS_OSIF.sTimeLag( str( gVal.STR_Time['auto_remove'] ), inThreshold=gVal.DEF_STR_TLNUM['forCheckAutoRemoveSec'] )
+###			if wGetLag['Result']!=True :
+###				wRes['Reason'] = "sTimeLag failed"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			if wGetLag['Beyond']==False :
+###				### 規定以内は除外
+###				wStr = "●自動リムーブチェック期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
+###				CLS_OSIF.sPrn( wStr )
+###				wRes['Result'] = True
+###				return wRes
+		wGetLag = CLS_OSIF.sTimeLag( str( gVal.STR_Time['auto_remove'] ), inThreshold=gVal.DEF_STR_TLNUM['forCheckAutoRemoveSec'] )
+		if wGetLag['Result']!=True :
+			wRes['Reason'] = "sTimeLag failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		if wGetLag['Beyond']==False :
+			### 規定以内は除外
+			wStr = "●自動リムーブチェック期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
+			CLS_OSIF.sPrn( wStr )
+			wRes['Result'] = True
+			return wRes
 		
-		self.CHR_GetReactionDate = None	#一度クリアしておく(異常時再取得するため)
-		
+###		self.CHR_GetReactionDate = None	#一度クリアしておく(異常時再取得するため)
+###		
 		wStr = "自動リムーブチェック中..."
 		CLS_OSIF.sPrn( wStr )
 		#############################
@@ -1472,9 +1522,17 @@ class CLS_TwitterMain():
 					gVal.OBJ_L.Log( "B", wRes )
 					return wRes
 		
+###		#############################
+###		# 現時刻をメモる
+###		self.CHR_AutoRemoveDate = str(gVal.STR_Time['TimeDate'])
 		#############################
-		# 現時刻をメモる
-		self.CHR_AutoRemoveDate = str(gVal.STR_Time['TimeDate'])
+		# 現時間を設定
+		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "auto_remove", gVal.STR_Time['TimeDate'] )
+		if wListRes['Result']!=True :
+			wRes['Reason'] = "SetTimeInfo is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		###	gVal.STR_Time['auto_remove']
 		
 		wStr = "チェック終了" + '\n'
 		CLS_OSIF.sPrn( wStr )

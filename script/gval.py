@@ -81,9 +81,9 @@ class gVal() :
 										# 各実行時間
 		"run"			: None,			# コマンド実行
 		"autorun"		: None,			# 自動監視
-		"reaction"		: None,			# リアクション受信				CHR_GetReactionDate
-		"mffavo"		: None,			# 相互フォローリストいいね		CHR_GetListFavoDate
-		"flfavo"		: None,			# フォロワー支援いいね			CHR_RunFollowerFavoDate
+		"reaction"		: None,			# リアクション受信
+		"mffavo"		: None,			# 相互フォローリストいいね
+		"flfavo"		: None,			# フォロワー支援いいね
 		"list_clear"	: None,			# リスト通知クリア
 		"auto_remove"	: None,			# 自動リムーブ
 		"send_favo"		: None,			# いいね情報送信
@@ -149,6 +149,9 @@ class gVal() :
 #############################
 # Timeline調整数
 	DEF_STR_TLNUM = {
+		
+		"forAutoAllRunSec"	: 14400,					# 自動監視 全実行期間  4時間  60x60x4
+		
 														# いいね管理
 		"favoTweetLine"		: 40,						#   いいね時 対象ユーザツイート取得ライン数
 		"favoCancelNum"		: 8,						#   いいね時 連続スキップでキャンセル
