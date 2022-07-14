@@ -1313,7 +1313,7 @@ class CLS_DB_IF() :
 			#   通報情報を更新する
 ###			if wKey in wARR_RateWord :
 			if wID in wARR_RateWordID :
-				wQy = "update tbl_exc_word set "
+				wQy = "update tbl_exc_user set "
 ###				wQy = wQy + "report = " + str(wARR_Word[wKey]['report']) + ", "
 ###				wQy = wQy + "vip = " + str(wARR_Word[wKey]['vip']) + " "
 ###				wQy = wQy + "where id = '" + str(wARR_Word[wKey]['id']) + "' " + \
