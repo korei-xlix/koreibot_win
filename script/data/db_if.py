@@ -9,6 +9,7 @@
 from postgresql_use import CLS_PostgreSQL_Use
 
 from traffic import CLS_Traffic
+from time import CLS_TIME
 from osif import CLS_OSIF
 from gval import gVal
 #####################################################
@@ -397,14 +398,15 @@ class CLS_DB_IF() :
 		
 		#############################
 		# 時間を取得
-		wTD = CLS_OSIF.sGetTime()
-		if wTD['Result']!=True :
-			###時間取得失敗  時計壊れた？
+###		wTD = CLS_OSIF.sGetTime()
+###		if wTD['Result']!=True :
+###			###時間取得失敗  時計壊れた？
 ###			wStr = "PC時間取得失敗" + '\n'
-			wRes['Reason'] = "PC time get is failer" + '\n'
+###			wRes['Reason'] = "PC time get is failer" + '\n'
 ###			CLS_OSIF.sPrn( wStr )
-			gVal.OBJ_L.Log( "C", wRes )
-			wTD['TimeDate'] = gVal.DEF_TIMEDATE
+###			gVal.OBJ_L.Log( "C", wRes )
+###			wTD['TimeDate'] = gVal.DEF_TIMEDATE
+		wTD = CLS_TIME.sGet( wRes, "(1)" )
 		
 		#############################
 		# テーブルチェック
@@ -429,9 +431,10 @@ class CLS_DB_IF() :
 			wQy = wQy + "'" + str( wTD['TimeDate'] ) + "',"		# 登録日時
 			wQy = wQy + "False,"								# 排他ロック true=ロックON
 			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# 排他日時
+			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# 排他獲得日時
 			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# 排他解除日時
-			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# 週間 開始日時
-			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# 1日  開始日時
+###			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# 週間 開始日時
+###			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# 1日  開始日時
 			wQy = wQy + "'" + gVal.DEF_NOTEXT + "', "			# トレンド送信タグ
 			wQy = wQy + "'" + gVal.DEF_NOTEXT + "', "			# リスト通知 リストID(数値)
 			wQy = wQy + "'" + gVal.DEF_NOTEXT + "', "			# リスト通知 リスト名
@@ -463,6 +466,27 @@ class CLS_DB_IF() :
 			if wResDB['Result']!=True :
 				##失敗
 				wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+###				CLS_OSIF.sErr( wRes )
+				gVal.OBJ_L.Log( "C", wRes )
+				return wRes
+			
+			wQy = "insert into tbl_time_data values ("
+			wQy = wQy + "'" + inUserData['Account'] + "',"		# 記録したユーザ(Twitter ID)
+			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# コマンド実行
+			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# 自動監視
+			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# リアクション受信
+			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# 相互フォローリストいいね
+			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# フォロワー支援いいね
+			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# リスト通知クリア
+			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# 自動リムーブ
+			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "' "	# いいね情報送信
+			wQy = wQy + ") ;"
+			
+			wResDB = self.OBJ_DB.RunQuery( wQy )
+			wResDB = self.OBJ_DB.GetQueryStat()
+			if wResDB['Result']!=True :
+				##失敗
+				wRes['Reason'] = "Run Query is failed(4): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
 ###				CLS_OSIF.sErr( wRes )
 				gVal.OBJ_L.Log( "C", wRes )
 				return wRes
@@ -499,7 +523,7 @@ class CLS_DB_IF() :
 			wResDB = self.OBJ_DB.GetQueryStat()
 			if wResDB['Result']!=True :
 				##失敗
-				wRes['Reason'] = "Run Query is failed(4): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+				wRes['Reason'] = "Run Query is failed(6): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
 ###				CLS_OSIF.sErr( wRes )
 				gVal.OBJ_L.Log( "C", wRes )
 				return wRes
@@ -607,14 +631,16 @@ class CLS_DB_IF() :
 			"Account"	: None,
 			"locked"	: None,
 			"lok_date"	: None,
-			"rel_date"	: None,
-			"week_date"	: None,
-			"day_date"	: None
+			"get_date"	: None,
+			"rel_date"	: None
+###			"week_date"	: None,
+###			"day_date"	: None
 		}
 		
 		#############################
 		# データ取得
-		wQy = "select locked, lok_date, rel_date, week_date, day_date from tbl_user_data "
+###		wQy = "select locked, lok_date, get_date, rel_date, week_date, day_date from tbl_user_data "
+		wQy = "select locked, lok_date, get_date, rel_date from tbl_user_data "
 		wQy = wQy + "where twitterid = '" + str(inAccount) + "' ;"
 		
 		wResDB = self.OBJ_DB.RunQuery( wQy )
@@ -641,9 +667,10 @@ class CLS_DB_IF() :
 		# Twitterデータ取得
 		wRes['Responce']['locked']    = wARR_DBData[0]['locked']
 		wRes['Responce']['lok_date']  = wARR_DBData[0]['lok_date']
+		wRes['Responce']['get_date']  = wARR_DBData[0]['get_date']
 		wRes['Responce']['rel_date']  = wARR_DBData[0]['rel_date']
-		wRes['Responce']['week_date'] = wARR_DBData[0]['week_date']
-		wRes['Responce']['day_date']  = wARR_DBData[0]['day_date']
+###		wRes['Responce']['week_date'] = wARR_DBData[0]['week_date']
+###		wRes['Responce']['day_date']  = wARR_DBData[0]['day_date']
 		
 		wRes['Responce']['Account'] = str(inAccount)
 		#############################
@@ -656,7 +683,8 @@ class CLS_DB_IF() :
 #####################################################
 # 排他ロック設定
 #####################################################
-	def SetLock( self, inAccount, inLock, inDate, inFLG_Week=False, inFLG_Day=False ):
+###	def SetLock( self, inAccount, inLock, inDate, inFLG_Week=False, inFLG_Day=False ):
+	def SetLock( self, inAccount, inLock, inDate ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -667,7 +695,8 @@ class CLS_DB_IF() :
 		wRes['Responce'] = 0
 		#############################
 		# データ取得
-		wQy = "select locked, lok_date, rel_date, week_date, day_date from tbl_user_data "
+###		wQy = "select locked, lok_date, rel_date, week_date, day_date from tbl_user_data "
+		wQy = "select locked, lok_date, get_date, rel_date from tbl_user_data "
 		wQy = wQy + "where twitterid = '" + str(inAccount) + "' ;"
 		
 		wResDB = self.OBJ_DB.RunQuery( wQy )
@@ -694,15 +723,20 @@ class CLS_DB_IF() :
 		# 変更する
 		wQy = "update tbl_user_data set " + \
 		if inLock==True :
-			wQy = wQy + "lok_date = '" + str( inDate ) + "', " + \
+###			wQy = wQy + "lok_date = '" + str( inDate ) + "', " + \
+			if wARR_DBData['locked']==False :
+				wQy = wQy + "lok_date = '" + str( inDate ) + "', " + \
+				wQy = wQy + "get_date = '" + str( inDate ) + "', " + \
+			else:
+				wQy = wQy + "get_date = '" + str( inDate ) + "', " + \
 		else:
 			wQy = wQy + "rel_date = '" + str( inDate ) + "', " + \
 		
-		if inFLG_Week==True :
-			wQy = wQy + "week_date = '" + str( inDate ) + "', " + \
-		if inFLG_Day==True :
-			wQy = wQy + "day_date = '" + str( inDate ) + "', " + \
-		
+###		if inFLG_Week==True :
+###			wQy = wQy + "week_date = '" + str( inDate ) + "', " + \
+###		if inFLG_Day==True :
+###			wQy = wQy + "day_date = '" + str( inDate ) + "', " + \
+###		
 		wQy = wQy + "locked = " + str( inLock ) + " " + \
 		wQy = wQy + "where twitterid = '" + str(inAccount) + "' ;"
 		wQy = wQy + ";"
@@ -720,16 +754,158 @@ class CLS_DB_IF() :
 		#############################
 		# ログに記録する
 		if inLock==True :
-			gVal.OBJ_L.Log( "SR", wRes, "排他: locked=True user=" + str(inUserData['Account']) )
+###			gVal.OBJ_L.Log( "SR", wRes, "排他: locked=True user=" + str(inUserData['Account']) )
+			if wARR_DBData['locked']==False :
+				gVal.OBJ_L.Log( "SR", wRes, "排他: locked=True user=" + str(inUserData['Account']) )
+			else:
+				gVal.OBJ_L.Log( "SR", wRes, "排他(延長): locked=True user=" + str(inUserData['Account']) )
 		
 		#############################
 		# 排他解除の場合
-		#   実行時間も返す
+###		#   実行時間も返す
+		#   獲得時間も返す
 		else:
-			wRunTime = inDate - wARR_DBData['lok_date']
+###			wRunTime = inDate - wARR_DBData['lok_date']
+			wRunTime = inDate - wARR_DBData['get_date']
 			gVal.OBJ_L.Log( "SR", wRes, "排他: locked=False user=" + str(inUserData['Account']) + " runtime=" + str(wRunTime) )
 			
 			wRes['Responce'] = wRunTime
+		
+		#############################
+		# =正常
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# 時間情報
+#####################################################
+	def GetTimeInfo( self, inAccount ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "GetTimeInfo"
+		
+		#############################
+		# データ取得
+		wQy = "select * from tbl_time_data "
+		wQy = wQy + "where twitterid = '" + str(inAccount) + "' ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQy )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
+		# 辞書型に整形
+		wARR_DBData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
+		
+		#############################
+		# 取得チェック
+		if len( wARR_DBData )!= 1 :
+			##失敗
+			wRes['Reason'] = "Get twitter data is not one: account=" + str(inAccount) + " num=" + str( len( wARR_DBData ) )
+			gVal.OBJ_L.Log( "D", wRes )
+			return wRes
+		
+		#############################
+		# グローバルにロード
+		wKeylist = list( wARR_DBData[0].keys() )
+		for wKey in wARR_DBData[0] :
+			if wKey=="twitterid" :
+				continue
+			
+			if wKey not in gVal.STR_Time :
+				wRes['Reason'] = "not col data: account=" + str(inAccount) + " key=" + str( wKey )
+				gVal.OBJ_L.Log( "A", wRes )
+				return wRes
+			
+			gVal.STR_Time[wKey] = wARR_DBData[0][wKey]
+		
+		#############################
+		# 全部ロードしたかチェック
+		wKeylist = list( gVal.STR_Time.keys() )
+		for wKey in gVal.STR_Time :
+			if wKey=="TimeDate" :
+				continue
+			
+			if gVal.STR_Time[wKey]==None :
+				wRes['Reason'] = "unload data: account=" + str(inAccount) + " key=" + str( wKey )
+				gVal.OBJ_L.Log( "A", wRes )
+				return wRes
+		
+		#############################
+		# =正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def SetTimeInfo( self, inAccount, inTag, inDate ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "SetTimeInfo"
+		
+		#############################
+		# 入力チェック
+		if inTag not in gVal.STR_Time :
+			wRes['Reason'] = "not col data: account=" + str(inAccount) + " tag=" + str( inTag )
+			gVal.OBJ_L.Log( "A", wRes )
+			return wRes
+		
+		#############################
+		# データ取得
+		wQy = "select " + inTag + " from tbl_time_data "
+		wQy = wQy + "where twitterid = '" + str(inAccount) + "' ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQy )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
+		# 辞書型に整形
+		wARR_DBData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
+		
+		#############################
+		# 取得チェック
+		if len( wARR_DBData )!= 1 :
+			##失敗
+			wRes['Reason'] = "Get twitter data is not one: account=" + str(inAccount) + " num=" + str( len( wARR_DBData ) )
+			gVal.OBJ_L.Log( "D", wRes )
+			return wRes
+		
+		#############################
+		# 変更する
+		wQy = "update tbl_time_data set " + \
+		wQy = wQy + str(inTag) + " = '" + str( inDate ) + "' " + \
+		wQy = wQy + "where twitterid = '" + str(inAccount) + "' ;"
+		wQy = wQy + ";"
+		
+		#############################
+		# クエリの実行
+		wResDB = self.OBJ_DB.RunQuery( wQy )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
+		# グローバルにセット
+		gVal.STR_Time[wKey] = inDate
 		
 		#############################
 		# =正常
@@ -800,14 +976,15 @@ class CLS_DB_IF() :
 		
 		#############################
 		# 時間を取得
-		wTD = CLS_OSIF.sGetTime()
-		if wTD['Result']!=True :
-			###時間取得失敗  時計壊れた？
+###		wTD = CLS_OSIF.sGetTime()
+###		if wTD['Result']!=True :
+###			###時間取得失敗  時計壊れた？
 ###			wStr = "PC時間取得失敗" + '\n'
 ###			CLS_OSIF.sPrn( wStr )
-			wRes['Reason'] = "PC time get is failer"
-			gVal.OBJ_L.Log( "C", wRes )
-			wTD['TimeDate'] = gVal.DEF_TIMEDATE
+###			wRes['Reason'] = "PC time get is failer"
+###			gVal.OBJ_L.Log( "C", wRes )
+###			wTD['TimeDate'] = gVal.DEF_TIMEDATE
+		wTD = CLS_TIME.sGet( wRes, "(2)" )
 		
 		#############################
 		# データベースから除外文字を取得
@@ -1043,14 +1220,15 @@ class CLS_DB_IF() :
 		
 		#############################
 		# 時間を取得
-		wTD = CLS_OSIF.sGetTime()
-		if wTD['Result']!=True :
-			###時間取得失敗  時計壊れた？
+###		wTD = CLS_OSIF.sGetTime()
+###		if wTD['Result']!=True :
+###			###時間取得失敗  時計壊れた？
 ###			wStr = "PC時間取得失敗" + '\n'
 ###			CLS_OSIF.sPrn( wStr )
-			wRes['Reason'] = "PC time get is failer"
-			gVal.OBJ_L.Log( "C", wRes )
-			wTD['TimeDate'] = gVal.DEF_TIMEDATE
+###			wRes['Reason'] = "PC time get is failer"
+###			gVal.OBJ_L.Log( "C", wRes )
+###			wTD['TimeDate'] = gVal.DEF_TIMEDATE
+		wTD = CLS_TIME.sGet( wRes, "(3)" )
 		
 		#############################
 		# データベースから禁止ユーザを取得
@@ -1267,14 +1445,15 @@ class CLS_DB_IF() :
 		
 		#############################
 		# 時間を取得
-		wTD = CLS_OSIF.sGetTime()
-		if wTD['Result']!=True :
-			###時間取得失敗  時計壊れた？
+###		wTD = CLS_OSIF.sGetTime()
+###		if wTD['Result']!=True :
+###			###時間取得失敗  時計壊れた？
 ###			wStr = "PC時間取得失敗" + '\n'
 ###			CLS_OSIF.sPrn( wStr )
-			wRes['Reason'] = "PC time get is failer"
-			gVal.OBJ_L.Log( "C", wRes )
-			wTD['TimeDate'] = gVal.DEF_TIMEDATE
+###			wRes['Reason'] = "PC time get is failer"
+###			gVal.OBJ_L.Log( "C", wRes )
+###			wTD['TimeDate'] = gVal.DEF_TIMEDATE
+		wTD = CLS_TIME.sGet( wRes, "(4)" )
 		
 		#############################
 		# ダブりチェック
@@ -1829,7 +2008,7 @@ class CLS_DB_IF() :
 		# データの組み立て
 		wCell = {
 			"twitterid"		: gVal.STR_UserInfo['Account'],
-			"regdate"		: str( gVal.STR_SystemInfo['TimeDate'] ),
+			"regdate"		: str( gVal.STR_Time['TimeDate'] ),
 			"tweet_id"		: str( inTweetID ),
 			"id"			: wUserID,
 			"screen_name"	: str( inUser['screen_name'] )
@@ -2257,7 +2436,7 @@ class CLS_DB_IF() :
 ###		wRes['Responce'] = False
 ###		
 ###		wQy = "update tbl_user_data set " + \
-###				"listdate = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
+###				"listdate = '" + str(gVal.STR_Time['TimeDate']) + "' " + \
 ###				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
 ###		
 ###		wResDB = self.OBJ_DB.RunQuery( wQy )
@@ -2270,7 +2449,7 @@ class CLS_DB_IF() :
 ###		
 ###		#############################
 ###		# 日付を跨いだか
-###		wNowDate = str(gVal.STR_SystemInfo['TimeDate'])
+###		wNowDate = str(gVal.STR_Time['TimeDate'])
 ###		wNowDate = wNowDate.split(" ")
 ###		wNowDate = wNowDate[0]
 ###		wRateDate = str(gVal.STR_UserInfo['ListDate'])
@@ -2279,7 +2458,7 @@ class CLS_DB_IF() :
 ###		if wNowDate!=wRateDate :
 ###			### 翌日
 ###			wRes['Responce'] = True
-###		gVal.STR_UserInfo['ListDate'] = str(gVal.STR_SystemInfo['TimeDate'])
+###		gVal.STR_UserInfo['ListDate'] = str(gVal.STR_Time['TimeDate'])
 ###		
 ###		wStr = "リスト通知日時を更新しました。" + '\n'
 ###		CLS_OSIF.sPrn( wStr )
@@ -2303,7 +2482,7 @@ class CLS_DB_IF() :
 ###		wRes['Responce'] = False
 ###		
 ###		wQy = "update tbl_user_data set " + \
-###				"lfavdate = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
+###				"lfavdate = '" + str(gVal.STR_Time['TimeDate']) + "' " + \
 ###				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
 ###		
 ###		wResDB = self.OBJ_DB.RunQuery( wQy )
@@ -2316,7 +2495,7 @@ class CLS_DB_IF() :
 ###		
 ###		#############################
 ###		# 日付を跨いだか
-###		wNowDate = str(gVal.STR_SystemInfo['TimeDate'])
+###		wNowDate = str(gVal.STR_Time['TimeDate'])
 ###		wNowDate = wNowDate.split(" ")
 ###		wNowDate = wNowDate[0]
 ###		wRateDate = str(gVal.STR_UserInfo['LFavoDate'])
@@ -2325,7 +2504,7 @@ class CLS_DB_IF() :
 ###		if wNowDate!=wRateDate :
 ###			### 翌日
 ###			wRes['Responce'] = True
-###		gVal.STR_UserInfo['LFavoDate'] = str(gVal.STR_SystemInfo['TimeDate'])
+###		gVal.STR_UserInfo['LFavoDate'] = str(gVal.STR_Time['TimeDate'])
 ###		
 ###		wStr = "リストいいね日時を更新しました。" + '\n'
 ###		CLS_OSIF.sPrn( wStr )
@@ -2353,7 +2532,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# 時間の取得
-		wTimeDate = str( gVal.STR_SystemInfo['TimeDate'] )
+		wTimeDate = str( gVal.STR_Time['TimeDate'] )
 		wDefTimeDate = gVal.DEF_TIMEDATE
 		
 		#############################
@@ -2466,7 +2645,7 @@ class CLS_DB_IF() :
 		wScreenName = inUser['screen_name']
 		
 		wFavoID   = str( inData['id'] )
-		wFavoDate = str( gVal.STR_SystemInfo['TimeDate'] )
+		wFavoDate = str( gVal.STR_Time['TimeDate'] )
 		if inCountUp==True :
 			wCnt    = inFavoData['favo_cnt'] + 1
 			wNowCnt = inFavoData['now_favo_cnt'] + 1
@@ -2570,7 +2749,7 @@ class CLS_DB_IF() :
 		#############################
 		# 更新
 		wQy = "update tbl_favouser_data set " + \
-					"list_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
+					"list_date = '" + str(gVal.STR_Time['TimeDate']) + "' " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
 					" and id = '" + str(wID) + "' ;"
 		
@@ -2599,7 +2778,7 @@ class CLS_DB_IF() :
 		if inCnt>=0 :
 			wCnt = inCnt + 1
 			wQy = "update tbl_favouser_data set " + \
-						"senddate = '" + str( gVal.STR_SystemInfo['TimeDate'] ) + "', " + \
+						"senddate = '" + str( gVal.STR_Time['TimeDate'] ) + "', " + \
 						"sended = True, " + \
 						"send_cnt = " + str( wCnt ) + ", " + \
 						"now_favo_cnt = 0 " + \
@@ -2655,11 +2834,11 @@ class CLS_DB_IF() :
 		if inFLG_MyFollow==True and inFLG_Follower==True :
 			wQy = "update tbl_favouser_data set "
 			if inFLG_FavoUpdate==True :
-				wQy = wQy + "favo_date = '" + str( gVal.STR_SystemInfo['TimeDate'] ) + "', "
+				wQy = wQy + "favo_date = '" + str( gVal.STR_Time['TimeDate'] ) + "', "
 			wQy = wQy + "myfollow = True, " + \
-					"myfollow_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "', " + \
+					"myfollow_date = '" + str(gVal.STR_Time['TimeDate']) + "', " + \
 					"follower = True, " + \
-					"follower_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
+					"follower_date = '" + str(gVal.STR_Time['TimeDate']) + "' " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
 					" and id = '" + str(inID) + "' ;"
 		
@@ -2678,9 +2857,9 @@ class CLS_DB_IF() :
 		elif inFLG_MyFollow==True and inFLG_Follower==False :
 			wQy = "update tbl_favouser_data set "
 			if inFLG_FavoUpdate==True :
-				wQy = wQy + "favo_date = '" + str( gVal.STR_SystemInfo['TimeDate'] ) + "', "
+				wQy = wQy + "favo_date = '" + str( gVal.STR_Time['TimeDate'] ) + "', "
 			wQy = wQy + "myfollow = True, " + \
-					"myfollow_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "', " + \
+					"myfollow_date = '" + str(gVal.STR_Time['TimeDate']) + "', " + \
 					"follower = False " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
 					" and id = '" + str(inID) + "' ;"
@@ -2692,7 +2871,7 @@ class CLS_DB_IF() :
 			wQy = "update tbl_favouser_data set " + \
 					"myfollow = False, " + \
 					"follower = True, " + \
-					"follower_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
+					"follower_date = '" + str(gVal.STR_Time['TimeDate']) + "' " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
 					" and id = '" + str(inID) + "' ;"
 		
@@ -2701,9 +2880,9 @@ class CLS_DB_IF() :
 		elif inFLG_MyFollow==True :
 			wQy = "update tbl_favouser_data set "
 			if inFLG_FavoUpdate==True :
-				wQy = wQy + "favo_date = '" + str( gVal.STR_SystemInfo['TimeDate'] ) + "', "
+				wQy = wQy + "favo_date = '" + str( gVal.STR_Time['TimeDate'] ) + "', "
 			wQy = wQy + "myfollow = True, " + \
-					"myfollow_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
+					"myfollow_date = '" + str(gVal.STR_Time['TimeDate']) + "' " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
 					" and id = '" + str(inID) + "' ;"
 		
@@ -2720,7 +2899,7 @@ class CLS_DB_IF() :
 		elif inFLG_Follower==True :
 			wQy = "update tbl_favouser_data set " + \
 					"follower = True, " + \
-					"follower_date = '" + str(gVal.STR_SystemInfo['TimeDate']) + "' " + \
+					"follower_date = '" + str(gVal.STR_Time['TimeDate']) + "' " + \
 					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
 					" and id = '" + str(inID) + "' ;"
 		
@@ -2938,7 +3117,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# 登録データを作成する
-		wTimeDate = str( gVal.STR_SystemInfo['TimeDate'] )
+		wTimeDate = str( gVal.STR_Time['TimeDate'] )
 		wIndex = len( gVal.ARR_SearchData ) + 1
 		
 		wCell = {
@@ -3139,7 +3318,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# 時間の取得
-		gVal.ARR_SearchData[wIndex]['update_date'] = str( gVal.STR_SystemInfo['TimeDate'] )
+		gVal.ARR_SearchData[wIndex]['update_date'] = str( gVal.STR_Time['TimeDate'] )
 		
 		#############################
 		# カウンタ進行

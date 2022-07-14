@@ -8,6 +8,7 @@
 #####################################################
 from twitter_use import CLS_Twitter_Use
 
+from time import CLS_TIME
 from osif import CLS_OSIF
 from gval import gVal
 #####################################################
@@ -143,7 +144,7 @@ class CLS_Twitter_IF() :
 		# 正常
 		
 		###現時刻をメモる
-		self.CHR_GetFollowDate = str(gVal.STR_SystemInfo['TimeDate'])
+		self.CHR_GetFollowDate = str(gVal.STR_Time['TimeDate'])
 		self.ARR_FollowData    = wARR_FollowData
 		
 		wRes['Result'] = True
@@ -205,12 +206,15 @@ class CLS_Twitter_IF() :
 		wUserID = str( inTweet['user']['id'] )
 		#############################
 		# 時間の変換
-		wTime = CLS_OSIF.sGetTimeformat_Twitter( inTweet['created_at'] )
+###		wTime = CLS_OSIF.sGetTimeformat_Twitter( inTweet['created_at'] )
+###		if wTime['Result']!=True :
+###			wRes['Reason'] = "sGetTimeformat_Twitter is Failed: " + str(inTweet['created_at'])
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		###wTime['TimeDate']
+		wTime = CLS_TIME.sTTchg( wRes, "(1)", inTweet['created_at'] )
 		if wTime['Result']!=True :
-			wRes['Reason'] = "sGetTimeformat_Twitter is Failed: " + str(inTweet['created_at'])
-			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		###wTime['TimeDate']
 		
 		#############################
 		# 重複があるか
@@ -668,7 +672,10 @@ class CLS_Twitter_IF() :
 					continue
 				
 				###日時の変換
-				wTime = CLS_OSIF.sGetTimeformat_Twitter( wARR_Tweets[wID]['created_at'] )
+###				wTime = CLS_OSIF.sGetTimeformat_Twitter( wARR_Tweets[wID]['created_at'] )
+###				if wTime['Result']!=True :
+###					continue
+				wTime = CLS_TIME.sTTchg( wRes, "(2)", wARR_Tweets[wID]['created_at'] )
 				if wTime['Result']!=True :
 					continue
 				wARR_Tweets[wID]['created_at'] = wTime['TimeDate']
@@ -737,10 +744,13 @@ class CLS_Twitter_IF() :
 			
 			###日時の変換
 			wTimeDate = wTweetRes['Responce']['data']['created_at']
-			wTimeRes = CLS_OSIF.sGetTimeformat_Twitter( wTimeDate )
+###			wTimeRes = CLS_OSIF.sGetTimeformat_Twitter( wTimeDate )
+###			if wTimeRes['Result']!=True :
+###				wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str( wTimeDate )
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+			wTimeRes = CLS_TIME.sTTchg( wRes, "(3)", wTimeDate )
 			if wTimeRes['Result']!=True :
-				wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str( wTimeDate )
-				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			wTimeDate = str( wTimeRes['TimeDate'] )
 		 	
@@ -1763,17 +1773,23 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# データの設定
-		wTime = CLS_OSIF.sGetTimeformat_Twitter( wSubRes['Responce'][0]['as_of'] )
+###		wTime = CLS_OSIF.sGetTimeformat_Twitter( wSubRes['Responce'][0]['as_of'] )
+###		if wTime['Result']!=True :
+###			wRes['Reason'] = "sGetTimeformat_Twitter is Failed(1): " + str(wSubRes['Responce'][0]['as_of'])
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+		wTime = CLS_TIME.sTTchg( wRes, "(4)", wSubRes['Responce'][0]['as_of'] )
 		if wTime['Result']!=True :
-			wRes['Reason'] = "sGetTimeformat_Twitter is Failed(1): " + str(wSubRes['Responce'][0]['as_of'])
-			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		wRes['Responce']['as_of'] = wTime['TimeDate']
 		
-		wTime = CLS_OSIF.sGetTimeformat_Twitter( wSubRes['Responce'][0]['created_at'] )
+###		wTime = CLS_OSIF.sGetTimeformat_Twitter( wSubRes['Responce'][0]['created_at'] )
+###		if wTime['Result']!=True :
+###			wRes['Reason'] = "sGetTimeformat_Twitter is Failed(2): " + str(wSubRes['Responce'][0]['created_at'])
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+		wTime = CLS_TIME.sTTchg( wRes, "(5)", wSubRes['Responce'][0]['created_at'] )
 		if wTime['Result']!=True :
-			wRes['Reason'] = "sGetTimeformat_Twitter is Failed(2): " + str(wSubRes['Responce'][0]['created_at'])
-			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		wRes['Responce']['created_at'] = wTime['TimeDate']
 		

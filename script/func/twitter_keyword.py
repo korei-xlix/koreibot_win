@@ -810,7 +810,7 @@ class CLS_TwitterKeyword():
 		#############################
 		# 更新
 		self.ARR_KeywordFavoUser[wUserID]['id']   = wID
-		self.ARR_KeywordFavoUser[wUserID]['date'] = str(gVal.STR_SystemInfo['TimeDate'])
+		self.ARR_KeywordFavoUser[wUserID]['date'] = str(gVal.STR_Time['TimeDate'])
 		
 		wRes['Result'] = True
 		return wRes

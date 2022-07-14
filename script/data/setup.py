@@ -456,6 +456,7 @@ class CLS_Setup():
 	def __initDB( self, inDBobj ):
 		self.__create_TBL_USER_DATA( inDBobj )
 		self.__create_TBL_TWITTER_DATA( inDBobj )
+		self.__create_TBL_TIME_DATA( inDBobj )
 		self.__create_TBL_FAVOUSER_DATA( inDBobj )
 		self.__create_TBL_LOG_DATA( inDBobj )
 		self.__create_TBL_TRAFFIC_DATA( inDBobj )
@@ -471,6 +472,8 @@ class CLS_Setup():
 		wQy = "drop table if exists tbl_user_data ;"
 		inOBJ_DB.RunQuery( wQy )
 		wQy = "drop table if exists tbl_twitter_data ;"
+		inOBJ_DB.RunQuery( wQy )
+		wQy = "drop table if exists tbl_time_data ;"
 		inOBJ_DB.RunQuery( wQy )
 		wQy = "drop table if exists tbl_favouser_data ;"
 		inOBJ_DB.RunQuery( wQy )
@@ -508,9 +511,8 @@ class CLS_Setup():
 		wQy = wQy + "regdate     TIMESTAMP,"			# 登録日時
 		wQy = wQy + "locked      BOOL  DEFAULT false,"	# 排他ロック true=ロックON
 		wQy = wQy + "lok_date    TIMESTAMP,"			# 排他日時
+		wQy = wQy + "get_date    TIMESTAMP,"			# 排他獲得日時
 		wQy = wQy + "rel_date    TIMESTAMP,"			# 排他解除日時
-		wQy = wQy + "week_date   TIMESTAMP,"			# 週間 開始日時
-		wQy = wQy + "day_date    TIMESTAMP,"			# 1日  開始日時
 		wQy = wQy + "trendtag    TEXT  NOT NULL,"		# トレンド送信タグ
 		wQy = wQy + "list_id     TEXT  NOT NULL,"		# リスト通知 リストID(数値)
 		wQy = wQy + "list_name   TEXT  NOT NULL,"		# リスト通知 リスト名
@@ -544,6 +546,34 @@ class CLS_Setup():
 		wQy = wQy + "acctoken    TEXT  NOT NULL,"		# Twitter Devで取ったAccess Token Key
 		wQy = wQy + "accsecret   TEXT  NOT NULL,"		# Twitter Devで取ったAccess Token secret
 		wQy = wQy + "bearer      TEXT  NOT NULL "		# Twitter Devで取ったbearer
+		wQy = wQy + " PRIMARY KEY ( twitterid ) ) ;"
+		
+		inOBJ_DB.RunQuery( wQy )
+		return
+
+
+
+#####################################################
+# テーブル作成: TBL_TIME_DATA
+#####################################################
+	def __create_TBL_TIME_DATA( self, inOBJ_DB, inTBLname="tbl_time_data" ):
+		#############################
+		# テーブルのドロップ
+		wQy = "drop table if exists " + inTBLname + ";"
+		inOBJ_DB.RunQuery( wQy )
+		
+		#############################
+		# テーブル枠の作成
+		wQy = "create table " + inTBLname + "("
+		wQy = wQy + "twitterid    TEXT  NOT NULL,"		# 記録したユーザ(Twitter ID)
+		wQy = wQy + "run          TIMESTAMP,"			# コマンド実行
+		wQy = wQy + "autorun      TIMESTAMP,"			# 自動監視
+		wQy = wQy + "reaction     TIMESTAMP,"			# リアクション受信
+		wQy = wQy + "mffavo       TIMESTAMP,"			# 相互フォローリストいいね
+		wQy = wQy + "flfavo       TIMESTAMP,"			# フォロワー支援いいね
+		wQy = wQy + "list_clear   TIMESTAMP,"			# リスト通知クリア
+		wQy = wQy + "auto_remove  TIMESTAMP,"			# 自動リムーブ
+		wQy = wQy + "send_favo    TIMESTAMP,"			# いいね情報送信
 		wQy = wQy + " PRIMARY KEY ( twitterid ) ) ;"
 		
 		inOBJ_DB.RunQuery( wQy )

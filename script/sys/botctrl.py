@@ -7,9 +7,10 @@
 # ::Class    : bot制御(共通)
 #####################################################
 from mylog import CLS_Mylog
-
 from db_if import CLS_DB_IF
 from twitter_if import CLS_Twitter_IF
+
+from time import CLS_TIME
 from osif import CLS_OSIF
 from filectrl import CLS_File
 from gval import gVal
@@ -212,10 +213,10 @@ class CLS_BotCtrl():
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-		#############################
-		# 前回ロック時間の取得(=前回bot実行時間)
-		gVal.STR_SystemInfo['RateLockTD'] = wChgDict[0]['lupdate']
-		
+###		#############################
+###		# 前回ロック時間の取得(=前回bot実行時間)
+###		gVal.STR_SystemInfo['RateLockTD'] = wChgDict[0]['lupdate']
+###		
 		#############################
 		# 排他開始
 		wLock = cls.sLock()
@@ -253,18 +254,30 @@ class CLS_BotCtrl():
 		
 		#############################
 		# 時間を取得
-		wTD = CLS_OSIF.sGetTime()
-		if wTD['Result']!=True :
-			###時間取得失敗  時計壊れた？
+###		wTD = CLS_OSIF.sGetTime()
+###		if wTD['Result']!=True :
+###			###時間取得失敗  時計壊れた？
 ##			wRes['Reason'] = "PC時間取得失敗"
 ##			gVal.OBJ_L.Log( "B", wRes )
-			wRes['Reason'] = "PC time get is failer" + '\n'
-			gVal.OBJ_L.Log( "C", wRes )
-			cls.sBotEnd()	#bot終了
+###			wRes['Reason'] = "PC time get is failer" + '\n'
+###			gVal.OBJ_L.Log( "C", wRes )
+###			cls.sBotEnd()	#bot終了
 ###			return
+###			return wRes
+		wTD = CLS_TIME.sGet( wRes, "(1)" )
+		if wTD['Result']!=True :
+			cls.sBotEnd()	#bot終了
 			return wRes
 		### wTD['TimeDate']
-		gVal.STR_SystemInfo['APIrect'] = str(wTD['TimeDate'])
+###		gVal.STR_SystemInfo['APIrect'] = str(wTD['TimeDate'])
+###		
+		#############################
+		# コマンド実行時間を設定
+		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "run", wTD['TimeDate'] )
+		if wListRes['Result']!=True :
+			wRes['Reason'] = "SetTimeInfo is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
 		
 		#############################
 		# Version情報
@@ -341,6 +354,14 @@ class CLS_BotCtrl():
 ###			### 初期化
 ###			wChgDict[0]['lfavdate'] = str(wTD['TimeDate'])
 ###		gVal.STR_UserInfo['LFavoDate'] = wChgDict[0]['lfavdate']
+		#############################
+		# 時間情報の取得
+		wListRes = gVal.OBJ_DB_IF.GetTimeInfo( gVal.STR_UserInfo['Account'] )
+		if wListRes['Result']!=True :
+			wRes['Reason'] = "GetTimeInfo is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
 		#############################
 		# トレンドタグ、リスト通知の取得
 		wListRes = gVal.OBJ_DB_IF.GetListName( gVal.STR_UserInfo['Account'] )
@@ -447,7 +468,8 @@ class CLS_BotCtrl():
 			
 			# ロック保持時間外かを求める (変換＆差)
 ###			wGetLag = CLS_OSIF.sTimeLag( str(wLUpdate), inThreshold=gVal.DEF_STR_TLNUM['forLockLimSec'] )
-			wGetLag = CLS_OSIF.sTimeLag( str(wRes['Responce']['lok_date']), inThreshold=gVal.DEF_STR_TLNUM['forLockLimSec'] )
+###			wGetLag = CLS_OSIF.sTimeLag( str(wRes['Responce']['lok_date']), inThreshold=gVal.DEF_STR_TLNUM['forLockLimSec'] )
+			wGetLag = CLS_OSIF.sTimeLag( str(wRes['Responce']['get_date']), inThreshold=gVal.DEF_STR_TLNUM['forLockLimSec'] )
 			if wGetLag['Result']!=True :
 				wRes['Reason'] = "sTimeLag failed"
 				return wRes
@@ -473,15 +495,18 @@ class CLS_BotCtrl():
 ###		
 		#############################
 		# 時間を取得
-		wTD = CLS_OSIF.sGetTime()
-		if wTD['Result']!=True :
-			###時間取得失敗  時計壊れた？
+###		wTD = CLS_OSIF.sGetTime()
+###		if wTD['Result']!=True :
+###			###時間取得失敗  時計壊れた？
 ###			wRes['Reason'] = "PC時間の取得に失敗しました"
 ###			gVal.OBJ_L.Log( "B", wRes )
-			wRes['Reason'] = "PC time get is failer"
-			gVal.OBJ_L.Log( "C", wRes )
+###			wRes['Reason'] = "PC time get is failer"
+###			gVal.OBJ_L.Log( "C", wRes )
+###			return wRes
+###		### wTD['TimeDate']
+		wTD = CLS_TIME.sGet( wRes, "(2)" )
+		if wTD['Result']!=True :
 			return wRes
-		### wTD['TimeDate']
 		
 ###		wQuery = "update tbl_user_data set " + \
 ###				"locked = True, " + \
@@ -494,31 +519,32 @@ class CLS_BotCtrl():
 ###			gVal.OBJ_L.Log( "B", wRes )
 ###			return wRes
 		
-		gVal.STR_SystemInfo['Day']  = False
-		gVal.STR_SystemInfo['Week'] = False
-		#############################
-		# 1日経過か
-		wGetLag = CLS_OSIF.sTimeLag( str(wRes['Responce']['day_date']), inThreshold=gVal.DEF_VAL_DAY )
-		if wGetLag['Result']!=True :
-			wRes['Reason'] = "sTimeLag failed"
-			return wRes
-		if wGetLag['Beyond']==True :
-			#反応時間外 =1日経過
-			gVal.STR_SystemInfo['Day'] = True
-		
-		#############################
-		# 1週間経過か
-		wGetLag = CLS_OSIF.sTimeLag( str(wRes['Responce']['week_date']), inThreshold=gVal.DEF_VAL_WEEK )
-		if wGetLag['Result']!=True :
-			wRes['Reason'] = "sTimeLag failed"
-			return wRes
-		if wGetLag['Beyond']==True :
-			#反応時間外 =1日経過
-			gVal.STR_SystemInfo['Week'] = True
-		
+###		gVal.STR_SystemInfo['Day']  = False
+###		gVal.STR_SystemInfo['Week'] = False
+###		#############################
+###		# 1日経過か
+###		wGetLag = CLS_OSIF.sTimeLag( str(wRes['Responce']['day_date']), inThreshold=gVal.DEF_VAL_DAY )
+###		if wGetLag['Result']!=True :
+###			wRes['Reason'] = "sTimeLag failed"
+###			return wRes
+###		if wGetLag['Beyond']==True :
+###			#反応時間外 =1日経過
+###			gVal.STR_SystemInfo['Day'] = True
+###		
+###		#############################
+###		# 1週間経過か
+###		wGetLag = CLS_OSIF.sTimeLag( str(wRes['Responce']['week_date']), inThreshold=gVal.DEF_VAL_WEEK )
+###		if wGetLag['Result']!=True :
+###			wRes['Reason'] = "sTimeLag failed"
+###			return wRes
+###		if wGetLag['Beyond']==True :
+###			#反応時間外 =1日経過
+###			gVal.STR_SystemInfo['Week'] = True
+###		
 		#############################
 		# 排他する
-		wLockRes = gVal.OBJ_DB_IF.SetLock( gVal.STR_UserInfo['Account'], True, wTD['TimeDate'], gVal.STR_SystemInfo['Day'], gVal.STR_SystemInfo['Week'] )
+###		wLockRes = gVal.OBJ_DB_IF.SetLock( gVal.STR_UserInfo['Account'], True, wTD['TimeDate'], gVal.STR_SystemInfo['Day'], gVal.STR_SystemInfo['Week'] )
+		wLockRes = gVal.OBJ_DB_IF.SetLock( gVal.STR_UserInfo['Account'], True, wTD['TimeDate'] )
 		if wLockRes['Result']!=True :
 			wRes['Reason'] = "GetLock is failed"
 			gVal.OBJ_L.Log( "C", wRes )
@@ -589,13 +615,16 @@ class CLS_BotCtrl():
 		# 排他の延長 = 今の操作時間に更新する
 		
 		# 時間を取得
-		wTD = CLS_OSIF.sGetTime()
+###		wTD = CLS_OSIF.sGetTime()
+###		if wTD['Result']!=True :
+###			###時間取得失敗  時計壊れた？
+###			wRes['Reason'] = "PC時間の取得に失敗しました"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		### wTD['TimeDate']
+		wTD = CLS_TIME.sGet( wRes, "(3)" )
 		if wTD['Result']!=True :
-			###時間取得失敗  時計壊れた？
-			wRes['Reason'] = "PC時間の取得に失敗しました"
-			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		### wTD['TimeDate']
 		
 ###		wQuery = "update tbl_user_data set " + \
 ###				"lupdate = '" + str(wTD['TimeDate']) + "'" + \
@@ -683,7 +712,8 @@ class CLS_BotCtrl():
 			### 排他がかかってる
 			
 			# ロック保持時間外かを求める (変換＆差)
-			wGetLag = CLS_OSIF.sTimeLag( str(wLUpdate), inThreshold=gVal.DEF_STR_TLNUM['forLockLimSec'] )
+###			wGetLag = CLS_OSIF.sTimeLag( str(wLUpdate), inThreshold=gVal.DEF_STR_TLNUM['forLockLimSec'] )
+			wGetLag = CLS_OSIF.sTimeLag( str(wLockRes['Responce']['get_date']), inThreshold=gVal.DEF_STR_TLNUM['forLockLimSec'] )
 			if wGetLag['Result']!=True :
 				wRes['Reason'] = "sTimeLag failed"
 				gVal.OBJ_L.Log( "B", wRes )

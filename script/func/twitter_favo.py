@@ -7,6 +7,7 @@
 # ::Class    : Twitter監視 いいね監視系
 #####################################################
 
+from time import CLS_TIME
 from osif import CLS_OSIF
 from mydisp import CLS_MyDisp
 from gval import gVal
@@ -97,10 +98,13 @@ class CLS_TwitterFavo():
 			wID = str( wID )
 			
 			###日時の変換
-			wTime = CLS_OSIF.sGetTimeformat_Twitter( wARR_TwData[wID]['created_at'] )
+###			wTime = CLS_OSIF.sGetTimeformat_Twitter( wARR_TwData[wID]['created_at'] )
+###			if wTime['Result']!=True :
+###				wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wARR_TwData[wID]['created_at'])
+###				gVal.OBJ_L.Log( "B", wRes )
+###				continue
+			wTime = CLS_TIME.sTTchg( wRes, "(1)", wARR_TwData[wID]['created_at'] )
 			if wTime['Result']!=True :
-				wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wARR_TwData[wID]['created_at'])
-				gVal.OBJ_L.Log( "B", wRes )
 				continue
 			wARR_TwData[wID]['created_at'] = wTime['TimeDate']
 			
@@ -293,7 +297,7 @@ class CLS_TwitterFavo():
 		
 		#############################
 		# 現時刻をメモる
-		self.OBJ_Parent.CHR_GetListFavoDate = str(gVal.STR_SystemInfo['TimeDate'])
+		self.OBJ_Parent.CHR_GetListFavoDate = str(gVal.STR_Time['TimeDate'])
 		
 		#############################
 		# 正常終了
@@ -518,7 +522,7 @@ class CLS_TwitterFavo():
 		
 		#############################
 		# 現時刻をメモる
-		self.OBJ_Parent.CHR_RunFollowerFavoDate = str(gVal.STR_SystemInfo['TimeDate'])
+		self.OBJ_Parent.CHR_RunFollowerFavoDate = str(gVal.STR_Time['TimeDate'])
 		
 		#############################
 		# 正常終了
@@ -628,10 +632,13 @@ class CLS_TwitterFavo():
 		# 該当なしは いいねしない
 		for wTweet in wTweetRes['Responce'] :
 			###日時の変換
-			wTime = CLS_OSIF.sGetTimeformat_Twitter( wTweet['created_at'] )
+###			wTime = CLS_OSIF.sGetTimeformat_Twitter( wTweet['created_at'] )
+###			if wTime['Result']!=True :
+###				wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wTweet['created_at'])
+###				gVal.OBJ_L.Log( "B", wRes )
+###				continue
+			wTime = CLS_TIME.sTTchg( wRes, "(2)", wTweet['created_at'] )
 			if wTime['Result']!=True :
-				wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wTweet['created_at'])
-				gVal.OBJ_L.Log( "B", wRes )
 				continue
 			wTweet['created_at'] = wTime['TimeDate']
 			
@@ -718,7 +725,7 @@ class CLS_TwitterFavo():
 		
 		#############################
 		# リストいいね情報の更新
-		wSubRes = gVal.OBJ_DB_IF.UpdateListFavoData( inData, wFavoID, str(gVal.STR_SystemInfo['TimeDate']) )
+		wSubRes = gVal.OBJ_DB_IF.UpdateListFavoData( inData, wFavoID, str(gVal.STR_Time['TimeDate']) )
 		if wSubRes['Result']!=True :
 			###失敗
 			wRes['Reason'] = "UpdateListFavoData is failed"
@@ -931,10 +938,13 @@ class CLS_TwitterFavo():
 		
 		#############################
 		# 期間を過ぎたツイートは除外
-		wTime = CLS_OSIF.sGetTimeformat_Twitter( wSTR_Tweet['created_at'] )
+###		wTime = CLS_OSIF.sGetTimeformat_Twitter( wSTR_Tweet['created_at'] )
+###		if wTime['Result']!=True :
+###			wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(inData['created_at'])
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+		wTime = CLS_TIME.sTTchg( wRes, "(3)", wSTR_Tweet['created_at'] )
 		if wTime['Result']!=True :
-			wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(inData['created_at'])
-			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		###wTweet['created_at'] = wTime['TimeDate']
 		
@@ -1072,7 +1082,7 @@ class CLS_TwitterFavo():
 		
 		#############################
 		# リストいいね情報の更新
-		wSubRes = gVal.OBJ_DB_IF.UpdateListFavoData( wSTR_Tweet['user'], wFavoID, str(gVal.STR_SystemInfo['TimeDate']) )
+		wSubRes = gVal.OBJ_DB_IF.UpdateListFavoData( wSTR_Tweet['user'], wFavoID, str(gVal.STR_Time['TimeDate']) )
 		if wSubRes['Result']!=True :
 			###失敗
 			wRes['Reason'] = "UpdateListFavoData is failed"
@@ -1520,10 +1530,13 @@ class CLS_TwitterFavo():
 					if wTweetIndex==1 :
 						### 1行目の日付を活動日にする
 						###日時の変換をして、設定
-						wTime = CLS_OSIF.sGetTimeformat_Twitter( wTweet['created_at'] )
+###						wTime = CLS_OSIF.sGetTimeformat_Twitter( wTweet['created_at'] )
+###						if wTime['Result']!=True :
+###							wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wTweet['created_at'])
+###							gVal.OBJ_L.Log( "B", wRes )
+###							return wRes
+						wTime = CLS_TIME.sTTchg( wRes, "(4)", wTweet['created_at'] )
 						if wTime['Result']!=True :
-							wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wTweet['created_at'])
-							gVal.OBJ_L.Log( "B", wRes )
 							return wRes
 						wARR_DBData['update_date'] = wTime['TimeDate']
 						
@@ -1536,10 +1549,13 @@ class CLS_TwitterFavo():
 					### 2行目以降
 					### リツイート もしくは 引用でなければ活動日にする(自分のツイート)
 					if ("retweeted_status" not in wTweet) and ("quoted_status" not in wTweet) :
-						wTime = CLS_OSIF.sGetTimeformat_Twitter( wTweet['created_at'] )
+###						wTime = CLS_OSIF.sGetTimeformat_Twitter( wTweet['created_at'] )
+###						if wTime['Result']!=True :
+###							wRes['Reason'] = "sGetTimeformat_Twitter is failed(2): " + str(wTweet['created_at'])
+###							gVal.OBJ_L.Log( "B", wRes )
+###							return wRes
+						wTime = CLS_TIME.sTTchg( wRes, "(5)", wTweet['created_at'] )
 						if wTime['Result']!=True :
-							wRes['Reason'] = "sGetTimeformat_Twitter is failed(2): " + str(wTweet['created_at'])
-							gVal.OBJ_L.Log( "B", wRes )
 							return wRes
 						wARR_DBData['update_date'] = wTime['TimeDate']
 						wARR_DBData['my_tweet'] = True

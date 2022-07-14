@@ -12,6 +12,7 @@ from twitter_keyword import CLS_TwitterKeyword
 from twitter_admin import CLS_TwitterAdmin
 from test_sample import CLS_Test
 
+from time import CLS_TIME
 from osif import CLS_OSIF
 from traffic import CLS_Traffic
 from mydisp import CLS_MyDisp
@@ -25,9 +26,9 @@ class CLS_TwitterMain():
 	OBJ_TwitterAdmin    = None
 	OBJ_Test            = None
 
-	CHR_GetReactionDate = None
-	CHR_GetListFavoDate = None
-	CHR_RunFollowerFavoDate = None
+###	CHR_GetReactionDate = None
+###	CHR_GetListFavoDate = None
+###	CHR_RunFollowerFavoDate = None
 	ARR_ReacrionUserID = []
 
 	CHR_AutoRemoveDate = None
@@ -153,24 +154,27 @@ class CLS_TwitterMain():
 		
 		#############################
 		# 時間を取得
-		wTD = CLS_OSIF.sGetTime()
+###		wTD = CLS_OSIF.sGetTime()
+###		if wTD['Result']!=True :
+###			###時間取得失敗  時計壊れた？
+###			wRes['Reason'] = "sGetTime is faied"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		### wTD['TimeDate']
+		wTD = CLS_TIME.sGet( wRes, "(1)" )
 		if wTD['Result']!=True :
-			###時間取得失敗  時計壊れた？
-			wRes['Reason'] = "sGetTime is faied"
-			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		### wTD['TimeDate']
-		
-		#############################
-		# 時間を設定
-		### 初回起動で時刻が入ってなければ、ロック時間を設定する
-		if inInit==False :
-			if gVal.STR_SystemInfo['RateTimeDate']==None :
-				gVal.STR_SystemInfo['RateTimeDate'] = str(gVal.STR_SystemInfo['RateLockTD'])
-			else :
-				gVal.STR_SystemInfo['RateTimeDate'] = gVal.STR_SystemInfo['TimeDate']
-		
-		gVal.STR_SystemInfo['TimeDate'] = wTD['TimeDate']
+###		
+###		#############################
+###		# 時間を設定
+###		### 初回起動で時刻が入ってなければ、ロック時間を設定する
+###		if inInit==False :
+###			if gVal.STR_SystemInfo['RateTimeDate']==None :
+###				gVal.STR_SystemInfo['RateTimeDate'] = str(gVal.STR_SystemInfo['RateLockTD'])
+###			else :
+###				gVal.STR_SystemInfo['RateTimeDate'] = gVal.STR_Time['TimeDate']
+###		
+		gVal.STR_Time['TimeDate'] = wTD['TimeDate']
 		
 		#############################
 		# 完了
@@ -192,7 +196,8 @@ class CLS_TwitterMain():
 		
 		#############################
 		# 前回チェックから15分経っているか
-		wGetLag = CLS_OSIF.sTimeLag( gVal.STR_SystemInfo['APIrect'], inThreshold=gVal.DEF_STR_TLNUM['resetAPISec'] )
+###		wGetLag = CLS_OSIF.sTimeLag( gVal.STR_SystemInfo['APIrect'], inThreshold=gVal.DEF_STR_TLNUM['resetAPISec'] )
+		wGetLag = CLS_OSIF.sTimeLag( gVal.STR_Time['run'], inThreshold=gVal.DEF_STR_TLNUM['resetAPISec'] )
 		if wGetLag['Result']!=True :
 			wRes['Reason'] = "sTimeLag failed"
 			gVal.OBJ_L.Log( "B", wRes )
@@ -213,9 +218,16 @@ class CLS_TwitterMain():
 			gVal.OBJ_L.Log( "A", wRes )
 			return wRes
 		
+###		#############################
+###		# カウント時刻を更新
+###		gVal.STR_SystemInfo['APIrect'] = str(wGetLag['NowTime'])
 		#############################
-		# カウント時刻を更新
-		gVal.STR_SystemInfo['APIrect'] = str(wGetLag['NowTime'])
+		# コマンド実行時間を更新
+		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "run", wGetLag['NowTime'] )
+		if wListRes['Result']!=True :
+			wRes['Reason'] = "SetTimeInfo is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
 		
 		#############################
 		# 完了
@@ -1042,7 +1054,7 @@ class CLS_TwitterMain():
 		
 		#############################
 		# 前回が今日以外なら通知する
-		wNowDate = str(gVal.STR_SystemInfo['TimeDate'])
+		wNowDate = str(gVal.STR_Time['TimeDate'])
 		wNowDate = wNowDate.split(" ")
 		wNowDate = wNowDate[0]
 		wRateDate = str(inData['list_date'])
@@ -1462,7 +1474,7 @@ class CLS_TwitterMain():
 		
 		#############################
 		# 現時刻をメモる
-		self.CHR_AutoRemoveDate = str(gVal.STR_SystemInfo['TimeDate'])
+		self.CHR_AutoRemoveDate = str(gVal.STR_Time['TimeDate'])
 		
 		wStr = "チェック終了" + '\n'
 		CLS_OSIF.sPrn( wStr )

@@ -30,16 +30,16 @@ class gVal() :
 		"PythonVer"		: 0,
 		"HostName"		: "",
 		
-		"Week"			: False,
-		"Day"			: False,
-		
-		"TimeDate"		: None,
-		"RateTimeDate"	: None,
-			# 前回実行日時
-		"RateLockTD"	: None,
-			# 前回ロック日時
-		"APIrect"		: "",
-		
+###		"Week"			: False,
+###		"Day"			: False,
+###		
+###		"TimeDate"		: None,
+###		"RateTimeDate"	: None,
+###			# 前回実行日時
+###		"RateLockTD"	: None,
+###			# 前回ロック日時
+###		"APIrect"		: "",
+###		
 		"EXT_FilePath"	: None,
 		
 		"RunMode"		: "normal"
@@ -73,6 +73,22 @@ class gVal() :
 ###		"ArListName": "",			#自動リムーブ先リスト
 		
 		"Traffic"		: False			#Twitterにトラヒックを報告するか
+	}
+
+#############################
+# 時間情報
+	STR_Time = {
+										# 各実行時間
+		"run"			: None,			# コマンド実行
+		"autorun"		: None,			# 自動監視
+		"reaction"		: None,			# リアクション受信				CHR_GetReactionDate
+		"mffavo"		: None,			# 相互フォローリストいいね		CHR_GetListFavoDate
+		"flfavo"		: None,			# フォロワー支援いいね			CHR_RunFollowerFavoDate
+		"list_clear"	: None,			# リスト通知クリア
+		"auto_remove"	: None,			# 自動リムーブ
+		"send_favo"		: None,			# いいね情報送信
+		
+		"TimeDate"		: None			# システム時間
 	}
 
 #############################
@@ -117,8 +133,6 @@ class gVal() :
 		"db_del"			: {0:0,1:"DB delete回数"},
 		
 	}
-
-
 
 #############################
 # ウェイト情報

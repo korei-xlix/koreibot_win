@@ -6,7 +6,9 @@
 # ::github   : https://github.com/korei-xlix/koreibot_win/
 # ::Class    : Twitter監視 フォロワー監視系
 #####################################################
+
 ###from htmlif import CLS_HTMLIF
+from time import CLS_TIME
 from osif import CLS_OSIF
 from mydisp import CLS_MyDisp
 from gval import gVal
@@ -101,10 +103,13 @@ class CLS_TwitterFollower():
 				break	###ウェイト中止
 			
 			###日時の変換
-			wTime = CLS_OSIF.sGetTimeformat_Twitter( wTweet['created_at'] )
+###			wTime = CLS_OSIF.sGetTimeformat_Twitter( wTweet['created_at'] )
+###			if wTime['Result']!=True :
+###				wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wTweet['created_at'])
+###				gVal.OBJ_L.Log( "B", wRes )
+###				continue
+			wTime = CLS_TIME.sTTchg( wRes, "(1)", wTweet['created_at'] )
 			if wTime['Result']!=True :
-				wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wTweet['created_at'])
-				gVal.OBJ_L.Log( "B", wRes )
 				continue
 			wTweet['created_at'] = wTime['TimeDate']
 			
@@ -146,10 +151,13 @@ class CLS_TwitterFollower():
 			wID = str(wSubRes['Responce'][wReplyID]['id'])
 			
 			###日時の変換
-			wTime = CLS_OSIF.sGetTimeformat_Twitter( wSubRes['Responce'][wReplyID]['created_at'] )
+###			wTime = CLS_OSIF.sGetTimeformat_Twitter( wSubRes['Responce'][wReplyID]['created_at'] )
+###			if wTime['Result']!=True :
+###				wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wSubRes['Responce'][wReplyID]['created_at'])
+###				gVal.OBJ_L.Log( "B", wRes )
+###				continue
+			wTime = CLS_TIME.sTTchg( wRes, "(2)", wSubRes['Responce'][wReplyID]['created_at'] )
 			if wTime['Result']!=True :
-				wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wSubRes['Responce'][wReplyID]['created_at'])
-				gVal.OBJ_L.Log( "B", wRes )
 				continue
 			wSubRes['Responce'][wReplyID]['created_at'] = wTime['TimeDate']
 			
@@ -186,7 +194,7 @@ class CLS_TwitterFollower():
 		
 		#############################
 		# 現時刻をメモる
-		self.OBJ_Parent.CHR_GetReactionDate = str(gVal.STR_SystemInfo['TimeDate'])
+		self.OBJ_Parent.CHR_GetReactionDate = str(gVal.STR_Time['TimeDate'])
 		
 		#############################
 		# 正常終了
@@ -317,7 +325,7 @@ class CLS_TwitterFollower():
 			#############################
 			# 送信者がいない場合
 ###			#   いいね者送信日時を更新して終わる
-###			wSubRes = gVal.OBJ_DB_IF.UpdateFavoDate( str( gVal.STR_SystemInfo['TimeDate'] ) )
+###			wSubRes = gVal.OBJ_DB_IF.UpdateFavoDate( str( gVal.STR_Time['TimeDate'] ) )
 ###			if wSubRes['Result']!=True :
 ###				###失敗
 ###				wRes['Reason'] = "UpdateFavoDate is failed"
@@ -348,10 +356,13 @@ class CLS_TwitterFollower():
 				
 				if wTweet['text'].find( wTrendHeader_Pattern )==0 :
 					###日時の変換
-					wTime = CLS_OSIF.sGetTimeformat_Twitter( wTweet['created_at'] )
+###					wTime = CLS_OSIF.sGetTimeformat_Twitter( wTweet['created_at'] )
+###					if wTime['Result']!=True :
+###						wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wTweet['created_at'])
+###						gVal.OBJ_L.Log( "B", wRes )
+###						continue
+					wTime = CLS_TIME.sTTchg( wRes, "(3)", wTweet['created_at'] )
 					if wTime['Result']!=True :
-						wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wTweet['created_at'])
-						gVal.OBJ_L.Log( "B", wRes )
 						continue
 					wTweet['created_at'] = wTime['TimeDate']
 					
@@ -409,7 +420,7 @@ class CLS_TwitterFollower():
 		
 		#############################
 		# いいね者送信日時を更新する
-###		wSubRes = gVal.OBJ_DB_IF.UpdateFavoDate( str( gVal.STR_SystemInfo['TimeDate'] ) )
+###		wSubRes = gVal.OBJ_DB_IF.UpdateFavoDate( str( gVal.STR_Time['TimeDate'] ) )
 ###		if wSubRes['Result']!=True :
 ###			###失敗
 ###			wRes['Reason'] = "UpdateFavoDate is failed"

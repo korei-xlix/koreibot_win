@@ -6,11 +6,12 @@
 # ::github   : https://github.com/korei-xlix/koreibot_win/
 # ::Class    : Twitter監視 管理系
 #####################################################
+
+from time import CLS_TIME
 from osif import CLS_OSIF
 from htmlif import CLS_HTMLIF
 from mydisp import CLS_MyDisp
 from gval import gVal
-
 #####################################################
 class CLS_TwitterAdmin():
 #####################################################
@@ -1238,10 +1239,13 @@ class CLS_TwitterAdmin():
 						continue
 					
 					###日時の変換をして、設定
-					wTime = CLS_OSIF.sGetTimeformat_Twitter( wTweetRes['Responce'][0]['created_at'] )
+###					wTime = CLS_OSIF.sGetTimeformat_Twitter( wTweetRes['Responce'][0]['created_at'] )
+###					if wTime['Result']!=True :
+###						wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wTweetRes['Responce'][0]['created_at'])
+###						gVal.OBJ_L.Log( "B", wRes )
+###						continue
+					wTime = CLS_TIME.sTTchg( wRes, "(1)", wTweetRes['Responce'][0]['created_at'] )
 					if wTime['Result']!=True :
-						wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wTweetRes['Responce'][0]['created_at'])
-						gVal.OBJ_L.Log( "B", wRes )
 						continue
 					
 					wGetLag = CLS_OSIF.sTimeLag( str( wTime['TimeDate'] ), inThreshold=gVal.DEF_STR_TLNUM['forAutoUserRemoveSec'] )
@@ -1743,9 +1747,11 @@ class CLS_TwitterAdmin():
 		
 		#############################
 		# 時間の取得
-		wTDRes = CLS_OSIF.sGetTime()
-		if wTDRes['Result']==True :
-			wSTR_SystemInfo['now_TimeDate'] = str( wTDRes['TimeDate'] )
+###		wTDRes = CLS_OSIF.sGetTime()
+###		if wTDRes['Result']==True :
+###			wSTR_SystemInfo['now_TimeDate'] = str( wTDRes['TimeDate'] )
+		wTDRes = CLS_TIME.sGet( wRes, "(1)" )
+		wSTR_SystemInfo['now_TimeDate'] = str( wTDRes['TimeDate'] )
 		
 		#############################
 		# フォロー一覧 取得
