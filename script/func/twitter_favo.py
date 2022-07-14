@@ -7,7 +7,7 @@
 # ::Class    : Twitter監視 いいね監視系
 #####################################################
 
-from time import CLS_TIME
+from ktime import CLS_TIME
 from osif import CLS_OSIF
 from mydisp import CLS_MyDisp
 from gval import gVal

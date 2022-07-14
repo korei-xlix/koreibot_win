@@ -7,7 +7,7 @@
 # ::Class    : Twitter監視 管理系
 #####################################################
 
-from time import CLS_TIME
+from ktime import CLS_TIME
 from osif import CLS_OSIF
 from htmlif import CLS_HTMLIF
 from mydisp import CLS_MyDisp
@@ -1741,7 +1741,7 @@ class CLS_TwitterAdmin():
 			"Sys_ListName"		: gVal.STR_UserInfo['ListName'],
 ###			"Sys_ArListName"	: gVal.STR_UserInfo['ArListName'],
 			"Sys_AutoRemove"	: gVal.STR_UserInfo['AutoRemove'],
-			"Sys_mListName"		: gVal.STR_UserInfo['mListName']
+			"Sys_mListName"		: gVal.STR_UserInfo['mListName'],
 			"Sys_fListName"		: gVal.STR_UserInfo['fListName']
 		}
 		

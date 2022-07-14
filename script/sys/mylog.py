@@ -154,11 +154,11 @@ class CLS_Mylog():
 			###いちおデータベースにも記録する
 			wQuery = "insert into tbl_log_data values (" + \
 						"'" + gVal.STR_UserInfo['Account'] + "'," + \
+						"'" + wCHR_TimeDate + "'," + \
 						"'C'," + \
 						"'CLS_Mylog'," + \
 						"'Log'," + \
-						"'CLS_OSIF.sGetTime is failed'," + \
-						"'" + wCHR_TimeDate + "'" + \
+						"'CLS_OSIF.sGetTime is failed' " + \
 						") ;"
 			
 			wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery, False )
@@ -173,11 +173,11 @@ class CLS_Mylog():
 		# データベースに記録する
 		wQuery = "insert into tbl_log_data values (" + \
 					"'" + gVal.STR_UserInfo['Account'] + "'," + \
+					"'" + wCHR_TimeDate + "'," + \
 					"'" + wLevel + "'," + \
 					"'" + wSTR_Log['LogClass'] + "'," + \
 					"'" + wSTR_Log['LogFunc'] + "'," + \
-					"'" + wSTR_Log['Reason'] + "'," + \
-					"'" + wCHR_TimeDate + "'" + \
+					"'" + wSTR_Log['Reason'] + "' " + \
 					") ;"
 		
 		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery, False )

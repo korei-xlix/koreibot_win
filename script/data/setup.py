@@ -6,6 +6,7 @@
 # ::github   : https://github.com/korei-xlix/koreibot_win/
 # ::Class    : セットアップ
 #####################################################
+from mylog import CLS_Mylog
 
 from osif import CLS_OSIF
 from filectrl import CLS_File
@@ -77,6 +78,10 @@ class CLS_Setup():
 		### ※ユーザ変更あり
 		
 		#############################
+		# ログオブジェクトの生成
+		gVal.OBJ_L = CLS_Mylog()
+		
+		#############################
 		# Twitterキーの入力と接続テスト
 		gVal.OBJ_Tw_IF = CLS_Twitter_IF()
 		wSubRes = gVal.OBJ_Tw_IF.SetTwitter( wTwitterAccount )
@@ -93,10 +98,10 @@ class CLS_Setup():
 		
 		#############################
 		# データ追加
-		if gVal.STR_SystemInfo['EXT_FilePath']!=None or \
+		if gVal.STR_SystemInfo['EXT_FilePath']!=None and \
 		   gVal.STR_SystemInfo['EXT_FilePath']!="" :
 			wSubRes = self.Add( inData, inDBconn=False )
-			if wSubRes['Result']!=True :
+			if wSubRes!=True :
 				gVal.OBJ_DB_IF.Close()
 				return False
 		
@@ -157,7 +162,7 @@ class CLS_Setup():
 			return True
 		
 		###入力の手間を省くため、パスワードを引き継ぐ
-		self.Setup()
+		self.Setup( inData )
 		return True
 
 
@@ -251,6 +256,10 @@ class CLS_Setup():
 ###			self.__create_TBL_EXC_WORD( gVal.OBJ_DB_IF.OBJ_DB )
 ###		
 		#############################
+		# ログオブジェクトの生成
+		gVal.OBJ_L = CLS_Mylog()
+		
+		#############################
 		# Twitterデータ取得
 		wTwitterDataRes = gVal.OBJ_DB_IF.GetTwitterData( gVal.STR_UserInfo['Account'] )
 		if wTwitterDataRes['Result']!=True :
@@ -278,6 +287,7 @@ class CLS_Setup():
 			#############################
 			# 禁止ユーザの設定
 			
+			CLS_OSIF.sPrn( "〇 禁止ユーザの設定中..." + '\n' )
 			#############################
 			# 登録データを作成する
 			wARR_Word = {}
@@ -323,6 +333,7 @@ class CLS_Setup():
 			if wSubRes['Result']!=True :
 				return False
 			
+			CLS_OSIF.sPrn( "〇 リストいいね指定の設定中..." + '\n' )
 			#############################
 			# リストいいね指定の設定
 			
@@ -355,6 +366,8 @@ class CLS_Setup():
 				wListName   = wARR_Line[5]
 				wScreenName = wARR_Line[4]
 				
+				CLS_OSIF.sPrn( "user= " + wScreenName + " list= " + wListName + " 設定中..." )
+				
 				### Twitterからユーザ情報を取得する
 				wUserInfoRes = gVal.OBJ_Tw_IF.GetUserinfo( inScreenName=wScreenName )
 				if wUserInfoRes['Result']!=True :
@@ -367,10 +380,14 @@ class CLS_Setup():
 				if wListRes['Result']!=True :
 					continue
 				wListID = None
-				for wROW in wListRes['Responce'] :
-					if wROW['name']!=wListName :
+				wKeylist = list( wListRes['Responce'].keys() )
+###				for wROW in wListRes['Responce'] :
+###					if wROW['name']!=wListName :
+				for wKey in wKeylist :
+					if wListRes['Responce'][wKey]['name']!=wListName :
 						continue
-					wListID = str( wROW['id'] )
+###					wListID = str( wROW['id'] )
+					wListID = str( wListRes['Responce'][wKey]['id'] )
 					break
 				if wListID==None :
 					continue
@@ -392,7 +409,7 @@ class CLS_Setup():
 				wARR_Data.update({ wListID : wCell })
 				wListNo += 1
 			
-			wSubRes = gVal.OBJ_DB_IF.SetListFavo( wARR_ListFavo )
+			wSubRes = gVal.OBJ_DB_IF.SetListFavo( wARR_Data )
 			if wSubRes['Result']!=True :
 				return False
 		
@@ -403,7 +420,7 @@ class CLS_Setup():
 		
 		#############################
 		# 正常終了
-		CLS_OSIF.sPrn( "データの追加が正常終了しました。" )
+		CLS_OSIF.sPrn( "〇 データの追加が正常終了しました。" )
 		return True
 
 
@@ -545,7 +562,7 @@ class CLS_Setup():
 		wQy = wQy + "apisecret   TEXT  NOT NULL,"		# Twitter Devで取ったAPI secret
 		wQy = wQy + "acctoken    TEXT  NOT NULL,"		# Twitter Devで取ったAccess Token Key
 		wQy = wQy + "accsecret   TEXT  NOT NULL,"		# Twitter Devで取ったAccess Token secret
-		wQy = wQy + "bearer      TEXT  NOT NULL "		# Twitter Devで取ったbearer
+		wQy = wQy + "bearer      TEXT  NOT NULL,"		# Twitter Devで取ったbearer
 		wQy = wQy + " PRIMARY KEY ( twitterid ) ) ;"
 		
 		inOBJ_DB.RunQuery( wQy )
@@ -595,7 +612,7 @@ class CLS_Setup():
 		wQy = "create table " + inTBLname + "("
 		wQy = wQy + "twitterid   TEXT  NOT NULL,"		# 記録したユーザ(Twitter ID)
 		wQy = wQy + "regdate     TIMESTAMP,"			# 登録日時
-		wQy = wQy + "level       CHAR(1) DEFAULT '-',"	# ログレベル
+		wQy = wQy + "level       CHAR(2) DEFAULT '-',"	# ログレベル
 		wQy = wQy + "log_class   TEXT  NOT NULL,"		# ログクラス
 		wQy = wQy + "log_func    TEXT  NOT NULL,"		# ログ関数
 		wQy = wQy + "reason      TEXT  NOT NULL "		# 理由
@@ -621,7 +638,7 @@ class CLS_Setup():
 		wQy = wQy + "twitterid     TEXT  NOT NULL,"		# 記録したユーザ(Twitter ID)
 		wQy = wQy + "regdate       TIMESTAMP,"			# 登録日時
 		wQy = wQy + "upddate       TIMESTAMP,"			# 更新日時(最終)
-		wQy = wQy + "flg_save      BOOL  DEFAULT false "# 自動削除禁止 true=削除しない
+		wQy = wQy + "flg_save      BOOL  DEFAULT false,"# 自動削除禁止 true=削除しない
 		
 		wQy = wQy + "id            TEXT  NOT NULL,"		# Twitter ID(数値)
 		wQy = wQy + "screen_name   TEXT  NOT NULL,"		# Twitter ユーザ名(英語)
@@ -645,7 +662,7 @@ class CLS_Setup():
 		wQy = wQy + "myfollow_date TIMESTAMP, "			# フォロー日時
 		wQy = wQy + "follower      BOOL  DEFAULT false,"# フォロワー(被フォロー) true=フォロワー
 		wQy = wQy + "follower_date TIMESTAMP, "			# 被フォロー日時
-		wQy = wQy + "memo          TEXT, "				# 自由記載(メモ)
+		wQy = wQy + "memo          TEXT "				# 自由記載(メモ)
 		wQy = wQy + " ) ;"
 		
 		inOBJ_DB.RunQuery( wQy )

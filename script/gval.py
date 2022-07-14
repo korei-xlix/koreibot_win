@@ -94,7 +94,7 @@ class gVal() :
 #############################
 # トラヒック情報
 	STR_TrafficInfo = {
-		"upddate"			: None	# 記録日時(更新)
+		"upddate"			: None,	# 記録日時(更新)
 		
 		"run"				: {0:0,1:"bot実行回数"},
 		"run_time"			: {0:0,1:"実行時間"},

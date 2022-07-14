@@ -10,7 +10,7 @@ from mylog import CLS_Mylog
 from db_if import CLS_DB_IF
 from twitter_if import CLS_Twitter_IF
 
-from time import CLS_TIME
+from ktime import CLS_TIME
 from osif import CLS_OSIF
 from filectrl import CLS_File
 from gval import gVal
@@ -40,7 +40,7 @@ class CLS_BotCtrl():
 		# 引数取得
 		wArg = CLS_OSIF.sGetArg()
 		
-		if len(wArg)<7 :	#引数が足りない
+		if len(wArg)<6 :	#引数が足りない
 			wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません(1)= " + str( wArg )
 			CLS_OSIF.sErr( wRes )
 ###			return False
@@ -89,7 +89,7 @@ class CLS_BotCtrl():
 		elif wArg[1]=="setup" :
 ###		   wArg[1]=="init" or \
 ###		   wArg[1]=="clear" :
-			if len(wArg)!=6 or len(wArg)!=7 :
+			if len(wArg)!=6 and len(wArg)!=7 :
 				wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません(3)= " + str( wArg )
 				CLS_OSIF.sErr( wRes )
 				return wRes
@@ -106,12 +106,16 @@ class CLS_BotCtrl():
 		#############################
 		# init  : 初期化モード
 		elif wArg[1]=="init" :
-			if len(wArg)!=6 :
+			if len(wArg)!=6 and len(wArg)!=7 :
 				wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません(4)= " + str( wArg )
 				CLS_OSIF.sErr( wRes )
 				return wRes
 			
 			gVal.STR_SystemInfo['RunMode'] = wArg[1]
+			
+			if len(wArg)==7 :
+				gVal.STR_SystemInfo['EXT_FilePath'] = wArg[6]
+			
 			wRes['Result'] = True	#正常
 			return wRes
 		

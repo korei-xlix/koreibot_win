@@ -8,7 +8,7 @@
 #####################################################
 
 ###from htmlif import CLS_HTMLIF
-from time import CLS_TIME
+from ktime import CLS_TIME
 from osif import CLS_OSIF
 from mydisp import CLS_MyDisp
 from gval import gVal

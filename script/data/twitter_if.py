@@ -8,7 +8,8 @@
 #####################################################
 from twitter_use import CLS_Twitter_Use
 
-from time import CLS_TIME
+from traffic import CLS_Traffic
+from ktime import CLS_TIME
 from osif import CLS_OSIF
 from gval import gVal
 #####################################################
@@ -70,7 +71,8 @@ class CLS_Twitter_IF() :
 		#############################
 		# フォロー一覧 取得
 		wMyFollowRes = self.OBJ_Twitter.GetMyFollowList()
-		gVal.STR_TrafficInfo['runapi'] += wMyFollowRes['RunAPI']
+###		gVal.STR_TrafficInfo['runapi'] += wMyFollowRes['RunAPI']
+		CLS_Traffic.sP( "run_api", wMyFollowRes['RunAPI'] )
 		if wMyFollowRes['Result']!=True :
 			wRes['Reason'] = "Twitter API Error(GetMyFollowList): " + wMyFollowRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
@@ -81,7 +83,8 @@ class CLS_Twitter_IF() :
 		#############################
 		# フォロワー一覧 取得
 		wFollowerRes = self.OBJ_Twitter.GetFollowerList()
-		gVal.STR_TrafficInfo['runapi'] += wFollowerRes['RunAPI']
+###		gVal.STR_TrafficInfo['runapi'] += wFollowerRes['RunAPI']
+		CLS_Traffic.sP( "run_api", wFollowerRes['RunAPI'] )
 		if wFollowerRes['Result']!=True :
 			wRes['Reason'] = "Twitter API Error(GetFollowerList): " + wFollowerRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
@@ -137,8 +140,10 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# トラヒック計測：フォロワー監視情報
-		gVal.STR_TrafficInfo['now_myfollow'] = len( self.ARR_MyFollowID )
-		gVal.STR_TrafficInfo['now_follower'] = len( self.ARR_FollowerID )
+###		gVal.STR_TrafficInfo['now_myfollow'] = len( self.ARR_MyFollowID )
+###		gVal.STR_TrafficInfo['now_follower'] = len( self.ARR_FollowerID )
+		CLS_Traffic.sP( "now_myfollow", len( self.ARR_MyFollowID ) )
+		CLS_Traffic.sP( "now_follower", len( self.ARR_FollowerID ) )
 		
 		#############################
 		# 正常
@@ -167,7 +172,8 @@ class CLS_Twitter_IF() :
 		#############################
 		# フォロー一覧 取得
 		wTwitterRes = self.OBJ_Twitter.GetFavolist()
-		gVal.STR_TrafficInfo['runapi'] += wTwitterRes['RunAPI']
+###		gVal.STR_TrafficInfo['runapi'] += wTwitterRes['RunAPI']
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		if wTwitterRes['Result']!=True :
 			wRes['Reason'] = "Twitter API Error: " + wTwitterRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
@@ -183,7 +189,8 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# トラヒック計測：いいね情報
-		gVal.STR_TrafficInfo['now_favo'] = len( self.ARR_Favo )
+###		gVal.STR_TrafficInfo['now_favo'] = len( self.ARR_Favo )
+###		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		
 		#############################
 		# 正常
@@ -422,10 +429,10 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# 入力チェック
-		if "apikey" not in inData or 
-		   "apisecret" not in inData or 
-		   "acctoken" not in inData or 
-		   "accsecret" not in inData or 
+		if "apikey" not in inData or \
+		   "apisecret" not in inData or \
+		   "acctoken" not in inData or \
+		   "accsecret" not in inData or \
 		   "bearer" not in inData :
 			
 ###			wRes['Reason'] = "入力チェックエラー: input=" + str(inData)
@@ -1639,7 +1646,8 @@ class CLS_Twitter_IF() :
 		#############################
 		# Twitterからユーザ情報を取得する
 		wUserinfoRes = self.OBJ_Twitter.GetUserinfo( inID=inID, inScreenName=inScreenName )
-		gVal.STR_TrafficInfo['runapi'] += wUserinfoRes['RunAPI']
+###		gVal.STR_TrafficInfo['runapi'] += wUserinfoRes['RunAPI']
+		CLS_Traffic.sP( "run_api" )
 		
 		wRes['StatusCode'] = wUserinfoRes['StatusCode']
 		#############################
@@ -1671,7 +1679,8 @@ class CLS_Twitter_IF() :
 		#############################
 		# フォロー者ID一覧 取得
 		wTwitterRes = self.OBJ_Twitter.GetFollowIDList( inID )
-		gVal.STR_TrafficInfo['runapi'] += wTweetRes['RunAPI']
+###		gVal.STR_TrafficInfo['runapi'] += wTweetRes['RunAPI']
+		CLS_Traffic.sP( "run_api" )
 		
 		#############################
 		# 結果チェック
@@ -1702,7 +1711,8 @@ class CLS_Twitter_IF() :
 		#############################
 		# Twitterから関係情報を取得
 		wUserinfoRes = self.OBJ_Twitter.GetFollowInfo( gVal.STR_UserInfo['id'], inID )
-		gVal.STR_TrafficInfo['runapi'] += wUserinfoRes['RunAPI']
+##		gVal.STR_TrafficInfo['runapi'] += wUserinfoRes['RunAPI']
+		CLS_Traffic.sP( "run_api", wUserinfoRes['RunAPI'] )
 		
 		#############################
 		# 結果チェック
@@ -1733,7 +1743,8 @@ class CLS_Twitter_IF() :
 		#############################
 		# Twitterからトレンドを取得
 		wSubRes = self.OBJ_Twitter.GetTrends()
-		gVal.STR_TrafficInfo['runapi'] += wSubRes['RunAPI']
+###		gVal.STR_TrafficInfo['runapi'] += wSubRes['RunAPI']
+		CLS_Traffic.sP( "run_api", wSubRes['RunAPI'] )
 		
 		wRes['Responce'] = {
 			"trends"		: [],

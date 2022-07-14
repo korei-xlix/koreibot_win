@@ -35,7 +35,8 @@ class CLS_Traffic():
 			gVal.OBJ_L.Log( "A", wRes )
 			return wRes
 		
-		gVal.STR_TrafficInfo['upddate'] = str( gVal.STR_UserInfo['TimeDate'] )
+###		gVal.STR_TrafficInfo['upddate'] = str( gVal.STR_UserInfo['TimeDate'] )
+		gVal.STR_TrafficInfo['upddate'] = str( gVal.STR_Time['TimeDate'] )
 		gVal.STR_TrafficInfo[inTag][0] += inCnt
 		
 		wRes['Result'] = True
@@ -239,8 +240,8 @@ class CLS_Traffic():
 				continue
 			wQy = wQy + wKey + " = " + str( gVal.STR_TrafficInfo[wKey] ) + ", "
 		
-		wQy = wQy + "upddate = '" + str( gVal.STR_TrafficInfo['upddate'] ) + "' " + \
-		wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
+		wQy = wQy + "upddate = '" + str( gVal.STR_TrafficInfo['upddate'] ) + "' "
+		wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "'"
 		wQy = wQy + " and day = '" + str( wARR_NowTD ) + "' ;"
 		
 		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy, False )
@@ -365,7 +366,7 @@ class CLS_Traffic():
 			wKeylist = list( wARR_RateTraffic.keys() )
 			for wIndex in wKeylist :
 				for wKey in wARR_Komoku :
-					if wKey \=="upddate" :
+					if wKey=="upddate" :
 						continue
 					wARR_TTraffic[2][wKey] += wARR_RateTraffic[wIndex][wKey]
 		
@@ -393,7 +394,7 @@ class CLS_Traffic():
 		
 		### トラヒックデータ
 		for wKey in wARR_Komoku :
-			if wKey \=="upddate" :
+			if wKey=="upddate" :
 				continue
 			
 			### 項目
