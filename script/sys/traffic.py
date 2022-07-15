@@ -14,7 +14,7 @@ from gval import gVal
 class CLS_Traffic():
 #####################################################
 	DEF_KOMOKU_LEN     = 32			#
-	DEF_KOMOKU_NUM_LEN = 19			#
+	DEF_KOMOKU_NUM_LEN = 16			#
 
 #####################################################
 # トラヒックセット
@@ -373,6 +373,12 @@ class CLS_Traffic():
 					if wKey=="upddate" :
 						continue
 					wARR_Traffic[2][wKey] += wARR_RateTraffic[wIndex][wKey]
+			
+			### 各値を平均値に計算しなおす
+			for wKey in wARR_Komoku :
+				if wKey=="upddate" :
+					continue
+				wARR_Traffic[2][wKey] = wARR_Traffic[2][wKey] / wReportNum
 		
 		#############################
 		# 表示データの枠
@@ -409,19 +415,26 @@ class CLS_Traffic():
 			wListData = gVal.STR_TrafficInfo[wKey][1] + " " * wListNumSpace + "   "
 			
 			### 1列目
-			wListData = wListData + str(wARR_Traffic[0][wKey])
+###			wListData = wListData + str(wARR_Traffic[0][wKey])
+			wListNumSpace = cls.DEF_KOMOKU_NUM_LEN - len( str(wARR_Traffic[0][wKey]) )
+			wListData = wListData + " " * wListNumSpace + str(wARR_Traffic[0][wKey])
 			if wReportNum>=2 :
 				### 1行目:スペース
-				wListNumSpace = cls.DEF_KOMOKU_NUM_LEN - len( str(wARR_Traffic[0][wKey]) )
-				wListData = wListData + " " * wListNumSpace + "  "
+				wListData = wListData + "     "
+###				wListNumSpace = cls.DEF_KOMOKU_NUM_LEN - len( str(wARR_Traffic[0][wKey]) )
+###				wListData = wListData + " " * wListNumSpace + "  "
 				
 				### 2行目
-				wListData = wListData + str(wARR_Traffic[1][wKey])
+###				wListData = wListData + str(wARR_Traffic[1][wKey])
+###				wListNumSpace = cls.DEF_KOMOKU_NUM_LEN - len( str(wARR_Traffic[1][wKey]) )
+###				wListData = wListData + " " * wListNumSpace + "  "
 				wListNumSpace = cls.DEF_KOMOKU_NUM_LEN - len( str(wARR_Traffic[1][wKey]) )
-				wListData = wListData + " " * wListNumSpace + "  "
+				wListData = wListData + " " * wListNumSpace + str(wARR_Traffic[1][wKey]) + "     "
 				
 				### 3行目
-				wListData = wListData + str(wARR_Traffic[2][wKey])
+###				wListData = wListData + str(wARR_Traffic[2][wKey])
+				wListNumSpace = cls.DEF_KOMOKU_NUM_LEN - len( str(wARR_Traffic[2][wKey]) )
+				wListData = wListData + " " * wListNumSpace + str(wARR_Traffic[2][wKey])
 			
 			wTag = "***" + wKey + "***"
 			wARR_ViewTraffic.update({ wTag : wListData })

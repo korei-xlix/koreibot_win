@@ -779,9 +779,6 @@ class CLS_DB_IF() :
 				gVal.OBJ_L.Log( "A", wRes )
 				return wRes
 			
-
-			print("rate: " + str(wRunRes['RateSec']) )
-
 			CLS_Traffic.sP( "run_time", wRunRes['RateSec'] )
 			
 			wStr = "排他解除: locked=False user=" + str(inAccount)
