@@ -20,7 +20,7 @@ class CLS_Traffic():
 # トラヒックセット
 #####################################################
 	@classmethod
-	def sP( cls, inTag, inCnt=1 ):
+	def sP( cls, inTag, inCnt=1, inFLG_Add=True ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -37,7 +37,11 @@ class CLS_Traffic():
 		
 ###		gVal.STR_TrafficInfo['upddate'] = str( gVal.STR_UserInfo['TimeDate'] )
 		gVal.STR_TrafficInfo['upddate'] = str( gVal.STR_Time['TimeDate'] )
-		gVal.STR_TrafficInfo[inTag][0] += inCnt
+###		gVal.STR_TrafficInfo[inTag][0] += inCnt
+		if inFLG_Add==True :
+			gVal.STR_TrafficInfo[inTag][0] += inCnt
+		else:
+			gVal.STR_TrafficInfo[inTag][0] = inCnt
 		
 		wRes['Result'] = True
 		return wRes

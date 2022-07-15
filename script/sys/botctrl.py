@@ -120,12 +120,25 @@ class CLS_BotCtrl():
 			return wRes
 		
 		#############################
+		# testclear  : テストクリア
+		elif wArg[1]=="testclear" :
+			if len(wArg)!=6 :
+				wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません(5)= " + str( wArg )
+				CLS_OSIF.sErr( wRes )
+				return wRes
+			
+			gVal.STR_SystemInfo['RunMode'] = wArg[1]
+			
+			wRes['Result'] = True	#正常
+			return wRes
+		
+		#############################
 		# test : テストモード
 ###		elif len(wArg)==4 :	#テストモード : bottest か
 ###			if wArg[3]==gVal.DEF_TEST_MODE :
 		elif wArg[1]==gVal.DEF_TEST_MODE :
 			if len(wArg)!=7 :
-				wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません(5)= " + str( wArg )
+				wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません(6)= " + str( wArg )
 				CLS_OSIF.sErr( wRes )
 				return wRes
 			
@@ -135,7 +148,7 @@ class CLS_BotCtrl():
 		# run : 通常モード
 		elif wArg[1]=="run" :
 			if len(wArg)!=7 :
-				wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません(6)= " + str( wArg )
+				wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません(7)= " + str( wArg )
 				CLS_OSIF.sErr( wRes )
 				return wRes
 			

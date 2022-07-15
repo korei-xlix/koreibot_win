@@ -159,7 +159,8 @@ class CLS_Main_Console() :
 		
 		#############################
 		# Bot実行回数の記録
-		gVal.STR_TrafficInfo['runbot'] += 1
+###		gVal.STR_TrafficInfo['runbot'] += 1
+		CLS_Traffic.sP( "run" )
 		
 	#####################################################
 		#############################
@@ -378,13 +379,12 @@ class CLS_Main_Console() :
 			wCLS_Setup.Add( wResTest['Responce'], inWordOnly=True )
 			return False	###問題あり
 		
-###		#############################
-###		# データクリアモードで実行
-###		elif gVal.STR_SystemInfo['RunMode']=="clear" :
-####		wCLS_Setup.Clear()
-###			wCLS_Setup.Clear( wResTest['Responce'] )
-###			return False	###問題あり
-###		
+		#############################
+		# データクリアモードで実行
+		elif gVal.STR_SystemInfo['RunMode']=="testclear" :
+			wCLS_Setup.testClear( wResTest['Responce'] )
+			return False	###問題あり
+		
 		#############################
 		# =正常
 		return True

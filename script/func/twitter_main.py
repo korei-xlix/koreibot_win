@@ -990,10 +990,10 @@ class CLS_TwitterMain():
 			# リアクション済みID
 			self.ARR_ReacrionUserID.append( inUser['id'] )
 			
-			#############################
-			# トラヒック計測：リアクション獲得数
-			gVal.STR_TrafficInfo['get_reaction'] += 1
-			
+###			#############################
+###			# トラヒック計測：リアクション獲得数
+###			gVal.STR_TrafficInfo['get_reaction'] += 1
+###			
 			#############################
 			# リアクションへのリアクション
 			wSubRes = self.__ReactionUserCheck_PutReaction( inUser, wARR_DBData, inTweet, wNewUser )

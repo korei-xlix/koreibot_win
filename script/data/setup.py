@@ -429,43 +429,41 @@ class CLS_Setup():
 # クリア
 #   一部のDBを初期化する
 #####################################################
-###	def Clear(self):
-###	def Clear( self, inData ):
-###		#############################
-###		# 応答形式の取得
-###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-###		wRes = CLS_OSIF.sGet_Resp()
-###		wRes['Class'] = "CLS_Setup"
-###		wRes['Func']  = "Clear"
-###		
-###		#############################
-###		# 実行の確認
-###		wStr = "ログと、キーユーザ検索データ用のデータベースをクリアします。" + '\n'
-###		CLS_OSIF.sPrn( wStr )
-###		wSelect = CLS_OSIF.sInp( "よろしいですか？(y/N)=> " )
-###		if wSelect!="y" :
-###			##キャンセル
-###			return True
-###		
-###		#############################
-###		# DBに接続 (接続情報の作成)
-####	wSubRes = gVal.OBJ_DB_IF.Connect()
-###		wSubRes = gVal.OBJ_DB_IF.Connect( inData )
-###		if wSubRes['Result']!=True :
-###			return False
-###		
-###		#############################
-###		# DB初期化
-###		self.__create_TBL_LOG_DATA( gVal.OBJ_DB_IF.OBJ_DB )
-###		
-###		#############################
-###		# 終わり
-###		gVal.OBJ_DB_IF.Close()
-###		CLS_OSIF.sPrn( "クリアが正常終了しました。" )
-###		
-###		return True
-###
-###
+	def testClear( self, inData ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_Setup"
+		wRes['Func']  = "testClear"
+		
+		#############################
+		# 実行の確認
+		wSelect = CLS_OSIF.sInp( "test clear run (y/N)=> " )
+		if wSelect!="y" :
+			##キャンセル
+			return True
+		
+		#############################
+		# DBに接続 (接続情報の作成)
+		gVal.OBJ_DB_IF = CLS_DB_IF()
+		wSubRes = gVal.OBJ_DB_IF.Connect( inData )
+		if wSubRes['Result']!=True :
+			return False
+		
+		#############################
+		# DB初期化
+		self.__create_TBL_LOG_DATA( gVal.OBJ_DB_IF.OBJ_DB )
+		self.__create_TBL_TRAFFIC_DATA( gVal.OBJ_DB_IF.OBJ_DB )
+		
+		#############################
+		# 終わり
+		gVal.OBJ_DB_IF.Close()
+		CLS_OSIF.sPrn( "clear complete !!!" )
+		
+		return True
+
+
 
 #####################################################
 # データベースの初期化
@@ -843,6 +841,7 @@ class CLS_Setup():
 		wQy = wQy + "s_hit       INTEGER DEFAULT 0,"	# 検索ヒット数
 		wQy = wQy + "s_favo      INTEGER DEFAULT 0,"	# 検索時いいね数
 		
+		wQy = wQy + "favo        INTEGER DEFAULT 0,"	# いいね数
 		wQy = wQy + "p_favo      INTEGER DEFAULT 0,"	# いいね実施回数
 		wQy = wQy + "d_favo      INTEGER DEFAULT 0,"	# いいね解除回数
 		wQy = wQy + "p_tweet     INTEGER DEFAULT 0,"	# ツイート送信回数

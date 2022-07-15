@@ -2576,7 +2576,7 @@ class CLS_DB_IF() :
 			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		gVal.STR_TrafficInfo['db_ins'] += 1
+###		gVal.STR_TrafficInfo['db_ins'] += 1
 		
 		self.ARR_FollowerDataID.append( wID )
 		
@@ -2613,7 +2613,7 @@ class CLS_DB_IF() :
 			wRes['Reason'] = "Run Query is failed: RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		gVal.STR_TrafficInfo['db_req'] += 1
+###		gVal.STR_TrafficInfo['db_req'] += 1
 		
 		#############################
 		# 1個取得できたか
@@ -2950,7 +2950,7 @@ class CLS_DB_IF() :
 			wRes['Reason'] = "Run Query is failed: RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		gVal.STR_TrafficInfo['db_req'] += 1
+###		gVal.STR_TrafficInfo['db_req'] += 1
 		
 		#############################
 		# リスト型に整形
@@ -2973,7 +2973,7 @@ class CLS_DB_IF() :
 				wRes['Reason'] = "Run Query is failed: RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
-			gVal.STR_TrafficInfo['db_req'] += 1
+###			gVal.STR_TrafficInfo['db_req'] += 1
 			
 			#############################
 			# 1個取得できたか
@@ -3031,7 +3031,7 @@ class CLS_DB_IF() :
 				wRes['Reason'] = "Run Query is failed: RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
-			gVal.STR_TrafficInfo['db_del'] += 1
+###			gVal.STR_TrafficInfo['db_del'] += 1
 			
 			gVal.OBJ_L.Log( "N", wRes, "DB: Delete FavoData: " + str( wARR_RateFavoData['screen_name'] ) )
 		
