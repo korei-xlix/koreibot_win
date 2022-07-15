@@ -12,7 +12,7 @@ from twitter_keyword import CLS_TwitterKeyword
 from twitter_admin import CLS_TwitterAdmin
 from test_sample import CLS_Test
 
-from ktime import CLS_TIME
+###from ktime import CLS_TIME
 from osif import CLS_OSIF
 from traffic import CLS_Traffic
 from mydisp import CLS_MyDisp
@@ -68,15 +68,15 @@ class CLS_TwitterMain():
 		wRes['Class'] = "CLS_TwitterMain"
 		wRes['Func']  = "Init"
 		
-		#############################
-		# 時間を取得
-		wSubRes = self.TimeUpdate( inInit=True )
-		if wSubRes['Result']!=True :
-			###時間取得失敗  時計壊れた？
-			wRes['Reason'] = "TimeUpdate is failed"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
+###		#############################
+###		# 時間を取得
+###		wSubRes = self.TimeUpdate( inInit=True )
+###		if wSubRes['Result']!=True :
+###			###時間取得失敗  時計壊れた？
+###			wRes['Reason'] = "TimeUpdate is failed"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
 		#############################
 		# Twitterから自ユーザ情報を取得する
 		wUserinfoRes = gVal.OBJ_Tw_IF.GetMyUserinfo()
@@ -144,16 +144,16 @@ class CLS_TwitterMain():
 #####################################################
 # グローバル時間更新
 #####################################################
-	def TimeUpdate( self, inInit=False ):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_TwitterMain"
-		wRes['Func']  = "TimeUpdate"
-		
-		#############################
-		# 時間を取得
+###	def TimeUpdate( self, inInit=False ):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_TwitterMain"
+###		wRes['Func']  = "TimeUpdate"
+###		
+###		#############################
+###		# 時間を取得
 ###		wTD = CLS_OSIF.sGetTime()
 ###		if wTD['Result']!=True :
 ###			###時間取得失敗  時計壊れた？
@@ -161,9 +161,9 @@ class CLS_TwitterMain():
 ###			gVal.OBJ_L.Log( "B", wRes )
 ###			return wRes
 ###		### wTD['TimeDate']
-		wTD = CLS_TIME.sGet( wRes, "(1)" )
-		if wTD['Result']!=True :
-			return wRes
+###		wTD = CLS_TIME.sGet( wRes, "(1)" )
+###		if wTD['Result']!=True :
+###			return wRes
 ###		
 ###		#############################
 ###		# 時間を設定
@@ -174,14 +174,14 @@ class CLS_TwitterMain():
 ###			else :
 ###				gVal.STR_SystemInfo['RateTimeDate'] = gVal.STR_Time['TimeDate']
 ###		
-		gVal.STR_Time['TimeDate'] = wTD['TimeDate']
-		
-		#############################
-		# 完了
-		wRes['Result'] = True
-		return wRes
-
-
+###		gVal.STR_Time['TimeDate'] = wTD['TimeDate']
+###		
+###		#############################
+###		# 完了
+###		wRes['Result'] = True
+###		return wRes
+###
+###
 
 #####################################################
 # 周期15分処理
@@ -711,6 +711,15 @@ class CLS_TwitterMain():
 #####################################################
 	def ExcuteUser(self):
 		wRes = self.OBJ_TwitterAdmin.ExcuteUser()
+		return wRes
+
+
+
+#####################################################
+# いいね全解除
+#####################################################
+	def AllFavoRemove(self):
+		wRes = self.OBJ_TwitterFavo.AllFavoRemove()
 		return wRes
 
 

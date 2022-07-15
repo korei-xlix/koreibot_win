@@ -164,6 +164,85 @@ class CLS_TwitterFavo():
 
 
 #####################################################
+# いいね全解除
+#####################################################
+	def AllFavoRemove( self, inFLG_FirstDisp=True ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterFavo"
+		wRes['Func']  = "AllFavoRemove"
+		
+		#############################
+		# 取得開始の表示
+		if inFLG_FirstDisp==True :
+			wResDisp = CLS_MyDisp.sViewHeaderDisp( "全てのいいね解除中" )
+		
+		#############################
+		# ふぁぼ一覧 取得
+		wARR_TwData = gVal.OBJ_Tw_IF.GetFavoData()
+		
+		#############################
+		# いいねがない場合、処理を終わる
+		if len(wARR_TwData)==0 :
+			wStr = "いいねがないため、処理を終わります。"
+			CLS_OSIF.sPrn( wStr )
+			wRes['Result'] = True	#正常終了
+			return wRes
+		
+		wARR_Tw_ID = list( wARR_TwData.keys() )
+		
+		###ウェイト初期化
+		self.OBJ_Parent.Wait_Init( inZanNum=len( wARR_Tw_ID ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
+		
+		wRemTweet = 0
+		#############################
+		# 期間を過ぎたいいねを解除していく
+		for wID in wARR_Tw_ID :
+			###ウェイトカウントダウン
+			if self.OBJ_Parent.Wait_Next()==False :
+				break	###ウェイト中止
+			
+			wID = str( wID )
+			
+			###  いいねを外す
+			wRemoveRes = gVal.OBJ_Tw_IF.FavoRemove( wID )
+			if wRemoveRes['Result']!=True :
+				wRes['Reason'] = "Twitter Error"
+				gVal.OBJ_L.Log( "B", wRes )
+			
+			if wRemoveRes['Responce']['Run']==True :
+				wTextReason = "●解除いいね日時: id=" + str(wID) + ": " + str(wRemoveRes['Responce']['Data']['created_at']) + " : " + str(wRemoveRes['Responce']['Data']['user']['screen_name'])
+				gVal.OBJ_L.Log( "T", wRes, wTextReason )
+				
+				wRemTweet += 1
+			else:
+				wRes['Reason'] = "FavoRemove failed: id=" + str(wID)
+				gVal.OBJ_L.Log( "D", wRes )
+				return wRes
+			
+			#############################
+			# 正常
+			continue	#次へ
+		
+		#############################
+		# 取得結果の表示
+		wStr = ""
+		if inFLG_FirstDisp==False :
+			wStr = "------------------------------" + '\n'
+		wStr = wStr + "Twitterいいね数  : " + str( len(wARR_Tw_ID) )+ '\n'
+		wStr = wStr + "いいね解除数     : " + str( wRemTweet )+ '\n'
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# 正常終了
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
 # リストいいね
 #####################################################
 	def ListFavo( self, inFLG_FirstDisp=True ):

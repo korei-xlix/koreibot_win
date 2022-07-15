@@ -155,7 +155,7 @@ class CLS_Traffic():
 		wQy = wQy + "'" + str( inTimeDate ) + "', "		# 登録日時
 		wQy = wQy + "'" + str( inTimeDate ) + "', "		# 記録日時(更新)
 		wQy = wQy + "'" + str( wARR_TD ) + "', "		# 記録日
-		wQy = wQy + "false, "							# 報告済か True=報告済
+###		wQy = wQy + "false, "							# 報告済か True=報告済
 		
 		for wKey in wKeylist :
 			if wKey=="db_req" or wKey=="db_ins" or wKey=="db_up" or wKey=="db_del" or \
@@ -242,7 +242,7 @@ class CLS_Traffic():
 		for wKey in wKeylist :
 			if wKey=="upddate" :
 				continue
-			wQy = wQy + wKey + " = " + str( gVal.STR_TrafficInfo[wKey] ) + ", "
+			wQy = wQy + wKey + " = " + str( gVal.STR_TrafficInfo[wKey][0] ) + ", "
 		
 		wQy = wQy + "upddate = '" + str( gVal.STR_TrafficInfo['upddate'] ) + "' "
 		wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "'"
@@ -325,7 +325,7 @@ class CLS_Traffic():
 		wQy = "select * from tbl_traffic_data where "
 		wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' "
 		wQy = wQy + " order by day desc "
-		wQy = wQy + " limit " + gVal.DEF_STR_TLNUM['trafficReportLimit'] + "; "
+		wQy = wQy + " limit " + str(gVal.DEF_STR_TLNUM['trafficReportLimit']) + "; "
 		
 		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy, False )
 		if wResDB['Result']!=True :
@@ -346,33 +346,33 @@ class CLS_Traffic():
 		
 		#############################
 		# 報告するトラヒックを組み立てる
-		wARR_TTraffic = {
+		wARR_Traffic = {
 			0 : None,
 			1 : None,
 			2 : None
 		}
 		
 		### 最新の日付のトラヒック
-		wARR_TTraffic[0] = wARR_RateTraffic[0]
+		wARR_Traffic[0] = wARR_RateTraffic[0]
 		
 		wARR_Komoku = list( gVal.STR_TrafficInfo.keys() )
 		
 		### 最新の翌日のトラヒック
 		if wReportNum>=2 :
-			wARR_TTraffic[1] = wARR_RateTraffic[1]
+			wARR_Traffic[1] = wARR_RateTraffic[1]
 			
 			### 最新から規定日数の平均トラヒック
-			wARR_TTraffic[2] = {}
+			wARR_Traffic[2] = {}
 			### 枠作成
 			for wKey in wARR_Komoku :
-				wARR_TTraffic[2].update({ wKey : 0 })
+				wARR_Traffic[2].update({ wKey : 0 })
 			
 			wKeylist = list( wARR_RateTraffic.keys() )
 			for wIndex in wKeylist :
 				for wKey in wARR_Komoku :
 					if wKey=="upddate" :
 						continue
-					wARR_TTraffic[2][wKey] += wARR_RateTraffic[wIndex][wKey]
+					wARR_Traffic[2][wKey] += wARR_RateTraffic[wIndex][wKey]
 		
 		#############################
 		# 表示データの枠
@@ -380,15 +380,15 @@ class CLS_Traffic():
 		
 		### 項目列＋1行目:日付
 		wListData = " " * cls.DEF_KOMOKU_LEN + "  "
-		wListData = wListData + str(wARR_TTraffic[0]['upddatta'])
+		wListData = wListData + str(wARR_Traffic[0]['upddate'])
 		if wReportNum>=2 :
 			### 1行目:スペース
-			wListNumSpace = cls.DEF_KOMOKU_NUM_LEN - len( str(wARR_TTraffic[0]['upddatta']) )
+			wListNumSpace = cls.DEF_KOMOKU_NUM_LEN - len( str(wARR_Traffic[0]['upddate']) )
 			wListData = wListData + " " * wListNumSpace + "  "
 			
 			### 2行目
-			wListData = wListData + str(wARR_TTraffic[1]['upddatta'])
-			wListNumSpace = cls.DEF_KOMOKU_NUM_LEN - len( str(wARR_TTraffic[1]['upddatta']) )
+			wListData = wListData + str(wARR_Traffic[1]['upddate'])
+			wListNumSpace = cls.DEF_KOMOKU_NUM_LEN - len( str(wARR_Traffic[1]['upddate']) )
 			wListData = wListData + " " * wListNumSpace + "  "
 			
 			### 3行目
@@ -406,29 +406,34 @@ class CLS_Traffic():
 			wListData = gVal.STR_TrafficInfo[wKey][1] + " " * wListNumSpace + "  "
 			
 			### 1列目
-			wListData = wListData + str(wARR_TTraffic[0][wKey])
+			wListData = wListData + str(wARR_Traffic[0][wKey])
 			if wReportNum>=2 :
 				### 1行目:スペース
-				wListNumSpace = cls.DEF_KOMOKU_NUM_LEN - len( str(wARR_TTraffic[0][wKey]) )
+				wListNumSpace = cls.DEF_KOMOKU_NUM_LEN - len( str(wARR_Traffic[0][wKey]) )
 				wListData = wListData + " " * wListNumSpace + "  "
 				
 				### 2行目
-				wListData = wListData + str(wARR_TTraffic[1][wKey])
-				wListNumSpace = cls.DEF_KOMOKU_NUM_LEN - len( str(wARR_TTraffic[1][wKey]) )
+				wListData = wListData + str(wARR_Traffic[1][wKey])
+				wListNumSpace = cls.DEF_KOMOKU_NUM_LEN - len( str(wARR_Traffic[1][wKey]) )
 				wListData = wListData + " " * wListNumSpace + "  "
 				
 				### 3行目
-				wListData = wListData + str(wARR_TTraffic[2][wKey])
+				wListData = wListData + str(wARR_Traffic[2][wKey])
 			
 			wTag = "***" + wKey + "***"
 			wARR_ViewTraffic.update({ wTag : wListData })
 		
+
+		print(str( wARR_ViewTraffic ))
+
 		#############################
 		# 画面表示
 		wResDisp = CLS_MyDisp.sViewDisp( "TrafficReport", inClear=inCrear, inData=wARR_ViewTraffic )
 		if wResDisp['Result']==False :
-			wRes['Reason'] = "sViewDisp is failed"
-			gVal.OBJ_L.Log( "B", wRes )
+###			wRes['Reason'] = "sViewDisp is failed"
+###			gVal.OBJ_L.Log( "B", wRes )
+			wRes['Reason'] = "sViewDisp is failed: reason=" + wResDisp['Reason']
+			gVal.OBJ_L.Log( "A", wRes )
 			return wRes
 		
 ###		wReported = 0	#報告した数

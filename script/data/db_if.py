@@ -730,7 +730,8 @@ class CLS_DB_IF() :
 		wQy = "update tbl_user_data set "
 		if inLock==True :
 ###			wQy = wQy + "lok_date = '" + str( inDate ) + "', " + \
-			if wARR_DBData['locked']==False :
+###			if wARR_DBData['locked']==False :
+			if wARR_DBData[0]['locked']==False :
 				wQy = wQy + "lok_date = '" + str( inDate ) + "', "
 				wQy = wQy + "get_date = '" + str( inDate ) + "', "
 			else:
@@ -761,21 +762,31 @@ class CLS_DB_IF() :
 		# ログに記録する
 		if inLock==True :
 ###			gVal.OBJ_L.Log( "SR", wRes, "排他: locked=True user=" + str(inUserData['Account']) )
-			if wARR_DBData['locked']==False :
-				gVal.OBJ_L.Log( "SR", wRes, "排他: locked=True user=" + str(inUserData['Account']) )
+###			if wARR_DBData['locked']==False :
+			if wARR_DBData[0]['locked']==False :
+				gVal.OBJ_L.Log( "SR", wRes, "排他: locked=True user=" + str(inAccount) )
 			else:
-				gVal.OBJ_L.Log( "SR", wRes, "排他(延長): locked=True user=" + str(inUserData['Account']) )
+				gVal.OBJ_L.Log( "SR", wRes, "排他(延長): locked=True user=" + str(inAccount) )
 		
 		#############################
 		# 排他解除の場合
-###		#   実行時間も返す
 		#   獲得時間も返す
 		else:
-###			wRunTime = inDate - wARR_DBData['lok_date']
-			wRunTime = inDate - wARR_DBData['get_date']
-			gVal.OBJ_L.Log( "SR", wRes, "排他: locked=False user=" + str(inUserData['Account']) + " runtime=" + str(wRunTime) )
+			wRunRes = CLS_OSIF.sTimeLagSec( inTimedate1=inDate, inTimedate2=wARR_DBData[0]['lok_date'] )
+			if wRunRes['Result']!=True :
+				##失敗
+				wRes['Reason'] = "sTimeLagSec is error: " + str(wRunRes['Reason'])
+				gVal.OBJ_L.Log( "A", wRes )
+				return wRes
 			
-			wRes['Responce'] = wRunTime
+			CLS_Traffic.sP( "run_time", wRunRes['RateSec'] )
+			
+			wStr = "排他解除: locked=False user=" + str(inAccount)
+			wStr = wStr + " runtime=" + str(wRunRes['RateSec']) + " daytime=" + str(gVal.STR_TrafficInfo['run_time'][0])
+			
+			gVal.OBJ_L.Log( "SR", wRes, wStr )
+			
+			wRes['Responce'] = wRunRes['RateSec']
 		
 		#############################
 		# =正常
@@ -910,7 +921,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# グローバルにセット
-		gVal.STR_Time[wKey] = inDate
+		gVal.STR_Time[inTag] = inDate
 		
 		#############################
 		# =正常
@@ -1186,10 +1197,10 @@ class CLS_DB_IF() :
 			wCell = {
 				"list_number"	: wListNo,
 				"id"			: wID,
-				"screen_name"	: wARR_DBData[wIndex]['screen_name'],
-				"report"		: wARR_DBData[wIndex]['report'],
-				"vip"			: wARR_DBData[wIndex]['vip'],
-				"memo"			: wARR_DBData[wIndex]['memo']
+				"screen_name"	: wARR_DBData[wID]['screen_name'],
+				"report"		: wARR_DBData[wID]['report'],
+				"vip"			: wARR_DBData[wID]['vip'],
+				"memo"			: wARR_DBData[wID]['memo']
 			}
 			wARR_ExeUser.update({ wID : wCell })
 			wListNo += 1
@@ -2151,7 +2162,7 @@ class CLS_DB_IF() :
 		wQy = "select "
 		wQy = wQy + "trendtag, list_id, list_name, "
 		wQy = wQy + "autoremove, mlist_id, mlist_name, flist_id, flist_name "
-		wQy = wQy + "from tbl_user_data, "
+		wQy = wQy + "from tbl_user_data "
 		wQy = wQy + "where twitterid = '" + str(inAccount) + "' ;"
 		
 		wResDB = self.OBJ_DB.RunQuery( wQy )

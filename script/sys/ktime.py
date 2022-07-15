@@ -14,6 +14,33 @@ class CLS_TIME():
 #####################################################
 
 #####################################################
+# グローバル時間更新
+#####################################################
+	@classmethod
+	def sTimeUpdate(cls):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TIME"
+		wRes['Func']  = "TimeUpdate"
+		
+		#############################
+		# 時間を取得
+		wTD = cls.sGet( wRes, "(1)" )
+		if wTD['Result']!=True :
+			return wRes
+		
+		gVal.STR_Time['TimeDate'] = wTD['TimeDate']
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
 # 時間取得
 #####################################################
 	@classmethod

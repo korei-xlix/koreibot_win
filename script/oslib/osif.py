@@ -298,6 +298,53 @@ class CLS_OSIF() :
 
 
 
+#####################################################
+# 2つの時間差の秒数を返す
+#
+#####################################################
+	@classmethod
+	def sTimeLagSec( cls, inTimedate1=None, inTimedate2=None ):
+		#############################
+		# 応答形式
+		wRes = {
+			"Result"	: False,	# 結果
+			"Reason"	: None,
+			
+			"TD1"		: None,		#
+			"TD2"		: None,		#
+			"RateSec"	: 0			# 時間差(秒)
+		}
+		
+		#############################
+		# 時間形式に変換する
+		try:
+			wTD1 = str( inTimedate1 )
+			wTD1 = datetime.strptime( wTD1, "%Y-%m-%d %H:%M:%S")
+		except:
+			wRes['Reason'] = "inTimedate1 exception error: " + str(inTimedate1)
+			return wRes	#失敗
+		wRes['TD1'] = wTD1
+		
+		try:
+			wTD2 = str( inTimedate2 )
+			wTD2 = datetime.strptime( wTD2, "%Y-%m-%d %H:%M:%S")
+		except:
+			wRes['Reason'] = "inTimedate2 exception error: " + str(inTimedate2)
+			return wRes	#失敗
+		wRes['TD2'] = wTD2
+		
+		#############################
+		# 差分を求めて秒数に変換する
+		wRunTime = wTD1 - wTD2
+		wRunTime = wRunTime.seconds
+		wSec = cls.sGetRound( inValue=wRunTime, inFLen=2 )
+		
+		wRes['RateSec'] = wSec
+		#############################
+		# 正常
+		wRes['Result']    = True
+		return wRes
+
 
 
 #####################################################
@@ -764,6 +811,23 @@ class CLS_OSIF() :
 	@classmethod
 	def sGetFloor( cls, inValue ):
 		wVal = math.floor( inValue )
+		return wVal
+
+
+
+#####################################################
+# 小数点以下指定
+#####################################################
+	@classmethod
+	def sGetRound( cls, inValue, inFLen=2 ):
+###		wStr = "{:." + str(inFLen) + "f}"
+###		print("xxx3: " + str( inValue ))
+###		wVal = float( inValue )
+###		print("xxx3: " + str( inValue ))
+###		print("xxx5: " + str( wStr ))
+###		wVal = print( wStr.format( inValue ) )
+###		wVal = float( wVal )
+		wVal = round( inValue, inFLen )
 		return wVal
 
 

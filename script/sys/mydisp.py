@@ -437,6 +437,7 @@ class CLS_MyDisp():
 		
 		###インプリデータチェック
 		if inLine not in inData :
+			pRes['Result'] = True
 			return
 		
 		###インプリ
@@ -500,7 +501,8 @@ class CLS_MyDisp():
 			###インプリメント
 			wResInp = cls.sDispInp( inDisp, wLine, inIndex, inData )
 			if wResInp['Result']!=True :
-				wRes['Reason'] = "sDispInp is failed: reasin=" + wResInp['Reason']
+###				wRes['Reason'] = "sDispInp is failed: reasin=" + wResInp['Reason']
+				wRes['Reason'] = "sDispInp is failed: reasin=" + str(wResInp['Reason'])
 				return wRes
 			if wResInp['Responce']!=None :
 				###インプリメントされていれば差し替える

@@ -74,6 +74,7 @@ class CLS_Mylog():
 
 	DEF_VIEW_CONSOLE = True		#デフォルトのコンソール表示
 	DEF_OUT_FILE     = False	#デフォルトのファイル出力
+	DEF_LEVEL_SIZE   = 2
 
 
 
@@ -152,16 +153,16 @@ class CLS_Mylog():
 			wCHR_TimeDate = "1901-01-01 00:00:00"
 			
 			###いちおデータベースにも記録する
-			wQuery = "insert into tbl_log_data values (" + \
-						"'" + gVal.STR_UserInfo['Account'] + "'," + \
-						"'" + wCHR_TimeDate + "'," + \
-						"'C'," + \
-						"'CLS_Mylog'," + \
-						"'Log'," + \
-						"'CLS_OSIF.sGetTime is failed' " + \
-						") ;"
+			wQy = "insert into tbl_log_data values ("
+			wQy = wQy + "'" + gVal.STR_UserInfo['Account'] + "',"
+			wQy = wQy + "'" + wCHR_TimeDate + "',"
+			wQy = wQy + "'C',"
+			wQy = wQy + "'CLS_Mylog',"
+			wQy = wQy + "'Log',"
+			wQy = wQy + "'CLS_OSIF.sGetTime is failed' "
+			wQy = wQy + ") ;"
 			
-			wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery, False )
+			wResDB = gVal.OBJ_DB_IF.RunQuery( wQy, False )
 			if wResDB['Result']!=True :
 				wRes['Reason'] = "Run Query is failed"
 				gVal.OBJ_L.Log( "C", wRes )
@@ -171,16 +172,16 @@ class CLS_Mylog():
 		
 		#############################
 		# データベースに記録する
-		wQuery = "insert into tbl_log_data values (" + \
-					"'" + gVal.STR_UserInfo['Account'] + "'," + \
-					"'" + wCHR_TimeDate + "'," + \
-					"'" + wLevel + "'," + \
-					"'" + wSTR_Log['LogClass'] + "'," + \
-					"'" + wSTR_Log['LogFunc'] + "'," + \
-					"'" + wSTR_Log['Reason'] + "' " + \
-					") ;"
+		wQy = "insert into tbl_log_data values ("
+		wQy = wQy + "'" + gVal.STR_UserInfo['Account'] + "',"
+		wQy = wQy + "'" + wCHR_TimeDate + "',"
+		wQy = wQy + "'" + wLevel + "',"
+		wQy = wQy + "'" + wSTR_Log['LogClass'] + "',"
+		wQy = wQy + "'" + wSTR_Log['LogFunc'] + "',"
+		wQy = wQy + "'" + wSTR_Log['Reason'] + "' "
+		wQy = wQy + ") ;"
 		
-		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery, False )
+		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy, False )
 		if wResDB['Result']!=True :
 			wRes['Reason'] = "Run Query is failed"
 			gVal.OBJ_L.Log( "C", wRes )
@@ -188,11 +189,19 @@ class CLS_Mylog():
 		
 		#############################
 		# ログの組み立て
-		if ( wLevel=="S" or wLevel=="R" or wLevel=="U" or wLevel=="T" \
-		   and inText!=None ) :
-			wOutLog = wLevel + ": " + wSTR_Log['Reason']
+###		if ( wLevel=="S" or wLevel=="R" or wLevel=="U" or wLevel=="T" \
+###		   and inText!=None ) :
+		wNumSpace = self.DEF_LEVEL_SIZE - len( wLevel )
+		wLevelTag = wLevel + " " * wNumSpace
+		if ( wLevel=="S" or wLevel=="SC" or wLevel=="SR" or \
+		     wLevel=="R" or wLevel=="RC" or wLevel=="RR" or \
+		     wLevel=="T" or wLevel=="N" ) \
+		   and inText!=None :
+###			wOutLog = wLevel + ": " + wSTR_Log['Reason']
+			wOutLog = wLevelTag + ": " + wSTR_Log['Reason']
 		else:
-			wOutLog = wLevel + ": "
+###			wOutLog = wLevel + ": "
+			wOutLog = wLevelTag + ": "
 			wOutLog = wOutLog + wSTR_Log['LogClass'] + ": "
 			wOutLog = wOutLog + wSTR_Log['LogFunc'] + ": "
 			wOutLog = wOutLog + wSTR_Log['Reason']
@@ -334,83 +343,83 @@ class CLS_Mylog():
 		# ログ取得
 		### wViewMode=V 運用ログ
 		if wViewMode=="V" :
-			wQuery = "select * from tbl_log_data where " + \
-						"twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
-						"( " + \
-						"level = 'S' or " + \
-						"level = 'SC' or " + \
-						"level = 'SR' or " + \
-						"level = 'RR' or " + \
-						"level = 'T' or " + \
-						"level = 'P' or " + \
-						"level = 'N' " + \
-						") and " + \
-						"( lupdate > now() - interval '2 week' ) " + \
-						"order by lupdate DESC ;"
+			wQy = "select * from tbl_log_data where "
+			wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' and "
+			wQy = wQy + "( "
+			wQy = wQy + "level = 'S' or "
+			wQy = wQy + "level = 'SC' or "
+			wQy = wQy + "level = 'SR' or "
+			wQy = wQy + "level = 'RR' or "
+			wQy = wQy + "level = 'T' or "
+			wQy = wQy + "level = 'P' or "
+			wQy = wQy + "level = 'N' "
+			wQy = wQy + ") and "
+			wQy = wQy + "( lupdate > now() - interval '2 week' ) "
+			wQy = wQy + "order by lupdate DESC ;"
 		
 		### wViewMode=R 運用ログ(操作のみ)
 		if wViewMode=="R" :
-			wQuery = "select * from tbl_log_data where " + \
-						"twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
-						"( " + \
-						"level = 'S' or " + \
-						"level = 'SC' or " + \
-						"level = 'SR' or " + \
-						"level = 'RR' or " + \
-						"level = 'N' " + \
-						") and " + \
-						"( lupdate > now() - interval '2 week' ) " + \
-						"order by lupdate DESC ;"
+			wQy = "select * from tbl_log_data where "
+			wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' and "
+			wQy = wQy + "( "
+			wQy = wQy + "level = 'S' or "
+			wQy = wQy + "level = 'SC' or "
+			wQy = wQy + "level = 'SR' or "
+			wQy = wQy + "level = 'RR' or "
+			wQy = wQy + "level = 'N' "
+			wQy = wQy + ") and "
+			wQy = wQy + "( lupdate > now() - interval '2 week' ) "
+			wQy = wQy + "order by lupdate DESC ;"
 		
 		### wViewMode=T トラヒック
 		if wViewMode=="T" :
-			wQuery = "select * from tbl_log_data where " + \
-						"twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
-						"level = 'T' and " + \
-						"( lupdate > now() - interval '2 week' ) " + \
-						"order by lupdate DESC ;"
+			wQy = "select * from tbl_log_data where "
+			wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' and "
+			wQy = wQy + "level = 'T' and "
+			wQy = wQy + "( lupdate > now() - interval '2 week' ) "
+			wQy = wQy + "order by lupdate DESC ;"
 		
 		### wViewMode=E 異常ログ
 		elif wViewMode=="E" :
-			wQuery = "select * from tbl_log_data where " + \
-						"twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
-						"( " + \
-						"level = 'A' or " + \
-						"level = 'B' or " + \
-						"level = 'C' or " + \
-						"level = 'D' or " + \
-						"level = 'E' or " + \
-						"level = 'X' or " + \
-						"level = '0' " + \
-						") and " + \
-						"( lupdate > now() - interval '2 week' ) " + \
-						"order by lupdate DESC ;"
+			wQy = "select * from tbl_log_data where "
+			wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' and "
+			wQy = wQy + "( "
+			wQy = wQy + "level = 'A' or "
+			wQy = wQy + "level = 'B' or "
+			wQy = wQy + "level = 'C' or "
+			wQy = wQy + "level = 'D' or "
+			wQy = wQy + "level = 'E' or "
+			wQy = wQy + "level = 'X' or "
+			wQy = wQy + "level = '0' "
+			wQy = wQy + ") and "
+			wQy = wQy + "( lupdate > now() - interval '2 week' ) "
+			wQy = wQy + "order by lupdate DESC ;"
 		
 		### wViewMode=U ユーザ操作ログ
 		elif wViewMode=="U" :
-			wQuery = "select * from tbl_log_data where " + \
-						"twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
-						"( " + \
-						"level = 'R' or " + \
-						"level = 'RC' " + \
-						") and " + \
-						"( lupdate > now() - interval '2 week' ) " + \
-						"order by lupdate DESC ;"
+			wQy = "select * from tbl_log_data where "
+			wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' and "
+			wQy = wQy + "( "
+			wQy = wQy + "level = 'R' or "
+			wQy = wQy + "level = 'RC' "
+			wQy = wQy + ") and "
+			wQy = wQy + "( lupdate > now() - interval '2 week' ) "
+			wQy = wQy + "order by lupdate DESC ;"
 		
 		### wViewMode=F 全ログ
 		elif wViewMode=="F" :
-			wQuery = "select * from tbl_log_data where " + \
-						"twitterid = '" + gVal.STR_UserInfo['Account'] + "' " + \
-						"order by lupdate DESC ;"
+			wQy = "select * from tbl_log_data where "
+			wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' "
+			wQy = wQy + "order by lupdate DESC ;"
 		
 		### wViewMode=A 全ログ(期間)
 		else:
-			wQuery = "select * from tbl_log_data where " + \
-						"twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
-						"( lupdate > now() - interval '2 week' ) " + \
-						"order by lupdate DESC ;"
+			wQy = "select * from tbl_log_data where "
+			wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' and "
+			wQy = wQy + "( lupdate > now() - interval '2 week' ) "
+			wQy = wQy + "order by lupdate DESC ;"
 		
-		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery, False )
+		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy, False )
 		if wResDB['Result']!=True :
 			wRes['Reason'] = "Run Query is failed"
 			gVal.OBJ_L.Log( "B", wRes )
@@ -506,11 +515,11 @@ class CLS_Mylog():
 		
 		#############################
 		# 全ログ取得
-		wQuery = "select * from tbl_log_data where " + \
+		wQy = "select * from tbl_log_data where " + \
 					"twitterid = '" + gVal.STR_UserInfo['Account'] + "' " + \
 					"order by lupdate ;"
 		
-		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery, False )
+		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy, False )
 		if wResDB['Result']!=True :
 			wRes['Reason'] = "Run Query is failed"
 			gVal.OBJ_L.Log( "B", wRes )
@@ -550,19 +559,19 @@ class CLS_Mylog():
 		# ログ消去
 		if inAllClear==True :
 			### 全ログ消去
-			wQuery = "delete from tbl_log_data where " + \
-						"twitterid = '" + gVal.STR_UserInfo['Account'] + "' " + \
-						";"
+			wQy = "delete from tbl_log_data where "
+			wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' "
+			wQy = wQy + ";"
 		else:
 			### エラーと運用のみクリア
-			wQuery = "delete from tbl_log_data where " + \
-						"twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
-						"(" + \
-						"not level = 'R' and " + \
-						"not level = 'RC' ) " + \
-						";"
+			wQy = "delete from tbl_log_data where "
+			wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' and "
+			wQy = wQy + "("
+			wQy = wQy + "not level = 'R' and "
+			wQy = wQy + "not level = 'RC' ) "
+			wQy = wQy + ";"
 		
-		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery, False )
+		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy, False )
 		if wResDB['Result']!=True :
 			wRes['Reason'] = "Run Query is failed"
 			gVal.OBJ_L.Log( "B", wRes )

@@ -1407,7 +1407,8 @@ class CLS_Twitter_IF() :
 #####################################################
 # いいね解除
 #####################################################
-	def FavoRemove( self, inID ):
+###	def FavoRemove( self, inID ):
+	def FavoRemove( self, inID, inFLG_Rem=False ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -1443,7 +1444,10 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# いいね情報を削除する
-		self.ARR_Favo.pop( wID )
+###		self.ARR_Favo.pop( wID )
+		if inFLG_Rem==True :
+			self.ARR_Favo.pop( wID )
+			### 通常、再度いいねしないよう削除しない
 		
 		#############################
 		# トラヒック計測：いいね解除数

@@ -291,7 +291,7 @@ class CLS_BotCtrl():
 		#############################
 		# コマンド実行時間を設定
 		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "run", wTD['TimeDate'] )
-		if wListRes['Result']!=True :
+		if wTimeRes['Result']!=True :
 			wRes['Reason'] = "SetTimeInfo is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
@@ -480,13 +480,14 @@ class CLS_BotCtrl():
 			return wRes
 		
 ###		if wLocked==True :
-		if wRes['Responce']['locked']==True :
+###		if wRes['Responce']['locked']==True :
+		if wLockRes['Responce']['locked']==True :
 			### 排他済み
 			
 			# ロック保持時間外かを求める (変換＆差)
 ###			wGetLag = CLS_OSIF.sTimeLag( str(wLUpdate), inThreshold=gVal.DEF_STR_TLNUM['forLockLimSec'] )
 ###			wGetLag = CLS_OSIF.sTimeLag( str(wRes['Responce']['lok_date']), inThreshold=gVal.DEF_STR_TLNUM['forLockLimSec'] )
-			wGetLag = CLS_OSIF.sTimeLag( str(wRes['Responce']['get_date']), inThreshold=gVal.DEF_STR_TLNUM['forLockLimSec'] )
+			wGetLag = CLS_OSIF.sTimeLag( str(wLockRes['Responce']['get_date']), inThreshold=gVal.DEF_STR_TLNUM['forLockLimSec'] )
 			if wGetLag['Result']!=True :
 				wRes['Reason'] = "sTimeLag failed"
 				return wRes
@@ -564,7 +565,7 @@ class CLS_BotCtrl():
 		wLockRes = gVal.OBJ_DB_IF.SetLock( gVal.STR_UserInfo['Account'], True, wTD['TimeDate'] )
 		if wLockRes['Result']!=True :
 			wRes['Reason'] = "GetLock is failed"
-			gVal.OBJ_L.Log( "C", wRes )
+			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
 ###		#ログに記録する
@@ -772,8 +773,8 @@ class CLS_BotCtrl():
 		wRes['Class'] = "CLS_BotCtrl"
 		wRes['Func']  = "sUnlock"
 		
-		#############################
-		# 排他解除する
+###		#############################
+###		# 排他解除する
 ###		wQuery = "update tbl_user_data set " + \
 ###				"locked = False " + \
 ###				"where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
@@ -785,7 +786,8 @@ class CLS_BotCtrl():
 ###			return wRes
 		#############################
 		# 排他解除
-		wLockRes = gVal.OBJ_DB_IF.SetLock( gVal.STR_UserInfo['Account'], False, wTD['TimeDate'] )
+###		wLockRes = gVal.OBJ_DB_IF.SetLock( gVal.STR_UserInfo['Account'], False, wTD['TimeDate'] )
+		wLockRes = gVal.OBJ_DB_IF.SetLock( gVal.STR_UserInfo['Account'], False, gVal.STR_Time['TimeDate'] )
 		if wLockRes['Result']!=True :
 			wRes['Reason'] = "GetLock is failed"
 			gVal.OBJ_L.Log( "C", wRes )

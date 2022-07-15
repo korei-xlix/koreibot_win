@@ -7,6 +7,7 @@
 # ::Class    : メイン処理(コンソール)
 #####################################################
 
+from ktime import CLS_TIME
 from osif import CLS_OSIF
 from traffic import CLS_Traffic
 from filectrl import CLS_File
@@ -35,6 +36,15 @@ class CLS_Main_Console() :
 		wRes = CLS_OSIF.sGet_Resp()
 		wRes['Class'] = "CLS_Main_Console"
 		wRes['Func']  = "sRun"
+		
+		#############################
+		# 時間を取得
+		wSubRes = CLS_TIME.sTimeUpdate()
+		if wSubRes['Result']!=True :
+			###時間取得失敗  時計壊れた？
+			wRes['Reason'] = "TimeUpdate is failed"
+			CLS_OSIF.sErr( wRes )
+			return wRes
 		
 		#############################
 		# 実行チェック
@@ -277,8 +287,14 @@ class CLS_Main_Console() :
 		
 	#####################################################
 		#############################
+		# いいね全解除
+		if inCommand=="\\r" :
+			cls.OBJ_TwitterMain.AllFavoRemove()
+		
+	#####################################################
+		#############################
 		# トレンドタグ設定
-		if inCommand=="\\t" :
+		elif inCommand=="\\t" :
 			cls.OBJ_TwitterMain.SetTrendTag()
 		
 		#############################
@@ -288,7 +304,7 @@ class CLS_Main_Console() :
 		
 		#############################
 		# 自動リムーブ
-		elif inCommand=="\\r" :
+		elif inCommand=="\\rmv" :
 			cls.OBJ_TwitterMain.SetAutoRemove()
 		
 	#####################################################
@@ -406,7 +422,8 @@ class CLS_Main_Console() :
 		cls.FLG_MainDispClear = True
 		#############################
 		# 時間を取得
-		wSubRes = cls.OBJ_TwitterMain.TimeUpdate()
+###		wSubRes = cls.OBJ_TwitterMain.TimeUpdate()
+		wSubRes = CLS_TIME.sTimeUpdate()
 		if wSubRes['Result']!=True :
 			###時間取得失敗  時計壊れた？
 			wRes['Reason'] = "TimeUpdate is failed"
@@ -425,7 +442,7 @@ class CLS_Main_Console() :
 		# トラヒック情報の記録と報告
 		wResTraffic = CLS_Traffic.sSet()
 		if wResTraffic['Result']!=True :
-			wRes['Reason'] = "Set Traffic failed: reason" + CLS_OSIF.sCatErr( wResTraffic )
+			wRes['Reason'] = "Set Traffic failed: reason=" + CLS_OSIF.sCatErr( wResTraffic )
 			return wRes
 ###		if wResTraffic['Responce']==True :
 ###			gVal.OBJ_L.Log( "S", wRes, "〇トラヒック情報切り替え" )
