@@ -10,6 +10,7 @@ from mylog import CLS_Mylog
 from db_if import CLS_DB_IF
 from twitter_if import CLS_Twitter_IF
 
+from traffic import CLS_Traffic
 from ktime import CLS_TIME
 from osif import CLS_OSIF
 from filectrl import CLS_File
@@ -427,6 +428,22 @@ class CLS_BotCtrl():
 		if wRes['Result']!=True :
 			wRes['Reason'] = "排他取得失敗: " + wRes['Reason']
 			gVal.OBJ_L.Log( "C", wRes )
+		
+		#############################
+		# 時間を取得
+		wSubRes = CLS_TIME.sTimeUpdate()
+		if wSubRes['Result']!=True :
+			###時間取得失敗  時計壊れた？
+			wRes['Reason'] = "TimeUpdate is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# トラヒック情報の記録と報告
+		wResTraffic = CLS_Traffic.sSet()
+		if wResTraffic['Result']!=True :
+			wRes['Reason'] = "Set Traffic failed: reason=" + CLS_OSIF.sCatErr( wResTraffic )
+			return wRes
 		
 		#############################
 		# DB終了

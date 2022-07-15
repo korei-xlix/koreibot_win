@@ -8,6 +8,7 @@
 #####################################################
 from datetime import datetime
 from datetime import timedelta
+import unicodedata
 import time
 import os
 import socket
@@ -785,6 +786,21 @@ class CLS_OSIF() :
 		wRes['Value']  = wValue
 		wRes['Result'] = True
 		return wRes
+
+
+
+#####################################################
+# 全角文字をLen=2としてカウントする
+#####################################################
+	@classmethod
+	def sDCharaCount( cls, inText ):
+		wCount = 0
+		for wChar in inText:
+			if unicodedata.east_asian_width(wChar) in 'FWA':
+				wCount += 2
+			else:
+				wCount += 1
+		return wCount
 
 
 

@@ -13,8 +13,8 @@ from gval import gVal
 #####################################################
 class CLS_Traffic():
 #####################################################
-	DEF_KOMOKU_LEN     = 28			#
-	DEF_KOMOKU_NUM_LEN = 10			#
+	DEF_KOMOKU_LEN     = 32			#
+	DEF_KOMOKU_NUM_LEN = 19			#
 
 #####################################################
 # トラヒックセット
@@ -274,15 +274,15 @@ class CLS_Traffic():
 			
 ###			wRes['Responce'] = True	#トラヒックが変更したことを知らせる
 		
-		#############################
-		# トラヒックを報告する
-		wSubRes = cls.sReport( inCrear=False )
-		if wSubRes['Result']!=True :
-			##失敗
-			wRes['Reason'] = "sReport is failed"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
+###		#############################
+###		# トラヒックを報告する
+###		wSubRes = cls.sReport( inCrear=False )
+###		if wSubRes['Result']!=True :
+###			##失敗
+###			wRes['Reason'] = "sReport is failed"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
 		#############################
 		# 正常終了
 		wRes['Result'] = True
@@ -392,7 +392,7 @@ class CLS_Traffic():
 			wListData = wListData + " " * wListNumSpace + "  "
 			
 			### 3行目
-			wListData = wListData + "直近 " + str(gVal.gVal.DEF_STR_TLNUM['trafficReportLimit']) +"件平均"
+			wListData = wListData + "直近 " + str(gVal.DEF_STR_TLNUM['trafficReportLimit']) +"件平均"
 		
 		wARR_ViewTraffic.update({ "***header***" : wListData })
 		
@@ -402,8 +402,11 @@ class CLS_Traffic():
 				continue
 			
 			### 項目
-			wListNumSpace = cls.DEF_KOMOKU_LEN - len( gVal.STR_TrafficInfo[wKey][1] )
-			wListData = gVal.STR_TrafficInfo[wKey][1] + " " * wListNumSpace + "  "
+###			wListNumSpace = cls.DEF_KOMOKU_LEN - len( gVal.STR_TrafficInfo[wKey][1] )
+###			wListData = gVal.STR_TrafficInfo[wKey][1] + " " * wListNumSpace + "  "
+			wCharCnt = CLS_OSIF.sDCharaCount( gVal.STR_TrafficInfo[wKey][1] )
+			wListNumSpace = cls.DEF_KOMOKU_LEN - wCharCnt
+			wListData = gVal.STR_TrafficInfo[wKey][1] + " " * wListNumSpace + "   "
 			
 			### 1列目
 			wListData = wListData + str(wARR_Traffic[0][wKey])
@@ -423,9 +426,6 @@ class CLS_Traffic():
 			wTag = "***" + wKey + "***"
 			wARR_ViewTraffic.update({ wTag : wListData })
 		
-
-		print(str( wARR_ViewTraffic ))
-
 		#############################
 		# 画面表示
 		wResDisp = CLS_MyDisp.sViewDisp( "TrafficReport", inClear=inCrear, inData=wARR_ViewTraffic )
@@ -480,8 +480,8 @@ class CLS_Traffic():
 		if wReportNum>=1 :
 			wRes['Responce'] = True
 		
-		CLS_OSIF.sInp( "確認したらリターンキーを押してください。[RT]" )
-		
+###		CLS_OSIF.sInp( "確認したらリターンキーを押してください。[RT]" )
+###		
 		#############################
 		# 正常終了
 		wRes['Result'] = True

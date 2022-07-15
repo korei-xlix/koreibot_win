@@ -49,12 +49,14 @@ class CLS_MyDisp():
 			cls.__dispInp_CautionUser( inLine, wRes, inData )
 		
 		###トラヒック報告
-		elif inDisp=="traffic_report.disp" :
+		elif inDisp=="TrafficReport" :
 			cls.__dispInp_TrafficReport( inLine, wRes, inData )
 		
 		###システム情報画面
 		elif inDisp=="SystemViewConsole" :
 			cls.__dispInp_SystemView( inLine, wRes, inData )
+		else:
+			wRes['Reason'] = "Disp name is no: inDisp=" + str(inDisp)
 		
 		return wRes
 
@@ -502,7 +504,7 @@ class CLS_MyDisp():
 			wResInp = cls.sDispInp( inDisp, wLine, inIndex, inData )
 			if wResInp['Result']!=True :
 ###				wRes['Reason'] = "sDispInp is failed: reasin=" + wResInp['Reason']
-				wRes['Reason'] = "sDispInp is failed: reasin=" + str(wResInp['Reason'])
+				wRes['Reason'] = "sDispInp is failed: reason=" + str(wResInp['Reason'])
 				return wRes
 			if wResInp['Responce']!=None :
 				###インプリメントされていれば差し替える

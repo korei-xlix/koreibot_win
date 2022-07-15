@@ -234,7 +234,7 @@ class CLS_Main_Console() :
 		#############################
 		# トラヒック情報の表示
 		elif inCommand=="\\lt" :
-			wResTraffic = CLS_Traffic.sView()
+			wResTraffic = CLS_Traffic.sReport()
 			if wResTraffic['Result']!=True :
 				gVal.OBJ_L.Log( "B", wResTraffic )
 		
