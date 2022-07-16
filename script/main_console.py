@@ -315,6 +315,21 @@ class CLS_Main_Console() :
 		
 	#####################################################
 		#############################
+		# 運用ログ（全部）
+		elif inCommand=="\\lr" :
+			gVal.OBJ_L.View( inViewMode="V" )
+		
+		#############################
+		# ログの表示(トラヒック)
+		elif inCommand=="\\lt" :
+			gVal.OBJ_L.View( inViewMode="T" )
+		
+		#############################
+		# ログの表示(全ログ)
+		elif inCommand=="\\la" :
+			gVal.OBJ_L.View( inViewMode="F" )
+		
+		#############################
 		# ログクリア
 		elif inCommand=="\\lc" :
 			gVal.OBJ_L.Clear()

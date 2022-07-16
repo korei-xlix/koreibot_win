@@ -360,8 +360,8 @@ class CLS_Mylog():
 			wQy = wQy + "level = 'P' or "
 			wQy = wQy + "level = 'N' "
 			wQy = wQy + ") and "
-			wQy = wQy + "( lupdate > now() - interval '2 week' ) "
-			wQy = wQy + "order by lupdate DESC ;"
+			wQy = wQy + "( regdate > now() - interval '2 week' ) "
+			wQy = wQy + "order by regdate DESC ;"
 		
 		### wViewMode=R 運用ログ(操作のみ)
 		if wViewMode=="R" :
@@ -374,16 +374,16 @@ class CLS_Mylog():
 			wQy = wQy + "level = 'RR' or "
 			wQy = wQy + "level = 'N' "
 			wQy = wQy + ") and "
-			wQy = wQy + "( lupdate > now() - interval '2 week' ) "
-			wQy = wQy + "order by lupdate DESC ;"
+			wQy = wQy + "( regdate > now() - interval '2 week' ) "
+			wQy = wQy + "order by regdate DESC ;"
 		
 		### wViewMode=T トラヒック
 		if wViewMode=="T" :
 			wQy = "select * from tbl_log_data where "
 			wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' and "
 			wQy = wQy + "level = 'T' and "
-			wQy = wQy + "( lupdate > now() - interval '2 week' ) "
-			wQy = wQy + "order by lupdate DESC ;"
+			wQy = wQy + "( regdate > now() - interval '2 week' ) "
+			wQy = wQy + "order by regdate DESC ;"
 		
 		### wViewMode=E 異常ログ
 		elif wViewMode=="E" :
@@ -398,8 +398,8 @@ class CLS_Mylog():
 			wQy = wQy + "level = 'X' or "
 			wQy = wQy + "level = '0' "
 			wQy = wQy + ") and "
-			wQy = wQy + "( lupdate > now() - interval '2 week' ) "
-			wQy = wQy + "order by lupdate DESC ;"
+			wQy = wQy + "( regdate > now() - interval '2 week' ) "
+			wQy = wQy + "order by regdate DESC ;"
 		
 		### wViewMode=U ユーザ操作ログ
 		elif wViewMode=="U" :
@@ -409,21 +409,21 @@ class CLS_Mylog():
 			wQy = wQy + "level = 'R' or "
 			wQy = wQy + "level = 'RC' "
 			wQy = wQy + ") and "
-			wQy = wQy + "( lupdate > now() - interval '2 week' ) "
-			wQy = wQy + "order by lupdate DESC ;"
+			wQy = wQy + "( regdate > now() - interval '2 week' ) "
+			wQy = wQy + "order by regdate DESC ;"
 		
 		### wViewMode=F 全ログ
 		elif wViewMode=="F" :
 			wQy = "select * from tbl_log_data where "
 			wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' "
-			wQy = wQy + "order by lupdate DESC ;"
+			wQy = wQy + "order by regdate DESC ;"
 		
 		### wViewMode=A 全ログ(期間)
 		else:
 			wQy = "select * from tbl_log_data where "
 			wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' and "
-			wQy = wQy + "( lupdate > now() - interval '2 week' ) "
-			wQy = wQy + "order by lupdate DESC ;"
+			wQy = wQy + "( regdate > now() - interval '2 week' ) "
+			wQy = wQy + "order by regdate DESC ;"
 		
 		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy, False )
 		if wResDB['Result']!=True :
@@ -451,7 +451,7 @@ class CLS_Mylog():
 		wKeylist = wARR_Log.keys()
 		wIndex = 0
 		for wKey in wKeylist :
-			wTD    = str(wARR_Log[wKey]['lupdate'])
+			wTD    = str(wARR_Log[wKey]['regdate'])
 			wBlank = " " * len( wTD ) + " "
 			
 			if wViewMode=="U" :
@@ -480,7 +480,7 @@ class CLS_Mylog():
 #	log_class   TEXT  NOT NULL
 #	log_func    TEXT  NOT NULL
 #	reason      TEXT  NOT NULL
-#	lupdate     TIMESTAMP
+#	regdate     TIMESTAMP
 #############################
 
 
@@ -523,7 +523,7 @@ class CLS_Mylog():
 		# 全ログ取得
 		wQy = "select * from tbl_log_data where " + \
 					"twitterid = '" + gVal.STR_UserInfo['Account'] + "' " + \
-					"order by lupdate ;"
+					"order by regdate ;"
 		
 		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy, False )
 		if wResDB['Result']!=True :
@@ -548,7 +548,7 @@ class CLS_Mylog():
 		# 出力組み立て
 		wKeylist = wARR_Log.keys()
 		for wKey in wKeylist :
-			wTD    = str(wARR_Log[wKey]['lupdate'])
+			wTD    = str(wARR_Log[wKey]['regdate'])
 			wBlank = " " * len( wTD ) + " "
 			
 			wLine = wTD + "," + wARR_Log[wKey]['level'] + ","
