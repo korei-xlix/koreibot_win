@@ -191,8 +191,14 @@ class CLS_Mylog():
 		# ログの組み立て
 ###		if ( wLevel=="S" or wLevel=="R" or wLevel=="U" or wLevel=="T" \
 ###		   and inText!=None ) :
-		wNumSpace = self.DEF_LEVEL_SIZE - len( wLevel )
-		wLevelTag = wLevel + " " * wNumSpace
+###		wNumSpace = self.DEF_LEVEL_SIZE - len( wLevel )
+###		wLevelTag = wLevel + " " * wNumSpace
+		if wLevel=="A" or wLevel=="B" or wLevel=="C" or wLevel=="D" or wLevel=="E" :
+			wLevelTag = "*" + wLevel
+		else:
+			wNumSpace = self.DEF_LEVEL_SIZE - len( wLevel )
+			wLevelTag = wLevel + " " * wNumSpace
+		
 		if ( wLevel=="S" or wLevel=="SC" or wLevel=="SR" or \
 		     wLevel=="R" or wLevel=="RC" or wLevel=="RR" or \
 		     wLevel=="T" or wLevel=="N" ) \

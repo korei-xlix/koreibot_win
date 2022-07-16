@@ -12,7 +12,7 @@ from twitter_keyword import CLS_TwitterKeyword
 from twitter_admin import CLS_TwitterAdmin
 from test_sample import CLS_Test
 
-###from ktime import CLS_TIME
+from ktime import CLS_TIME
 from osif import CLS_OSIF
 from traffic import CLS_Traffic
 from mydisp import CLS_MyDisp
@@ -754,7 +754,8 @@ class CLS_TwitterMain():
 # いいね全解除
 #####################################################
 	def AllFavoRemove(self):
-		wRes = self.OBJ_TwitterFavo.AllFavoRemove()
+###		wRes = self.OBJ_TwitterFavo.AllFavoRemove()
+		wRes = self.OBJ_TwitterFavo.RemFavo( inFLG_All=True )
 		return wRes
 
 

@@ -51,7 +51,8 @@ class CLS_TwitterFavo():
 #####################################################
 # いいね解除
 #####################################################
-	def RemFavo( self, inFLG_FirstDisp=True ):
+###	def RemFavo( self, inFLG_FirstDisp=True ):
+	def RemFavo( self, inFLG_FirstDisp=True, inFLG_All=False ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -63,121 +64,6 @@ class CLS_TwitterFavo():
 		# 取得開始の表示
 		if inFLG_FirstDisp==True :
 			wResDisp = CLS_MyDisp.sViewHeaderDisp( "いいね解除中" )
-		
-		#############################
-		# ふぁぼ一覧 取得
-		wARR_TwData = gVal.OBJ_Tw_IF.GetFavoData()
-		
-		#############################
-		# いいねがない場合、処理を終わる
-		if len(wARR_TwData)==0 :
-			wStr = "いいねがないため、処理を終わります。"
-			CLS_OSIF.sPrn( wStr )
-			wRes['Result'] = True	#正常終了
-			return wRes
-		
-		wARR_Tw_ID = list( wARR_TwData.keys() )
-		wARR_Tw_ID.reverse()	#逆ソート
-		
-		#############################
-		# 最古のいいねIDを算出
-		wARR_Tw_ID_LastKey = wARR_Tw_ID[-1]
-		
-		###ウェイト初期化
-		self.OBJ_Parent.Wait_Init( inZanNum=len( wARR_Tw_ID ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
-		
-		wRemTweet = 0
-		wCancelNum = 0
-		#############################
-		# 期間を過ぎたいいねを解除していく
-		for wID in wARR_Tw_ID :
-			###ウェイトカウントダウン
-			if self.OBJ_Parent.Wait_Next()==False :
-				break	###ウェイト中止
-			
-			wID = str( wID )
-			
-			###日時の変換
-###			wTime = CLS_OSIF.sGetTimeformat_Twitter( wARR_TwData[wID]['created_at'] )
-###			if wTime['Result']!=True :
-###				wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wARR_TwData[wID]['created_at'])
-###				gVal.OBJ_L.Log( "B", wRes )
-###				continue
-			wTime = CLS_TIME.sTTchg( wRes, "(1)", wARR_TwData[wID]['created_at'] )
-			if wTime['Result']!=True :
-				continue
-			wARR_TwData[wID]['created_at'] = wTime['TimeDate']
-			
-			###期間を過ぎているか
-			wGetLag = CLS_OSIF.sTimeLag( str(wARR_TwData[wID]['created_at']), inThreshold=gVal.DEF_STR_TLNUM['forRemFavoSec'] )
-			if wGetLag['Result']!=True :
-				wRes['Reason'] = "sTimeLag failed(1)"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			if wGetLag['Beyond']==False :
-				###期間内
-				###  次へ
-				wStr = "○解除対象外: " + str(wARR_TwData[wID]['created_at']) + " : " + str(wARR_TwData[wID]['user']['screen_name'])
-				CLS_OSIF.sPrn( wStr )
-				wCancelNum += 1
-				if gVal.DEF_STR_TLNUM['favoCancelNum']<=wCancelNum :
-					### 規定回数のスキップなので処理停止
-					break
-				continue
-			
-			wCancelNum = 0
-			###  いいねを外す
-			wRemoveRes = gVal.OBJ_Tw_IF.FavoRemove( wID )
-			if wRemoveRes['Result']!=True :
-				wRes['Reason'] = "Twitter Error"
-				gVal.OBJ_L.Log( "B", wRes )
-			
-			if wRemoveRes['Responce']['Run']==True :
-				wTextReason = "●解除いいね日時: id=" + str(wID) + ": " + str(wRemoveRes['Responce']['Data']['created_at']) + " : " + str(wRemoveRes['Responce']['Data']['user']['screen_name'])
-				gVal.OBJ_L.Log( "T", wRes, wTextReason )
-				
-				wRemTweet += 1
-			else:
-				wRes['Reason'] = "FavoRemove failed: id=" + str(wID)
-				gVal.OBJ_L.Log( "D", wRes )
-				return wRes
-			
-			#############################
-			# 正常
-			continue	#次へ
-		
-		#############################
-		# 取得結果の表示
-		wStr = ""
-		if inFLG_FirstDisp==False :
-			wStr = "------------------------------" + '\n'
-		wStr = wStr + "Twitterいいね数  : " + str( len(wARR_Tw_ID) )+ '\n'
-		wStr = wStr + "いいね解除数     : " + str( wRemTweet )+ '\n'
-		wStr = wStr + "最古いいね日時   : " + str( str( wARR_TwData[wARR_Tw_ID_LastKey]['created_at'] ) )+ '\n'
-		CLS_OSIF.sPrn( wStr )
-		
-		#############################
-		# 正常終了
-		wRes['Result'] = True
-		return wRes
-
-
-
-#####################################################
-# いいね全解除
-#####################################################
-	def AllFavoRemove( self, inFLG_FirstDisp=True ):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_TwitterFavo"
-		wRes['Func']  = "AllFavoRemove"
-		
-		#############################
-		# 取得開始の表示
-		if inFLG_FirstDisp==True :
-			wResDisp = CLS_MyDisp.sViewHeaderDisp( "全てのいいね解除中" )
 		
 		#############################
 		# ふぁぼ一覧 取得
@@ -200,39 +86,114 @@ class CLS_TwitterFavo():
 			return wRes
 		
 		wARR_Tw_ID = list( wARR_TwData.keys() )
+		wARR_Tw_ID.reverse()	#逆ソート
+		
+		#############################
+		# 最古のいいねIDを算出
+		wARR_Tw_ID_LastKey = wARR_Tw_ID[-1]
+		
+###		###ウェイト初期化
+###		self.OBJ_Parent.Wait_Init( inZanNum=len( wARR_Tw_ID ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
+###		
+		wARR_RemoveID = []
+		wRemTweet = 0
+		wCancelNum = 0
+		#############################
+		# 期間を過ぎたいいねを選出する
+		for wID in wARR_Tw_ID :
+###			###ウェイトカウントダウン
+###			if self.OBJ_Parent.Wait_Next()==False :
+###				break	###ウェイト中止
+###			
+			wID = str( wID )
+			
+			###日時の変換
+###			wTime = CLS_OSIF.sGetTimeformat_Twitter( wARR_TwData[wID]['created_at'] )
+###			if wTime['Result']!=True :
+###				wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wARR_TwData[wID]['created_at'])
+###				gVal.OBJ_L.Log( "B", wRes )
+###				continue
+			if inFLG_All==False :
+				wTime = CLS_TIME.sTTchg( wRes, "(1)", wARR_TwData[wID]['created_at'] )
+				if wTime['Result']!=True :
+					continue
+				wARR_TwData[wID]['created_at'] = wTime['TimeDate']
+				
+				###期間を過ぎているか
+				wGetLag = CLS_OSIF.sTimeLag( str(wARR_TwData[wID]['created_at']), inThreshold=gVal.DEF_STR_TLNUM['forRemFavoSec'] )
+				if wGetLag['Result']!=True :
+					wRes['Reason'] = "sTimeLag failed(1)"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				if wGetLag['Beyond']==False :
+					###期間内
+					###  次へ
+					wStr = "○解除対象外: " + str(wARR_TwData[wID]['created_at']) + " : " + str(wARR_TwData[wID]['user']['screen_name'])
+					CLS_OSIF.sPrn( wStr )
+					wCancelNum += 1
+					if gVal.DEF_STR_TLNUM['favoCancelNum']<=wCancelNum :
+						### 規定回数のスキップなので処理停止
+						break
+					continue
+				
+				wCancelNum = 0
+			
+###			###  いいねを外す
+###			wRemoveRes = gVal.OBJ_Tw_IF.FavoRemove( wID )
+###			if wRemoveRes['Result']!=True :
+###				wRes['Reason'] = "Twitter Error"
+###				gVal.OBJ_L.Log( "B", wRes )
+###			
+###			if wRemoveRes['Responce']['Run']==True :
+###				wTextReason = "●解除いいね日時: id=" + str(wID) + ": " + str(wRemoveRes['Responce']['Data']['created_at']) + " : " + str(wRemoveRes['Responce']['Data']['user']['screen_name'])
+###				gVal.OBJ_L.Log( "T", wRes, wTextReason )
+###				
+###				wRemTweet += 1
+###			else:
+###				wRes['Reason'] = "FavoRemove failed: id=" + str(wID)
+###				gVal.OBJ_L.Log( "D", wRes )
+###				return wRes
+			#############################
+			# 対象なのでIDを詰める
+			wARR_RemoveID.append( wID )
+			
+			#############################
+			# 正常
+			continue	#次へ
+		
+		#############################
+		# 処理数の表示
+		wStr = "いいね解除対象数= " + str(len( wARR_Tw_ID )) + " 個" + '\n'
+		CLS_OSIF.sPrn( wStr )
 		
 		###ウェイト初期化
-		self.OBJ_Parent.Wait_Init( inZanNum=len( wARR_Tw_ID ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
+		self.OBJ_Parent.Wait_Init( inZanNum=len( wARR_RemoveID ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
 		
 		wRemTweet = 0
 		#############################
-		# 期間を過ぎたいいねを解除していく
-		for wID in wARR_Tw_ID :
+		# 選出したいいねを解除していく
+		for wID in wARR_RemoveID :
 			###ウェイトカウントダウン
 			if self.OBJ_Parent.Wait_Next()==False :
 				break	###ウェイト中止
 			
 			wID = str( wID )
 			
-			###  いいねを外す
+			#############################
+			# いいねを外す
 			wRemoveRes = gVal.OBJ_Tw_IF.FavoRemove( wID )
 			if wRemoveRes['Result']!=True :
 				wRes['Reason'] = "Twitter Error"
 				gVal.OBJ_L.Log( "B", wRes )
 			
 			if wRemoveRes['Responce']['Run']==True :
-				wTextReason = "●解除いいね日時: id=" + str(wID) + ": " + str(wRemoveRes['Responce']['Data']['created_at']) + " : " + str(wRemoveRes['Responce']['Data']['user']['screen_name'])
+				wTextReason = "いいね解除: id=" + str(wID) + ": " + str(wRemoveRes['Responce']['Data']['created_at']) + " : " + str(wRemoveRes['Responce']['Data']['user']['screen_name'])
 				gVal.OBJ_L.Log( "T", wRes, wTextReason )
 				
 				wRemTweet += 1
 			else:
 				wRes['Reason'] = "FavoRemove failed: id=" + str(wID)
 				gVal.OBJ_L.Log( "D", wRes )
-				return wRes
-			
-			#############################
-			# 正常
-			continue	#次へ
 		
 		#############################
 		# 取得結果の表示
@@ -240,7 +201,9 @@ class CLS_TwitterFavo():
 		if inFLG_FirstDisp==False :
 			wStr = "------------------------------" + '\n'
 		wStr = wStr + "Twitterいいね数  : " + str( len(wARR_Tw_ID) )+ '\n'
-		wStr = wStr + "いいね解除数     : " + str( wRemTweet )+ '\n'
+		wStr = wStr + "いいね解除対象数 : " + str( len( wARR_Tw_ID ) )+ '\n'
+		wStr = wStr + "いいね解除実施数 : " + str( wRemTweet )+ '\n'
+		wStr = wStr + "最古いいね日時   : " + str( str( wARR_TwData[wARR_Tw_ID_LastKey]['created_at'] ) )+ '\n'
 		CLS_OSIF.sPrn( wStr )
 		
 		#############################
@@ -249,6 +212,98 @@ class CLS_TwitterFavo():
 		return wRes
 
 
+
+#####################################################
+# いいね全解除
+#####################################################
+###	def AllFavoRemove( self, inFLG_FirstDisp=True ):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_TwitterFavo"
+###		wRes['Func']  = "AllFavoRemove"
+###		
+###		#############################
+###		# 取得開始の表示
+###		if inFLG_FirstDisp==True :
+###			wResDisp = CLS_MyDisp.sViewHeaderDisp( "全てのいいね解除中" )
+###		
+###		#############################
+###		# ふぁぼ一覧 取得
+###		wFavoRes = gVal.OBJ_Tw_IF.GetFavo()
+###		if wFavoRes['Result']!=True :
+###			wRes['Reason'] = "GetFavoData is failed"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		#############################
+###		# ふぁぼ一覧 取得
+###		wARR_TwData = gVal.OBJ_Tw_IF.GetFavoData()
+###		
+###		#############################
+###		# いいねがない場合、処理を終わる
+###		if len(wARR_TwData)==0 :
+###			wStr = "いいねがないため、処理を終わります。"
+###			CLS_OSIF.sPrn( wStr )
+###			wRes['Result'] = True	#正常終了
+###			return wRes
+###		
+###		wARR_Tw_ID = list( wARR_TwData.keys() )
+###		
+###		#############################
+###		# 処理数の表示
+###		wStr = "いいね数= " + str(len( wARR_Tw_ID )) + " 個" + '\n'
+###		CLS_OSIF.sPrn( wStr )
+###		
+###		###ウェイト初期化
+###		self.OBJ_Parent.Wait_Init( inZanNum=len( wARR_Tw_ID ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
+###		
+###		wRemTweet = 0
+###		#############################
+###		# 期間を過ぎたいいねを解除していく
+###		for wID in wARR_Tw_ID :
+###			###ウェイトカウントダウン
+###			if self.OBJ_Parent.Wait_Next()==False :
+###				break	###ウェイト中止
+###			
+###			wID = str( wID )
+###			
+###			###  いいねを外す
+###			wRemoveRes = gVal.OBJ_Tw_IF.FavoRemove( wID )
+###			if wRemoveRes['Result']!=True :
+###				wRes['Reason'] = "Twitter Error"
+###				gVal.OBJ_L.Log( "B", wRes )
+###			
+###			if wRemoveRes['Responce']['Run']==True :
+###				wTextReason = "●解除いいね日時: id=" + str(wID) + ": " + str(wRemoveRes['Responce']['Data']['created_at']) + " : " + str(wRemoveRes['Responce']['Data']['user']['screen_name'])
+###				gVal.OBJ_L.Log( "T", wRes, wTextReason )
+###				
+###				wRemTweet += 1
+###			else:
+###				wRes['Reason'] = "FavoRemove failed: id=" + str(wID)
+###				gVal.OBJ_L.Log( "D", wRes )
+###				return wRes
+###			
+###			#############################
+###			# 正常
+###			continue	#次へ
+###		
+###		#############################
+###		# 取得結果の表示
+###		wStr = ""
+###		if inFLG_FirstDisp==False :
+###			wStr = "------------------------------" + '\n'
+###		wStr = wStr + "Twitterいいね数  : " + str( len(wARR_Tw_ID) )+ '\n'
+###		wStr = wStr + "いいね解除数     : " + str( wRemTweet )+ '\n'
+###		CLS_OSIF.sPrn( wStr )
+###		
+###		#############################
+###		# 正常終了
+###		wRes['Result'] = True
+###		return wRes
+###
+###
 
 #####################################################
 # リストいいね
