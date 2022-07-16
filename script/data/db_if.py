@@ -2547,35 +2547,44 @@ class CLS_DB_IF() :
 		wID = str(inUser['id'])
 		wScreenName = inUser['screen_name']
 		
-		#############################
-		# 時間の取得
-		wTimeDate = str( gVal.STR_Time['TimeDate'] )
-		wDefTimeDate = gVal.DEF_TIMEDATE
-		
+###		#############################
+###		# 時間の取得
+###		wTimeDate = str( gVal.STR_Time['TimeDate'] )
+###		wDefTimeDate = gVal.DEF_TIMEDATE
+###		
 		#############################
 		# SQLの作成
 		wQy = "insert into tbl_favouser_data values ("
-		wQy = wQy + "'" + gVal.STR_UserInfo['Account'] + "', "
-		wQy = wQy + "'" + wTimeDate + "', "
+		wQy = wQy + "'" + gVal.STR_UserInfo['Account'] + "', "		# 記録したユーザ(Twitter ID)
+		wQy = wQy + "'" + str( gVal.STR_Time['TimeDate'] ) + "', "	# 登録日時
+		wQy = wQy + "'" + str( gVal.STR_Time['TimeDate'] ) + "', "	# 更新日時(最終)
+		                                                              
+		wQy = wQy + "False, "										# 自動削除禁止 true=削除しない
+		                                                              
+		wQy = wQy + "'" + wID + "', "								# Twitter ID(数値)
+		wQy = wQy + "'" + wScreenName + "', "						# Twitter ユーザ名(英語)
+		wQy = wQy + "'" + gVal.DEF_NOTEXT + "', "					# レベルタグ(ユーザの親密度 指標)
+		                                                              
+		wQy = wQy + "'" + gVal.DEF_TIMEDATE + "', "					# トロフィー送信日時
+		wQy = wQy + "0, "											# トロフィー送信回数(累計)
 		
-		wQy = wQy + "'" + wID + "', "
-		wQy = wQy + "'" + wScreenName + "', "
+		wQy = wQy + "'" + gVal.DEF_NOTEXT + "', "					# いいね受信(このユーザがいいねした) ツイートID
+		wQy = wQy + "'" + gVal.DEF_TIMEDATE + "', "					# いいね受信日時
+		wQy = wQy + "0, "											# いいね受信回数(総数)
+		wQy = wQy + "0, "											# いいね受信回数(今周)
+		                                                              
+		wQy = wQy + "'" + gVal.DEF_NOTEXT + "', "					# いいね送信(このユーザのツイート) ツイートID
+		wQy = wQy + "'" + gVal.DEF_TIMEDATE + "', "					# いいね送信日時
+		wQy = wQy + "0, "											# いいね送信回数(総数)
+		                                                              
+		wQy = wQy + "'" + gVal.DEF_TIMEDATE + "', "					# リスト日時
+		                                                              
+		wQy = wQy + "False, "										# フォロー者 true=フォロー者
+		wQy = wQy + "'" + gVal.DEF_TIMEDATE + "', "					# フォロー日時
+		wQy = wQy + "False, "										# フォロワー(被フォロー) true=フォロワー
+		wQy = wQy + "'" + gVal.DEF_TIMEDATE + "', "					# 被フォロー日時
 		
-		wQy = wQy + "'" + wDefTimeDate + "', "
-		wQy = wQy + "False, "
-		wQy = wQy + "0, "
-		wQy = wQy + "0, "
-		wQy = wQy + "0, "
-		wQy = wQy + "'(none)', "
-		wQy = wQy + "'" + wDefTimeDate + "', "
-		wQy = wQy + "'" + wDefTimeDate + "', "
-		wQy = wQy + "'(none)', "
-		wQy = wQy + "'" + wDefTimeDate + "', "
-		wQy = wQy + "False, "
-		wQy = wQy + "'" + wDefTimeDate + "', "
-		wQy = wQy + "False, "
-		wQy = wQy + "'" + wDefTimeDate + "' "
-		
+		wQy = wQy + "'' "											# memo
 		wQy = wQy + ") ;"
 		
 		#############################
@@ -2591,17 +2600,18 @@ class CLS_DB_IF() :
 		
 		self.ARR_FollowerDataID.append( wID )
 		
-		#############################
-		# ログ記録
-		gVal.OBJ_L.Log( "N", wRes, "DB: Insert FavoData: " + wScreenName )
-		
+###		#############################
+###		# ログ記録
+###		gVal.OBJ_L.Log( "N", wRes, "DB: Insert FavoData: " + wScreenName )
+###		
 		#############################
 		# 正常
 		wRes['Result'] = True
 		return wRes
 
 	#####################################################
-	def GetFavoDataOne( self, inID ):
+###	def GetFavoDataOne( self, inID ):
+	def GetFavoDataOne( self, inID, inFLG_New=True ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -2612,16 +2622,16 @@ class CLS_DB_IF() :
 		wRes['Responce'] = None
 		#############################
 		# DBのいいね情報取得
-		wQy = "select * from tbl_favouser_data where " + \
-					"twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
-					"id = '" + str( inID ) + "' " + \
-					";"
+		wQy = "select * from tbl_favouser_data where "
+		wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' and "
+		wQy = wQy + "id = '" + str( inID ) + "' "
+		wQy = wQy + ";"
 		
 		wResDB = self.OBJ_DB.RunQuery( wQy )
 		wResDB = self.OBJ_DB.GetQueryStat()
 		if wResDB['Result']!=True :
 			##失敗
-			wRes['Reason'] = "Run Query is failed: RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 ###		gVal.STR_TrafficInfo['db_req'] += 1
@@ -2629,12 +2639,47 @@ class CLS_DB_IF() :
 		#############################
 		# 1個取得できたか
 		if len(wResDB['Responce']['Data'])==0 :
-			## ないのは正常で返す(ResponceはNoneのまま)
-			wRes['Result'] = True
-			return wRes
-		if len(wResDB['Responce']['Data'])!=1 :
+###			## ないのは正常で返す(ResponceはNoneのまま)
+###			wRes['Result'] = True
+###			return wRes
+			if inFLG_New==True :
+				### 新規モードであれば作成する
+				wResDB = gVal.OBJ_DB_IF.InsertFavoData( inID )
+				if wResDB['Result']!=True :
+					###失敗
+					wRes['Reason'] = "InsertFavoData is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				
+				### DBのいいね情報取得
+				wQy = "select * from tbl_favouser_data where "
+				wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' and "
+				wQy = wQy + "id = '" + str( inID ) + "' "
+				wQy = wQy + ";"
+				
+				wResDB = self.OBJ_DB.RunQuery( wQy )
+				wResDB = self.OBJ_DB.GetQueryStat()
+				if wResDB['Result']!=True :
+					##失敗
+					wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				
+				if len(wResDB['Responce']['Data'])!=1 :
+					## 1個ではない
+					wRes['Reason'] = "Get data is failed(2): id=" + str(inID)
+					gVal.OBJ_L.Log( "D", wRes )
+					return wRes
+			
+			else:
+				## ないのは正常で返す(ResponceはNoneのまま)
+				wRes['Result'] = True
+				return wRes
+		
+###		if len(wResDB['Responce']['Data'])!=1 :
+		elif len(wResDB['Responce']['Data'])!=1 :
 			## 1個ではない
-			wRes['Reason'] = "Get data is failed : id=" + str(inID)
+			wRes['Reason'] = "Get data is failed(1): id=" + str(inID)
 			gVal.OBJ_L.Log( "D", wRes )
 			return wRes
 		

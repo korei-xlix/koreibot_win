@@ -181,6 +181,14 @@ class CLS_TwitterFavo():
 		
 		#############################
 		# ふぁぼ一覧 取得
+		wFavoRes = gVal.OBJ_Tw_IF.GetFavo()
+		if wFavoRes['Result']!=True :
+			wRes['Reason'] = "GetFavoData is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# ふぁぼ一覧 取得
 		wARR_TwData = gVal.OBJ_Tw_IF.GetFavoData()
 		
 		#############################

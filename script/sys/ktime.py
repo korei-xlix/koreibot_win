@@ -104,7 +104,7 @@ class CLS_TIME():
 			wRes['TimeDate'] = gVal.DEF_TIMEDATE
 		else:
 			### 正常取得
-			wRes['TimeDate'] = wTD['TimeDate']
+			wRes['TimeDate'] = wTime['TimeDate']
 		
 		###wTime['TimeDate']
 		

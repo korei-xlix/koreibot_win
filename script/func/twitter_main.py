@@ -195,6 +195,15 @@ class CLS_TwitterMain():
 		wRes['Func']  = "Circle15min"
 		
 		#############################
+		# 時間を取得
+		wSubRes = CLS_TIME.sTimeUpdate()
+		if wSubRes['Result']!=True :
+			###時間取得失敗  時計壊れた？
+			wRes['Reason'] = "TimeUpdate is failed"
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
 		# 前回チェックから15分経っているか
 ###		wGetLag = CLS_OSIF.sTimeLag( gVal.STR_SystemInfo['APIrect'], inThreshold=gVal.DEF_STR_TLNUM['resetAPISec'] )
 		wGetLag = CLS_OSIF.sTimeLag( gVal.STR_Time['run'], inThreshold=gVal.DEF_STR_TLNUM['resetAPISec'] )
@@ -209,6 +218,15 @@ class CLS_TwitterMain():
 			return wRes
 		
 		### ※前回から15分経ったので処理実行
+###		#############################
+###		# 時間を取得
+###		wSubRes = CLS_TIME.sTimeUpdate()
+###		if wSubRes['Result']!=True :
+###			###時間取得失敗  時計壊れた？
+###			wRes['Reason'] = "TimeUpdate is failed"
+###			gVal.OBJ_L.Log( "C", wRes )
+###			return wRes
+###		
 		#############################
 		# Twitter再接続
 		wTwitterRes = gVal.OBJ_Tw_IF.ReConnect()
@@ -223,8 +241,16 @@ class CLS_TwitterMain():
 		#############################
 		# コマンド実行時間を更新
 		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "run", wGetLag['NowTime'] )
-		if wListRes['Result']!=True :
+		if wTimeRes['Result']!=True :
 			wRes['Reason'] = "SetTimeInfo is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# トラヒック情報の記録と報告
+		wResTraffic = CLS_Traffic.sSet()
+		if wResTraffic['Result']!=True :
+			wRes['Reason'] = "Set Traffic failed: reason=" + CLS_OSIF.sCatErr( wResTraffic )
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
@@ -317,8 +343,13 @@ class CLS_TwitterMain():
 		wRes['Func']  = "GetTwitterInfo"
 		
 		wRes['Responce'] = False
+		
+
+
 		#############################
 		# フォロー情報取得
+		CLS_MyDisp.sViewHeaderDisp( "フォロー情報取得" )
+		
 		wFavoRes = gVal.OBJ_Tw_IF.GetFollow()
 		if wFavoRes['Result']!=True :
 			wRes['Reason'] = "GetFollow is failed"
@@ -332,8 +363,9 @@ class CLS_TwitterMain():
 		
 		#############################
 		# フォロー状態をDBに反映する
-		wStr = "フォロー状態をDBに記録中..." + '\n'
-		CLS_OSIF.sPrn( wStr )
+###		wStr = "フォロー状態をDBに記録中..." + '\n'
+###		CLS_OSIF.sPrn( wStr )
+		CLS_MyDisp.sViewHeaderDisp( "フォロー情報の記録中" )
 		
 		wKeylist = list( wFollowerData.keys() )
 		for wID in wKeylist :
@@ -349,24 +381,27 @@ class CLS_TwitterMain():
 				return wRes
 			### DB未登録
 			if wSubRes['Responce']==None :
-				###DBに登録する
-				wSetRes = gVal.OBJ_DB_IF.InsertFavoData( wFollowerData[wID] )
-				if wSetRes['Result']!=True :
-					###失敗
-					wRes['Reason'] = "InsertFavoData is failed"
-					gVal.OBJ_L.Log( "B", wRes )
-					return wRes
-				wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
-				if wSubRes['Result']!=True :
-					###失敗
-					wRes['Reason'] = "GetFavoDataOne(2) is failed"
-					gVal.OBJ_L.Log( "B", wRes )
-					return wRes
-				### DB未登録（ありえない）
-				if wSubRes['Responce']==None :
-					wRes['Reason'] = "GetFavoDataOne(3) is failed"
-					gVal.OBJ_L.Log( "B", wRes )
-					return wRes
+###				###DBに登録する
+###				wSetRes = gVal.OBJ_DB_IF.InsertFavoData( wFollowerData[wID] )
+###				if wSetRes['Result']!=True :
+###					###失敗
+###					wRes['Reason'] = "InsertFavoData is failed"
+###					gVal.OBJ_L.Log( "B", wRes )
+###					return wRes
+###				wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
+###				if wSubRes['Result']!=True :
+###					###失敗
+###					wRes['Reason'] = "GetFavoDataOne(2) is failed"
+###					gVal.OBJ_L.Log( "B", wRes )
+###					return wRes
+###				### DB未登録（ありえない）
+###				if wSubRes['Responce']==None :
+###					wRes['Reason'] = "GetFavoDataOne(3) is failed"
+###					gVal.OBJ_L.Log( "B", wRes )
+###					return wRes
+				wRes['Reason'] = "GetFavoDataOne(3) is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
 			
 			wARR_DBData = wSubRes['Responce']
 			

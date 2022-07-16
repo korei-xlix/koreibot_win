@@ -419,17 +419,17 @@ class CLS_Main_Console() :
 		wRes['Class'] = "CLS_Main_Console"
 		wRes['Func']  = "sFirstProcess"
 		
-		cls.FLG_MainDispClear = True
-		#############################
-		# 時間を取得
+###		cls.FLG_MainDispClear = True
+###		#############################
+###		# 時間を取得
 ###		wSubRes = cls.OBJ_TwitterMain.TimeUpdate()
-		wSubRes = CLS_TIME.sTimeUpdate()
-		if wSubRes['Result']!=True :
-			###時間取得失敗  時計壊れた？
-			wRes['Reason'] = "TimeUpdate is failed"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
+###		wSubRes = CLS_TIME.sTimeUpdate()
+###		if wSubRes['Result']!=True :
+###			###時間取得失敗  時計壊れた？
+###			wRes['Reason'] = "TimeUpdate is failed"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
 		#############################
 		# 開始or前回チェックから15分経ったか
 		w15Res = cls.OBJ_TwitterMain.Circle15min()
@@ -438,12 +438,12 @@ class CLS_Main_Console() :
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-		#############################
-		# トラヒック情報の記録と報告
-		wResTraffic = CLS_Traffic.sSet()
-		if wResTraffic['Result']!=True :
-			wRes['Reason'] = "Set Traffic failed: reason=" + CLS_OSIF.sCatErr( wResTraffic )
-			return wRes
+###		#############################
+###		# トラヒック情報の記録と報告
+###		wResTraffic = CLS_Traffic.sSet()
+###		if wResTraffic['Result']!=True :
+###			wRes['Reason'] = "Set Traffic failed: reason=" + CLS_OSIF.sCatErr( wResTraffic )
+###			return wRes
 ###		if wResTraffic['Responce']==True :
 ###			gVal.OBJ_L.Log( "S", wRes, "〇トラヒック情報切り替え" )
 ###			wRes['Responce'] = False	#画面クリアさせない

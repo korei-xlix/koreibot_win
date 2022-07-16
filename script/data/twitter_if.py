@@ -390,7 +390,7 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# Twitter接続テスト
-		wResTwitter_Create = self.OBJ_Twitter.Create(
+		wTwitterRes_Create = self.OBJ_Twitter.Create(
 					wRes['Responce']['Account'],
 					wRes['Responce']['APIkey'],
 					wRes['Responce']['APIsecret'],
@@ -398,13 +398,13 @@ class CLS_Twitter_IF() :
 					wRes['Responce']['ACCsecret'],
 					wRes['Responce']['Bearer']
 				)
-		wResTwitter = self.OBJ_Twitter.GetTwStatus()
-		if wResTwitter_Create!=True :
-			wRes['Reason'] = "Twitterの接続に失敗しました: reason=" + wResTwitter['Reason']
+		wTwitterRes = self.OBJ_Twitter.GetTwStatus()
+		if wTwitterRes_Create!=True :
+			wRes['Reason'] = "Twitterの接続に失敗しました: reason=" + wTwitterRes['Reason']
 			return wRes
 		
 		###結果の確認
-		if wResTwitter['Init']!=True :
+		if wTwitterRes['Init']!=True :
 			wRes['Reason'] = "Twitterが初期化できてません"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
@@ -450,7 +450,7 @@ class CLS_Twitter_IF() :
 		# Twitter生成→接続
 		self.OBJ_Twitter = CLS_Twitter_Use()
 ###		wResTwitter_Create = self.OBJ_Twitter.Create( gVal.STR_UserInfo['Account'], inAPIkey, inAPIsecret, inACCtoken, inACCsecret, inBearer )
-		wResTwitter_Create = self.OBJ_Twitter.Create(
+		wTwitterRes_Create = self.OBJ_Twitter.Create(
 			gVal.STR_UserInfo['Account'],
 			inData['apikey'],
 			inData['apisecret'],
@@ -461,16 +461,16 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# Twitter状態の取得
-		wResTwitter = self.OBJ_Twitter.GetTwStatus()
-		if wResTwitter_Create!=True :
-			wRes['Reason'] = "Twitterの接続失敗: reason=" + wResTwitter['Reason']
+		wTwitterRes = self.OBJ_Twitter.GetTwStatus()
+		if wTwitterRes_Create!=True :
+			wRes['Reason'] = "Twitterの接続失敗: reason=" + wTwitterRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			
 			self.__connectFailView()
 			return False
 		
 		###結果の確認
-		if wResTwitter['Init']!=True :
+		if wTwitterRes['Init']!=True :
 			wRes['Reason'] = "Twitter初期化失敗"
 			gVal.OBJ_L.Log( "B", wRes )
 			
@@ -551,25 +551,25 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# ユーザツイートを取得
-		wTweetRes = self.OBJ_Twitter.GetTL( inTLmode=inTLmode, inFLG_Rep=inFLG_Rep, inFLG_Rts=inFLG_Rts, inCount=inCount, inID=inID, inListID=inListID )
+		wTwitterRes = self.OBJ_Twitter.GetTL( inTLmode=inTLmode, inFLG_Rep=inFLG_Rep, inFLG_Rts=inFLG_Rts, inCount=inCount, inID=inID, inListID=inListID )
 ###		gVal.STR_TrafficInfo['runapi'] += wTweetRes['RunAPI']
-		CLS_Traffic.sP( "run_api", wTweetRes['RunAPI'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		
 		#############################
 		# 結果チェック
-		if wTweetRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error: " + wTweetRes['Reason']
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error: " + wTwitterRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
 		#############################
 		# トラヒック計測：取得タイムライン数
 ###		gVal.STR_TrafficInfo['timeline'] += len( wTweetRes['Responce'] )
-		CLS_Traffic.sP( "timeline", len( wTweetRes['Responce'] ) )
+		CLS_Traffic.sP( "timeline", len( wTwitterRes['Responce'] ) )
 		
 		#############################
 		# 完了
-		wRes['Responce'] = wTweetRes['Responce']
+		wRes['Responce'] = wTwitterRes['Responce']
 		wRes['Result'] = True
 		return wRes
 
@@ -588,14 +588,14 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# 検索を利用する
-		wTweetRes = self.OBJ_Twitter.GetTweetSearch_v2( inQuery=inQuery, inMaxResult=inMaxResult )
+		wTwitterRes = self.OBJ_Twitter.GetTweetSearch_v2( inQuery=inQuery, inMaxResult=inMaxResult )
 ###		gVal.STR_TrafficInfo['runapi'] += wTweetRes['RunAPI']
-		CLS_Traffic.sP( "run_api", wTweetRes['RunAPI'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		
 		#############################
 		# 結果チェック
-		if wTweetRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error: " + wTweetRes['Reason'] + " query=" + str(inQuery)
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error: " + wTwitterRes['Reason'] + " query=" + str(inQuery)
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
@@ -603,12 +603,12 @@ class CLS_Twitter_IF() :
 		# データ加工
 		#   いいねがない場合はセットなし
 		wARR_Tweets = {}
-		if wTweetRes['Responce']['meta']['result_count']>0 and \
-		   "includes" in wTweetRes['Responce'] and \
-		   "data" in wTweetRes['Responce'] :
+		if wTwitterRes['Responce']['meta']['result_count']>0 and \
+		   "includes" in wTwitterRes['Responce'] and \
+		   "data" in wTwitterRes['Responce'] :
 			
 			### Tweetデータから対象引用リツイートを抽出
-			for wTweet in wTweetRes['Responce']['data'] :
+			for wTweet in wTwitterRes['Responce']['data'] :
 				### 枠の作成
 				wSTR_CellUser = {
 					"id"			: None,
@@ -663,7 +663,7 @@ class CLS_Twitter_IF() :
 			
 			### Tweetデータから関連ユーザ情報を抜き出す
 			wARR_Users = {}
-			for wUser in wTweetRes['Responce']['includes']['users'] :
+			for wUser in wTwitterRes['Responce']['includes']['users'] :
 				wID = str( wUser['id'] )
 				if wID in wARR_Users :
 					continue
@@ -709,7 +709,7 @@ class CLS_Twitter_IF() :
 		#############################
 		# トラヒック計測：取得タイムライン数
 ###		gVal.STR_TrafficInfo['timeline'] += len( wTweetRes['Responce'] )
-		CLS_Traffic.sP( "timeline", len( wTweetRes['Responce'] ) )
+		CLS_Traffic.sP( "timeline", len( wTwitterRes['Responce'] ) )
 		
 		#############################
 		# 完了
@@ -732,34 +732,34 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# ユーザツイートを取得
-		wTweetRes = self.OBJ_Twitter.GetTweetLookup( inID=inID )
-###		gVal.STR_TrafficInfo['runapi'] += wTweetRes['RunAPI']
-		CLS_Traffic.sP( "run_api", wTweetRes['RunAPI'] )
+		wTwitterRes = self.OBJ_Twitter.GetTweetLookup( inID=inID )
+###		gVal.STR_TrafficInfo['runapi'] += wTwitterRes['RunAPI']
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		
 		#############################
 		# 結果チェック
-		if wTweetRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error: " + wTweetRes['Reason']
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error: " + wTwitterRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
 		#############################
 		# データ加工
 		wTweets = {}
-		if "data" in wTweetRes['Responce'] :
+		if "data" in wTwitterRes['Responce'] :
 			
-			wID     = str( wTweetRes['Responce']['data']['id'] )
-			wUserID = str( wTweetRes['Responce']['data']['author_id'] )
+			wID     = str( wTwitterRes['Responce']['data']['id'] )
+			wUserID = str( wTwitterRes['Responce']['data']['author_id'] )
 			
 			### screen_nameの取り出し
 			wScreenName = ""
-			for wUsers in wTweetRes['Responce']['includes']['users'] :
+			for wUsers in wTwitterRes['Responce']['includes']['users'] :
 				if str(wUsers['id'])==wUserID :
 					wScreenName  = wUsers['username']
 					wDescription = wUsers['description']
 			
 			###日時の変換
-			wTimeDate = wTweetRes['Responce']['data']['created_at']
+			wTimeDate = wTwitterRes['Responce']['data']['created_at']
 ###			wTimeRes = CLS_OSIF.sGetTimeformat_Twitter( wTimeDate )
 ###			if wTimeRes['Result']!=True :
 ###				wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str( wTimeDate )
@@ -778,16 +778,16 @@ class CLS_Twitter_IF() :
 			wSTR_Cell = {
 				"created_at"	: wTimeDate,
 				"id"			: wID,
-				"text"			: wTweetRes['Responce']['data']['text'],
+				"text"			: wTwitterRes['Responce']['data']['text'],
 				"user"			: wSTR_CellUser
 			}
-			wSTR_Cell.update({ "data" : wTweetRes['Responce'] })
+			wSTR_Cell.update({ "data" : wTwitterRes['Responce'] })
 			wTweets = wSTR_Cell
 		
 		#############################
 		# トラヒック計測：取得タイムライン数
-###		gVal.STR_TrafficInfo['timeline'] += len( wTweetRes['Responce'] )
-		CLS_Traffic.sP( "timeline", len( wTweetRes['Responce'] ) )
+###		gVal.STR_TrafficInfo['timeline'] += len( wTwitterRes['Responce'] )
+		CLS_Traffic.sP( "timeline", len( wTwitterRes['Responce'] ) )
 		
 		#############################
 		# 完了
@@ -811,14 +811,14 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# 自分へのメンション情報を取得
-		wTweetRes = self.OBJ_Twitter.GetMentionLookup( inID=gVal.STR_UserInfo['id'] )
+		wTwitterRes = self.OBJ_Twitter.GetMentionLookup( inID=gVal.STR_UserInfo['id'] )
 ###		gVal.STR_TrafficInfo['runapi'] += wTweetRes['RunAPI']
-		CLS_Traffic.sP( "run_api", wTweetRes['RunAPI'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		
 		#############################
 		# 結果チェック
-		if wTweetRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error: " + wTweetRes['Reason']
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error: " + wTwitterRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
@@ -826,10 +826,10 @@ class CLS_Twitter_IF() :
 		# データ加工
 		#   メンション情報がない場合はセットなし
 		wMentions = {}
-		if wTweetRes['Responce']['meta']['result_count']>0 and \
-		   "data" in wTweetRes['Responce'] :
+		if wTwitterRes['Responce']['meta']['result_count']>0 and \
+		   "data" in wTwitterRes['Responce'] :
 			
-			for wTweet in wTweetRes['Responce']['data'] :
+			for wTweet in wTwitterRes['Responce']['data'] :
 				wReplyID     = str( wTweet['id'] )
 				wReplyUserID = str( wTweet['author_id'] )
 				wReplyText   = str( wTweet['text'] )
@@ -875,14 +875,14 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# ユーザツイートを取得
-		wTweetRes = self.OBJ_Twitter.GetLikesLookup( inID=inID )
+		wTwitterRes = self.OBJ_Twitter.GetLikesLookup( inID=inID )
 ###		gVal.STR_TrafficInfo['runapi'] += wTweetRes['RunAPI']
-		CLS_Traffic.sP( "run_api", wTweetRes['RunAPI'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		
 		#############################
 		# 結果チェック
-		if wTweetRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error: " + wTweetRes['Reason']
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error: " + wTwitterRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
@@ -890,9 +890,9 @@ class CLS_Twitter_IF() :
 		# データ加工
 		#   いいねがない場合はセットなし
 		wUsers = {}
-		if wTweetRes['Responce']['meta']['result_count']>0 and \
-		   "data" in wTweetRes['Responce'] :
-			for wUser in wTweetRes['Responce']['data'] :
+		if wTwitterRes['Responce']['meta']['result_count']>0 and \
+		   "data" in wTwitterRes['Responce'] :
+			for wUser in wTwitterRes['Responce']['data'] :
 				wID = str(wUser['id'])
 				wName = wUser['name'].replace( "'", "''" )
 				
@@ -926,14 +926,14 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# ユーザツイートを取得
-		wTweetRes = self.OBJ_Twitter.GetRetweetLookup( inID=inID )
+		wTwitterRes = self.OBJ_Twitter.GetRetweetLookup( inID=inID )
 ###		gVal.STR_TrafficInfo['runapi'] += wTweetRes['RunAPI']
-		CLS_Traffic.sP( "run_api", wTweetRes['RunAPI'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		
 		#############################
 		# 結果チェック
-		if wTweetRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error: " + wTweetRes['Reason']
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error: " + wTwitterRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
@@ -941,9 +941,9 @@ class CLS_Twitter_IF() :
 		# データ加工
 		#   いいねがない場合はセットなし
 		wUsers = {}
-		if wTweetRes['Responce']['meta']['result_count']>0 and \
-		   "data" in wTweetRes['Responce'] :
-			for wUser in wTweetRes['Responce']['data'] :
+		if wTwitterRes['Responce']['meta']['result_count']>0 and \
+		   "data" in wTwitterRes['Responce'] :
+			for wUser in wTwitterRes['Responce']['data'] :
 				wID = str(wUser['id'])
 				wName = wUser['name'].replace( "'", "''" )
 				
@@ -979,14 +979,14 @@ class CLS_Twitter_IF() :
 		# 検索を利用する
 		wQuery = "{id} -is:retweet"
 		wQuery = wQuery.format( id=inID )
-		wTweetRes = self.OBJ_Twitter.GetTweetSearch_v2( inQuery=wQuery )
+		wTwitterRes = self.OBJ_Twitter.GetTweetSearch_v2( inQuery=wQuery )
 ###		gVal.STR_TrafficInfo['runapi'] += wTweetRes['RunAPI']
-		CLS_Traffic.sP( "run_api", wTweetRes['RunAPI'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		
 		#############################
 		# 結果チェック
-		if wTweetRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error: " + wTweetRes['Reason']
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error: " + wTwitterRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
@@ -994,12 +994,12 @@ class CLS_Twitter_IF() :
 		# データ加工
 		#   いいねがない場合はセットなし
 		wUsers = {}
-		if wTweetRes['Responce']['meta']['result_count']>0 and \
-		   "includes" in wTweetRes['Responce'] and \
-		   "data" in wTweetRes['Responce'] :
+		if wTwitterRes['Responce']['meta']['result_count']>0 and \
+		   "includes" in wTwitterRes['Responce'] and \
+		   "data" in wTwitterRes['Responce'] :
 			
 			### Tweetデータから対象引用リツイートを抽出
-			for wTweet in wTweetRes['Responce']['data'] :
+			for wTweet in wTwitterRes['Responce']['data'] :
 				if "referenced_tweets" not in wTweet :
 					continue
 				for wTweetCont in wTweet['referenced_tweets'] :
@@ -1025,7 +1025,7 @@ class CLS_Twitter_IF() :
 					wUsers.update({ wUserID : wSTR_Cell })
 			
 			### Tweetデータから関連ユーザ情報を抜き出す
-			for wUser in wTweetRes['Responce']['includes']['users'] :
+			for wUser in wTwitterRes['Responce']['includes']['users'] :
 				wUserID = str( wUser['id'] )
 				if wUserID not in wUsers :
 					continue
@@ -1054,15 +1054,15 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# ツイート
-		wTweetRes = self.OBJ_Twitter.Tweet( inTweet )
+		wTwitterRes = self.OBJ_Twitter.Tweet( inTweet )
 ###		gVal.STR_TrafficInfo['runapi'] += wTweetRes['RunAPI']
-		CLS_Traffic.sP( "run_api", wTweetRes['RunAPI'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		
 		#############################
 		# 結果チェック
-		if wTweetRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error: " + wTweetRes['Reason']
-			wRes.update({ "StatusCode" : str(wTweetRes['StatusCode']) })
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error: " + wTwitterRes['Reason']
+			wRes.update({ "StatusCode" : str(wTwitterRes['StatusCode']) })
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
@@ -1091,14 +1091,14 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# ツイート
-		wTweetRes = self.OBJ_Twitter.DelTweet( inID )
+		wTwitterRes = self.OBJ_Twitter.DelTweet( inID )
 ###		gVal.STR_TrafficInfo['runapi'] += wTweetRes['RunAPI']
-		CLS_Traffic.sP( "run_api", wTweetRes['RunAPI'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		
 		#############################
 		# 結果チェック
-		if wTweetRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error: " + wTweetRes['Reason']
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error: " + wTwitterRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
@@ -1124,12 +1124,12 @@ class CLS_Twitter_IF() :
 		# DM送信
 		wTwitterRes = self.OBJ_Twitter.SendDM( inID, inTweet )
 ###		gVal.STR_TrafficInfo['runapi'] += wTweetRes['RunAPI']
-		CLS_Traffic.sP( "run_api", wTweetRes['RunAPI'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		
 		#############################
 		# 結果チェック
-		if wTweetRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error: " + wTweetRes['Reason']
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error: " + wTwitterRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
@@ -1160,7 +1160,7 @@ class CLS_Twitter_IF() :
 		# フォローする
 		wTwitterRes = self.OBJ_Twitter.CreateFollow( inID )
 ###		gVal.STR_TrafficInfo['runapi'] += wTwitterRes['RunAPI']
-		CLS_Traffic.sP( "run_api", wTweetRes['RunAPI'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		### Twitter Wait
 		CLS_OSIF.sSleep( self.DEF_VAL_SLEEP )
 		
@@ -1188,7 +1188,7 @@ class CLS_Twitter_IF() :
 		if inMute==True :
 			wTwitterRes = self.OBJ_Twitter.CreateMute( inID )
 ###			gVal.STR_TrafficInfo['runapi'] += wTwitterRes['RunAPI']
-			CLS_Traffic.sP( "run_api", wTweetRes['RunAPI'] )
+			CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 			if wTwitterRes['Result']!=True :
 				wRes['Reason'] = "Twitter API Error(CreateMute): " + wTwitterRes['Reason']
 				gVal.OBJ_L.Log( "B", wRes )
@@ -1236,7 +1236,7 @@ class CLS_Twitter_IF() :
 		# リムーブする
 		wTwitterRes = self.OBJ_Twitter.RemoveFollow( inID )
 ###		gVal.STR_TrafficInfo['runapi'] += wTwitterRes['RunAPI']
-		CLS_Traffic.sP( "run_api", wTweetRes['RunAPI'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		
 		wRes['StatusCode'] = wTwitterRes['StatusCode']
 		#############################
@@ -1273,7 +1273,7 @@ class CLS_Twitter_IF() :
 		# ブロックする
 		wTwitterRes = self.OBJ_Twitter.CreateBlock( inID )
 ###		gVal.STR_TrafficInfo['runapi'] += wTwitterRes['RunAPI']
-		CLS_Traffic.sP( "run_api", wTweetRes['RunAPI'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		if wTwitterRes['Result']!=True :
 			wRes['Reason'] = "Twitter API Error(CreateBlock): " + wTwitterRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
@@ -1285,7 +1285,7 @@ class CLS_Twitter_IF() :
 		# ブロック解除する
 		wTwitterRes = self.OBJ_Twitter.RemoveBlock( inID )
 ###		gVal.STR_TrafficInfo['runapi'] += wTwitterRes['RunAPI']
-		CLS_Traffic.sP( "run_api", wTweetRes['RunAPI'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		if wTwitterRes['Result']!=True :
 			wRes['Reason'] = "Twitter API Error(RemoveBlock): " + wTwitterRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
@@ -1320,7 +1320,7 @@ class CLS_Twitter_IF() :
 		# いいね一覧を取得
 		wTwitterRes = self.OBJ_Twitter.GetUserFavolist( inID, inCount )
 ###		gVal.STR_TrafficInfo['runapi'] += wTwitterRes['RunAPI']
-		CLS_Traffic.sP( "run_api", wTweetRes['RunAPI'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		
 		#############################
 		# 結果チェック
@@ -1373,7 +1373,7 @@ class CLS_Twitter_IF() :
 		# いいねする
 		wTwitterRes = self.OBJ_Twitter.CreateFavo( inID )
 ###		gVal.STR_TrafficInfo['runapi'] += wTwitterRes['RunAPI']
-		CLS_Traffic.sP( "run_api", wTweetRes['RunAPI'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		
 		#############################
 		# 結果チェック
@@ -1433,7 +1433,7 @@ class CLS_Twitter_IF() :
 		# いいね解除する
 		wTwitterRes = self.OBJ_Twitter.RemoveFavo( inID )
 ###		gVal.STR_TrafficInfo['runapi'] += wTwitterRes['RunAPI']
-		CLS_Traffic.sP( "run_api", wTweetRes['RunAPI'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		
 		#############################
 		# 結果チェック
@@ -1516,7 +1516,7 @@ class CLS_Twitter_IF() :
 		# リツイートする
 		wTwitterRes = self.OBJ_Twitter.CreateRetweet( inID )
 ###		gVal.STR_TrafficInfo['runapi'] += wTwitterRes['RunAPI']
-		CLS_Traffic.sP( "run_api", wTweetRes['RunAPI'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		
 		#############################
 		# 結果チェック
@@ -1551,7 +1551,7 @@ class CLS_Twitter_IF() :
 		# ミュートする
 		wTwitterRes = self.OBJ_Twitter.CreateMute( inID )
 ###		gVal.STR_TrafficInfo['runapi'] += wTwitterRes['RunAPI']
-		CLS_Traffic.sP( "run_api", wTweetRes['RunAPI'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		if wTwitterRes['Result']!=True :
 			wRes['Reason'] = "Twitter API Error(CreateMute): " + wTwitterRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
@@ -1651,20 +1651,20 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# Twitterから自ユーザ情報を取得する
-		wUserinfoRes = self.OBJ_Twitter.GetMyUserinfo()
+		wTwitterRes = self.OBJ_Twitter.GetMyUserinfo()
 ###		gVal.STR_TrafficInfo['runapi'] += wUserinfoRes['RunAPI']
-		CLS_Traffic.sP( "run_api", wUserinfoRes['RunAPI'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		
 		#############################
 		# 結果チェック
-		if wUserinfoRes['Result']!=True :
-			wRes['Reason'] = "Twitter Error: " + wUserinfoRes['Reason']
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitter Error: " + wTwitterRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
 		#############################
 		# 完了
-		wRes['Responce'] = wUserinfoRes['Responce']
+		wRes['Responce'] = wTwitterRes['Responce']
 		wRes['Result'] = True
 		return wRes
 
@@ -1683,21 +1683,21 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# Twitterからユーザ情報を取得する
-		wUserinfoRes = self.OBJ_Twitter.GetUserinfo( inID=inID, inScreenName=inScreenName )
+		wTwitterRes = self.OBJ_Twitter.GetUserinfo( inID=inID, inScreenName=inScreenName )
 ###		gVal.STR_TrafficInfo['runapi'] += wUserinfoRes['RunAPI']
-		CLS_Traffic.sP( "run_api", wUserinfoRes['RunAPI'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		
-		wRes['StatusCode'] = wUserinfoRes['StatusCode']
+		wRes['StatusCode'] = wTwitterRes['StatusCode']
 		#############################
 		# 結果チェック
-		if wUserinfoRes['Result']!=True :
-			wRes['Reason'] = "Twitter Error: " + wUserinfoRes['Reason']
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitter Error: " + wTwitterRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
 		#############################
 		# 完了
-		wRes['Responce'] = wUserinfoRes['Responce']
+		wRes['Responce'] = wTwitterRes['Responce']
 		wRes['Result'] = True
 		return wRes
 
@@ -1718,7 +1718,7 @@ class CLS_Twitter_IF() :
 		# フォロー者ID一覧 取得
 		wTwitterRes = self.OBJ_Twitter.GetFollowIDList( inID )
 ###		gVal.STR_TrafficInfo['runapi'] += wTweetRes['RunAPI']
-		CLS_Traffic.sP( "run_api", wTweetRes['RunAPI'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		
 		#############################
 		# 結果チェック
@@ -1748,20 +1748,20 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# Twitterから関係情報を取得
-		wUserinfoRes = self.OBJ_Twitter.GetFollowInfo( gVal.STR_UserInfo['id'], inID )
+		wTwitterRes = self.OBJ_Twitter.GetFollowInfo( gVal.STR_UserInfo['id'], inID )
 ##		gVal.STR_TrafficInfo['runapi'] += wUserinfoRes['RunAPI']
-		CLS_Traffic.sP( "run_api", wUserinfoRes['RunAPI'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		
 		#############################
 		# 結果チェック
-		if wUserinfoRes['Result']!=True :
-			wRes['Reason'] = "GetFollowInfo API Error: " + wUserinfoRes['Reason']
-			wRes['Responce'] = wUserinfoRes['StatusCode']
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "GetFollowInfo API Error: " + wTwitterRes['Reason']
+			wRes['Responce'] = wTwitterRes['StatusCode']
 			return wRes
 		
 		#############################
 		# 完了
-		wRes['Responce'] = wUserinfoRes['Responce']['relationship']['source']
+		wRes['Responce'] = wTwitterRes['Responce']['relationship']['source']
 		wRes['Result'] = True
 		return wRes
 
@@ -1780,9 +1780,9 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# Twitterからトレンドを取得
-		wSubRes = self.OBJ_Twitter.GetTrends()
+		wTwitterRes = self.OBJ_Twitter.GetTrends()
 ###		gVal.STR_TrafficInfo['runapi'] += wSubRes['RunAPI']
-		CLS_Traffic.sP( "run_api", wSubRes['RunAPI'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		
 		wRes['Responce'] = {
 			"trends"		: [],
@@ -1791,16 +1791,16 @@ class CLS_Twitter_IF() :
 		}
 		#############################
 		# Twitter処理結果
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "GetTrends API Error: " + wSubRes['Reason']
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "GetTrends API Error: " + wTwitterRes['Reason']
 			return wRes
-		if len(wSubRes['Responce'])<=0 :
+		if len(wTwitterRes['Responce'])<=0 :
 			wRes['Reason'] = "Trend Data error: not 0"
 			return wRes
-		if "trends" not in wSubRes['Responce'][0] :
+		if "trends" not in wTwitterRes['Responce'][0] :
 			wRes['Reason'] = "Trend Data error: not trends"
 			return wRes
-		wTrendRes = wSubRes['Responce'][0]['trends']
+		wTrendRes = wTwitterRes['Responce'][0]['trends']
 		
 		#############################
 		# トレンド情報の詰め込み
@@ -1827,7 +1827,7 @@ class CLS_Twitter_IF() :
 ###			wRes['Reason'] = "sGetTimeformat_Twitter is Failed(1): " + str(wSubRes['Responce'][0]['as_of'])
 ###			gVal.OBJ_L.Log( "B", wRes )
 ###			return wRes
-		wTime = CLS_TIME.sTTchg( wRes, "(4)", wSubRes['Responce'][0]['as_of'] )
+		wTime = CLS_TIME.sTTchg( wRes, "(4)", wTwitterRes['Responce'][0]['as_of'] )
 		if wTime['Result']!=True :
 			return wRes
 		wRes['Responce']['as_of'] = wTime['TimeDate']
@@ -1837,7 +1837,7 @@ class CLS_Twitter_IF() :
 ###			wRes['Reason'] = "sGetTimeformat_Twitter is Failed(2): " + str(wSubRes['Responce'][0]['created_at'])
 ###			gVal.OBJ_L.Log( "B", wRes )
 ###			return wRes
-		wTime = CLS_TIME.sTTchg( wRes, "(5)", wSubRes['Responce'][0]['created_at'] )
+		wTime = CLS_TIME.sTTchg( wRes, "(5)", wTwitterRes['Responce'][0]['created_at'] )
 		if wTime['Result']!=True :
 			return wRes
 		wRes['Responce']['created_at'] = wTime['TimeDate']
@@ -1866,20 +1866,20 @@ class CLS_Twitter_IF() :
 		wRes['Responce'] = None
 		#############################
 		# リスト取得
-		wSubRes = self.OBJ_Twitter.GetLists( inScreenName=inScreenName )
-		CLS_Traffic.sP( "run_api", wSubRes['RunAPI'] )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
+		wTwitterRes = self.OBJ_Twitter.GetLists( inScreenName=inScreenName )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error(GetLists): " + wTwitterRes['Reason']
 			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
 		
 		#############################
 		# リストIDを抽出する
 		wListID = None
-		wKeylist = list( wSubRes['Responce'].keys() )
+		wKeylist = list( wTwitterRes['Responce'].keys() )
 		for wKey in wKeylist :
-			if wSubRes['Responce'][wKey]['name']==inListName :
-				wListID = wSubRes['Responce'][wKey]['id']
+			if wTwitterRes['Responce'][wKey]['name']==inListName :
+				wListID = wTwitterRes['Responce'][wKey]['id']
 				break
 		
 		if wListID==None :
@@ -1949,16 +1949,16 @@ class CLS_Twitter_IF() :
 ###		wSubRes = self.CheckList(
 ###		   inListName=inListName,
 ###		   inScreenName=inScreenName )
-		wSubRes = self.GetListID(
+		wTwitterRes = self.GetListID(
 		   inListName=inListName,
 		   inScreenName=inScreenName )
 		
-		if wSubRes['Result']!=True :
+		if wTwitterRes['Result']!=True :
 			wRes['Reason'] = "CheckList is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 ###		if wSubRes['Responce']==False :
-		if wSubRes['Responce']==None :
+		if wTwitterRes['Responce']==None :
 			wRes['Reason'] = "List is not found: list=" + inListName + " owner=" + str(inScreenName)
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
@@ -1967,17 +1967,17 @@ class CLS_Twitter_IF() :
 		# ユーザ一覧を取得する
 		wARR_ListUser = {}
 		
-		wSubRes = self.OBJ_Twitter.GetListMember(
+		wTwitterRes = self.OBJ_Twitter.GetListMember(
 		   inListName=inListName,
 		   inScreenName=inScreenName )
-		CLS_Traffic.sP( "run_api", wSubRes['RunAPI'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error(GetListMember): " + wSubRes['Reason']
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error(GetListMember): " + wTwitterRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-		for wLine in wSubRes['Responce'] :
+		for wLine in wTwitterRes['Responce'] :
 			wID = str( wLine['id'] )
 			wCell = {
 				"id"          : wID,
@@ -2009,16 +2009,16 @@ class CLS_Twitter_IF() :
 ###		wSubRes = self.CheckList(
 ###		   inListName=inListName,
 ###		   inScreenName=inScreenName )
-		wSubRes = self.GetListID(
+		wTwitterRes = self.GetListID(
 		   inListName=inListName,
 		   inScreenName=inScreenName )
 		
-		if wSubRes['Result']!=True :
+		if wTwitterRes['Result']!=True :
 			wRes['Reason'] = "CheckList is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 ###		if wSubRes['Responce']==False :
-		if wSubRes['Responce']==None :
+		if wTwitterRes['Responce']==None :
 			wRes['Reason'] = "List is not found: list=" + inListName + " owner=" + str(inScreenName)
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
@@ -2027,17 +2027,17 @@ class CLS_Twitter_IF() :
 		# ユーザ一覧を取得する
 		wARR_ListUser = {}
 		
-		wSubRes = self.OBJ_Twitter.GetListSubscribers(
+		wTwitterRes = self.OBJ_Twitter.GetListSubscribers(
 		   inListName=inListName,
 		   inScreenName=inScreenName )
-		CLS_Traffic.sP( "run_api", wSubRes['RunAPI'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error(GetListSubscribers): " + wSubRes['Reason']
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error(GetListSubscribers): " + wTwitterRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-		for wLine in wSubRes['Responce'] :
+		for wLine in wTwitterRes['Responce'] :
 			wID = str( wLine['id'] )
 			wCell = {
 				"id"          : wID,
@@ -2079,13 +2079,13 @@ class CLS_Twitter_IF() :
 		#############################
 		# リストがTwitterにあるか確認
 ###		wSubRes = self.CheckList( inListName=gVal.STR_UserInfo['ListName'] )
-		wSubRes = self.GetListID( inListName=gVal.STR_UserInfo['ListName'] )
-		if wSubRes['Result']!=True :
+		wTwitterRes = self.GetListID( inListName=gVal.STR_UserInfo['ListName'] )
+		if wTwitterRes['Result']!=True :
 			wRes['Reason'] = "CheckList is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 ###		if wSubRes['Responce']==False :
-		if wSubRes['Responce']==None :
+		if wTwitterRes['Responce']==None :
 			wRes['Reason'] = "Twitter List not found: " + gVal.STR_UserInfo['ListName']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
@@ -2094,14 +2094,14 @@ class CLS_Twitter_IF() :
 		# リスト通知のユーザ一覧を取得する
 		wARR_ListIndUser = {}
 		
-		wSubRes = self.OBJ_Twitter.GetListMember( inListName=gVal.STR_UserInfo['ListName'] )
-		CLS_Traffic.sP( "run_api", wSubRes['RunAPI'] )
-		if wSubRes['Result']!=True :
+		wTwitterRes = self.OBJ_Twitter.GetListMember( inListName=gVal.STR_UserInfo['ListName'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
+		if wTwitterRes['Result']!=True :
 			wRes['Reason'] = "Twitter error(GetListMember)"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-		for wLine in wSubRes['Responce'] :
+		for wLine in wTwitterRes['Responce'] :
 			wID = str( wLine['id'] )
 			wCell = {
 				"id"          : wID,
@@ -2138,12 +2138,12 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# リスト通知のユーザ取得
-		wSubRes = self.ListInd_GetUser()
-		if wSubRes['Result']!=True :
+		wTwitterRes = self.ListInd_GetUser()
+		if wTwitterRes['Result']!=True :
 			wRes['Reason'] = "ListInd_GetUser is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		wARR_ListUser = wSubRes['Responce']
+		wARR_ListUser = wTwitterRes['Responce']
 		
 		#############################
 		# リスト通知ユーザに ID が登録されているか
@@ -2179,22 +2179,22 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# リスト通知にユーザが存在するか
-		wSubRes = self.ListInd_CheckUser( inID=wID )
-		if wSubRes['Result']!=True :
+		wTwitterRes = self.ListInd_CheckUser( inID=wID )
+		if wTwitterRes['Result']!=True :
 			wRes['Reason'] = "ListInd_CheckUser is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		if wSubRes['Responce']==True :
+		if wTwitterRes['Responce']==True :
 			### リスト通知済み
 			wRes['Result'] = True
 			return wRes
 		
 		#############################
 		# リスト通知にID追加
-		wSubRes = self.OBJ_Twitter.AddUserList( gVal.STR_UserInfo['ListName'], wID )
-		CLS_Traffic.sP( "run_api", wSubRes['RunAPI'] )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error(AddUserList): " + wSubRes['Reason'] + " : list=" + gVal.STR_UserInfo['ListName'] + " user=" + inUser['screen_name']
+		wTwitterRes = self.OBJ_Twitter.AddUserList( gVal.STR_UserInfo['ListName'], wID )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error(AddUserList): " + wTwitterRes['Reason'] + " : list=" + gVal.STR_UserInfo['ListName'] + " user=" + inUser['screen_name']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
@@ -2225,21 +2225,21 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# リスト通知のユーザ取得
-		wSubRes = self.ListInd_GetUser()
-		if wSubRes['Result']!=True :
+		wTwitterRes = self.ListInd_GetUser()
+		if wTwitterRes['Result']!=True :
 			wRes['Reason'] = "ListInd_GetUser is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		wARR_ListUser = wSubRes['Responce']
+		wARR_ListUser = wTwitterRes['Responce']
 		
 		#############################
 		# 全クリア
 		wKeylist = list( wARR_ListUser.keys() )
 		for wID in wKeylist :
-			wSubRes = self.OBJ_Twitter.RemoveUserList( gVal.STR_UserInfo['ListName'], wID )
-			CLS_Traffic.sP( "run_api", wSubRes['RunAPI'] )
-			if wSubRes['Result']!=True :
-				wRes['Reason'] = "Twitter API Error(RemoveUserList): " + wSubRes['Reason'] + " : list=" + gVal.STR_UserInfo['ListName'] + " user=" + wARR_ListUser[wID]['screen_name']
+			wTwitterRes = self.OBJ_Twitter.RemoveUserList( gVal.STR_UserInfo['ListName'], wID )
+			CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
+			if wTwitterRes['Result']!=True :
+				wRes['Reason'] = "Twitter API Error(RemoveUserList): " + wTwitterRes['Reason'] + " : list=" + gVal.STR_UserInfo['ListName'] + " user=" + wARR_ListUser[wID]['screen_name']
 				gVal.OBJ_L.Log( "B", wRes )
 				continue
 		
@@ -2261,14 +2261,14 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# リスト取得
-		wSubRes = self.OBJ_Twitter.GetLists( inScreenName=inScreenName )
-		CLS_Traffic.sP( "run_api", wSubRes['RunAPI'] )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
+		wTwitterRes = self.OBJ_Twitter.GetLists( inScreenName=inScreenName )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error(GetLists): " + wTwitterRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-		wRes['Responce'] = wSubRes['Responce']
+		wRes['Responce'] = wTwitterRes['Responce']
 		wRes['Result'] = True
 		return wRes
 
@@ -2287,20 +2287,20 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# リスト取得
-		wSubRes = self.OBJ_Twitter.GetLists( inScreenName=inScreenName )
-		CLS_Traffic.sP( "run_api", wSubRes['RunAPI'] )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error(GetLists): " + wSubRes['Reason']
+		wTwitterRes = self.OBJ_Twitter.GetLists( inScreenName=inScreenName )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error(GetLists): " + wTwitterRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		wARR_List = wSubRes['Responce']
+		wARR_List = wTwitterRes['Responce']
 		
-		wSubRes = self.OBJ_Twitter.GetSubsLists( inScreenName=inScreenName )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error(GetSubsLists): " + wSubRes['Reason']
+		wTwitterRes = self.OBJ_Twitter.GetSubsLists( inScreenName=inScreenName )
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error(GetSubsLists): " + wTwitterRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		wARR_SubsList = wSubRes['Responce']
+		wARR_SubsList = wTwitterRes['Responce']
 		
 		#############################
 		# リスト一覧
@@ -2360,13 +2360,13 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# 自分のリスト通知のユーザ取得
-		wSubRes = self.OBJ_Twitter.GetSubsLists( inScreenName=inUser['screen_name'] )
-		CLS_Traffic.sP( "run_api", wSubRes['RunAPI'] )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error(GetSubsLists): " + wSubRes['Reason']
+		wTwitterRes = self.OBJ_Twitter.GetSubsLists( inScreenName=inUser['screen_name'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error(GetSubsLists): " + wTwitterRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		wARR_SubsList = wSubRes['Responce']
+		wARR_SubsList = wTwitterRes['Responce']
 		
 		wListFavo_Keylist = list( gVal.ARR_ListFavo.keys() )
 		wFLG_RemoveRun = False
@@ -2408,10 +2408,10 @@ class CLS_Twitter_IF() :
 			if wARR_SubsList[wKey]['me']==False :
 				continue
 			
-			wSubRes = self.OBJ_Twitter.RemoveUserList( wARR_SubsList[wKey]['name'], wID )
-			CLS_Traffic.sP( "run_api", wSubRes['RunAPI'] )
-			if wSubRes['Result']!=True :
-				wRes['Reason'] = "Twitter API Error(RemoveUserList): " + wSubRes['Reason'] + " : list=" + wARR_SubsList[wKey]['name'] + " user=" + inUser['screen_name']
+			wTwitterRes = self.OBJ_Twitter.RemoveUserList( wARR_SubsList[wKey]['name'], wID )
+			CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
+			if wTwitterRes['Result']!=True :
+				wRes['Reason'] = "Twitter API Error(RemoveUserList): " + wTwitterRes['Reason'] + " : list=" + wARR_SubsList[wKey]['name'] + " user=" + inUser['screen_name']
 				gVal.OBJ_L.Log( "B", wRes )
 				continue
 			
@@ -2421,11 +2421,11 @@ class CLS_Twitter_IF() :
 		# 自動リムーブリストにID追加
 		if inFLG_Only==False :
 ###			wSubRes = self.OBJ_Twitter.AddUserList( gVal.STR_UserInfo['ArListName'], wID )
-			wSubRes = self.OBJ_Twitter.AddUserList( gVal.STR_UserInfo['rListName'], wID )
-			CLS_Traffic.sP( "run_api", wSubRes['RunAPI'] )
-			if wSubRes['Result']!=True :
+			wTwitterRes = self.OBJ_Twitter.AddUserList( gVal.STR_UserInfo['rListName'], wID )
+			CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
+			if wTwitterRes['Result']!=True :
 ###				wRes['Reason'] = "Twitter API Error(AddUserList): " + wSubRes['Reason'] + " : list=" + gVal.STR_UserInfo['ArListName'] + " user=" + inUser['screen_name']
-				wRes['Reason'] = "Twitter API Error(AddUserList): " + wSubRes['Reason'] + " : list=" + gVal.STR_UserInfo['rListName'] + " user=" + inUser['screen_name']
+				wRes['Reason'] = "Twitter API Error(AddUserList): " + wTwitterRes['Reason'] + " : list=" + gVal.STR_UserInfo['rListName'] + " user=" + inUser['screen_name']
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			
