@@ -762,14 +762,26 @@ class CLS_TwitterAdmin():
 		#############################
 		# 入力画面表示
 		wStr = "トレンドタグの設定をおこないます。" + '\n'
-		wStr = wStr + "タグに設定する名前を入力してください。"
-		wStr = wStr + "  \\q=キャンセル  /  \\n=設定解除  /  other=設定値"
+		wStr = wStr + "タグに設定する名前を入力してください。" + '\n'
+		wStr = wStr + '\n'
+		wStr = wStr + "  \\q=キャンセル  /  \\n=設定解除  /  other=設定値" + '\n'
 		wStr = wStr + "---------------------------------------" + '\n'
 		CLS_OSIF.sPrn( wStr )
 		
 		#############################
 		# 入力
 		while True :
+			#############################
+			# 現在の設定の表示
+			wStr = "[現在の設定] "
+			wStr = wStr + "トレンドタグ名="
+			if gVal.STR_UserInfo['TrendTag']!=gVal.DEF_NOTEXT :
+				wStr = wStr + gVal.STR_UserInfo['TrendTag']
+			else:
+				wStr = wStr + "(設定解除)"
+			wStr = wStr + '\n'
+			CLS_OSIF.sPrn( wStr )
+			
 			wInputName = CLS_OSIF.sInp( "Tag Name ？=> " )
 			
 			if wInputName=="" :
@@ -851,8 +863,9 @@ class CLS_TwitterAdmin():
 		#############################
 		# 入力画面表示
 		wStr = "リスト通知の設定をおこないます。" + '\n'
-		wStr = wStr + "通知に設定するリスト名を入力してください。"
-		wStr = wStr + "  \\q=キャンセル  /  \\n=設定解除  /  other=設定値"
+		wStr = wStr + "通知に設定するリスト名を入力してください。" + '\n'
+		wStr = wStr + '\n'
+		wStr = wStr + "  \\q=キャンセル  /  \\n=設定解除  /  other=設定値" + '\n'
 		wStr = wStr + "---------------------------------------" + '\n'
 		CLS_OSIF.sPrn( wStr )
 		
@@ -860,6 +873,17 @@ class CLS_TwitterAdmin():
 		#############################
 		# 入力
 		while True :
+			#############################
+			# 現在の設定の表示
+			wStr = "[現在の設定] "
+			wStr = wStr + "通知リスト名="
+			if gVal.STR_UserInfo['ListName']!=gVal.DEF_NOTEXT :
+				wStr = wStr + gVal.STR_UserInfo['ListName']
+			else:
+				wStr = wStr + "(設定解除)"
+			wStr = wStr + '\n'
+			CLS_OSIF.sPrn( wStr )
+			
 			wInputName = CLS_OSIF.sInp( "List Name ？=> " )
 			
 			if wInputName=="" :
@@ -876,9 +900,11 @@ class CLS_TwitterAdmin():
 				### 設定解除
 				break
 			
+			wStr = "Twitterの情報確認中..."
+			CLS_OSIF.sPrn( wStr )
 			#############################
 			# リストがTwitterにあるか確認
-			wSubRes = self.GetListID( inListName=wInputName )
+			wSubRes = gVal.OBJ_Tw_IF.GetListID( inListName=wInputName )
 			if wSubRes['Result']!=True :
 				wRes['Reason'] = "GetListID is failed"
 				gVal.OBJ_L.Log( "B", wRes )
@@ -1021,7 +1047,7 @@ class CLS_TwitterAdmin():
 			
 			#############################
 			# \l : リスト設定
-			elif wInputName=="\\a" :
+			elif wInputName=="\\l" :
 				wMListID   = None
 				wMListName = None
 				wFListID   = None
@@ -1031,8 +1057,10 @@ class CLS_TwitterAdmin():
 				# 相互フォローリスト設定
 				wInputName = CLS_OSIF.sInp( "   相互フォローリスト名 ？=> " )
 				
+				wStr = "Twitterの情報確認中..."
+				CLS_OSIF.sPrn( wStr )
 				### リストがTwitterにあるか確認
-				wSubRes = self.GetListID( inListName=wInputName )
+				wSubRes = gVal.OBJ_Tw_IF.GetListID( inListName=wInputName )
 				if wSubRes['Result']!=True :
 					wRes['Reason'] = "GetListID is failed"
 					gVal.OBJ_L.Log( "B", wRes )
@@ -1047,8 +1075,10 @@ class CLS_TwitterAdmin():
 				# 片フォロワーリスト設定
 				wInputName = CLS_OSIF.sInp( "   片フォロワーリスト名 ？=> " )
 				
+				wStr = "Twitterの情報確認中..."
+				CLS_OSIF.sPrn( wStr )
 				### リストがTwitterにあるか確認
-				wSubRes = self.GetListID( inListName=wInputName )
+				wSubRes = gVal.OBJ_Tw_IF.GetListID( inListName=wInputName )
 				if wSubRes['Result']!=True :
 					wRes['Reason'] = "GetListID is failed"
 					gVal.OBJ_L.Log( "B", wRes )

@@ -378,7 +378,9 @@ class CLS_Traffic():
 			for wKey in wARR_Komoku :
 				if wKey=="upddate" :
 					continue
-				wARR_Traffic[2][wKey] = wARR_Traffic[2][wKey] / wReportNum
+###				wARR_Traffic[2][wKey] = wARR_Traffic[2][wKey] / wReportNum
+				wValHarf = wARR_Traffic[2][wKey] / wReportNum
+				wARR_Traffic[2][wKey] = CLS_OSIF.sGetRound( wValHarf )
 		
 		#############################
 		# 表示データの枠

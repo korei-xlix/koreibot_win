@@ -288,29 +288,34 @@ class CLS_Main_Console() :
 	#####################################################
 		#############################
 		# いいね全解除
-		if inCommand=="\\r" :
+		if inCommand=="\\rm" :
 			cls.OBJ_TwitterMain.AllFavoRemove()
 		
 	#####################################################
 		#############################
 		# トレンドタグ設定
-		elif inCommand=="\\t" :
+		elif inCommand=="\\tc" :
 			cls.OBJ_TwitterMain.SetTrendTag()
 		
 		#############################
 		# リスト通知設定
-		elif inCommand=="\\i" :
+		elif inCommand=="\\ic" :
 			cls.OBJ_TwitterMain.SetListName()
 		
 		#############################
 		# 自動リムーブ
-		elif inCommand=="\\rmv" :
+		elif inCommand=="\\ac" :
 			cls.OBJ_TwitterMain.SetAutoRemove()
+		
+		#############################
+		# フォローリスト設定
+		elif inCommand=="\\fc" :
+			cls.OBJ_TwitterMain.SetAutoList()
 		
 	#####################################################
 		#############################
 		# 禁止ユーザ
-		elif inCommand=="\\u" :
+		elif inCommand=="\\uc" :
 			cls.OBJ_TwitterMain.ExcuteUser()
 		
 	#####################################################
@@ -331,7 +336,7 @@ class CLS_Main_Console() :
 		
 		#############################
 		# ログクリア
-		elif inCommand=="\\lc" :
+		elif inCommand=="\\lcr" :
 			gVal.OBJ_L.Clear()
 		
 		#############################

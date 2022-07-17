@@ -2421,7 +2421,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# ログに記録する
-		if inListName!=gVal.DEF_NOTEXT :
+		if inMListName!=gVal.DEF_NOTEXT :
 			wStr = "相互フォローリスト設定: list name: name=" + str(inMListName) + " screen_name=" + str(gVal.STR_UserInfo['Account'])
 			gVal.OBJ_L.Log( "SC", wRes, wStr )
 			wStr = "片フォロワーリスト設定: list name: name=" + str(inFListName) + " screen_name=" + str(gVal.STR_UserInfo['Account'])
