@@ -1306,10 +1306,10 @@ class CLS_TwitterAdmin():
 			wRes['Responce'] = True		#自動リムーブ実行
 			#############################
 			# DBに反映
-			wSubRes = gVal.OBJ_DB_IF.UpdateFavoDataFollower( wUserID, False, False )
+			wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Follower( wUserID, False, False )
 			if wSubRes['Result']!=True :
 				###失敗
-				wRes['Reason'] = "UpdateFavoDataFollower is failed"
+				wRes['Reason'] = "UpdateFavoData_Follower is failed"
 				gVal.OBJ_L.Log( "B", wRes )
 				continue
 		

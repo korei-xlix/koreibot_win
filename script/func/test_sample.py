@@ -134,9 +134,17 @@ class CLS_Test():
 ###			gVal.OBJ_L.Log( "C", wRes )
 ###			return wRes
 ###		
+###		#############################
+###		# リストいいね
+###		wSubRes = self.OBJ_TwitterFavo.ListFavo()
+###		if wSubRes['Result']!=True :
+###			wRes['Reason'] = "ListFavo"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+		
 		#############################
 		# リストいいね
-		wSubRes = self.OBJ_TwitterFavo.ListFavo()
+		wSubRes = gVal.OBJ_Tw_IF.GetFollowListUser()
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "ListFavo"
 			gVal.OBJ_L.Log( "B", wRes )

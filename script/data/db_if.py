@@ -2610,6 +2610,45 @@ class CLS_DB_IF() :
 		return wRes
 
 	#####################################################
+	def GetFavoData(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "GetFavoData"
+		
+		wRes['Responce'] = {}
+		#############################
+		# リムーブ もしくは ブロックでTwitterから完全リムーブされたか
+		#   DB上フォロー者 もしくは フォロワーを抽出
+		wQy = "select * from tbl_favouser_data where "
+		wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' and "
+		wQy = wQy + "( myfollow = True or "
+		wQy = wQy + "follower = True ) "
+		wQy = wQy + ";"
+		
+		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+		if wResDB['Result']!=True :
+			wRes['Reason'] = "Run Query is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 辞書型に整形
+		wARR_DBData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
+		
+		#############################
+		# 添え字をIDに差し替える
+		wARR_RateFavoDate = gVal.OBJ_DB_IF.ChgDataID( wARR_DBData )
+		
+		wRes['Responce'] = wARR_RateFavoDate
+		#############################
+		# 正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
 ###	def GetFavoDataOne( self, inID ):
 	def GetFavoDataOne( self, inID, inFLG_New=True ):
 		#############################
@@ -2694,6 +2733,8 @@ class CLS_DB_IF() :
 		wRes['Result'] = True
 		return wRes
 
+	#####################################################
+	# いいね情報更新：
 	#####################################################
 	def UpdateFavoData( self, inUser, inData, inFavoData, inCountUp=True ):
 		#############################
@@ -2865,13 +2906,14 @@ class CLS_DB_IF() :
 		return wRes
 
 	#####################################################
-	def UpdateFavoDataFollower( self, inID, inFLG_MyFollow=None, inFLG_Follower=None, inFLG_FavoUpdate=False ):
+###	def UpdateFavoDataFollower( self, inID, inFLG_MyFollow=None, inFLG_Follower=None, inFLG_FavoUpdate=False ):
+	def UpdateFavoData_Follower( self, inID, inFLG_MyFollow=None, inFLG_Follower=None, inUserLevel=None ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
 		wRes = CLS_OSIF.sGet_Resp()
 		wRes['Class'] = "CLS_DB_IF"
-		wRes['Func']  = "UpdateFavoDataFollower"
+		wRes['Func']  = "UpdateFavoData_Follower"
 		
 		#############################
 		# 入力チェック
@@ -2895,89 +2937,158 @@ class CLS_DB_IF() :
 		# フォロー者・フォロワー なし→あり
 		if inFLG_MyFollow==True and inFLG_Follower==True :
 			wQy = "update tbl_favouser_data set "
-			if inFLG_FavoUpdate==True :
-				wQy = wQy + "favo_date = '" + str( gVal.STR_Time['TimeDate'] ) + "', "
-			wQy = wQy + "myfollow = True, " + \
-					"myfollow_date = '" + str(gVal.STR_Time['TimeDate']) + "', " + \
-					"follower = True, " + \
-					"follower_date = '" + str(gVal.STR_Time['TimeDate']) + "' " + \
-					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
-					" and id = '" + str(inID) + "' ;"
+###			if inFLG_FavoUpdate==True :
+###				wQy = wQy + "favo_date = '" + str( gVal.STR_Time['TimeDate'] ) + "', "
+			wQy = wQy + "myfollow = True, " 
+			wQy = wQy + "myfollow_date = '" + str(gVal.STR_Time['TimeDate']) + "', "
+			wQy = wQy + "follower = True, "
+			wQy = wQy + "follower_date = '" + str(gVal.STR_Time['TimeDate']) + "' "
+			wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "'"
+			wQy = wQy + " and id = '" + str(inID) + "' ;"
 		
 		#############################
 		# フォロー者・フォロワー あり→なし
 		elif inFLG_MyFollow==False and inFLG_Follower==False :
-			wQy = "update tbl_favouser_data set " + \
-					"myfollow = False, " + \
-					"follower = False " + \
-					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
-					" and id = '" + str(inID) + "' ;"
+			wQy = "update tbl_favouser_data set "
+			wQy = wQy + "myfollow = False, "
+			wQy = wQy + "follower = False "
+			wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "'"
+			wQy = wQy + " and id = '" + str(inID) + "' ;"
 		
 		#############################
 		# フォロー者 なし→あり
 		# フォロワー あり→なし
 		elif inFLG_MyFollow==True and inFLG_Follower==False :
 			wQy = "update tbl_favouser_data set "
-			if inFLG_FavoUpdate==True :
-				wQy = wQy + "favo_date = '" + str( gVal.STR_Time['TimeDate'] ) + "', "
-			wQy = wQy + "myfollow = True, " + \
-					"myfollow_date = '" + str(gVal.STR_Time['TimeDate']) + "', " + \
-					"follower = False " + \
-					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
-					" and id = '" + str(inID) + "' ;"
+###			if inFLG_FavoUpdate==True :
+###				wQy = wQy + "favo_date = '" + str( gVal.STR_Time['TimeDate'] ) + "', "
+			wQy = wQy + "myfollow = True, "
+			wQy = wQy + "myfollow_date = '" + str(gVal.STR_Time['TimeDate']) + "', "
+			wQy = wQy + "follower = False "
+			wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "'"
+			wQy = wQy + " and id = '" + str(inID) + "' ;"
 		
 		#############################
 		# フォロー者 あり→なし
 		# フォロワー なし→あり
 		elif inFLG_MyFollow==False and inFLG_Follower==True :
-			wQy = "update tbl_favouser_data set " + \
-					"myfollow = False, " + \
-					"follower = True, " + \
-					"follower_date = '" + str(gVal.STR_Time['TimeDate']) + "' " + \
-					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
-					" and id = '" + str(inID) + "' ;"
+			wQy = "update tbl_favouser_data set "
+			wQy = wQy + "myfollow = False, "
+			wQy = wQy + "follower = True, "
+			wQy = wQy + "follower_date = '" + str(gVal.STR_Time['TimeDate']) + "' "
+			wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "' "
+			wQy = wQy + " and id = '" + str(inID) + "' ;"
 		
 		#############################
 		# フォロー者 なし→あり
 		elif inFLG_MyFollow==True :
 			wQy = "update tbl_favouser_data set "
-			if inFLG_FavoUpdate==True :
-				wQy = wQy + "favo_date = '" + str( gVal.STR_Time['TimeDate'] ) + "', "
-			wQy = wQy + "myfollow = True, " + \
-					"myfollow_date = '" + str(gVal.STR_Time['TimeDate']) + "' " + \
-					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
-					" and id = '" + str(inID) + "' ;"
+###			if inFLG_FavoUpdate==True :
+###				wQy = wQy + "favo_date = '" + str( gVal.STR_Time['TimeDate'] ) + "', "
+			wQy = wQy + "myfollow = True, "
+			wQy = wQy + "myfollow_date = '" + str(gVal.STR_Time['TimeDate']) + "' "
+			wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "' "
+			wQy = wQy + " and id = '" + str(inID) + "' ;"
 		
 		#############################
 		# フォロー者 あり→なし
 		elif inFLG_MyFollow==False :
-			wQy = "update tbl_favouser_data set " + \
-					"myfollow = False " + \
-					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
-					" and id = '" + str(inID) + "' ;"
+			wQy = "update tbl_favouser_data set "
+			wQy = wQy + "myfollow = False "
+			wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "' "
+			wQy = wQy + " and id = '" + str(inID) + "' ;"
 		
 		#############################
 		# フォロワー なし→あり
 		elif inFLG_Follower==True :
-			wQy = "update tbl_favouser_data set " + \
-					"follower = True, " + \
-					"follower_date = '" + str(gVal.STR_Time['TimeDate']) + "' " + \
-					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
-					" and id = '" + str(inID) + "' ;"
+			wQy = "update tbl_favouser_data set "
+			wQy = wQy + "follower = True, "
+			wQy = wQy + "follower_date = '" + str(gVal.STR_Time['TimeDate']) + "' "
+			wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "' "
+			wQy = wQy + " and id = '" + str(inID) + "' ;"
 		
 		#############################
 		# フォロワー あり→なし
 		else :
-			wQy = "update tbl_favouser_data set " + \
-					"follower = False " + \
-					"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
-					" and id = '" + str(inID) + "' ;"
+			wQy = "update tbl_favouser_data set "
+			wQy = wQy + "follower = False "
+			wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "' "
+			wQy = wQy + " and id = '" + str(inID) + "' ;"
+		
+		#############################
+		# クエリ実行
+		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy )
+		if wResDB['Result']!=True :
+			wRes['Reason'] = "Run Query is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def UpdateFavoData_UserLevel( self, inID, inUserLevel ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "UpdateFavoData_UserLevel"
+		
+		#############################
+		# ユーザレベルを取得する
+		wQy = "select level_tag from tbl_favouser_data where "
+		wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' and "
+		wQy = wQy + "( myfollow = True or "
+		wQy = wQy + "follower = True ) "
+		wQy = wQy + ";"
+		
+		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+		if wResDB['Result']!=True :
+			wRes['Reason'] = "Run Query is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		if len(wResDB['Responce']['Data'])!=1 :
+			### 1つだけでなければNG（ありえない？）
+			wRes['Reason'] = "data is not one: user id=" + str(inID)
+			gVal.OBJ_L.Log( "A", wRes )
+			return wRes
+		
+		### 現在のユーザレベル
+		wRateUserLevel = if wResDB['Responce']['Data'][0]['level_tag']
+		
+		#############################
+		# ユーザレベルに変化がなければ終わり
+		if wRateUserLevel==inUserLevel :
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# ユーザレベルの更新
+		wQy = "update tbl_favouser_data set "
+		wQy = wQy + "level_tag = '" + inUserLevel + "' "
+		wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "'"
+		wQy = wQy + " and id = '" + str(inID) + "' ;"
 		
 		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy )
 		if wResDB['Result']!=True :
 			wRes['Reason'] = "Run Query is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
+		
+		#############################
+		# ログの記録
+		if wRateUserLevel==gVal.DEF_NOTEXT :
+			### 新規の設定
+			wStr = "ユーザレベル設定: " + inUserLevel
+		else:
+			### レベル変更
+			wStr = "ユーザレベル変更: 変更前=" wRateUserLevel + " 変更後=" + inUserLevel
+		
+		gVal.OBJ_L.Log( "RC", wRes, wStr )
 		
 		#############################
 		# 正常

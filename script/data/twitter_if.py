@@ -30,7 +30,14 @@ class CLS_Twitter_IF() :
 	DEF_VAL_SLEEP = 10				#Twitter処理遅延（秒）
 	DEF_VAL_FAVO_1DAYSEC = 86400	#いいね1日経過時間  1日 (60x60x24)x1
 
-	ARR_Lists = {}			#リスト一覧
+###	ARR_Lists = {}			#リスト一覧
+	ARR_SubscribeListUserID = []		#リスト登録しているユーザID
+									# ※リスト通知、両フォロワー、片フォローは除く
+###	ARR_FollowList = {}				#リスト登録しているユーザID（各リストごとの詳細）
+###									# ※リスト通知、両フォロワー、片フォローは除く
+
+	ARR_MutualListUserID = []		#相互フォローリスト登録しているユーザID
+	ARR_FollowerListUserID = []		#片フォロワーリスト登録しているユーザID
 
 
 
@@ -68,6 +75,11 @@ class CLS_Twitter_IF() :
 				return wRes
 		
 		self.CHR_GetFollowDate = None	#一度クリアしておく(異常時再取得するため)
+		
+		#############################
+		# フォロー情報取得
+		CLS_MyDisp.sViewHeaderDisp( "フォロー情報取得" )
+		
 		#############################
 		# フォロー一覧 取得
 		wMyFollowRes = self.OBJ_Twitter.GetMyFollowList()
@@ -167,6 +179,10 @@ class CLS_Twitter_IF() :
 		wRes = CLS_OSIF.sGet_Resp()
 		wRes['Class'] = "CLS_Twitter_IF"
 		wRes['Func']  = "GetFavo"
+		
+		#############################
+		# いいね情報取得
+		CLS_MyDisp.sViewHeaderDisp( "いいね情報取得" )
 		
 		self.ARR_FavoUser = {}
 		#############################
@@ -2336,6 +2352,270 @@ class CLS_Twitter_IF() :
 
 
 #####################################################
+# 自動フォローリスト 追加
+#####################################################
+	def MutualList_AddUser( self, inUser ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_Twitter_IF"
+		wRes['Func']  = "MutualList_AddUser"
+		
+		wID = str( inUser['id'] )
+		
+		wRes['Responce'] = False	#実行
+		#############################
+		# 自動リムーブが有効か
+		if gVal.STR_UserInfo['AutoRemove']==False :
+			###リスト通知 =無効
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# 相互フォローリストに追加済みか
+		if self.CheckMutualListUser( wID )==True :
+			### 追加済なので終わり
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# 相互フォローリストに追加
+		wTwitterRes = self.OBJ_Twitter.AddUserList( gVal.STR_UserInfo['mListName'], wID )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error(AddUserList): " + wTwitterRes['Reason'] + " : list=" + gVal.STR_UserInfo['mListName'] + " user=" + inUser['screen_name']
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		gVal.OBJ_L.Log( "RC", wRes, "〇リスト追加: list=" + gVal.STR_UserInfo['mListName'] + " user=" + inUser['screen_name'] )
+		wRes['Responce'] = True		#追加
+		
+		self.ARR_MutualListUserID.append( wID )
+		
+		#############################
+		# 片フォロワーリストに追加されていたら
+		#   リストから削除する
+		if self.CheckFollowListUser( wID )==True :
+			wTwitterRes = self.OBJ_Twitter.RemoveUserList( gVal.STR_UserInfo['fListName'], wID )
+			CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
+			if wTwitterRes['Result']!=True :
+				wRes['Reason'] = "Twitter API Error(RemoveUserList): " + wTwitterRes['Reason'] + " : list=" + gVal.STR_UserInfo['fListName'] + " user=" + inUser['screen_name']
+				gVal.OBJ_L.Log( "B", wRes )
+				continue
+			
+			gVal.OBJ_L.Log( "RC", wRes, "●リスト解除: list=" + gVal.STR_UserInfo['fListName'] + " user=" + inUser['screen_name'] )
+			
+			self.ARR_FollowerListUserID.remove( wID )
+		
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def FollowerList_AddUser( self, inUser ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_Twitter_IF"
+		wRes['Func']  = "FollowerList_AddUser"
+		
+		wID = str( inUser['id'] )
+		
+		wRes['Responce'] = False	#実行
+		#############################
+		# 自動リムーブが有効か
+		if gVal.STR_UserInfo['AutoRemove']==False :
+			###リスト通知 =無効
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# 片フォロワーリストに追加済みか
+		if self.CheckFollowListUser( wID )==True :
+			### 追加済なので終わり
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# 片フォロワーリストに追加
+		wTwitterRes = self.OBJ_Twitter.AddUserList( gVal.STR_UserInfo['fListName'], wID )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error(AddUserList): " + wTwitterRes['Reason'] + " : list=" + gVal.STR_UserInfo['fListName'] + " user=" + inUser['screen_name']
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		gVal.OBJ_L.Log( "RC", wRes, "〇リスト追加: list=" + gVal.STR_UserInfo['fListName'] + " user=" + inUser['screen_name'] )
+		wRes['Responce'] = True		#追加
+		
+		self.ARR_FollowerListUserID.append( wID )
+		
+		#############################
+		# 相互フォローリストに追加されていたら
+		#   リストから削除する
+		if self.CheckMutualListUser( wID )==True :
+			wTwitterRes = self.OBJ_Twitter.RemoveUserList( gVal.STR_UserInfo['mListName'], wID )
+			CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
+			if wTwitterRes['Result']!=True :
+				wRes['Reason'] = "Twitter API Error(RemoveUserList): " + wTwitterRes['Reason'] + " : list=" + gVal.STR_UserInfo['mListName'] + " user=" + inUser['screen_name']
+				gVal.OBJ_L.Log( "B", wRes )
+				continue
+			
+			gVal.OBJ_L.Log( "RC", wRes, "●リスト解除: list=" + gVal.STR_UserInfo['mListName'] + " user=" + inUser['screen_name'] )
+			
+			self.ARR_MutualListUserID.remove( wID )
+		
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def FollowerList_Remove( self, inUser ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_Twitter_IF"
+		wRes['Func']  = "FollowerList_Remove"
+		
+		wID = str( inUser['id'] )
+		
+		wRes['Responce'] = False	#実行
+		#############################
+		# 自動リムーブが有効か
+		if gVal.STR_UserInfo['AutoRemove']==False :
+			###リスト通知 =無効
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# 片フォロワーリストに追加されていたら
+		#   リストから削除する
+		if self.CheckMutualListUser( wID )==True :
+			wTwitterRes = self.OBJ_Twitter.RemoveUserList( gVal.STR_UserInfo['fListName'], wID )
+			CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
+			if wTwitterRes['Result']!=True :
+				wRes['Reason'] = "Twitter API Error(RemoveUserList): " + wTwitterRes['Reason'] + " : list=" + gVal.STR_UserInfo['fListName'] + " user=" + inUser['screen_name']
+				gVal.OBJ_L.Log( "B", wRes )
+				continue
+			
+			gVal.OBJ_L.Log( "RC", wRes, "●リスト解除: list=" + gVal.STR_UserInfo['fListName'] + " user=" + inUser['screen_name'] )
+			
+			self.ARR_MutualListUserID.remove( wID )
+		
+		#############################
+		# 相互フォローリストに追加されていたら
+		#   リストから削除する
+		if self.CheckMutualListUser( wID )==True :
+			wTwitterRes = self.OBJ_Twitter.RemoveUserList( gVal.STR_UserInfo['mListName'], wID )
+			CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
+			if wTwitterRes['Result']!=True :
+				wRes['Reason'] = "Twitter API Error(RemoveUserList): " + wTwitterRes['Reason'] + " : list=" + gVal.STR_UserInfo['mListName'] + " user=" + inUser['screen_name']
+				gVal.OBJ_L.Log( "B", wRes )
+				continue
+			
+			gVal.OBJ_L.Log( "RC", wRes, "●リスト解除: list=" + gVal.STR_UserInfo['mListName'] + " user=" + inUser['screen_name'] )
+			
+			self.ARR_MutualListUserID.remove( wID )
+		
+		#############################
+		# その他リスト登録をしてたら
+		#   リストから削除する
+		
+		#############################
+		# 相手のリストを取得する
+		wTwitterRes = self.OBJ_Twitter.GetSubsLists( inScreenName=inUser['screen_name'] )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error(GetSubsLists): " + wTwitterRes['Reason']
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		wARR_SubsList = wTwitterRes['Responce']
+		
+		wListFavo_Keylist = list( gVal.ARR_ListFavo.keys() )
+		#############################
+		# 相手のリストのうち
+		# 通知リスト、相互フォロー、片フォロワー以外のリストを削除する
+		for wKey in wARR_SubsList :
+			if wARR_SubsList[wKey]['me']==False :
+				###自分じゃなければスキップ
+				continue
+			
+			### リスト通知、相互フォロー、片フォロワーはスキップ
+			if wARR_SubsList[wKey]['name']==gVal.STR_UserInfo['ListName'] or \
+			   wARR_SubsList[wKey]['name']==gVal.STR_UserInfo['mListName'] or \
+			   wARR_SubsList[wKey]['name']==gVal.STR_UserInfo['fListName'] :
+				continue
+			
+			### リスト解除する
+			wTwitterRes = self.OBJ_Twitter.RemoveUserList( wARR_SubsList[wKey]['name'], wID )
+			CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
+			if wTwitterRes['Result']!=True :
+				wRes['Reason'] = "Twitter API Error(RemoveUserList): " + wTwitterRes['Reason'] + " : list=" + wARR_SubsList[wKey]['name'] + " user=" + inUser['screen_name']
+				gVal.OBJ_L.Log( "B", wRes )
+				continue
+			
+			gVal.OBJ_L.Log( "U", wRes, "●リスト解除: list=" + wARR_SubsList[wKey]['name'] + " user=" + inUser['screen_name'] )
+		
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# 自動リムーブ
+#####################################################
+	def AutoRemove( self, inUser ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_Twitter_IF"
+		wRes['Func']  = "AutoRemove"
+		
+		wID = str( inUser['id'] )
+		
+		wRes['Responce'] = False	#実行
+		#############################
+		# 自動リムーブが有効か
+		if gVal.STR_UserInfo['AutoRemove']==False :
+			###リスト通知 =無効
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# リムーブ実行
+		wSubRes = self.Remove( wID )
+		CLS_Traffic.sP( "run_api", wMuteRes['RunAPI'] )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error(Remove): " + wSubRes['Reason']
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 記録する
+		wStr = "●リムーブ者: " + inUser['screen_name']
+		gVal.OBJ_L.Log( "R", wRes, wStr )
+		
+		CLS_Traffic.sP( "d_myfollow" )
+		
+		#############################
+		# リストリムーブする
+		wSubRes = self.FollowerList_Remove( self, inUser )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "FollowerList_Remove is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		wRes['Responce'] = True		#実行
+		#############################
+		# 正常
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
 # 自動リムーブリスト 追加
 #####################################################
 	def AutoRemove_AddUser( self, inUser, inFLG_Only=False ):
@@ -2355,7 +2635,8 @@ class CLS_Twitter_IF() :
 		if gVal.STR_UserInfo['AutoRemove']==False :
 			###リスト通知 =無効
 			wRes['Reason'] = "auto remove is invalid"
-			gVal.OBJ_L.Log( "B", wRes )
+###			gVal.OBJ_L.Log( "B", wRes )
+			gVal.OBJ_L.Log( "N", wRes )
 			return wRes
 		
 		#############################
@@ -2436,6 +2717,213 @@ class CLS_Twitter_IF() :
 		
 		wRes['Result'] = True
 		return wRes
+
+
+
+#####################################################
+# リスト登録ユーザ取得
+#####################################################
+	def GetFollowListUser( self, inScreenName=None ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_Twitter_IF"
+		wRes['Func']  = "GetLists"
+		
+		wRes['Responce'] = {}
+		#############################
+		# リスト登録ユーザ取得
+		CLS_MyDisp.sViewHeaderDisp( "リスト登録ユーザ取得" )
+		
+		#############################
+		# リスト取得
+		wTwitterRes = self.OBJ_Twitter.GetLists( inScreenName=inScreenName )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error(GetLists): " + wTwitterRes['Reason']
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 初期化
+		self.ARR_SubscribeListUserID = []
+###		self.ARR_FollowList = {}
+		wARR_FollowList = {}
+		
+		#############################
+		# リスト登録のIDを抽出
+		# ・自分のリスト
+		# ・リスト通知は除外
+		# ・相互フォローリストは除外
+		# ・片フォロワーリストは除外
+		wKeylist = list( wTwitterRes['Responce'].keys() )
+		for wKey in wKeylist :
+			if wTwitterRes['Responce'][wKey]['me']==False :
+				### 自分以外は除外
+				continue
+			
+			wListID = str(wTwitterRes['Responce'][wKey]['id'])
+			if gVal.STR_UserInfo['ListID']!=gVal.DEF_NOTEXT :
+				if gVal.STR_UserInfo['ListID']==wListID :
+					### リスト通知リストは除外
+					continue
+			
+			if gVal.STR_UserInfo['mListID']!=gVal.DEF_NOTEXT :
+				if gVal.STR_UserInfo['mListID']==wListID :
+					### 相互フォローリストは除外
+					continue
+			
+			if gVal.STR_UserInfo['fListID']!=gVal.DEF_NOTEXT :
+				if gVal.STR_UserInfo['fListID']==wListID :
+					### 片フォロワーリストは除外
+					continue
+			
+			wListName = str(wTwitterRes['Responce'][wKey]['name'])
+			wCell = {
+				"id"		: wListID,
+				"name"		: wListName,
+				"user_ids"	: []
+			}
+###			self.ARR_FollowList.update({ wListID : wCell })
+			wARR_FollowList.update({ wListID : wCell })
+			
+			wStr = "リスト登録ユーザ取得中：list=" + wListName
+			CLS_OSIF.sPrn( wStr )
+			#############################
+			# リスト通知のユーザ一覧を取得する
+			wTwitterListRes = self.OBJ_Twitter.GetListMember( inListName=wListName )
+			CLS_Traffic.sP( "run_api", wTwitterListRes['RunAPI'] )
+			if wTwitterListRes['Result']!=True :
+				wRes['Reason'] = "Twitter error(GetListMember)"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			
+			for wLine in wTwitterListRes['Responce'] :
+				wUserID = str( wLine['id'] )
+###				self.ARR_FollowList[wListID]['user_ids'].append( wUserID )
+				wARR_FollowList[wListID]['user_ids'].append( wUserID )
+				
+				if wUserID not in self.ARR_SubscribeListUserID :
+					self.ARR_SubscribeListUserID.append( wUserID )
+			
+###			wStr = "  ユーザ数=" + str(len( self.ARR_FollowList[wListID]['user_ids'] ))
+			wStr = "  ユーザ数=" + str(len( wARR_FollowList[wListID]['user_ids'] ))
+			CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# 総計表示
+###		wStr = '\n' + "リスト登録一覧数    =" + str(len( self.ARR_FollowList ))
+		wStr = '\n' + "リスト登録一覧数    =" + str(len( wARR_FollowList ))
+		CLS_OSIF.sPrn( wStr )
+		
+		wStr = "リスト登録ユーザID数=" + str(len( self.ARR_SubscribeListUserID ))
+		CLS_OSIF.sPrn( wStr )
+		
+###		self.ARR_FollowList = wARR_FollowList
+		wRes['Responce'] = wARR_FollowList
+		#############################
+		# 正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def CheckSubscribeListUser( self, inID ):
+		if inID not in self.ARR_SubscribeListUserID :
+			return False
+		return True
+
+
+
+#####################################################
+# 自動リスト登録ユーザ取得
+#####################################################
+	def GetAutoListUser( self ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_Twitter_IF"
+		wRes['Func']  = "GetAutoListUser"
+		
+		#############################
+		# 自動リムーブが有効か
+		if gVal.STR_UserInfo['AutoRemove']==False :
+			### 有効でなければ終わる
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# リスト登録ユーザ取得
+		CLS_MyDisp.sViewHeaderDisp( "自動リスト登録ユーザ取得" )
+		
+		#############################
+		# 初期化
+		self.ARR_MutualListUserID = []
+		self.ARR_FollowerListUserID = []
+		wARR_FollowList = {}
+		
+		#############################
+		# 相互フォローリストユーザIDを取得する
+		wStr = "相互フォローリスト登録ユーザ取得中..."
+		CLS_OSIF.sPrn( wStr )
+		
+		wTwitterListRes = self.OBJ_Twitter.GetListMember( inListName=gVal.STR_UserInfo['mListName'] )
+		CLS_Traffic.sP( "run_api", wTwitterListRes['RunAPI'] )
+		if wTwitterListRes['Result']!=True :
+			wRes['Reason'] = "Twitter error(GetListMember)"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		for wLine in wTwitterListRes['Responce'] :
+			wUserID = str( wLine['id'] )
+			
+			if wUserID not in self.ARR_MutualListUserID :
+				self.ARR_MutualListUserID.append( wUserID )
+		
+		#############################
+		# 片フォロワーリストユーザIDを取得する
+		wStr = "片フォロワーリスト登録ユーザ取得中..."
+		CLS_OSIF.sPrn( wStr )
+		
+		wTwitterListRes = self.OBJ_Twitter.GetListMember( inListName=gVal.STR_UserInfo['fListName'] )
+		CLS_Traffic.sP( "run_api", wTwitterListRes['RunAPI'] )
+		if wTwitterListRes['Result']!=True :
+			wRes['Reason'] = "Twitter error(GetListMember)"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		for wLine in wTwitterListRes['Responce'] :
+			wUserID = str( wLine['id'] )
+			
+			if wUserID not in self.ARR_FollowerListUserID :
+				self.ARR_FollowerListUserID.append( wUserID )
+		
+		#############################
+		# 総計表示
+		wStr = '\n' + "相互フォローリストID一覧数=" + str(len( self.ARR_MutualListUserID ))
+		CLS_OSIF.sPrn( wStr )
+		
+		wStr = "片フォロワーリストID一覧数=" + str(len( self.ARR_FollowerListUserID ))
+		CLS_OSIF.sPrn( wStr )
+		
+		wRes['Responce'] = wARR_FollowList
+		#############################
+		# 正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def CheckMutualListUser( self, inID ):
+		if inID not in self.ARR_MutualListUserID :
+			return False
+		return True
+
+	#####################################################
+	def CheckFollowListUser( self, inID ):
+		if inID not in self.ARR_FollowerListUserID :
+			return False
+		return True
 
 
 

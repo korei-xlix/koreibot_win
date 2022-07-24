@@ -548,10 +548,10 @@ class CLS_TwitterFollower():
 				
 				#############################
 				# DBに反映
-				wSubRes = gVal.OBJ_DB_IF.UpdateFavoDataFollower( wUserID, inFLG_MyFollow=False )
+				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Follower( wUserID, inFLG_MyFollow=False )
 				if wSubRes['Result']!=True :
 					###失敗
-					wRes['Reason'] = "UpdateFavoDataFollower is failed"
+					wRes['Reason'] = "UpdateFavoData_Follower is failed"
 					gVal.OBJ_L.Log( "B", wRes )
 					return wRes
 				
