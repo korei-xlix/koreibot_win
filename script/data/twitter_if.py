@@ -2402,7 +2402,7 @@ class CLS_Twitter_IF() :
 			if wTwitterRes['Result']!=True :
 				wRes['Reason'] = "Twitter API Error(RemoveUserList): " + wTwitterRes['Reason'] + " : list=" + gVal.STR_UserInfo['fListName'] + " user=" + inUser['screen_name']
 				gVal.OBJ_L.Log( "B", wRes )
-				continue
+				return wRes
 			
 			gVal.OBJ_L.Log( "RC", wRes, "●リスト解除: list=" + gVal.STR_UserInfo['fListName'] + " user=" + inUser['screen_name'] )
 			
@@ -2460,7 +2460,7 @@ class CLS_Twitter_IF() :
 			if wTwitterRes['Result']!=True :
 				wRes['Reason'] = "Twitter API Error(RemoveUserList): " + wTwitterRes['Reason'] + " : list=" + gVal.STR_UserInfo['mListName'] + " user=" + inUser['screen_name']
 				gVal.OBJ_L.Log( "B", wRes )
-				continue
+				return wRes
 			
 			gVal.OBJ_L.Log( "RC", wRes, "●リスト解除: list=" + gVal.STR_UserInfo['mListName'] + " user=" + inUser['screen_name'] )
 			
@@ -2497,7 +2497,7 @@ class CLS_Twitter_IF() :
 			if wTwitterRes['Result']!=True :
 				wRes['Reason'] = "Twitter API Error(RemoveUserList): " + wTwitterRes['Reason'] + " : list=" + gVal.STR_UserInfo['fListName'] + " user=" + inUser['screen_name']
 				gVal.OBJ_L.Log( "B", wRes )
-				continue
+				return wRes
 			
 			gVal.OBJ_L.Log( "RC", wRes, "●リスト解除: list=" + gVal.STR_UserInfo['fListName'] + " user=" + inUser['screen_name'] )
 			
@@ -2512,7 +2512,7 @@ class CLS_Twitter_IF() :
 			if wTwitterRes['Result']!=True :
 				wRes['Reason'] = "Twitter API Error(RemoveUserList): " + wTwitterRes['Reason'] + " : list=" + gVal.STR_UserInfo['mListName'] + " user=" + inUser['screen_name']
 				gVal.OBJ_L.Log( "B", wRes )
-				continue
+				return wRes
 			
 			gVal.OBJ_L.Log( "RC", wRes, "●リスト解除: list=" + gVal.STR_UserInfo['mListName'] + " user=" + inUser['screen_name'] )
 			

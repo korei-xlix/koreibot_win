@@ -1247,6 +1247,9 @@ class CLS_TwitterMain():
 			return wRes
 		### DB未登録
 		if wSubRes['Responce']['Data']==None :
+			wRes['Reason'] = "GetFavoDataOne(1) is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
 ###		if wSubRes['Responce']==None :
 ###			###DBに登録する
 ###			wSetRes = gVal.OBJ_DB_IF.InsertFavoData( inUser )

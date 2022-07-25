@@ -3142,7 +3142,7 @@ class CLS_DB_IF() :
 			return wRes
 		
 		### 現在のユーザレベル
-		wRateUserLevel = if wResDB['Responce']['Data'][0]['level_tag']
+		wRateUserLevel = wResDB['Responce']['Data'][0]['level_tag']
 		
 		#############################
 		# ユーザレベルに変化がなければ終わり
@@ -3172,7 +3172,7 @@ class CLS_DB_IF() :
 			wStr = "ユーザレベル設定: " + inUserLevel
 		else:
 			### レベル変更
-			wStr = "ユーザレベル変更: 変更前=" wRateUserLevel + " 変更後=" + inUserLevel
+			wStr = "ユーザレベル変更: 変更前=" + wRateUserLevel + " 変更後=" + inUserLevel
 		
 		gVal.OBJ_L.Log( "RC", wRes, wStr )
 		
@@ -3212,7 +3212,7 @@ class CLS_DB_IF() :
 			return wRes
 		
 		### フラグを反転
-		wFLG_Save = if wResDB['Responce']['Data'][0]['flg_save']
+		wFLG_Save = wResDB['Responce']['Data'][0]['flg_save']
 		if wFLG_Save==True :
 			wFLG_Save = False
 		
