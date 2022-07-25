@@ -331,16 +331,16 @@ class CLS_TwitterFollower():
 					wSendTweetIndex += 1
 					wFLG_Header = True
 			
-			#############################
-			# リアクション 1回以下
-			else:
-				wSubRes = gVal.OBJ_DB_IF.SendedFavoData( wID, -1 )
-				if wSubRes['Result']!=True :
-					###失敗
-					wRes['Reason'] = "SendedFavoData(1) is failed"
-					gVal.OBJ_L.Log( "B", wRes )
-					return wRes
-		
+###			#############################
+###			# リアクション 1回以下
+###			else:
+###				wSubRes = gVal.OBJ_DB_IF.SendedFavoData( wID, -1 )
+###				if wSubRes['Result']!=True :
+###					###失敗
+###					wRes['Reason'] = "SendedFavoData(1) is failed"
+###					gVal.OBJ_L.Log( "B", wRes )
+###					return wRes
+###		
 		if wSendCnt==0 :
 			#############################
 			# 送信者がいない場合
@@ -431,10 +431,11 @@ class CLS_TwitterFollower():
 			wID = str( wID )
 			
 			if wARR_RateFavoDate[wID]['now_favo_cnt']>=gVal.DEF_STR_TLNUM['favoSendsCnt'] :
-				wSubRes = gVal.OBJ_DB_IF.SendedFavoData( wID, wARR_RateFavoDate[wID]['favo_cnt'] )
+###				wSubRes = gVal.OBJ_DB_IF.SendedFavoData( wID, wARR_RateFavoDate[wID]['favo_cnt'] )
+				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_SendFavoInfo( wID, wARR_RateFavoDate[wID] )
 				if wSubRes['Result']!=True :
 					###失敗
-					wRes['Reason'] = "SendedFavoData(2) is failed"
+					wRes['Reason'] = "UpdateFavoData_SendFavoInfo(2) is failed"
 					gVal.OBJ_L.Log( "B", wRes )
 					return wRes
 		
@@ -494,12 +495,14 @@ class CLS_TwitterFollower():
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		### DB未登録
-		if wSubRes['Responce']==None :
+###		if wSubRes['Responce']==None :
+		if wSubRes['Responce']['Data']==None :
 			wStr = "▽DB未登録ユーザに対する自動リムーブ検出"
 			wRes['Reason'] = wStr + ": " + inUser['screen_name']
 			gVal.OBJ_L.Log( "X", wRes )
 		else:
-			wARR_DBData = wSubRes['Responce']
+###			wARR_DBData = wSubRes['Responce']
+			wARR_DBData = wSubRes['Responce']['Data']
 		
 		wFLG_Remove = False
 		#############################

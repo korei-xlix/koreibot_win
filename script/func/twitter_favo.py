@@ -660,9 +660,11 @@ class CLS_TwitterFavo():
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			### DB未登録ならスキップ
-			if wDBRes['Responce']==None :
+###			if wDBRes['Responce']==None :
+			if wDBRes['Responce']['Data']==None :
 				continue
-			wARR_DBData = wDBRes['Responce']
+###			wARR_DBData = wDBRes['Responce']
+			wARR_DBData = wDBRes['Responce']['Data']
 			
 			#############################
 			# 自動いいね
@@ -904,11 +906,30 @@ class CLS_TwitterFavo():
 			CLS_OSIF.sPrn( wStr )
 		
 		#############################
-		# リストいいね情報の更新
-		wSubRes = gVal.OBJ_DB_IF.UpdateListFavoData( inData, wFavoID, str(gVal.STR_Time['TimeDate']) )
+		# 1個取り出す
+		wResDBData = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
+		if wResDBData['Result']!=True :
+			###失敗
+			wRes['Reason'] = "GetFavoDataOne is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		### DB登録なし
+		if wResDBData['Responce']['Data']==None :
+			### 正常
+			wRes['Result'] = True
+			return wRes
+		
+		wARR_DBData = wResDBData['Responce']['Data']
+		
+###		#############################
+###		# リストいいね情報の更新
+###		wSubRes = gVal.OBJ_DB_IF.UpdateListFavoData( inData, wFavoID, str(gVal.STR_Time['TimeDate']) )
+		#############################
+		# いいね情報：いいね送信更新
+		wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Put( inData, wFavoID, wARR_DBData )
 		if wSubRes['Result']!=True :
 			###失敗
-			wRes['Reason'] = "UpdateListFavoData is failed"
+			wRes['Reason'] = "UpdateFavoData_Put is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
@@ -1192,30 +1213,31 @@ class CLS_TwitterFavo():
 			wRes['Reason'] = "GetFavoDataOne is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		### DB未登録
-		if wSubRes['Responce']==None :
-			###DBに登録する
-			wSetRes = gVal.OBJ_DB_IF.InsertFavoData( wSTR_Tweet['user'] )
-			if wSetRes['Result']!=True :
-				###失敗
-				wRes['Reason'] = "InsertFavoData is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
-			if wSubRes['Result']!=True :
-				###失敗
-				wRes['Reason'] = "GetFavoDataOne(2) is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			### DB未登録（ありえない）
-			if wSubRes['Responce']==None :
-				wRes['Reason'] = "GetFavoDataOne(3) is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			
+###		### DB未登録
+###		if wSubRes['Responce']==None :
+###			###DBに登録する
+###			wSetRes = gVal.OBJ_DB_IF.InsertFavoData( wSTR_Tweet['user'] )
+###			if wSetRes['Result']!=True :
+###				###失敗
+###				wRes['Reason'] = "InsertFavoData is failed"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
+###			if wSubRes['Result']!=True :
+###				###失敗
+###				wRes['Reason'] = "GetFavoDataOne(2) is failed"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+		### DB未登録（ありえない）
+		if wSubRes['Responce']['Data']==None :
+			wRes['Reason'] = "GetFavoDataOne(3) is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		if wSubRes['Responce']['FLG_New']==True :
 			wNewUser = True	#新規登録
 		
-		wARR_DBData = wSubRes['Responce']
+###		wARR_DBData = wSubRes['Responce']
+		wARR_DBData = wSubRes['Responce']['Data']
 		
 		#############################
 		# 前回からのいいね期間内は除外
@@ -1260,9 +1282,12 @@ class CLS_TwitterFavo():
 			wStr = "●外部いいね中止(いいね被り): " + wSTR_Tweet['user']['screen_name'] + '\n' ;
 			CLS_OSIF.sPrn( wStr )
 		
+###		#############################
+###		# リストいいね情報の更新
+###		wSubRes = gVal.OBJ_DB_IF.UpdateListFavoData( wSTR_Tweet['user'], wFavoID, str(gVal.STR_Time['TimeDate']) )
 		#############################
-		# リストいいね情報の更新
-		wSubRes = gVal.OBJ_DB_IF.UpdateListFavoData( wSTR_Tweet['user'], wFavoID, str(gVal.STR_Time['TimeDate']) )
+		# いいね情報：いいね送信更新
+		wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Put( wSTR_Tweet['user'], wFavoID, wARR_DBData )
 		if wSubRes['Result']!=True :
 			###失敗
 			wRes['Reason'] = "UpdateListFavoData is failed"
@@ -1610,17 +1635,22 @@ class CLS_TwitterFavo():
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			### DB登録なし
-			if wDBRes['Responce']==None :
+###			if wDBRes['Responce']==None :
+			if wDBRes['Responce']['Data']==None :
 				### 除外
 				continue
 			
-			if str(wDBRes['Responce']['lfavo_date'])==gVal.DEF_TIMEDATE or \
-			   wDBRes['Responce']['lfavo_date']==None :
+###			if str(wDBRes['Responce']['lfavo_date'])==gVal.DEF_TIMEDATE or \
+###			   wDBRes['Responce']['lfavo_date']==None :
+			if str(wDBRes['Responce']['Data']['lfavo_date'])==gVal.DEF_TIMEDATE or \
+			   wDBRes['Responce']['Data']['lfavo_date']==None :
 				### リストいいねしてないなら除外
 				continue
 			
+###			if wARR_FollowerData[wID]['follower']==False and \
+###			   wDBRes['Responce']['favo_cnt']==0 :
 			if wARR_FollowerData[wID]['follower']==False and \
-			   wDBRes['Responce']['favo_cnt']==0 :
+			   wDBRes['Responce']['Data']['favo_cnt']==0 :
 				### フォロワーではない かつ いいね受信=0 は除外
 				continue
 			
@@ -1752,11 +1782,16 @@ class CLS_TwitterFavo():
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			### DB登録
-			if wDBRes['Responce']!=None :
-				wARR_DBData['favo_cnt']     = wDBRes['Responce']['favo_cnt']
-				wARR_DBData['now_favo_cnt'] = wDBRes['Responce']['now_favo_cnt']
-				wARR_DBData['favo_date']  = wDBRes['Responce']['favo_date']
-				wARR_DBData['lfavo_date'] = wDBRes['Responce']['lfavo_date']
+###			if wDBRes['Responce']!=None :
+###				wARR_DBData['favo_cnt']     = wDBRes['Responce']['favo_cnt']
+###				wARR_DBData['now_favo_cnt'] = wDBRes['Responce']['now_favo_cnt']
+###				wARR_DBData['favo_date']  = wDBRes['Responce']['favo_date']
+###				wARR_DBData['lfavo_date'] = wDBRes['Responce']['lfavo_date']
+			if wDBRes['Responce']['Data']!=None :
+				wARR_DBData['favo_cnt']     = wDBRes['Responce']['Data']['favo_cnt']
+				wARR_DBData['now_favo_cnt'] = wDBRes['Responce']['Data']['now_favo_cnt']
+				wARR_DBData['favo_date']  = wDBRes['Responce']['Data']['favo_date']
+				wARR_DBData['lfavo_date'] = wDBRes['Responce']['Data']['lfavo_date']
 			
 			#############################
 			# 表示するデータ組み立て

@@ -135,13 +135,13 @@ class CLS_TwitterKeyword():
 				wStr = wStr + "[  ]"
 			wStr = wStr + "  "
 			
-			### センシティブツイートを含める
-			if gVal.ARR_SearchData[wI]['sensitive']==True :
-				wStr = wStr + "[〇]"
-			else:
-				wStr = wStr + "[  ]"
-			wStr = wStr + "  "
-			
+###			### センシティブツイートを含める
+###			if gVal.ARR_SearchData[wI]['sensitive']==True :
+###				wStr = wStr + "[〇]"
+###			else:
+###				wStr = wStr + "[  ]"
+###			wStr = wStr + "  "
+###			
 			### 検索ワード
 			wListData = gVal.ARR_SearchData[wI]['word']
 			wStr = wStr + wListData + '\n'
@@ -220,7 +220,8 @@ class CLS_TwitterKeyword():
 		wKeylist = list( gVal.ARR_SearchData.keys() )
 		wGetIndex = None
 		for wIndex in wKeylist :
-			if gVal.ARR_SearchData[wIndex]['id']==wNum :
+###			if gVal.ARR_SearchData[wIndex]['id']==wNum :
+			if gVal.ARR_SearchData[wIndex]['list_number']==wNum :
 				wGetIndex = str(wIndex)
 				break
 		
@@ -240,13 +241,13 @@ class CLS_TwitterKeyword():
 			wRes['Result'] = True
 			return wRes
 		
-		#############################
-		# n: センシティブツイートを含める
-		elif wCom=="n" :
-			self.__sensitive_KeywordFavo( wGetIndex )
-			wRes['Result'] = True
-			return wRes
-		
+###		#############################
+###		# n: センシティブツイートを含める
+###		elif wCom=="n" :
+###			self.__sensitive_KeywordFavo( wGetIndex )
+###			wRes['Result'] = True
+###			return wRes
+###		
 		#############################
 		# c: 検索ワード変更
 		elif wCom=="c" :
@@ -386,31 +387,31 @@ class CLS_TwitterKeyword():
 		wRes['Result'] = True
 		return wRes
 
-	#####################################################
-	# 検索ワード センシティブツイートを含める
-	#####################################################
-	def __sensitive_KeywordFavo( self, inNum ):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_TwitterFavo"
-		wRes['Func']  = "__sensitive_KeywordFavo"
-		
-		#############################
-		# 実行の確認
-		wSubRes = gVal.OBJ_DB_IF.SensitiveSearchWord( inNum )
-		if wSubRes['Result']!=True :
-			###失敗
-			wRes['Reason'] = "SensitiveSearchWord is failed"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# 完了
-		wRes['Result'] = True
-		return wRes
-
+###	#####################################################
+###	# 検索ワード センシティブツイートを含める
+###	#####################################################
+###	def __sensitive_KeywordFavo( self, inNum ):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_TwitterFavo"
+###		wRes['Func']  = "__sensitive_KeywordFavo"
+###		
+###		#############################
+###		# 実行の確認
+###		wSubRes = gVal.OBJ_DB_IF.SensitiveSearchWord( inNum )
+###		if wSubRes['Result']!=True :
+###			###失敗
+###			wRes['Reason'] = "SensitiveSearchWord is failed"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		#############################
+###		# 完了
+###		wRes['Result'] = True
+###		return wRes
+###
 	#####################################################
 	# 検索ワード変更
 	#####################################################
@@ -629,12 +630,12 @@ class CLS_TwitterKeyword():
 				CLS_OSIF.sPrn( wStr )
 				continue
 			### センシティブなツイートは除外
-			if gVal.ARR_SearchData[inIndex]['sensitive']==False :
-				if "possibly_sensitive" in wTweet :
-					if str(wTweet['possibly_sensitive'])=="true" :
-						wStr = "●抽出除外(センシティブツイート): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
-						CLS_OSIF.sPrn( wStr )
-						continue
+###			if gVal.ARR_SearchData[inIndex]['sensitive']==False :
+			if "possibly_sensitive" in wTweet :
+				if str(wTweet['possibly_sensitive'])=="true" :
+					wStr = "●抽出除外(センシティブツイート): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
+					CLS_OSIF.sPrn( wStr )
+					continue
 			
 			#############################
 			# 禁止ユーザは除外

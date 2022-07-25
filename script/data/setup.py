@@ -455,6 +455,7 @@ class CLS_Setup():
 		# DB初期化
 		self.__create_TBL_LOG_DATA( gVal.OBJ_DB_IF.OBJ_DB )
 		self.__create_TBL_TRAFFIC_DATA( gVal.OBJ_DB_IF.OBJ_DB )
+		self.__create_TBL_FAVOUSER_DATA( gVal.OBJ_DB_IF.OBJ_DB )
 		
 		#############################
 		# 終わり
@@ -654,7 +655,8 @@ class CLS_Setup():
 		wQy = wQy + "pfavo_date    TIMESTAMP, "			# いいね送信日時
 		wQy = wQy + "pfavo_cnt     INTEGER DEFAULT 0,"	# いいね送信回数(総数)
 		
-		wQy = wQy + "list_date     TIMESTAMP,"			# リスト日時
+###		wQy = wQy + "list_date     TIMESTAMP,"			# リスト日時
+		wQy = wQy + "list_ind_date TIMESTAMP,"			# リスト通知日時
 		
 		wQy = wQy + "myfollow      BOOL  DEFAULT false,"# フォロー者 true=フォロー者
 		wQy = wQy + "myfollow_date TIMESTAMP, "			# フォロー日時
@@ -785,7 +787,7 @@ class CLS_Setup():
 		wQy = wQy + "regdate     TIMESTAMP,"			# 登録日時
 		wQy = wQy + "upddate     TIMESTAMP,"			# 検索実行日時
 		wQy = wQy + "valid       BOOL  DEFAULT false, "	# 有効 True=有効
-		wQy = wQy + "word        TEXT  NOT NULL, "		# 検索ワード
+		wQy = wQy + "word        TEXT  NOT NULL, "		# 検索ワード(キー)
 		wQy = wQy + "hit_cnt     INTEGER DEFAULT 0,"	# 検索ヒット数
 		wQy = wQy + "favo_cnt    INTEGER DEFAULT 0 "	# いいね数
 		wQy = wQy + " ) ;"

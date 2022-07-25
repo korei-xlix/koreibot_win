@@ -375,10 +375,12 @@ class CLS_TwitterAdmin():
 			wRes['Reason'] = "GetFavoDataOne is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		if wSubRes['Responce']!=None :
+###		if wSubRes['Responce']!=None :
+		if wSubRes['Responce']['Data']!=None :
 			### DBにユーザが存在する
 			wFLG_DB = True
-			wARR_DBData = wSubRes['Responce']
+###			wARR_DBData = wSubRes['Responce']
+			wARR_DBData = wSubRes['Responce']['Data']
 		
 		#############################
 		# Twitterからフォロー関係を取得する

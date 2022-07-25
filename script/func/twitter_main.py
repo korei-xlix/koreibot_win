@@ -402,7 +402,8 @@ class CLS_TwitterMain():
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			### DB未登録
-			if wSubRes['Responce']==None :
+			if wSubRes['Responce']['Data']==None :
+###			if wSubRes['Responce']==None :
 ###				###DBに登録する
 ###				wSetRes = gVal.OBJ_DB_IF.InsertFavoData( wFollowerData[wID] )
 ###				if wSetRes['Result']!=True :
@@ -425,7 +426,8 @@ class CLS_TwitterMain():
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			
-			wARR_DBData = wSubRes['Responce']
+###			wARR_DBData = wSubRes['Responce']
+			wARR_DBData = wSubRes['Responce']['Data']
 			
 			wMyFollow = None
 			wFollower = None
@@ -1244,29 +1246,31 @@ class CLS_TwitterMain():
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		### DB未登録
-		if wSubRes['Responce']==None :
-			###DBに登録する
-			wSetRes = gVal.OBJ_DB_IF.InsertFavoData( inUser )
-			if wSetRes['Result']!=True :
-				###失敗
-				wRes['Reason'] = "InsertFavoData is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
-			if wSubRes['Result']!=True :
-				###失敗
-				wRes['Reason'] = "GetFavoDataOne(2) is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			### DB未登録（ありえない）
-			if wSubRes['Responce']==None :
-				wRes['Reason'] = "GetFavoDataOne(3) is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			
+		if wSubRes['Responce']['Data']==None :
+###		if wSubRes['Responce']==None :
+###			###DBに登録する
+###			wSetRes = gVal.OBJ_DB_IF.InsertFavoData( inUser )
+###			if wSetRes['Result']!=True :
+###				###失敗
+###				wRes['Reason'] = "InsertFavoData is failed"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
+###			if wSubRes['Result']!=True :
+###				###失敗
+###				wRes['Reason'] = "GetFavoDataOne(2) is failed"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			### DB未登録（ありえない）
+###			if wSubRes['Responce']==None :
+###				wRes['Reason'] = "GetFavoDataOne(3) is failed"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+		if wSubRes['Responce']['FLG_New']==None :
 			wNewUser = True	#新規登録
 		
-		wARR_DBData = wSubRes['Responce']
+###		wARR_DBData = wSubRes['Responce']
+		wARR_DBData = wSubRes['Responce']['Data']
 		
 		wTweetID = str( inTweet['id'] )
 		#############################
@@ -1301,7 +1305,8 @@ class CLS_TwitterMain():
 				### 除外してない場合
 				
 				### いいね情報を更新する
-				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData( inUser, inTweet, wARR_DBData, False )
+###				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData( inUser, inTweet, wARR_DBData, False )
+				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Recive( inUser, inTweet, wARR_DBData, False )
 				if wSubRes['Result']!=True :
 					###失敗
 					wRes['Reason'] = "UpdateFavoData is failed"
@@ -1318,7 +1323,8 @@ class CLS_TwitterMain():
 		if wFLG_Action==True :
 			#############################
 			# いいね情報を更新する
-			wSubRes = gVal.OBJ_DB_IF.UpdateFavoData( inUser, inTweet, wARR_DBData )
+###			wSubRes = gVal.OBJ_DB_IF.UpdateFavoData( inUser, inTweet, wARR_DBData )
+			wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Recive( inUser, inTweet, wARR_DBData )
 			if wSubRes['Result']!=True :
 				###失敗
 				wRes['Reason'] = "UpdateFavoData is failed"
@@ -1415,7 +1421,8 @@ class CLS_TwitterMain():
 		wNowDate = str(gVal.STR_Time['TimeDate'])
 		wNowDate = wNowDate.split(" ")
 		wNowDate = wNowDate[0]
-		wRateDate = str(inData['list_date'])
+###		wRateDate = str(inData['list_date'])
+		wRateDate = str(inData['list_ind_date'])
 		wRateDate = wRateDate.split(" ")
 		wRateDate = wRateDate[0]
 		if wNowDate==wRateDate :
@@ -1443,9 +1450,10 @@ class CLS_TwitterMain():
 		
 		#############################
 		# DBに登録する
-		wSubRes = gVal.OBJ_DB_IF.UpdateListIndData( inData )
+###		wSubRes = gVal.OBJ_DB_IF.UpdateListIndData( inData )
+		wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_ListIndData( inData )
 		if wSubRes['Result']!=True :
-			wRes['Reason'] = "UpdateListIndData Error"
+			wRes['Reason'] = "UpdateFavoData_ListIndData Error"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
