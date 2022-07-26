@@ -464,6 +464,32 @@ class CLS_OSIF() :
 
 
 #####################################################
+# 日数加算
+#####################################################
+	@classmethod
+	def sAddTimedate_day( cls, inTimedate, inDay ):
+		wRes = {
+			"Result"	: False,
+			"TimeDate"	: ""
+		}
+		
+		#############################
+		# 入力時間の整形
+		wTimedate = str(inTimedate)
+		
+		#############################
+		# タイムゾーンで時間補正
+		try:
+			wRes['TimeDate'] = datetime.strptime( wTimedate, "%Y-%m-%d %H:%M:%S") + timedelta( days=inDay )
+		except:
+			return wRes	#失敗
+		
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
 # スリープ
 #####################################################
 	@classmethod

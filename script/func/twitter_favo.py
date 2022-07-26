@@ -653,7 +653,8 @@ class CLS_TwitterFavo():
 			
 			#############################
 			# DBからいいね情報を取得する(1個)
-			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
+###			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
+			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wARR_FollowData[wUserID] )
 			if wDBRes['Result']!=True :
 				###失敗
 				wRes['Reason'] = "GetFavoDataOne is failed"
@@ -907,7 +908,8 @@ class CLS_TwitterFavo():
 		
 		#############################
 		# 1個取り出す
-		wResDBData = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
+###		wResDBData = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
+		wResDBData = gVal.OBJ_DB_IF.GetFavoDataOne( inData )
 		if wResDBData['Result']!=True :
 			###失敗
 			wRes['Reason'] = "GetFavoDataOne is failed"
@@ -1207,7 +1209,8 @@ class CLS_TwitterFavo():
 		wNewUser = False
 		#############################
 		# DBからいいね情報を取得する(1個)
-		wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
+###		wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
+		wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( inData )
 		if wSubRes['Result']!=True :
 			###失敗
 			wRes['Reason'] = "GetFavoDataOne is failed"
@@ -1628,7 +1631,8 @@ class CLS_TwitterFavo():
 			# DBからいいね情報を取得する(1個)
 			#   
 			#   
-			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wID )
+###			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wID )
+			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wARR_FollowerData[wID] )
 			if wDBRes['Result']!=True :
 				###失敗
 				wRes['Reason'] = "GetFavoDataOne is failed"
@@ -1775,7 +1779,8 @@ class CLS_TwitterFavo():
 			# DBからいいね情報を取得する(1個)
 			#   
 			#   
-			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wID )
+###			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wID )
+			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( inARR_Data[wID] )
 			if wDBRes['Result']!=True :
 				###失敗
 				wRes['Reason'] = "GetFavoDataOne is failed"

@@ -1200,6 +1200,7 @@ class CLS_DB_IF() :
 				"screen_name"	: wARR_DBData[wID]['screen_name'],
 				"report"		: wARR_DBData[wID]['report'],
 				"vip"			: wARR_DBData[wID]['vip'],
+				"rel_date"		: wARR_DBData[wID]['rel_date'],
 				"memo"			: wARR_DBData[wID]['memo']
 			}
 			wARR_ExeUser.update({ wID : wCell })
@@ -1329,7 +1330,10 @@ class CLS_DB_IF() :
 ###				wQy = wQy + "vip = " + str(wARR_Word[wKey]['vip']) + " "
 ###				wQy = wQy + "where id = '" + str(wARR_Word[wKey]['id']) + "' " + \
 				wQy = wQy + "report = " + str(inARRData[wID]['report']) + ", "
-				wQy = wQy + "vip = " + str(inARRData[wID]['vip']) + " "
+###				wQy = wQy + "vip = " + str(inARRData[wID]['vip']) + " "
+				wQy = wQy + "vip = " + str(inARRData[wID]['vip']) + ", "
+				wQy = wQy + "rel_date = '" + str(inARRData[wID]['rel_date']) + "', "
+				wQy = wQy + "memo = '" + str(inARRData[wID]['memo']) + "' "
 				wQy = wQy + "where id = '" + str(inARRData[wID]['id']) + "' "
 				wQy = wQy + " ;"
 				
@@ -1350,7 +1354,7 @@ class CLS_DB_IF() :
 				wQy = wQy + "'" + str(inARRData[wID]['screen_name']) + "', "
 				wQy = wQy + str(inARRData[wID]['report']) + ", "
 				wQy = wQy + str(inARRData[wID]['vip']) + ", "
-				wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"				# 排他獲得日時
+				wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"
 				wQy = wQy + "'' "
 				wQy = wQy + ") ;"
 				
@@ -1496,6 +1500,7 @@ class CLS_DB_IF() :
 		wQy = wQy + "'" + str(inData['screen_name']) + "', "
 		wQy = wQy + "False, "
 		wQy = wQy + "False, "
+		wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"
 		wQy = wQy + "'' "
 		wQy = wQy + ") ;"
 		
@@ -1533,7 +1538,8 @@ class CLS_DB_IF() :
 			"screen_name"	: str(inData['screen_name']),
 			"report"		: False,
 			"vip"			: False,
-			"rel_date"		: "(none)",
+###			"rel_date"		: "(none)",
+			"rel_date"		: str( gVal.DEF_TIMEDATE ),
 			"memo"			: ""
 		}
 ###		gVal.ARR_NotReactionUser.update({ str(inName) : wCell })
@@ -1610,8 +1616,12 @@ class CLS_DB_IF() :
 		if inVIP!=None :
 ###			wFLR_VIP = inVIP
 			wSTR_Value['vip'] = inVIP
+		
 		if inRelDate!=None :
 			wSTR_Value['rel_date'] = inRelDate
+		else:
+			wSTR_Value['rel_date'] = str( gVal.DEF_TIMEDATE )
+		
 		if inMemo!=None :
 			wSTR_Value['memo'] = inMemo
 		
@@ -1770,6 +1780,25 @@ class CLS_DB_IF() :
 			}
 ###			wARR_Data.update({ wIndex : wCell })
 			wARR_Data.update({ wID : wCell })
+		
+		#############################
+		# リスト通知リストと
+		# 自動リムーブが有効なら 相互フォローリスト、片フォロワーリスト
+		# を登録から除外する
+		wKeylist = list( wARR_Data.keys() )
+		wARR_Del = []
+		for wIndex in wKeylist :
+			wID = str( wARR_Data[wIndex]['id'] )
+			
+			if ( gVal.STR_UserInfo['ListID']==wID or \
+			     gVal.STR_UserInfo['mListID']==wID and gVal.STR_UserInfo['AutoRemove']==True or \
+			     gVal.STR_UserInfo['fListID']==wID and gVal.STR_UserInfo['AutoRemove']==True ) \
+			   and gVal.STR_UserInfo['id']==wARR_Data[wIndex]['user_id'] :
+				wARR_Del.append( wID )
+		
+		for wID in wARR_Del :
+			wID = str( wID )
+			del wARR_Data[wID]
 		
 		gVal.ARR_ListFavo = wARR_Data
 		
@@ -2654,7 +2683,8 @@ class CLS_DB_IF() :
 
 	#####################################################
 ###	def GetFavoDataOne( self, inID ):
-	def GetFavoDataOne( self, inID, inFLG_New=True ):
+###	def GetFavoDataOne( self, inID, inFLG_New=True ):
+	def GetFavoDataOne( self, inUser, inFLG_New=True ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -2668,10 +2698,16 @@ class CLS_DB_IF() :
 			"FLG_New"	: False
 		}
 		#############################
+		# ユーザ情報の加工
+		wID = str(inUser['id'])
+		wScreenName = inUser['screen_name']
+		
+		#############################
 		# DBのいいね情報取得
 		wQy = "select * from tbl_favouser_data where "
 		wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' and "
-		wQy = wQy + "id = '" + str( inID ) + "' "
+###		wQy = wQy + "id = '" + str( inID ) + "' "
+		wQy = wQy + "id = '" + str( wID ) + "' "
 		wQy = wQy + ";"
 		
 		wResDB = self.OBJ_DB.RunQuery( wQy )
@@ -2691,7 +2727,8 @@ class CLS_DB_IF() :
 ###			return wRes
 			if inFLG_New==True :
 				### 新規モードであれば作成する
-				wResDB = gVal.OBJ_DB_IF.InsertFavoData( inID )
+###				wResDB = gVal.OBJ_DB_IF.InsertFavoData( inID )
+				wResDB = gVal.OBJ_DB_IF.InsertFavoData( inUser )
 				if wResDB['Result']!=True :
 					###失敗
 					wRes['Reason'] = "InsertFavoData is failed"
@@ -2701,7 +2738,8 @@ class CLS_DB_IF() :
 				### DBのいいね情報取得
 				wQy = "select * from tbl_favouser_data where "
 				wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' and "
-				wQy = wQy + "id = '" + str( inID ) + "' "
+###				wQy = wQy + "id = '" + str( inID ) + "' "
+				wQy = wQy + "id = '" + str( wID ) + "' "
 				wQy = wQy + ";"
 				
 				wResDB = self.OBJ_DB.RunQuery( wQy )
@@ -2714,7 +2752,8 @@ class CLS_DB_IF() :
 				
 				if len(wResDB['Responce']['Data'])!=1 :
 					## 1個ではない
-					wRes['Reason'] = "Get data is failed(2): id=" + str(inID)
+###					wRes['Reason'] = "Get data is failed(2): id=" + str(inID)
+					wRes['Reason'] = "Get data is failed(2): id=" + str(wID)
 					gVal.OBJ_L.Log( "D", wRes )
 					return wRes
 				
@@ -2728,7 +2767,8 @@ class CLS_DB_IF() :
 ###		if len(wResDB['Responce']['Data'])!=1 :
 		elif len(wResDB['Responce']['Data'])!=1 :
 			## 1個ではない
-			wRes['Reason'] = "Get data is failed(1): id=" + str(inID)
+###			wRes['Reason'] = "Get data is failed(1): id=" + str(inID)
+			wRes['Reason'] = "Get data is failed(1): id=" + str(wID)
 			gVal.OBJ_L.Log( "D", wRes )
 			return wRes
 		

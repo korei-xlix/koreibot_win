@@ -488,7 +488,8 @@ class CLS_TwitterFollower():
 		#############################
 		# DBからいいね情報を取得する(1個)
 		#   新規の場合、DB登録だけで終わる
-		wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
+###		wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
+		wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( inUser )
 		if wSubRes['Result']!=True :
 			###失敗
 			wRes['Reason'] = "GetFavoDataOne is failed"

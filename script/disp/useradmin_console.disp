@@ -3,6 +3,7 @@
 --------------------
 [@USERADMIN-TWITTER@]
 [@USERADMIN-TWITTER-ID@]
+[@USERADMIN-USER_LEVEL@]
 
 --------------------
 [@USERADMIN-MYFOLLOW@]
@@ -12,16 +13,23 @@
 [@USERADMIN-MYBLOCK@]
 [@USERADMIN-BLOCKED@]
 
-[@USERADMIN-FAVO_DATE@]
-[@USERADMIN-SEND_CNT@]
-[@USERADMIN-FAVO_CNT@]
-[@USERADMIN-NOW_FAVO_CNT@]
-[@USERADMIN-LIST_DATE@]
+#[@USERADMIN-FAVO_DATE@]
+#[@USERADMIN-SEND_CNT@]
+#[@USERADMIN-FAVO_CNT@]
+#[@USERADMIN-NOW_FAVO_CNT@]
+#[@USERADMIN-LIST_DATE@]
+#
+#[@USERADMIN-LIST_FAVO_DATE@]
+[@USERADMIN-R_FAVO_DATE@]
+[@USERADMIN-P_FAVO_DATE@]
 
-[@USERADMIN-LIST_FAVO_DATE@]
+[@USERADMIN-LIST_DATE@]
+[@USERADMIN-SEND_DATE@]
 
 [@USERADMIN-EXIST@]
 [@USERADMIN-DB_REGDATE@]
+
+[@USERADMIN-MEMO@]
 --------------------
 
 コマンドを入力してください。
@@ -29,7 +37,10 @@
     [\rm]       リムーブする
     [\rma]      関係をリセットする（リムーブもする）
 
-    [\v]        ブラウザでプロフィールを表示する
+    [\p]        ブラウザでプロフィールを表示する
+    [\v]        VIP設定（相互フォロー時）
+    [\r]        自動削除禁止
+    [\m]        メモする
 
     [\q]        １つ前に戻る
 

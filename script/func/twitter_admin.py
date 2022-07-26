@@ -68,17 +68,36 @@ class CLS_TwitterAdmin():
 			
 			"flg_db_set"		: False,		# DB設定 True=DBあり
 			"regdate"			: None,
-			"senddate"			: None,
-			"sended"			: False,
-			"send_cnt"			: 0,
-			"favo_cnt"			: 0,
-			"now_favo_cnt"		: 0,
-			"favo_date"			: None,
-			"list_date"			: None,
+			"upddate"			: None,
+###			"senddate"			: None,
+###			"sended"			: False,
+###			"send_cnt"			: 0,
+###			"favo_cnt"			: 0,
+###			"now_favo_cnt"		: 0,
+###			"favo_date"			: None,
+###			"list_date"			: None,
+###			
+###			"lfavo_date"		: None,
+			"flg_save"			: False,
 			
-			"lfavo_date"		: None,
+			"level_tag"			: None,
 			
-			"report"			: False			# 通報 True=通報あり
+			"send_date"			: None,
+			"send_cnt"			: -1,
+			
+			"rfavo_date"		: None,
+			"rfavo_cnt"			: -1,
+			"rfavo_n_cnt"		: -1,
+			"pfavo_date"		: None,
+			"pfavo_cnt"			: -1,
+			"list_ind_date"		: None,
+			
+			"myfollow_date"		: None,
+			"follower_date"		: None,
+			
+			"memo"				: None
+###			
+###			"report"			: False			# 通報 True=通報あり
 		}
 		return
 
@@ -192,8 +211,24 @@ class CLS_TwitterAdmin():
 		
 		#############################
 		# コマンド：ブラウザで表示
-		elif inWord=="\\v" :
+###		elif inWord=="\\v" :
+		elif inWord=="\\p" :
 			wRes = self.__view_Profile( self.STR_UserAdminInfo['screen_name'] )
+		
+		#############################
+		# コマンド：VIP設定
+		elif inWord=="\\v" :
+			wRes = self.__run_UserAdmin_VIP()
+		
+		#############################
+		# コマンド：自動削除禁止
+		elif inWord=="\\r" :
+			wRes = self.__run_UserAdmin_Save()
+		
+		#############################
+		# コマンド：メモする
+		elif inWord=="\\m" :
+			wRes = self.__run_UserAdmin_memo()
 		
 		#############################
 		# 不明なコマンド
@@ -329,6 +364,161 @@ class CLS_TwitterAdmin():
 
 
 #####################################################
+# VIP設定
+#####################################################
+	def __run_UserAdmin_VIP(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterAdmin"
+		wRes['Func']  = "__run_UserAdmin_VIP"
+		
+		wLevelTag = self.STR_UserAdminInfo['level_tag']
+		#############################
+		# ユーザレベルの変更
+		if wLevelTag=="A+" and \
+		   self.STR_UserAdminInfo['myfollow']==True and self.STR_UserAdminInfo['follower']==True :
+			### VIP設定解除
+			if self.STR_UserAdminInfo['send_cnt']>=gVal.DEF_STR_TLNUM['LEVEL_B_Cnt'] :
+				wLevelTag = "B+"
+			elif self.STR_UserAdminInfo['send_cnt']>=1 :
+				wLevelTag = "B"
+			else:
+				wLevelTag = "C+"
+		
+		elif ( wLevelTag=="B+" or wLevelTag=="B" or wLevelTag=="C+" or wLevelTag=="C" ) and \
+		   self.STR_UserAdminInfo['myfollow']==True and self.STR_UserAdminInfo['follower']==True :
+			### VIP設定
+			wLevelTag = "A+"
+		
+		elif wLevelTag=="A" :
+			### 公式アカウントのため変更不可
+			wStr = "レベル A のためVIP設定できません"
+			CLS_OSIF.sInp( wStr )
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		elif self.STR_UserAdminInfo['myfollow']==False or self.STR_UserAdminInfo['follower']==False :
+			### 相互フォローではない
+			wStr = "相互フォローでないためVIP設定できません"
+			CLS_OSIF.sInp( wStr )
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		else:
+			### 変更不能のレベル
+			wStr = "設定できないレベルのためVIP設定できません"
+			CLS_OSIF.sInp( wStr )
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# ユーザレベルの変更の実行
+		wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( self.STR_UserAdminInfo['id'], wLevelTag )
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "UpdateFavoData_UserLevel is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# ユーザ管理へ変更
+		self.STR_UserAdminInfo['level_tag'] = wLevelTag
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# 自動削除禁止
+#####################################################
+	def __run_UserAdmin_Save(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterAdmin"
+		wRes['Func']  = "__run_UserAdmin_Save"
+		
+		#############################
+		# DBがなければ終わり
+		if self.STR_UserAdminInfo['flg_db_set']==False :
+			wStr = "DBがないため設定できません"
+			CLS_OSIF.sInp( wStr )
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# 実行の確認
+		wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_FLG_Save( self.STR_UserAdminInfo['id'] )
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "UpdateFavoData_FLG_Save is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		wStr = "禁止ユーザを削除しました"
+		CLS_OSIF.sInp( wStr )
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# メモする
+#####################################################
+	def __run_UserAdmin_memo(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterAdmin"
+		wRes['Func']  = "__run_UserAdmin_memo"
+		
+		#############################
+		# コンソールを表示
+		wStr = "memoを入力します。" + '\n'
+		wStr = wStr + "  \\q=中止 / \\r=メモ削除 / other=memo" + '\n'
+		CLS_OSIF.sPrn( wStr )
+		wWord = CLS_OSIF.sInp( "  => " )
+		if wWord!="\\q" :
+			wRes['Result'] = True
+			return wRes
+		
+		elif wWord!="\\r" :
+			wWord = gVal.DEF_NOTEXT
+		
+		#############################
+		# 実行の確認
+		wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_memo( self.STR_UserAdminInfo['id'], wWord )
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "UpdateFavoData_memo is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		wStr = "禁止ユーザを削除しました"
+		CLS_OSIF.sInp( wStr )
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
 # ユーザ情報取得
 #####################################################
 	def __get_UserAdmin( self, inScreenName ):
@@ -369,7 +559,8 @@ class CLS_TwitterAdmin():
 		wARR_DBData = None
 		#############################
 		# DBからユーザ情報を取得する(1個)
-		wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wID )
+###		wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wID )
+		wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserInfoRes['Responce'], inFLG_New=False )
 		if wSubRes['Result']!=True :
 			###失敗
 			wRes['Reason'] = "GetFavoDataOne is failed"
@@ -409,14 +600,31 @@ class CLS_TwitterAdmin():
 		### DB
 		if wFLG_DB==True :
 			self.STR_UserAdminInfo['regdate']  = str( wARR_DBData['regdate'] )
-			self.STR_UserAdminInfo['senddate'] = str( wARR_DBData['senddate'] )
-			self.STR_UserAdminInfo['sended']   = wARR_DBData['sended']
-			self.STR_UserAdminInfo['send_cnt']     = wARR_DBData['send_cnt']
-			self.STR_UserAdminInfo['favo_cnt']     = wARR_DBData['favo_cnt']
-			self.STR_UserAdminInfo['now_favo_cnt'] = wARR_DBData['now_favo_cnt']
-			self.STR_UserAdminInfo['favo_date'] = str( wARR_DBData['favo_date'] )
-			self.STR_UserAdminInfo['list_date'] = str( wARR_DBData['list_date'] )
-			self.STR_UserAdminInfo['lfavo_date'] = str( wARR_DBData['lfavo_date'] )
+###			self.STR_UserAdminInfo['senddate'] = str( wARR_DBData['senddate'] )
+###			self.STR_UserAdminInfo['sended']   = wARR_DBData['sended']
+###			self.STR_UserAdminInfo['send_cnt']     = wARR_DBData['send_cnt']
+###			self.STR_UserAdminInfo['favo_cnt']     = wARR_DBData['favo_cnt']
+###			self.STR_UserAdminInfo['now_favo_cnt'] = wARR_DBData['now_favo_cnt']
+###			self.STR_UserAdminInfo['favo_date'] = str( wARR_DBData['favo_date'] )
+###			self.STR_UserAdminInfo['list_date'] = str( wARR_DBData['list_date'] )
+###			self.STR_UserAdminInfo['lfavo_date'] = str( wARR_DBData['lfavo_date'] )
+			self.STR_UserAdminInfo['upddate']  = str( wARR_DBData['upddate'] )
+			self.STR_UserAdminInfo['flg_save'] = wARR_DBData['flg_save']
+			
+			self.STR_UserAdminInfo['level_tag'] = str( wARR_DBData['level_tag'] )
+			self.STR_UserAdminInfo['send_date'] = str( wARR_DBData['send_date'] )
+			self.STR_UserAdminInfo['send_cnt']  = wARR_DBData['send_cnt']
+			
+			self.STR_UserAdminInfo['rfavo_date']  = str( wARR_DBData['rfavo_date'] )
+			self.STR_UserAdminInfo['rfavo_cnt']   = wARR_DBData['rfavo_cnt']
+			self.STR_UserAdminInfo['rfavo_n_cnt'] = wARR_DBData['rfavo_n_cnt']
+			self.STR_UserAdminInfo['pfavo_date']  = str( wARR_DBData['pfavo_date'] )
+			self.STR_UserAdminInfo['pfavo_cnt']   = wARR_DBData['pfavo_cnt']
+			self.STR_UserAdminInfo['list_ind_date'] = str( wARR_DBData['list_ind_date'] )
+			self.STR_UserAdminInfo['myfollow_date'] = str( wARR_DBData['myfollow_date'] )
+			self.STR_UserAdminInfo['follower_date'] = str( wARR_DBData['follower_date'] )
+			
+			self.STR_UserAdminInfo['memo'] = str( wARR_DBData['memo'] )
 			
 			self.STR_UserAdminInfo['flg_db_set'] = True
 		
@@ -613,7 +821,14 @@ class CLS_TwitterAdmin():
 			if gVal.ARR_NotReactionUser[wGetIndex]['vip']==False :
 				### 通報 ONの場合は排他する
 				if gVal.ARR_NotReactionUser[wGetIndex]['report']==True :
-					CLS_OSIF.sPrn( "通報 ONのため通報設定にできません" )
+					CLS_OSIF.sPrn( "通報 ONのためVIP設定にできません" )
+					CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+					wRes['Result'] = True
+					return wRes
+				
+				### 予約削除の場合は設定不可にする
+				if gVal.ARR_NotReactionUser[wGetIndex]['rel_date']!=gVal.DEF_TIMEDATE :
+					CLS_OSIF.sPrn( "予約削除中のため設定にできませ" )
 					CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
 					wRes['Result'] = True
 					return wRes
@@ -627,6 +842,99 @@ class CLS_TwitterAdmin():
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 ###			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# v: 予約削除
+		elif wCom=="v" :
+			wFLG_Update = False
+			if gVal.ARR_NotReactionUser[wGetIndex]['vip']==True :
+				### VIP ONの場合は設定できない
+				CLS_OSIF.sPrn( "VIP ONのため予約削除できません" )
+				CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+				wRes['Result'] = True
+				return wRes
+			
+			CLS_OSIF.sPrn( "予約削除する日数を入力してください。" )
+			wDays = CLS_OSIF.sInp( "  \\q=中止 / \\r=解除 / days ? (1-90) => " )
+			
+			wRelDate = None
+			if wDays=="\\q" :
+				### 中止
+				CLS_OSIF.sPrn( "キャンセルされました。" )
+				CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+				wRes['Result'] = True
+				return wRes
+			
+			elif wDays=="\\r" :
+				### 解除
+				wRelDate = gVal.DEF_TIMEDATE
+			
+			else:
+				### 整数か
+				try:
+					wDays = int(wDays)
+				except ValueError:
+					CLS_OSIF.sPrn( "入力が整数ではありません" + '\n' )
+					CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+					wRes['Result'] = True
+					return wRes
+				
+				### 範囲内か
+				if wDays<=0 or wDays>90 :
+					CLS_OSIF.sPrn( "範囲外の数値です" + '\n' )
+					CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+					wRes['Result'] = True
+					return wRes
+				
+				### 日数加算
+				wSubRes = CLS_OSIF.sAddTimedate_day( str( gVal.STR_Time['TimeDate'] ), wDays )
+				if wSubRes['Result']!=True :
+					wRes['Reason'] = "sAddTimedate_day failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				### wSubRes['TimeDate']
+				wRelDate = wSubRes['TimeDate']
+			
+			wFLG_Update = True
+			
+			wSubRes = gVal.OBJ_DB_IF.UpdateExeUser( wGetIndex, inRelDate=str(wRelDate) )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "UpdateExeUser is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# m: memo
+		elif wCom=="m" :
+			CLS_OSIF.sPrn( "メモする内容" )
+			wMemo = CLS_OSIF.sInp( "  \\q=中止 / \\r=解除 / memo ? => " )
+			
+			if wMemo=="\\q" :
+				### 中止
+				CLS_OSIF.sPrn( "キャンセルされました。" )
+				CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+				wRes['Result'] = True
+				return wRes
+			
+			elif wMemo=="\\r" :
+				### 解除
+				wMemo = gVal.DEF_NOTEXT
+			
+			wFLG_Update = True
+			
+			wSubRes = gVal.OBJ_DB_IF.UpdateExeUser( wGetIndex, inMemo=wMemo )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "UpdateExeUser is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
 			wRes['Result'] = True
 			return wRes
 		

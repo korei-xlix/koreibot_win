@@ -109,12 +109,22 @@ class CLS_MyDisp():
 		elif "[@USERADMIN-TWITTER-ID@]"==inLine :
 			pRes['Responce'] = "ユーザID     " + str(inData['id'])
 		
+		###インプリ：ユーザレベル
+		elif "[@USERADMIN-USER_LEVEL@]"==inLine :
+			if inData['flg_db_set']==False or inData['level_tag']==gVal.DEF_NOTEXT :
+				wStr = ""
+			else:
+				pRes['Responce'] = "ユーザレベル: " + str(inData['level_tag'])
+			pRes['Responce'] = wStr
+		
 		###インプリ：フォロー者
 		elif "[@USERADMIN-MYFOLLOW@]"==inLine :
 			if inData['myfollow']==True :
 				wStr = "〇はい"
 			else:
 				wStr = "▼いいえ"
+			if inData['flg_db_set']==True and inData['myfollow_date']!=gVal.DEF_TIMEDATE :
+				wStr = wStr + " [最終フォロー日: " + str( inData['myfollow_date'] ) + "]"
 			pRes['Responce'] = "    フォロー中                  : " + wStr
 		
 		###インプリ：フォロワー
@@ -123,6 +133,8 @@ class CLS_MyDisp():
 				wStr = "〇はい"
 			else:
 				wStr = "▼いいえ"
+			if inData['flg_db_set']==True and inData['follower_date']!=gVal.DEF_TIMEDATE :
+				wStr = wStr + " [最終被フォロー: " + str( inData['follower_date'] ) + "]"
 			pRes['Responce'] = "    フォロワー                  : " + wStr
 		
 		###インプリ：鍵アカウント
@@ -149,74 +161,106 @@ class CLS_MyDisp():
 				wStr = "  いいえ"
 			pRes['Responce'] = "    被ブロック                  : " + wStr
 		
-		###インプリ：いいね情報 送信回数
-		elif "[@USERADMIN-SEND_CNT@]"==inLine :
-			if inData['flg_db_set']==False :
-				wStr = "－－－"
-			elif inData['send_cnt']>0 :
-				wStr = str( inData['send_cnt'] )
-			else:
-				wStr = "  なし"
-			pRes['Responce'] = "    いいね情報 送信回数         : " + wStr
-		
-		###インプリ：いいね受信 総回数
-		elif "[@USERADMIN-FAVO_CNT@]"==inLine :
-			if inData['flg_db_set']==False :
-				wStr = "－－－"
-			elif inData['favo_cnt']>0 :
-				wStr = str( inData['favo_cnt'] )
-			else:
-				wStr = "  なし"
-			pRes['Responce'] = "    いいね受信 総回数           : " + wStr
-		
-		###インプリ：いいね受信 今週数
-		elif "[@USERADMIN-NOW_FAVO_CNT@]"==inLine :
-			if inData['flg_db_set']==False :
-				wStr = "－－－"
-			elif inData['now_favo_cnt']>0 :
-				wStr = str( inData['now_favo_cnt'] )
-			else:
-				wStr = "  なし"
-			pRes['Responce'] = "    いいね受信 今週数           : " + wStr
-		
+###		###インプリ：いいね情報 送信回数
+###		elif "[@USERADMIN-SEND_CNT@]"==inLine :
+###			if inData['flg_db_set']==False :
+###				wStr = "－－－"
+###			elif inData['send_cnt']>0 :
+###				wStr = str( inData['send_cnt'] )
+###			else:
+###				wStr = "  なし"
+###			pRes['Responce'] = "    いいね情報 送信回数         : " + wStr
+###		
+###		###インプリ：いいね受信 総回数
+###		elif "[@USERADMIN-FAVO_CNT@]"==inLine :
+###			if inData['flg_db_set']==False :
+###				wStr = "－－－"
+###			elif inData['favo_cnt']>0 :
+###				wStr = str( inData['favo_cnt'] )
+###			else:
+###				wStr = "  なし"
+###			pRes['Responce'] = "    いいね受信 総回数           : " + wStr
+###		
+###		###インプリ：いいね受信 今週数
+###		elif "[@USERADMIN-NOW_FAVO_CNT@]"==inLine :
+###			if inData['flg_db_set']==False :
+###				wStr = "－－－"
+###			elif inData['now_favo_cnt']>0 :
+###				wStr = str( inData['now_favo_cnt'] )
+###			else:
+###				wStr = "  なし"
+###			pRes['Responce'] = "    いいね受信 今週数           : " + wStr
+###		
 		###インプリ：最終いいね受信日
-		elif "[@USERADMIN-FAVO_DATE@]"==inLine :
+		elif "[@USERADMIN-R_FAVO_DATE@]"==inLine :
+###		elif "[@USERADMIN-FAVO_DATE@]"==inLine :
 ###			if inData['flg_db_set']==False or \
 ###			   inData['favo_date']==None :
-			if inData['flg_db_set']==False or \
-			   ( inData['favo_date']==None or inData['favo_date']==gVal.DEF_TIMEDATE ) or \
-			   inData['favo_cnt']==0 :
+###			if inData['flg_db_set']==False or \
+###			   ( inData['favo_date']==None or inData['favo_date']==gVal.DEF_TIMEDATE ) or \
+###			   inData['favo_cnt']==0 :
+			if inData['flg_db_set']==False or inData['rfavo_date']==gVal.DEF_TIMEDATE or \
+			   inData['rfavo_cnt']==0 :
 				wStr = "－－－"
 			else:
 				wStr = str( inData['favo_date'] )
+			if inData['flg_db_set']==True and inData['rfavo_cnt']>=0 :
+				wStr = wStr + " [総計=" +str( inData['rfavo_cnt'] ) + " / 今週=" + str( inData['rfavo_n_cnt'] ) + "]"
 			pRes['Responce'] = "    最終いいね受信日            : " + wStr
 		
 		###インプリ：最終リスト通知日
 		elif "[@USERADMIN-LIST_DATE@]"==inLine :
 ###			if inData['flg_db_set']==False or \
 ###			   inData['list_date']==None :
-			if inData['flg_db_set']==False or \
-			   ( inData['list_date']==None or inData['list_date']==gVal.DEF_TIMEDATE ) :
+###			if inData['flg_db_set']==False or \
+###			   ( inData['list_date']==None or inData['list_date']==gVal.DEF_TIMEDATE ) :
+			if inData['flg_db_set']==False or inData['list_ind_date']==gVal.DEF_TIMEDATE :
 				wStr = "－－－"
 			else:
-				wStr = str( inData['list_date'] )
+				wStr = str( inData['list_ind_date'] )
 			pRes['Responce'] = "    最終リスト通知日            : " + wStr
 		
 		###インプリ：最終いいね実施日
-		elif "[@USERADMIN-LIST_FAVO_DATE@]"==inLine :
+		elif "[@USERADMIN-P_FAVO_DATE@]"==inLine :
 ###			if inData['flg_db_set']==False or \
 ###			   inData['lfavo_date']==None :
-			if inData['flg_db_set']==False or \
-			   ( inData['lfavo_date']==None or inData['lfavo_date']==gVal.DEF_TIMEDATE ) :
+###			if inData['flg_db_set']==False or \
+###			   ( inData['lfavo_date']==None or inData['lfavo_date']==gVal.DEF_TIMEDATE ) :
+			if inData['flg_db_set']==False or inData['pfavo_date']==gVal.DEF_TIMEDATE or \
+			   inData['pfavo_cnt']==0 :
 				wStr = "－－－"
 			else:
-				wStr = str( inData['lfavo_date'] )
+				wStr = str( inData['pfavo_date'] )
+			if inData['flg_db_set']==True and inData['pfavo_cnt']>=0 :
+				wStr = wStr + " [総計=" +str( inData['pfavo_cnt'] ) + "]"
 			pRes['Responce'] = "    最終いいね実施日            : " + wStr
+		
+		###インプリ：最終いいね送信日
+		elif "[@USERADMIN-SEND_DATE@]"==inLine :
+			if inData['flg_db_set']==False or inData['send_date']==gVal.DEF_TIMEDATE or \
+			   inData['send_cnt']==0 :
+				wStr = "－－－"
+			else:
+				wStr = str( inData['send_date'] )
+			if inData['flg_db_set']==True and inData['send_cnt']>=0 :
+				wStr = wStr + " [総計=" +str( inData['send_cnt'] ) + "]"
+			pRes['Responce'] = "    最終いいね送信日            : " + wStr
+		
+		###インプリ：メモ
+		elif "[@USERADMIN-MEMO@]"==inLine :
+			if inData['flg_db_set']==False or inData['memo']==gVal.DEF_NOTEXT :
+				wStr = ""
+			else:
+				wStr = str( inData['memo'] )
+			pRes['Responce'] = wStr
 		
 		###インプリ：DB情報あり
 		elif "[@USERADMIN-EXIST@]"==inLine :
 			if inData['flg_db_set']==True :
 				wStr = "〇はい"
+				if inData['flg_save']==True :
+					wStr = wStr + " [〇自動削除禁止]"
+			
 			else:
 				wStr = "▼いいえ"
 			pRes['Responce'] = "    DB情報あり                  : " + wStr
