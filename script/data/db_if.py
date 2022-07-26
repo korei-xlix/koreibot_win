@@ -1547,8 +1547,9 @@ class CLS_DB_IF() :
 		
 		#############################
 		# ログに記録する
-		wStr = "データ追加: exe user data: insert=1"
+###		wStr = "データ追加: exe user data: insert=1"
 ##		 + str(wResult['insert']) + " update=" + str(wResult['update']) + " delete=" + str(wResult['delete'])
+		wStr = "禁止ユーザ設定: exe user data: user=" + gVal.ARR_NotReactionUser[str(inData['id'])]['screen_name']
 		gVal.OBJ_L.Log( "RR", wRes, wStr )
 		
 		#############################
@@ -1658,7 +1659,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# ログに記録する
-		wStr = "データ更新: exe user data: update=1"
+		wStr = "禁止ユーザ更新: exe user data: user=" + gVal.ARR_NotReactionUser[wUserID]['screen_name']
 		gVal.OBJ_L.Log( "RR", wRes, wStr )
 		
 		#############################
@@ -1714,11 +1715,13 @@ class CLS_DB_IF() :
 		
 		#############################
 		# データ削除
+		wScreenName = gVal.ARR_NotReactionUser[wUserID]['screen_name']
 		del gVal.ARR_NotReactionUser[wUserID]
 		
 		#############################
 		# ログに記録する
-		wStr = "データ削除: exe user data: delete=1"
+###		wStr = "データ削除: exe user data: delete=1"
+		wStr = "禁止ユーザ解除: exe user data: user=" + wScreenName
 		gVal.OBJ_L.Log( "RR", wRes, wStr )
 		
 		#############################

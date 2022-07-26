@@ -867,7 +867,16 @@ class CLS_TwitterMain():
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-
+		#############################
+		# 禁止ユーザ自動削除（●フル自動監視）
+		if wFLG_Short==False :
+			wSubRes = self.OBJ_TwitterAdmin.ExcuteUser_AutoDelete()
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "ExcuteUser_AutoDelete is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+		
 
 
 

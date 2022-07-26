@@ -1059,6 +1059,59 @@ class CLS_TwitterAdmin():
 
 
 #####################################################
+# 禁止ユーザ自動削除
+#####################################################
+	def ExcuteUser_AutoDelete( self, inFLG_FirstDisp=True ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterAdmin"
+		wRes['Func']  = "ExcuteUser_AutoDelete"
+		
+		#############################
+		# 取得開始の表示
+		if inFLG_FirstDisp==True :
+			wResDisp = CLS_MyDisp.sViewHeaderDisp( "禁止ユーザ自動削除" )
+		
+		wKeylist = list( gVal.ARR_NotReactionUser.keys() )
+		for wKey in wKeylist :
+			#############################
+			# 自動削除設定中か
+			if gVal.ARR_NotReactionUser[wKey]['rel_date']==gVal.DEF_TIMEDATE :
+				### 設定OFFはスキップ
+				continue
+			
+			#############################
+			# 予定日が過ぎたか
+			wSubRes = CLS_OSIF.sCmpTime( gVal.ARR_NotReactionUser[wKey]['rel_date'], inDstTD=str( gVal.STR_Time['TimeDate'] ) )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "sCmpTime is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				continue
+			if wSubRes['Future']==True :
+				###未来時間= 過ぎてないのでスキップ
+				continue
+			
+			# ※予定時間を過ぎたので削除実行
+			#############################
+			# 実行の確認
+			wSubRes = gVal.OBJ_DB_IF.DeleteExeUser( str(gVal.ARR_NotReactionUser[wKey]['id']) )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "DeleteExeUser is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				continue
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
 # トレンドタグ設定
 #####################################################
 	def SetTrendTag(self):
