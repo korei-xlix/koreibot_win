@@ -1578,6 +1578,20 @@ class CLS_TwitterAdmin():
 		wRes['Func']  = "RunAutoUserRemove"
 		
 		#############################
+		# 実行時間か
+		wGetLag = CLS_OSIF.sTimeLag( str( gVal.STR_Time['auto_delete'] ), inThreshold=gVal.DEF_STR_TLNUM['forCheckAutoDeleteSec'] )
+		if wGetLag['Result']!=True :
+			wRes['Reason'] = "sTimeLag failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		if wGetLag['Beyond']==False :
+			### 規定以内は除外
+			wStr = "●自動削除期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
+			CLS_OSIF.sPrn( wStr )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
 		# 入力画面表示
 		wStr = "ユーザ自動削除中..."
 		CLS_OSIF.sPrn( wStr )
@@ -1632,11 +1646,6 @@ class CLS_TwitterAdmin():
 						continue
 					
 					###日時の変換をして、設定
-###					wTime = CLS_OSIF.sGetTimeformat_Twitter( wTweetRes['Responce'][0]['created_at'] )
-###					if wTime['Result']!=True :
-###						wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wTweetRes['Responce'][0]['created_at'])
-###						gVal.OBJ_L.Log( "B", wRes )
-###						continue
 					wTime = CLS_TIME.sTTchg( wRes, "(1)", wTweetRes['Responce'][0]['created_at'] )
 					if wTime['Result']!=True :
 						continue
@@ -1662,9 +1671,16 @@ class CLS_TwitterAdmin():
 				gVal.OBJ_L.Log( "B", wRes )
 				continue
 			
+			### ユーザレベル変更
+			wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, "G-" )
+			
+			### トラヒック記録（フォロワー減少）
+			CLS_Traffic.sP( "d_follower" )
+			
 			#############################
 			# ログに記録
-			gVal.OBJ_L.Log( "R", wRes, "●自動削除によるリムーブ: " + wFollowerData[wID]['screen_name'] )
+###			gVal.OBJ_L.Log( "R", wRes, "●自動削除によるリムーブ: " + wFollowerData[wID]['screen_name'] )
+			gVal.OBJ_L.Log( "R", wRes, "追い出し: " + wFollowerData[wID]['screen_name'] )
 			
 			wRes['Responce'] = True		#自動リムーブ実行
 			#############################
@@ -1675,6 +1691,15 @@ class CLS_TwitterAdmin():
 				wRes['Reason'] = "UpdateFavoData_Follower is failed"
 				gVal.OBJ_L.Log( "B", wRes )
 				continue
+		
+		#############################
+		# 現時間を設定
+		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "auto_delete", gVal.STR_Time['TimeDate'] )
+		if wListRes['Result']!=True :
+			wRes['Reason'] = "SetTimeInfo is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		###	gVal.STR_Time['auto_remove']
 		
 		wStr = "〇自動削除 完了" + '\n'
 		CLS_OSIF.sPrn( wStr )

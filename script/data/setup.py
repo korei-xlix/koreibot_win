@@ -453,6 +453,7 @@ class CLS_Setup():
 		
 		#############################
 		# DB初期化
+		self.__create_TBL_TIME_DATA( gVal.OBJ_DB_IF.OBJ_DB )
 		self.__create_TBL_LOG_DATA( gVal.OBJ_DB_IF.OBJ_DB )
 		self.__create_TBL_TRAFFIC_DATA( gVal.OBJ_DB_IF.OBJ_DB )
 		self.__create_TBL_FAVOUSER_DATA( gVal.OBJ_DB_IF.OBJ_DB )
@@ -590,6 +591,7 @@ class CLS_Setup():
 		wQy = wQy + "list_clear   TIMESTAMP,"			# リスト通知クリア
 		wQy = wQy + "auto_remove  TIMESTAMP,"			# 自動リムーブ
 		wQy = wQy + "send_favo    TIMESTAMP,"			# いいね情報送信
+		wQy = wQy + "auto_delete  TIMESTAMP,"			# 自動削除
 		wQy = wQy + " PRIMARY KEY ( twitterid ) ) ;"
 		
 		inOBJ_DB.RunQuery( wQy )

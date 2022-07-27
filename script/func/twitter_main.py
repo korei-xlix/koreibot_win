@@ -521,16 +521,49 @@ class CLS_TwitterMain():
 					# ・ユーザレベル=A or A+以外
 					# ・片フォロワー（フォロー者OFF）
 					# ・ツイート数=0 もしくは 鍵アカウント
+					# ・最終ツイートが一定期間過ぎてるか
 					wUserInfoRes = gVal.OBJ_Tw_IF.GetUserinfo( inScreenName=wFollowerData[wID]['screen_name'] )
 					if wUserInfoRes['Result']!=True :
 						wRes['Reason'] = "Twitter API Error(GetUserinfo): " + wUserInfoRes['Reason'] + " screen_name=" + wFollowerData[wID]['screen_name']
 						gVal.OBJ_L.Log( "B", wRes )
 						continue
 					
+					wFLG_RemDetect = False
+###					if wFollowerData[wID]['myfollow']==False and \
+###					   wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel=="A" and \
+###					   ( wUserInfoRes['Responce']['statuses_count']==0 or \
+###					     wUserInfoRes['Responce']['protected']==True ) :
 					if wFollowerData[wID]['myfollow']==False and \
 					   wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel=="A" and \
 					   ( wUserInfoRes['Responce']['statuses_count']==0 or \
 					     wUserInfoRes['Responce']['protected']==True ) :
+						###対象
+						wFLG_RemDetect = True
+					
+					else:
+						###最終ツイート日時が規定日を超えているか
+						wTweetRes = gVal.OBJ_Tw_IF.GetTL( inTLmode="user", inFLG_Rep=False, inFLG_Rts=True,
+							 inID=wID, inCount=1 )
+						if wTweetRes['Result']!=True :
+							wRes['Reason'] = "Twitter Error: GetTL"
+							gVal.OBJ_L.Log( "B", wRes )
+							continue
+						
+						###日時の変換をして、設定
+						wTime = CLS_TIME.sTTchg( wRes, "(1)", wTweetRes['Responce'][0]['created_at'] )
+						if wTime['Result']!=True :
+							continue
+						
+						wGetLag = CLS_OSIF.sTimeLag( str( wTime['TimeDate'] ), inThreshold=gVal.DEF_STR_TLNUM['forAutoUserRemoveSec'] )
+						if wGetLag['Result']!=True :
+							wRes['Reason'] = "sTimeLag failed"
+							gVal.OBJ_L.Log( "B", wRes )
+							continue
+						if wGetLag['Beyond']==True :
+							### 規定外 =許容外の日数なので対象
+							wFLG_RemDetect = True
+					
+					if wFLG_RemDetect==True :
 						#############################
 						# ブロック→リムーブする
 						wBlockRes = gVal.OBJ_Tw_IF.BlockRemove( wID )
@@ -877,9 +910,6 @@ class CLS_TwitterMain():
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 		
-
-
-
 		#############################
 		# ユーザ自動削除（●フル自動監視）
 		if wFLG_Short==False :

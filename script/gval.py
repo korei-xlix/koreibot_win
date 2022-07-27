@@ -87,6 +87,7 @@ class gVal() :
 		"list_clear"	: None,			# リスト通知クリア
 		"auto_remove"	: None,			# 自動リムーブ
 		"send_favo"		: None,			# いいね情報送信
+		"auto_delete"	: None,			# 自動削除
 		
 		"TimeDate"		: None			# システム時間
 	}
@@ -189,6 +190,7 @@ class gVal() :
 		"forListFavoAutoRemoveSec"	: 604800,			#   リストいいね 自動リムーブまでの期間   7日  (60x60x24)x7
 		"forCheckAutoRemoveSec"		: 86400,			#   自動リムーブチェック期間 1日 (60x60x24)x1
 		"forOverListFavoCount"		: 3,				#   外部いいね数(1ユーザ)
+		"forCheckAutoDeleteSec"		: 172800,			#   自動削除チェック期間 2日 (60x60x24)x2
 		
 		"forAutoUserRemoveSec"		: 2592000,			# ユーザ削除までの期間  30日 (60x60x24)x30
 		
