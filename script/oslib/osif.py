@@ -490,6 +490,50 @@ class CLS_OSIF() :
 
 
 #####################################################
+# 日付が切り替わったか
+#####################################################
+	@classmethod
+	def sCheckNextDay( cls, inSrcTD, inDstTD=None ):
+		wRes = {
+			"Result"	: False,
+			"Next"		: False		# True= SrcTDが翌日
+		}
+		
+		try:
+			#############################
+			# 文字列を日時型に変換する
+			wSrcTD = datetime.strptime( inSrcTD, "%Y-%m-%d")
+			
+			#############################
+			# 比較先がなければ現在時刻を取得する
+			if inDstTD==None :
+				wNowTD = datetime.now()
+			else:
+				wNowTD = inDstTD
+				if isinstance( inDstTD, datetime )==False :
+					wNowTD = datetime.strptime( inDstTD, "%Y-%m-%d")
+		
+		except ValueError as err :
+			return wRes
+		
+		#############################
+		# 年月日をバラす
+		wSrcTD = wSrcTD.split("-")
+		wNowTD = wSrcTD.split("-")
+		
+		#############################
+		# SrcとDstが違う=翌日
+		if wSrcTD[0]!=wNowTD[0] or \
+		   wSrcTD[1]!=wNowTD[1] or \
+		   wSrcTD[2]!=wNowTD[2] :
+			wRes['Next'] = True
+		
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
 # スリープ
 #####################################################
 	@classmethod

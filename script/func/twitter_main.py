@@ -484,6 +484,7 @@ class CLS_TwitterMain():
 ###						wUserLevel = "G"
 ###					else:
 					if wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" :
+						### 公式垢以外
 						if wFollowerData[wID]['follower']==True :
 							### フォロワー（フォロー者OFF・フォロワーになった）
 							wUserLevel = "E"
@@ -533,8 +534,10 @@ class CLS_TwitterMain():
 ###					   wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel=="A" and \
 ###					   ( wUserInfoRes['Responce']['statuses_count']==0 or \
 ###					     wUserInfoRes['Responce']['protected']==True ) :
+###					if wFollowerData[wID]['myfollow']==False and \
+###					   wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel=="A" and \
 					if wFollowerData[wID]['myfollow']==False and \
-					   wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel=="A" and \
+					   wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and and wUserLevel!="A" and \
 					   ( wUserInfoRes['Responce']['statuses_count']==0 or \
 					     wUserInfoRes['Responce']['protected']==True ) :
 						###対象
@@ -588,7 +591,8 @@ class CLS_TwitterMain():
 						else:
 							wStr = "△再フォローされた"
 						
-						if wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel=="A" :
+###						if wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel=="A" :
+						if wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+"  and and wUserLevel!="A" :
 							if wFollowerData[wID]['myfollow']==True :
 								### フォローされて相互フォローになった
 								wUserLevel = "C+"
@@ -621,7 +625,8 @@ class CLS_TwitterMain():
 ###						wUserLevel = "G"
 ###					else:
 					wFollower = False
-					if wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel=="A" :
+###					if wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel=="A" :
+					if wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel!="A" :
 						if wFollowerData[wID]['myfollow']==True :
 							### フォロー者（相互フォロー中、フォロー者ON・フォロワーOFFになった）
 							wUserLevel = "C-"
@@ -942,6 +947,14 @@ class CLS_TwitterMain():
 		wSubRes = self.CheckListUsers()
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "CheckListUsers error"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 自動リムーブチェック
+		wSubRes = self.CheckAutoRemove()
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "CheckAutoRemove error"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
@@ -1520,13 +1533,22 @@ class CLS_TwitterMain():
 		wRes['Class'] = "CLS_TwitterMain"
 		wRes['Func']  = "UpdateListIndUser"
 		
-		wGetLag = CLS_OSIF.sTimeLag( str( gVal.STR_Time['list_clear'] ), inThreshold=gVal.DEF_VAL_DAY )
+###		wGetLag = CLS_OSIF.sTimeLag( str( gVal.STR_Time['list_clear'] ), inThreshold=gVal.DEF_VAL_DAY )
+###		if wGetLag['Result']!=True :
+###			wRes['Reason'] = "sTimeLag failed"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		if wGetLag['Beyond']==False :
+###			### 規定以内= 処理しない
+###			wRes['Result'] = True
+###			return wRes
+		wGetLag = CLS_OSIF.sCheckNextDay( str( gVal.STR_Time['list_clear'] ), str( gVal.STR_Time['TimeDate'] ) )
 		if wGetLag['Result']!=True :
-			wRes['Reason'] = "sTimeLag failed"
+			wRes['Reason'] = "sCheckNextDay failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		if wGetLag['Beyond']==False :
-			### 規定以内= 処理しない
+		if wGetLag['Next']==False :
+			### 翌日ではない= スキップ
 			wRes['Result'] = True
 			return wRes
 		
@@ -1549,8 +1571,8 @@ class CLS_TwitterMain():
 			wRes['Reason'] = "AllClearListInd error"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		
-		gVal.OBJ_L.Log( "SC", wRes, "リスト通知クリア" )
+		if wSubRes['Responce']==True :
+			gVal.OBJ_L.Log( "SC", wRes, "リスト通知クリア" )
 		
 		#############################
 		# 現時間を設定
@@ -1577,8 +1599,59 @@ class CLS_TwitterMain():
 		wRes['Class'] = "CLS_TwitterMain"
 		wRes['Func']  = "CheckListUsers"
 		
-		wStr = "リスト登録ユーザチェック中..."
-		CLS_OSIF.sPrn( wStr )
+###		wStr = "リスト登録ユーザチェック中..."
+###		CLS_OSIF.sPrn( wStr )
+		#############################
+		# 取得開始の表示
+		wResDisp = CLS_MyDisp.sViewHeaderDisp( "リスト登録ユーザチェック" )
+		
+		#############################
+		# 通知リストのチェック
+		# 自動リムーブが有効なら、相互フォローリスト、片フォロワーリストのチェック
+		wARR_IndListName = []
+		if ( gVal.STR_UserInfo['ListID']==gVal.DEF_NOTEXT :
+			wARR_IndListName.append( gVal.STR_UserInfo['ListName'] )
+		
+		if gVal.STR_UserInfo['AutoRemove']==True and \
+		   ( gVal.STR_UserInfo['mListID']!=gVal.DEF_NOTEXT or \
+		     gVal.STR_UserInfo['fListID']!=gVal.DEF_NOTEXT ) :
+			wARR_IndListName.append( gVal.STR_UserInfo['mListName'] )
+			wARR_IndListName.append( gVal.STR_UserInfo['fListName'] )
+		
+		wKeylist = list( wARR_IndList.keys() )
+		for wKey in wKeylist :
+			wStr = "〇チェック中リスト: " + wARR_IndListName[wKey]
+			CLS_OSIF.sPrn( wStr )
+			
+			#############################
+			# Twitterからリストの登録ユーザ一覧を取得
+			wListRes = gVal.OBJ_Tw_IF.GetListSubscribers(
+			   inListName=wARR_IndListName[wKey],
+			   inScreenName=gVal.STR_UserInfo['Account'] )
+			
+			if wListRes['Result']!=True :
+				wRes['Reason'] = "Twitter API Error(GetListSubscribers:List): " + wListRes['Reason']
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if len(wListRes['Responce'])>=1 :
+				### 登録者あり
+				wKeylistUser = list( wListRes['Responce'].keys() )
+				for wID in wKeylistUser :
+					wID = str(wID)
+					
+					### 警告済はスキップ
+					if wID in gVal.ARR_CautionTweet :
+						continue
+					### 自分には警告しない
+					if str(gVal.STR_UserInfo['id'])==wID  :
+						continue
+					
+					wSubRes = self.SendTweet_Caution( wListRes['Responce'][wID], gVal.STR_UserInfo['Account'], wARR_IndListName[wKey], inFLG_ListCaution=True )
+					if wSubRes['Result']!=True :
+						wRes['Reason'] = "SendTweet_Caution is failed(1): user=" + wListRes['Responce'][wID]['screen_name'] + " list=" + wARR_IndListName[wKey]
+						gVal.OBJ_L.Log( "B", wRes )
+						continue
+		
 		#############################
 		# ListFavo一覧のうち
 		# 警告ありのリストをチェックする
@@ -1616,47 +1689,52 @@ class CLS_TwitterMain():
 					continue
 				
 				# ※警告確定
-				#############################
-				# 警告ツイートを作成
-				wTweet = "@" + wListRes['Responce'][wID]['screen_name'] + '\n'
-				wTweet = wTweet + "[ご注意] ユーザ " + gVal.ARR_ListFavo[wKey]['screen_name'] + " のリスト " + gVal.ARR_ListFavo[wKey]['list_name'] + " はフォロー禁止です。" + '\n'
-				wTweet = wTweet + "[Caution] Excuse me. The list " + gVal.ARR_ListFavo[wKey]['list_name'] + " for user " + gVal.ARR_ListFavo[wKey]['screen_name'] + " is unfollowable."
-				
-				wTweetID = "(none)"
-				if gVal.DEF_STR_TLNUM['sendListUsersCaution']==True :
-					#############################
-					# ツイート送信
-					wTweetRes = gVal.OBJ_Tw_IF.Tweet( wTweet )
-					if wTweetRes['Result']!=True :
-						wRes['Reason'] = "Twitter API Error(3): " + wTweetRes['Reason']
-						gVal.OBJ_L.Log( "B", wRes )
-						continue
-					else:
-						### Tweet完了まで10秒遅延待機
-						CLS_OSIF.sSleep(10)
-						
-						### ツイートIDを取得する
-						wTweetRes = gVal.GetSearch( wTweet )
-						if wTweetRes['Result']!=True :
-							wRes['Reason'] = "Twitter API Error(4): " + wTweetRes['Reason']
-							gVal.OBJ_L.Log( "B", wRes )
-							continue
-						if len(wTweetRes['Responce'])!=1 :
-							wRes['Reason'] = "Twitter is not one screen_name=" + wListRes['Responce'][wID]['screen_name']
-							gVal.OBJ_L.Log( "B", wRes )
-							continue
-						wTweetID = str( wTweetRes['Responce'][0]['id'] )
-						
-						### ログに記録
-						gVal.OBJ_L.Log( "U", wRes, "●リスト登録への警告: " + wListRes['Responce'][wID]['screen_name'] )
-				else:
-					### ログに記録
-					gVal.OBJ_L.Log( "U", wRes, "●リスト登録への警告(Twitter未送信): " + wListRes['Responce'][wID]['screen_name'] )
-				
-				### IDを警告済に追加
-				wSubRes = gVal.OBJ_DB_IF.SetCautionTweet( wListRes['Responce'][wID], wTweetID )
+###				#############################
+###				# 警告ツイートを作成
+###				wTweet = "@" + wListRes['Responce'][wID]['screen_name'] + '\n'
+###				wTweet = wTweet + "[ご注意] ユーザ " + gVal.ARR_ListFavo[wKey]['screen_name'] + " のリスト " + gVal.ARR_ListFavo[wKey]['list_name'] + " はフォロー禁止です。" + '\n'
+###				wTweet = wTweet + "[Caution] Excuse me. The list " + gVal.ARR_ListFavo[wKey]['list_name'] + " for user " + gVal.ARR_ListFavo[wKey]['screen_name'] + " is unfollowable."
+###				
+###				wTweetID = "(none)"
+###				if gVal.DEF_STR_TLNUM['sendListUsersCaution']==True :
+###					#############################
+###					# ツイート送信
+###					wTweetRes = gVal.OBJ_Tw_IF.Tweet( wTweet )
+###					if wTweetRes['Result']!=True :
+###						wRes['Reason'] = "Twitter API Error(3): " + wTweetRes['Reason']
+###						gVal.OBJ_L.Log( "B", wRes )
+###						continue
+###					else:
+###						### Tweet完了まで10秒遅延待機
+###						CLS_OSIF.sSleep(10)
+###						
+###						### ツイートIDを取得する
+###						wTweetRes = gVal.GetSearch( wTweet )
+###						if wTweetRes['Result']!=True :
+###							wRes['Reason'] = "Twitter API Error(4): " + wTweetRes['Reason']
+###							gVal.OBJ_L.Log( "B", wRes )
+###							continue
+###						if len(wTweetRes['Responce'])!=1 :
+###							wRes['Reason'] = "Twitter is not one screen_name=" + wListRes['Responce'][wID]['screen_name']
+###							gVal.OBJ_L.Log( "B", wRes )
+###							continue
+###						wTweetID = str( wTweetRes['Responce'][0]['id'] )
+###						
+###						### ログに記録
+###						gVal.OBJ_L.Log( "U", wRes, "●リスト登録への警告: " + wListRes['Responce'][wID]['screen_name'] )
+###				else:
+###					### ログに記録
+###					gVal.OBJ_L.Log( "U", wRes, "●リスト登録への警告(Twitter未送信): " + wListRes['Responce'][wID]['screen_name'] )
+###				
+###				### IDを警告済に追加
+###				wSubRes = gVal.OBJ_DB_IF.SetCautionTweet( wListRes['Responce'][wID], wTweetID )
+###				if wSubRes['Result']!=True :
+###					wRes['Reason'] = "SetCautionTweet is failed"
+###					gVal.OBJ_L.Log( "B", wRes )
+###					continue
+				wSubRes = self.SendTweet_Caution( wListRes['Responce'][wID], gVal.ARR_ListFavo[wKey]['screen_name'], gVal.ARR_ListFavo[wKey]['list_name'], inFLG_ListCaution=True )
 				if wSubRes['Result']!=True :
-					wRes['Reason'] = "SetCautionTweet is failed"
+					wRes['Reason'] = "SendTweet_Caution is failed(1): user=" + wListRes['Responce'][wID]['screen_name'] + " list=" + gVal.ARR_ListFavo[wKey]['list_name']
 					gVal.OBJ_L.Log( "B", wRes )
 					continue
 		
@@ -1665,8 +1743,9 @@ class CLS_TwitterMain():
 		
 		#############################
 		# 所有リストの登録者のうち、フォロワーじゃない人にフォローを促す
-		wStr = "全リストの登録ユーザチェック中..."
-		CLS_OSIF.sPrn( wStr )
+###		wStr = "全リストの登録ユーザチェック中..."
+###		CLS_OSIF.sPrn( wStr )
+		wResDisp = CLS_MyDisp.sViewHeaderDisp( "全リストの登録ユーザチェック" )
 		
 		#############################
 		# リストの取得
@@ -1730,7 +1809,6 @@ class CLS_TwitterMain():
 				if gVal.OBJ_Tw_IF.CheckFollower( wID )==True  :
 					continue
 				### 禁止ユーザはスキップ
-###				wUserRes = self.CheckExtUser( wARR_ListUsers[wID]['screen_name'], "フォロワー以外のリスト登録者", inFLG_Log=False )
 				wUserRes = self.CheckExtUser( wARR_ListUsers[wID], "フォロワー以外のリスト登録者", inFLG_Log=False )
 				if wUserRes['Result']!=True :
 					wRes['Reason'] = "CheckExtUser failed"
@@ -1762,68 +1840,79 @@ class CLS_TwitterMain():
 						gVal.OBJ_L.Log( "B", wRes )
 						continue
 					
+					### ユーザレベル変更
+					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, "G-" )
+					
+					### トラヒック記録（フォロワー減少）
+					CLS_Traffic.sP( "d_follower" )
+					
 					### ログに記録
-					gVal.OBJ_L.Log( "U", wRes, "▼非フォロワーのリスト登録者 追い出し: screen_name=" + wARR_ListUsers[wID]['screen_name'] )
+					gVal.OBJ_L.Log( "R", wRes, "追い出し: screen_name=" + wARR_ListUsers[wID]['screen_name'] )
 				
 				#############################
 				# 通常アカウントへは警告ツイートを送信
 				else:
-					wTweetID = "(none)"
-					#############################
-					# 警告の送信が有効の場合
-					if gVal.DEF_STR_TLNUM['sendListUsersCaution']==True :
-						#############################
-						# 警告ツイートを作成
-						wTweet = "@" + wARR_ListUsers[wID]['screen_name'] + '\n'
-						wTweet = wTweet + "[お願い] リスト " + wARR_Lists[wKey]['name'] + " をフォローするには当アカウント " + gVal.STR_UserInfo['Account'] + " もフォローしてください。" + '\n'
-						wTweet = wTweet + "[Request] To follow the list " + wARR_Lists[wKey]['name'] + ", please also follow this account " + gVal.STR_UserInfo['Account'] + "."
-						
-						#############################
-						# ツイート送信
-						wTweetRes = gVal.OBJ_Tw_IF.Tweet( wTweet )
-						if wTweetRes['Result']!=True :
-						###	if wTweetRes['StatusCode']=="403" :
-							wRes['Reason'] = "Twitter API Error(38): " + wTweetRes['Reason']
-							gVal.OBJ_L.Log( "B", wRes )
-							continue
-						else:
-							### Tweet完了→Twitter再取得可能になるまで約10秒遅延待機
-							CLS_OSIF.sSleep(10)
-							
-							#############################
-							# 送信したツイートのパターン生成
-							wNoRet_Tweet = wTweet.replace( "@", "" )
-							wNoRet_Tweet = wNoRet_Tweet.replace( "[", "" )
-							wNoRet_Tweet = wNoRet_Tweet.replace( "]", "" )
-							
-							wTweetRes = gVal.OBJ_Tw_IF.GetSearch( wNoRet_Tweet )
-							if wTweetRes['Result']!=True :
-								wRes['Reason'] = "Twitter API Error(48): " + wTweetRes['Reason']
-								gVal.OBJ_L.Log( "B", wRes )
-								continue
-							
-							#############################
-							# 送信したツイートのツイートIDを取得する
-							if len(wTweetRes['Responce'])==1 :
-								wTweetID = str( wTweetRes['Responce'][0]['id'] )
-							else:
-								### 1ツイート以外はありえない？
-								wRes['Reason'] = "Twitter is dual ttweet, or not one screen_name=" + wARR_ListUsers[wID]['screen_name']
-								gVal.OBJ_L.Log( "D", wRes )
-							
-							### ログに記録
-							gVal.OBJ_L.Log( "U", wRes, "●非フォロワーのリスト登録者: screen_name=" + wARR_ListUsers[wID]['screen_name'] + " tweetid=" + wTweetID )
-					
-					#############################
-					# 警告の送信が有効の場合
-					else:
-						### ログに記録
-						gVal.OBJ_L.Log( "U", wRes, "●非フォロワーのリスト登録者(Twitter未送信): screen_name=" + wARR_ListUsers[wID]['screen_name'] )
-					
-					### IDを警告済に追加
-					wSubRes = gVal.OBJ_DB_IF.SetCautionTweet( wARR_ListUsers[wID], wTweetID )
+###					wTweetID = "(none)"
+###					#############################
+###					# 警告の送信が有効の場合
+###					if gVal.DEF_STR_TLNUM['sendListUsersCaution']==True :
+###						#############################
+###						# 警告ツイートを作成
+###						wTweet = "@" + wARR_ListUsers[wID]['screen_name'] + '\n'
+###						wTweet = wTweet + "[お願い] リスト " + wARR_Lists[wKey]['name'] + " をフォローするには当アカウント " + gVal.STR_UserInfo['Account'] + " もフォローしてください。" + '\n'
+###						wTweet = wTweet + "[Request] To follow the list " + wARR_Lists[wKey]['name'] + ", please also follow this account " + gVal.STR_UserInfo['Account'] + "."
+###						
+###						#############################
+###						# ツイート送信
+###						wTweetRes = gVal.OBJ_Tw_IF.Tweet( wTweet )
+###						if wTweetRes['Result']!=True :
+###						###	if wTweetRes['StatusCode']=="403" :
+###							wRes['Reason'] = "Twitter API Error(38): " + wTweetRes['Reason']
+###							gVal.OBJ_L.Log( "B", wRes )
+###							continue
+###						else:
+###							### Tweet完了→Twitter再取得可能になるまで約10秒遅延待機
+###							CLS_OSIF.sSleep(10)
+###							
+###							#############################
+###							# 送信したツイートのパターン生成
+###							wNoRet_Tweet = wTweet.replace( "@", "" )
+###							wNoRet_Tweet = wNoRet_Tweet.replace( "[", "" )
+###							wNoRet_Tweet = wNoRet_Tweet.replace( "]", "" )
+###							
+###							wTweetRes = gVal.OBJ_Tw_IF.GetSearch( wNoRet_Tweet )
+###							if wTweetRes['Result']!=True :
+###								wRes['Reason'] = "Twitter API Error(48): " + wTweetRes['Reason']
+###								gVal.OBJ_L.Log( "B", wRes )
+###								continue
+###							
+###							#############################
+###							# 送信したツイートのツイートIDを取得する
+###							if len(wTweetRes['Responce'])==1 :
+###								wTweetID = str( wTweetRes['Responce'][0]['id'] )
+###							else:
+###								### 1ツイート以外はありえない？
+###								wRes['Reason'] = "Twitter is dual ttweet, or not one screen_name=" + wARR_ListUsers[wID]['screen_name']
+###								gVal.OBJ_L.Log( "D", wRes )
+###							
+###							### ログに記録
+###							gVal.OBJ_L.Log( "U", wRes, "●非フォロワーのリスト登録者: screen_name=" + wARR_ListUsers[wID]['screen_name'] + " tweetid=" + wTweetID )
+###					
+###					#############################
+###					# 警告の送信が有効の場合
+###					else:
+###						### ログに記録
+###						gVal.OBJ_L.Log( "U", wRes, "●非フォロワーのリスト登録者(Twitter未送信): screen_name=" + wARR_ListUsers[wID]['screen_name'] )
+###					
+###					### IDを警告済に追加
+###					wSubRes = gVal.OBJ_DB_IF.SetCautionTweet( wARR_ListUsers[wID], wTweetID )
+###					if wSubRes['Result']!=True :
+###						wRes['Reason'] = "SetCautionTweet is failed"
+###						gVal.OBJ_L.Log( "B", wRes )
+###						continue
+					wSubRes = self.SendTweet_Caution( wARR_ListUsers[wID], gVal.STR_UserInfo['Account'], wARR_Lists[wKey]['name'], inFLG_ListCaution=False )
 					if wSubRes['Result']!=True :
-						wRes['Reason'] = "SetCautionTweet is failed"
+						wRes['Reason'] = "SendTweet_Caution is failed(2): user=" + wARR_ListUsers[wID]['screen_name'] + " list=" + wARR_Lists[wKey]['name']
 						gVal.OBJ_L.Log( "B", wRes )
 						continue
 		
@@ -1831,31 +1920,125 @@ class CLS_TwitterMain():
 		CLS_OSIF.sPrn( wStr )
 		
 		#############################
+		# 正常終了
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	# 警告ツイート送信
+	#####################################################
+	def SendTweet_Caution( self, inUser, inOwnerName, inListName, inFLG_ListCaution=True ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "SendTweet_Caution"
+		
+		wRes['Responce'] = False
+		
+###		wUserID     = str(inUser['id'])
+		wScreenName = inUser['screen_name']
+		
+		wTweetID = gVal.DEF_NOTEXT
+		#############################
+		# 警告ツイートを作成
+		if inFLG_ListCaution==True :
+			### 警告リスト登録者への警告
+			wTweet = "@" + wScreenName + '\n'
+			wTweet = wTweet + "[ご注意] ユーザ " + str(inOwnerName) + " のリスト " + str(inListName) + " はフォロー禁止です。" + '\n'
+			wTweet = wTweet + "[Caution] Excuse me. The list " + str(inListName) + " for user " + str(inOwnerName) + " is unfollowable."
+		
+		else:
+			### 非フォロワーのリスト登録者への警告
+			wTweet = "@" + wScreenName + '\n'
+			wTweet = wTweet + "[お願い] リスト " + str(inListName) + " をフォローするには当アカウント " + str(inOwnerName) + " もフォローしてください。" + '\n'
+			wTweet = wTweet + "[Request] To follow the list " + str(inListName) + ", please also follow this account " + str(inOwnerName) + "."
+		
+		#############################
+		# 送信したツイートのパターン生成
+		wNoRet_Tweet = wTweet.replace( "@", "" )
+		wNoRet_Tweet = wNoRet_Tweet.replace( "[", "" )
+		wNoRet_Tweet = wNoRet_Tweet.replace( "]", "" )
+		
+		#############################
+		# Twitterへの送信が有効の場合
+		if gVal.DEF_STR_TLNUM['sendListUsersCaution']==True :
+			#############################
+			# ツイート送信
+			wTweetRes = gVal.OBJ_Tw_IF.Tweet( wTweet )
+			if wTweetRes['Result']!=True :
+			###	if wTweetRes['StatusCode']=="403" :
+				wRes['Reason'] = "Twitter API Error(Tweet): " + wTweetRes['Reason']
+				gVal.OBJ_L.Log( "B", wRes )
+				continue
+			else:
+				### Tweet完了→Twitter再取得可能になるまで約10秒遅延待機
+				CLS_OSIF.sSleep(10)
+				
+				wTweetRes = gVal.OBJ_Tw_IF.GetSearch( wNoRet_Tweet )
+				if wTweetRes['Result']!=True :
+					wRes['Reason'] = "Twitter API Error(GetSearch): " + wTweetRes['Reason']
+					gVal.OBJ_L.Log( "B", wRes )
+					continue
+				
+				#############################
+				# 送信したツイートのツイートIDを取得する
+				if len(wTweetRes['Responce'])==1 :
+					wTweetID = str( wTweetRes['Responce'][0]['id'] )
+				else:
+					### 1ツイート以外はありえない？
+					wRes['Reason'] = "Twitter is dual ttweet, or not one screen_name=" + wScreenName
+					gVal.OBJ_L.Log( "D", wRes )
+				
+				### ログに記録
+				wStr = "リスト登録者へ警告(規定外ユーザ): screen_name=" + wScreenName + " tweetid=" + wTweetID + " list=" + str(inListName)
+				gVal.OBJ_L.Log( "RR", wRes, wStr )
+			
+			wRes['Responce'] = True	#Twitterへ送信済
+		
+		#############################
+		# Twitterへの送信が無効の場合
+		else:
+			### ログに記録
+			wStr = "リスト登録者へ警告(規定外ユーザ・Twitter未送信): screen_name=" + wScreenName + " tweetid=" + wTweetID + " list=" + str(inListName)
+			gVal.OBJ_L.Log( "RR", wRes, wStr )
+		
+		#############################
+		# IDを警告済に追加
+		wSubRes = gVal.OBJ_DB_IF.SetCautionTweet( inUser, wTweetID )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "SetCautionTweet is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 正常
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# 自動リムーブチェック
+#####################################################
+	def CheckAutoRemove( self, inData, inWord ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "CheckAutoRemove"
+		
+		wRes['Responce'] = False
+		#############################
 		# 自動リムーブが無効ならここで終わる
-###		if gVal.STR_UserInfo['ArListName']=="" :
 		if gVal.STR_UserInfo['AutoRemove']==False :
 			wRes['Result'] = True
 			return wRes
 		
 		#############################
-		# 自動リムーブチェック
-		
-		#############################
 		# 取得可能時間か？
-###		if self.CHR_AutoRemoveDate!=None :
-###			### 範囲時間内のツイートか
-###			wGetLag = CLS_OSIF.sTimeLag( str( self.CHR_AutoRemoveDate ), inThreshold=gVal.DEF_STR_TLNUM['forCheckAutoRemoveSec'] )
-###			wGetLag = CLS_OSIF.sTimeLag( str( gVal.STR_Time['auto_remove'] ), inThreshold=gVal.DEF_STR_TLNUM['forCheckAutoRemoveSec'] )
-###			if wGetLag['Result']!=True :
-###				wRes['Reason'] = "sTimeLag failed"
-###				gVal.OBJ_L.Log( "B", wRes )
-###				return wRes
-###			if wGetLag['Beyond']==False :
-###				### 規定以内は除外
-###				wStr = "●自動リムーブチェック期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
-###				CLS_OSIF.sPrn( wStr )
-###				wRes['Result'] = True
-###				return wRes
 		wGetLag = CLS_OSIF.sTimeLag( str( gVal.STR_Time['auto_remove'] ), inThreshold=gVal.DEF_STR_TLNUM['forCheckAutoRemoveSec'] )
 		if wGetLag['Result']!=True :
 			wRes['Reason'] = "sTimeLag failed"
@@ -1868,10 +2051,12 @@ class CLS_TwitterMain():
 			wRes['Result'] = True
 			return wRes
 		
-###		self.CHR_GetReactionDate = None	#一度クリアしておく(異常時再取得するため)
-###		
-		wStr = "自動リムーブチェック中..."
-		CLS_OSIF.sPrn( wStr )
+###		wStr = "自動リムーブチェック中..."
+###		CLS_OSIF.sPrn( wStr )
+		#############################
+		# 取得開始の表示
+		wResDisp = CLS_MyDisp.sViewHeaderDisp( "自動リムーブチェック" )
+		
 		#############################
 		# ListFavo一覧のうち
 		# 自動リムーブ有効のリストをチェックする
@@ -1913,9 +2098,6 @@ class CLS_TwitterMain():
 					gVal.OBJ_L.Log( "B", wRes )
 					return wRes
 		
-###		#############################
-###		# 現時刻をメモる
-###		self.CHR_AutoRemoveDate = str(gVal.STR_Time['TimeDate'])
 		#############################
 		# 現時間を設定
 		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "auto_remove", gVal.STR_Time['TimeDate'] )

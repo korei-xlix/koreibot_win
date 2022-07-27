@@ -2088,8 +2088,9 @@ class CLS_Twitter_IF() :
 		# リスト通知が有効か
 		if gVal.STR_UserInfo['ListName']=="" :
 			###リスト通知 =無効
-			wRes['Reason'] = "List ind is invalid"
-			gVal.OBJ_L.Log( "B", wRes )
+###			wRes['Reason'] = "List ind is invalid"
+###			gVal.OBJ_L.Log( "B", wRes )
+			wRes['Result'] = True
 			return wRes
 		
 		#############################
@@ -2148,8 +2149,9 @@ class CLS_Twitter_IF() :
 		# リスト通知が有効か
 		if gVal.STR_UserInfo['ListName']=="" :
 			###リスト通知 =無効
-			wRes['Reason'] = "List ind is invalid"
-			gVal.OBJ_L.Log( "B", wRes )
+###			wRes['Reason'] = "List ind is invalid"
+###			gVal.OBJ_L.Log( "B", wRes )
+			wRes['Result'] = True
 			return wRes
 		
 		#############################
@@ -2189,8 +2191,9 @@ class CLS_Twitter_IF() :
 		# リスト通知が有効か
 		if gVal.STR_UserInfo['ListName']=="" :
 			###リスト通知 =無効
-			wRes['Reason'] = "List ind is invalid"
-			gVal.OBJ_L.Log( "B", wRes )
+###			wRes['Reason'] = "List ind is invalid"
+###			gVal.OBJ_L.Log( "B", wRes )
+			wRes['Result'] = True
 			return wRes
 		
 		#############################
@@ -2231,12 +2234,14 @@ class CLS_Twitter_IF() :
 		wRes['Class'] = "CLS_Twitter_IF"
 		wRes['Func']  = "ListInd_Clear"
 		
+		wRes['Responce'] = False
 		#############################
 		# リスト通知が有効か
 		if gVal.STR_UserInfo['ListName']=="" :
 			###リスト通知 =無効
-			wRes['Reason'] = "List ind is invalid"
-			gVal.OBJ_L.Log( "B", wRes )
+###			wRes['Reason'] = "List ind is invalid"
+###			gVal.OBJ_L.Log( "B", wRes )
+			wRes['Result'] = True
 			return wRes
 		
 		#############################
@@ -2259,6 +2264,7 @@ class CLS_Twitter_IF() :
 				gVal.OBJ_L.Log( "B", wRes )
 				continue
 		
+		wRes['Responce'] = True
 		wRes['Result'] = True
 		return wRes
 
@@ -2634,9 +2640,10 @@ class CLS_Twitter_IF() :
 ###		if gVal.STR_UserInfo['ArListName']=="" :
 		if gVal.STR_UserInfo['AutoRemove']==False :
 			###リスト通知 =無効
-			wRes['Reason'] = "auto remove is invalid"
+###			wRes['Reason'] = "auto remove is invalid"
 ###			gVal.OBJ_L.Log( "B", wRes )
-			gVal.OBJ_L.Log( "N", wRes )
+###			gVal.OBJ_L.Log( "N", wRes )
+			wRes['Result'] = True
 			return wRes
 		
 		#############################
