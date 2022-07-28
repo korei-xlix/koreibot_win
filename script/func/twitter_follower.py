@@ -52,19 +52,6 @@ class CLS_TwitterFollower():
 		
 		#############################
 		# 取得可能時間か？
-###		if self.OBJ_Parent.CHR_GetReactionDate!=None :
-###			### 範囲時間内のツイートか
-###			wGetLag = CLS_OSIF.sTimeLag( str( self.OBJ_Parent.CHR_GetReactionDate ), inThreshold=gVal.DEF_STR_TLNUM['forReactionSec'] )
-###			if wGetLag['Result']!=True :
-###				wRes['Reason'] = "sTimeLag failed"
-###				gVal.OBJ_L.Log( "B", wRes )
-###				return wRes
-###			if wGetLag['Beyond']==False :
-###				### 規定以内は除外
-###				wStr = "●リアクション期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
-###				CLS_OSIF.sPrn( wStr )
-###				wRes['Result'] = True
-###				return wRes
 		wGetLag = CLS_OSIF.sTimeLag( str( gVal.STR_Time['reaction'] ), inThreshold=gVal.DEF_STR_TLNUM['forReactionSec'] )
 		if wGetLag['Result']!=True :
 			wRes['Reason'] = "sTimeLag failed"
@@ -77,7 +64,6 @@ class CLS_TwitterFollower():
 			wRes['Result'] = True
 			return wRes
 		
-###		self.OBJ_Parent.CHR_GetReactionDate = None	#一度クリアしておく(異常時再取得するため)
 		#############################
 		# 取得開始の表示
 		if inFLG_Short==False :
@@ -114,11 +100,6 @@ class CLS_TwitterFollower():
 				break	###ウェイト中止
 			
 			###日時の変換
-###			wTime = CLS_OSIF.sGetTimeformat_Twitter( wTweet['created_at'] )
-###			if wTime['Result']!=True :
-###				wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wTweet['created_at'])
-###				gVal.OBJ_L.Log( "B", wRes )
-###				continue
 			wTime = CLS_TIME.sTTchg( wRes, "(1)", wTweet['created_at'] )
 			if wTime['Result']!=True :
 				continue
@@ -162,11 +143,6 @@ class CLS_TwitterFollower():
 			wID = str(wSubRes['Responce'][wReplyID]['id'])
 			
 			###日時の変換
-###			wTime = CLS_OSIF.sGetTimeformat_Twitter( wSubRes['Responce'][wReplyID]['created_at'] )
-###			if wTime['Result']!=True :
-###				wRes['Reason'] = "sGetTimeformat_Twitter is failed(1): " + str(wSubRes['Responce'][wReplyID]['created_at'])
-###				gVal.OBJ_L.Log( "B", wRes )
-###				continue
 			wTime = CLS_TIME.sTTchg( wRes, "(2)", wSubRes['Responce'][wReplyID]['created_at'] )
 			if wTime['Result']!=True :
 				continue
@@ -203,9 +179,6 @@ class CLS_TwitterFollower():
 				wStr = "〇リプライ検出: " + wUserInfoRes['Responce']['screen_name']
 				CLS_OSIF.sPrn( wStr )
 		
-###		#############################
-###		# 現時刻をメモる
-###		self.OBJ_Parent.CHR_GetReactionDate = str(gVal.STR_Time['TimeDate'])
 		#############################
 		# 現時間を設定
 		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "reaction", gVal.STR_Time['TimeDate'] )
@@ -479,7 +452,6 @@ class CLS_TwitterFollower():
 		
 		#############################
 		# 自動リムーブが無効ならここで終わる
-###		if gVal.STR_UserInfo['ArListName']=="" :
 		if gVal.STR_UserInfo['AutoRemove']==False :
 			wRes['Result'] = True
 			return wRes
@@ -488,7 +460,6 @@ class CLS_TwitterFollower():
 		#############################
 		# DBからいいね情報を取得する(1個)
 		#   新規の場合、DB登録だけで終わる
-###		wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
 		wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( inUser )
 		if wSubRes['Result']!=True :
 			###失敗
@@ -496,13 +467,11 @@ class CLS_TwitterFollower():
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		### DB未登録
-###		if wSubRes['Responce']==None :
 		if wSubRes['Responce']['Data']==None :
 			wStr = "▽DB未登録ユーザに対する自動リムーブ検出"
 			wRes['Reason'] = wStr + ": " + inUser['screen_name']
-			gVal.OBJ_L.Log( "X", wRes )
+			gVal.OBJ_L.Log( "N", wRes )
 		else:
-###			wARR_DBData = wSubRes['Responce']
 			wARR_DBData = wSubRes['Responce']['Data']
 		
 		wFLG_Remove = False
@@ -519,7 +488,7 @@ class CLS_TwitterFollower():
 				#   =登録日時
 				if str(wARR_DBData['favo_date'])!=gVal.DEF_TIMEDATE :
 					### いいねあり= いいね日時
-					wCompTimeDate = str(wARR_DBData['favo_date'])
+					wCompTimeDate = str(wARR_DBData['rfavo_date'])
 				else:
 					### いいねなし= 登録日時
 					wCompTimeDate = str(wARR_DBData['regdate'])
@@ -546,6 +515,22 @@ class CLS_TwitterFollower():
 					gVal.OBJ_L.Log( "B", wRes )
 					return wRes
 				
+				### リストリムーブ
+				wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_Remove( wUserID )
+				
+				if wARR_DBData['follower']==True :
+					### フォロー者OFF・フォロワーON
+					wUserLevel = "D-"
+				else:
+					### フォロー者OFF・フォロワーOFF
+					wUserLevel = "E-"
+				
+				### ユーザレベル変更
+				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
+				
+				### トラヒック記録（フォロワー減少）
+				CLS_Traffic.sP( "d_follower" )
+				
 				#############################
 				# ログに記録
 				gVal.OBJ_L.Log( "R", wRes, "●自動リムーブ: " + inUser['screen_name'] )
@@ -561,26 +546,45 @@ class CLS_TwitterFollower():
 				
 				wRes['Responce'] = True		#自動リムーブ実行
 		
-		wFLG_ListRemove_Only = False
+###		wFLG_ListRemove_Only = False
+###		#############################
+###		# 自動リムーブしていれば
+###		#   リスト解除→自動リムーブリストへ
+###		# 自動リムーブしていなければ
+###		#   リスト解除のみ
+###		if wFLG_Remove==False :
+###			wFLG_ListRemove_Only = True
+###		
+###		#############################
+###		# フォロワーじゃなければ
+###		# リスト解除
+###		if wFLG_Remove==True or \
+###		   gVal.OBJ_Tw_IF.CheckFollower( wUserID )==False :
+###			#############################
+###			# 自動リムーブリストに登録
+###			# (他のリスト登録は全削除)
+###			wTweetRes = gVal.OBJ_Tw_IF.AutoRemove_AddUser( inUser, wFLG_ListRemove_Only )
+###			if wTweetRes['Result']!=True :
+###				wRes['Reason'] = "AutoRemove_AddUser is failed"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
 		#############################
 		# 自動リムーブしていれば
-		#   リスト解除→自動リムーブリストへ
+		#   リスト解除→片フォロワーリストへ
 		# 自動リムーブしていなければ
 		#   リスト解除のみ
-		if wFLG_Remove==False :
-			wFLG_ListRemove_Only = True
-		
-		#############################
-		# フォロワーじゃなければ
-		# リスト解除
-		if wFLG_Remove==True or \
-		   gVal.OBJ_Tw_IF.CheckFollower( wUserID )==False :
-			#############################
-			# 自動リムーブリストに登録
-			# (他のリスト登録は全削除)
-			wTweetRes = gVal.OBJ_Tw_IF.AutoRemove_AddUser( inUser, wFLG_ListRemove_Only )
+		if wFLG_Remove==True :
+			### 片フォロワーリストへ
+			wTweetRes = gVal.OBJ_Tw_IF.FollowerList_AddUser( inUser )
 			if wTweetRes['Result']!=True :
-				wRes['Reason'] = "AutoRemove_AddUser is failed"
+				wRes['Reason'] = "FollowerList_AddUser is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+		else:
+			### リスト解除へ
+			wTweetRes = gVal.OBJ_Tw_IF.FollowerList_Remove( inUser )
+			if wTweetRes['Result']!=True :
+				wRes['Reason'] = "FollowerList_Remove is failed"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 		

@@ -2571,161 +2571,161 @@ class CLS_Twitter_IF() :
 #####################################################
 # 自動リムーブ
 #####################################################
-	def AutoRemove( self, inUser ):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_Twitter_IF"
-		wRes['Func']  = "AutoRemove"
-		
-		wID = str( inUser['id'] )
-		
-		wRes['Responce'] = False	#実行
-		#############################
-		# 自動リムーブが有効か
-		if gVal.STR_UserInfo['AutoRemove']==False :
-			###リスト通知 =無効
-			wRes['Result'] = True
-			return wRes
-		
-		#############################
-		# リムーブ実行
-		wSubRes = self.Remove( wID )
-		CLS_Traffic.sP( "run_api", wMuteRes['RunAPI'] )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error(Remove): " + wSubRes['Reason']
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# 記録する
-		wStr = "●リムーブ者: " + inUser['screen_name']
-		gVal.OBJ_L.Log( "R", wRes, wStr )
-		
-		CLS_Traffic.sP( "d_myfollow" )
-		
-		#############################
-		# リストリムーブする
-		wSubRes = self.FollowerList_Remove( self, inUser )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "FollowerList_Remove is failed"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		wRes['Responce'] = True		#実行
-		#############################
-		# 正常
-		wRes['Result'] = True
-		return wRes
-
-
+###	def AutoRemove( self, inUser ):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_Twitter_IF"
+###		wRes['Func']  = "AutoRemove"
+###		
+###		wID = str( inUser['id'] )
+###		
+###		wRes['Responce'] = False	#実行
+###		#############################
+###		# 自動リムーブが有効か
+###		if gVal.STR_UserInfo['AutoRemove']==False :
+###			###リスト通知 =無効
+###			wRes['Result'] = True
+###			return wRes
+###		
+###		#############################
+###		# リムーブ実行
+###		wSubRes = self.Remove( wID )
+###		CLS_Traffic.sP( "run_api", wMuteRes['RunAPI'] )
+###		if wSubRes['Result']!=True :
+###			wRes['Reason'] = "Twitter API Error(Remove): " + wSubRes['Reason']
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		#############################
+###		# 記録する
+###		wStr = "●リムーブ者: " + inUser['screen_name']
+###		gVal.OBJ_L.Log( "R", wRes, wStr )
+###		
+###		CLS_Traffic.sP( "d_myfollow" )
+###		
+###		#############################
+###		# リストリムーブする
+###		wSubRes = self.FollowerList_Remove( self, inUser )
+###		if wSubRes['Result']!=True :
+###			wRes['Reason'] = "FollowerList_Remove is failed"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		wRes['Responce'] = True		#実行
+###		#############################
+###		# 正常
+###		wRes['Result'] = True
+###		return wRes
+###
+###
 
 #####################################################
 # 自動リムーブリスト 追加
 #####################################################
-	def AutoRemove_AddUser( self, inUser, inFLG_Only=False ):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_Twitter_IF"
-		wRes['Func']  = "AutoRemove_AddUser"
-		
-		wID = str( inUser['id'] )
-		
-		wRes['Responce'] = False	#実行
-		#############################
-		# 自動リムーブが有効か
+###	def AutoRemove_AddUser( self, inUser, inFLG_Only=False ):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_Twitter_IF"
+###		wRes['Func']  = "AutoRemove_AddUser"
+###		
+###		wID = str( inUser['id'] )
+###		
+###		wRes['Responce'] = False	#実行
+###		#############################
+###		# 自動リムーブが有効か
 ###		if gVal.STR_UserInfo['ArListName']=="" :
-		if gVal.STR_UserInfo['AutoRemove']==False :
-			###リスト通知 =無効
+###		if gVal.STR_UserInfo['AutoRemove']==False :
+###			###リスト通知 =無効
 ###			wRes['Reason'] = "auto remove is invalid"
 ###			gVal.OBJ_L.Log( "B", wRes )
 ###			gVal.OBJ_L.Log( "N", wRes )
-			wRes['Result'] = True
-			return wRes
-		
-		#############################
-		# 自分のリスト通知のユーザ取得
-		wTwitterRes = self.OBJ_Twitter.GetSubsLists( inScreenName=inUser['screen_name'] )
-		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
-		if wTwitterRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error(GetSubsLists): " + wTwitterRes['Reason']
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		wARR_SubsList = wTwitterRes['Responce']
-		
-		wListFavo_Keylist = list( gVal.ARR_ListFavo.keys() )
-		wFLG_RemoveRun = False
-		#############################
-		# 自分が自動リムーブ設定対象のリストに登録されてるか
-		#   =されていれば自動リムーブ対象
-		#   =されてなければ対象外
-		for wKey in wARR_SubsList :
-			if wARR_SubsList[wKey]['me']==False :
-				###自分じゃなければスキップ
-				continue
-			
-			for wListFavoKey in wListFavo_Keylist :
-				if gVal.ARR_ListFavo[wListFavoKey]['screen_name']!=gVal.STR_UserInfo['Account'] :
-					###自分のリスト設定じゃなければスキップ
-					continue
-				if gVal.ARR_ListFavo[wListFavoKey]['list_name']!=wARR_SubsList[wKey]['name'] :
-					###対象のリスト設定じゃなければスキップ
-					continue
-				###対象リストが自動リムーブ設定されてるか
-				if gVal.ARR_ListFavo[wListFavoKey]['auto_rem']==True :
-					### 自動リムーブ設定されてる =リムーブ対象
-					wFLG_RemoveRun = True
-				break
-			
-			###自動リムーブ対象ならループを抜ける
-			if wFLG_RemoveRun==True :
-				break
-		
-		### 自動リムーブ対象じゃなければ終了
-		if wFLG_RemoveRun!=True :
-			wRes['Result'] = True
-			return wRes
-		
-		# ※自動リムーブ確定
-		#############################
-		# 自分のリストだけ登録解除していく
-		for wKey in wARR_SubsList :
-			if wARR_SubsList[wKey]['me']==False :
-				continue
-			
-			wTwitterRes = self.OBJ_Twitter.RemoveUserList( wARR_SubsList[wKey]['name'], wID )
-			CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
-			if wTwitterRes['Result']!=True :
-				wRes['Reason'] = "Twitter API Error(RemoveUserList): " + wTwitterRes['Reason'] + " : list=" + wARR_SubsList[wKey]['name'] + " user=" + inUser['screen_name']
-				gVal.OBJ_L.Log( "B", wRes )
-				continue
-			
-			gVal.OBJ_L.Log( "U", wRes, "●リスト解除: list=" + wARR_SubsList[wKey]['name'] + " user=" + inUser['screen_name'] )
-		
-		#############################
-		# 自動リムーブリストにID追加
-		if inFLG_Only==False :
-###			wSubRes = self.OBJ_Twitter.AddUserList( gVal.STR_UserInfo['ArListName'], wID )
-			wTwitterRes = self.OBJ_Twitter.AddUserList( gVal.STR_UserInfo['rListName'], wID )
-			CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
-			if wTwitterRes['Result']!=True :
-###				wRes['Reason'] = "Twitter API Error(AddUserList): " + wSubRes['Reason'] + " : list=" + gVal.STR_UserInfo['ArListName'] + " user=" + inUser['screen_name']
-				wRes['Reason'] = "Twitter API Error(AddUserList): " + wTwitterRes['Reason'] + " : list=" + gVal.STR_UserInfo['rListName'] + " user=" + inUser['screen_name']
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			
-###			gVal.OBJ_L.Log( "U", wRes, "〇リスト追加: list=" + gVal.STR_UserInfo['ArListName'] + " user=" + inUser['screen_name'] )
-			gVal.OBJ_L.Log( "U", wRes, "〇リスト追加: list=" + gVal.STR_UserInfo['rListName'] + " user=" + inUser['screen_name'] )
-			
-			wRes['Responce'] = True		#追加
-		
-		wRes['Result'] = True
-		return wRes
-
-
+###			wRes['Result'] = True
+###			return wRes
+###		
+###		#############################
+###		# 自分のリスト通知のユーザ取得
+###		wTwitterRes = self.OBJ_Twitter.GetSubsLists( inScreenName=inUser['screen_name'] )
+###		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
+###		if wTwitterRes['Result']!=True :
+###			wRes['Reason'] = "Twitter API Error(GetSubsLists): " + wTwitterRes['Reason']
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		wARR_SubsList = wTwitterRes['Responce']
+###		
+###		wListFavo_Keylist = list( gVal.ARR_ListFavo.keys() )
+###		wFLG_RemoveRun = False
+###		#############################
+###		# 自分が自動リムーブ設定対象のリストに登録されてるか
+###		#   =されていれば自動リムーブ対象
+###		#   =されてなければ対象外
+###		for wKey in wARR_SubsList :
+###			if wARR_SubsList[wKey]['me']==False :
+###				###自分じゃなければスキップ
+###				continue
+###			
+###			for wListFavoKey in wListFavo_Keylist :
+###				if gVal.ARR_ListFavo[wListFavoKey]['screen_name']!=gVal.STR_UserInfo['Account'] :
+###					###自分のリスト設定じゃなければスキップ
+###					continue
+###				if gVal.ARR_ListFavo[wListFavoKey]['list_name']!=wARR_SubsList[wKey]['name'] :
+###					###対象のリスト設定じゃなければスキップ
+###					continue
+###				###対象リストが自動リムーブ設定されてるか
+###				if gVal.ARR_ListFavo[wListFavoKey]['auto_rem']==True :
+###					### 自動リムーブ設定されてる =リムーブ対象
+###					wFLG_RemoveRun = True
+###				break
+###			
+###			###自動リムーブ対象ならループを抜ける
+###			if wFLG_RemoveRun==True :
+###				break
+###		
+###		### 自動リムーブ対象じゃなければ終了
+###		if wFLG_RemoveRun!=True :
+###			wRes['Result'] = True
+###			return wRes
+###		
+###		# ※自動リムーブ確定
+###		#############################
+###		# 自分のリストだけ登録解除していく
+###		for wKey in wARR_SubsList :
+###			if wARR_SubsList[wKey]['me']==False :
+###				continue
+###			
+###			wTwitterRes = self.OBJ_Twitter.RemoveUserList( wARR_SubsList[wKey]['name'], wID )
+###			CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
+###			if wTwitterRes['Result']!=True :
+###				wRes['Reason'] = "Twitter API Error(RemoveUserList): " + wTwitterRes['Reason'] + " : list=" + wARR_SubsList[wKey]['name'] + " user=" + inUser['screen_name']
+###				gVal.OBJ_L.Log( "B", wRes )
+###				continue
+###			
+###			gVal.OBJ_L.Log( "U", wRes, "●リスト解除: list=" + wARR_SubsList[wKey]['name'] + " user=" + inUser['screen_name'] )
+###		
+###		#############################
+###		# 自動リムーブリストにID追加
+###		if inFLG_Only==False :
+######			wSubRes = self.OBJ_Twitter.AddUserList( gVal.STR_UserInfo['ArListName'], wID )
+###			wTwitterRes = self.OBJ_Twitter.AddUserList( gVal.STR_UserInfo['rListName'], wID )
+###			CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
+###			if wTwitterRes['Result']!=True :
+######				wRes['Reason'] = "Twitter API Error(AddUserList): " + wSubRes['Reason'] + " : list=" + gVal.STR_UserInfo['ArListName'] + " user=" + inUser['screen_name']
+###				wRes['Reason'] = "Twitter API Error(AddUserList): " + wTwitterRes['Reason'] + " : list=" + gVal.STR_UserInfo['rListName'] + " user=" + inUser['screen_name']
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			
+######			gVal.OBJ_L.Log( "U", wRes, "〇リスト追加: list=" + gVal.STR_UserInfo['ArListName'] + " user=" + inUser['screen_name'] )
+###			gVal.OBJ_L.Log( "U", wRes, "〇リスト追加: list=" + gVal.STR_UserInfo['rListName'] + " user=" + inUser['screen_name'] )
+###			
+###			wRes['Responce'] = True		#追加
+###		
+###		wRes['Result'] = True
+###		return wRes
+###
+###
 
 #####################################################
 # リスト登録ユーザ取得
