@@ -543,7 +543,7 @@ class CLS_TwitterMain():
 ###					if wFollowerData[wID]['myfollow']==False and \
 ###					   wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel=="A" and \
 					if wFollowerData[wID]['myfollow']==False and \
-					   wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and and wUserLevel!="A" and \
+					   wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel!="A" and \
 					   ( wUserInfoRes['Responce']['statuses_count']==0 or \
 					     wUserInfoRes['Responce']['protected']==True ) :
 						###対象
@@ -602,7 +602,7 @@ class CLS_TwitterMain():
 							wStr = "△再フォローされた"
 						
 ###						if wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel=="A" :
-						if wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+"  and and wUserLevel!="A" :
+						if wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel!="A" :
 							if wFollowerData[wID]['myfollow']==True :
 								### フォローされて相互フォローになった
 								wUserLevel = "C+"
@@ -1467,7 +1467,6 @@ class CLS_TwitterMain():
 		
 		#############################
 		# リスト通知をおこなう
-###		if gVal.STR_UserInfo['ListName']!="" :
 		if gVal.STR_UserInfo['ListName']!=gVal.DEF_NOTEXT :
 			wSubRes = self.__ReactionUserCheck_ListInd( inData )
 			if wSubRes['Result']!=True :
@@ -1626,7 +1625,7 @@ class CLS_TwitterMain():
 		# 通知リストのチェック
 		# 自動リムーブが有効なら、相互フォローリスト、片フォロワーリストのチェック
 		wARR_IndListName = []
-		if ( gVal.STR_UserInfo['ListID']==gVal.DEF_NOTEXT :
+		if gVal.STR_UserInfo['ListID']==gVal.DEF_NOTEXT :
 			wARR_IndListName.append( gVal.STR_UserInfo['ListName'] )
 		
 		if gVal.STR_UserInfo['AutoRemove']==True and \
@@ -1823,7 +1822,7 @@ class CLS_TwitterMain():
 				if str(gVal.STR_UserInfo['id'])==wID  :
 					continue
 				### フォロワーはスキップ
-				if gVal.OBJ_Tw_IF.CheckFollower( wID )==True  :
+				if gVal.OBJ_Tw_IF.CheckFollower( wID )==True :
 					continue
 				### 禁止ユーザはスキップ
 				wUserRes = self.CheckExtUser( wARR_ListUsers[wID], "フォロワー以外のリスト登録者", inFLG_Log=False )
@@ -1988,7 +1987,7 @@ class CLS_TwitterMain():
 			###	if wTweetRes['StatusCode']=="403" :
 				wRes['Reason'] = "Twitter API Error(Tweet): " + wTweetRes['Reason']
 				gVal.OBJ_L.Log( "B", wRes )
-				continue
+				return wRes
 			else:
 				### Tweet完了→Twitter再取得可能になるまで約10秒遅延待機
 				CLS_OSIF.sSleep(10)
@@ -1997,7 +1996,7 @@ class CLS_TwitterMain():
 				if wTweetRes['Result']!=True :
 					wRes['Reason'] = "Twitter API Error(GetSearch): " + wTweetRes['Reason']
 					gVal.OBJ_L.Log( "B", wRes )
-					continue
+					return wRes
 				
 				#############################
 				# 送信したツイートのツイートIDを取得する
@@ -2007,6 +2006,7 @@ class CLS_TwitterMain():
 					### 1ツイート以外はありえない？
 					wRes['Reason'] = "Twitter is dual ttweet, or not one screen_name=" + wScreenName
 					gVal.OBJ_L.Log( "D", wRes )
+					return wRes
 				
 				### ログに記録
 				wStr = "リスト登録者へ警告(規定外ユーザ): screen_name=" + wScreenName + " tweetid=" + wTweetID + " list=" + str(inListName)

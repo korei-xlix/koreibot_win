@@ -459,6 +459,14 @@ class CLS_Setup():
 		self.__create_TBL_FAVOUSER_DATA( gVal.OBJ_DB_IF.OBJ_DB )
 		
 		#############################
+		# ログオブジェクトの生成
+		gVal.OBJ_L = CLS_Mylog()
+		
+		#############################
+		# tbl_time_infoの初期化
+		gVal.OBJ_DB_IF.AutoInsert_TimeInfo()
+		
+		#############################
 		# 終わり
 		gVal.OBJ_DB_IF.Close()
 		CLS_OSIF.sPrn( "clear complete !!!" )

@@ -472,25 +472,30 @@ class CLS_DB_IF() :
 				gVal.OBJ_L.Log( "C", wRes )
 				return wRes
 			
-			wQy = "insert into tbl_time_data values ("
-			wQy = wQy + "'" + inUserData['Account'] + "',"		# 記録したユーザ(Twitter ID)
-			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# コマンド実行
-			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# 自動監視
-			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# リアクション受信
-			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# 相互フォローリストいいね
-			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# フォロワー支援いいね
-			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# リスト通知クリア
-			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# 自動リムーブ
-			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "' "	# いいね情報送信
-			wQy = wQy + ") ;"
-			
-			wResDB = self.OBJ_DB.RunQuery( wQy )
-			wResDB = self.OBJ_DB.GetQueryStat()
-			if wResDB['Result']!=True :
-				##失敗
-				wRes['Reason'] = "Run Query is failed(4): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+###			wQy = "insert into tbl_time_data values ("
+###			wQy = wQy + "'" + inUserData['Account'] + "',"		# 記録したユーザ(Twitter ID)
+###			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# コマンド実行
+###			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# 自動監視
+###			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# リアクション受信
+###			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# 相互フォローリストいいね
+###			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# フォロワー支援いいね
+###			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# リスト通知クリア
+###			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# 自動リムーブ
+###			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "' "	# いいね情報送信
+###			wQy = wQy + ") ;"
+###			
+###			wResDB = self.OBJ_DB.RunQuery( wQy )
+###			wResDB = self.OBJ_DB.GetQueryStat()
+###			if wResDB['Result']!=True :
+###				##失敗
+###				wRes['Reason'] = "Run Query is failed(4): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
 ###				CLS_OSIF.sErr( wRes )
-				gVal.OBJ_L.Log( "C", wRes )
+###				gVal.OBJ_L.Log( "C", wRes )
+###				return wRes
+			wResDB = self.InsertTimeInfo( inUserData['Account'] )
+			if wResDB['Result']!=True :
+				wRes['Reason'] = "InsertTimeInfo is failed"
+				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			
 ###			#############################
@@ -856,6 +861,99 @@ class CLS_DB_IF() :
 				wRes['Reason'] = "unload data: account=" + str(inAccount) + " key=" + str( wKey )
 				gVal.OBJ_L.Log( "A", wRes )
 				return wRes
+		
+		#############################
+		# =正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def AutoInsert_TimeInfo(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "AutoInsert_TimeInfo"
+		
+		#############################
+		# データ取得(twitteridのみ)
+		wQy = "select twitterid from tbl_user_data "
+		wQy = wQy + " ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQy )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
+		# リスト型に整形
+		wARR_Account = gVal.OBJ_DB_IF.ChgList( wResDB['Responce'] )
+		
+		#############################
+		# いちお全レコードをdeleteしておく
+		wQy = "delete from tbl_time_data "
+		wQy = wQy + " ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQy )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
+		# ユーザデータ分の枠を作成する
+		for wAccount in wARR_Account :
+			wAccount = str(wAccount)
+			
+			wSubRes = self.InsertTimeInfo( wAccount )
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "InsertTimeInfo is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			
+			wStr = "Insert new TimeInfo : user=" + str( wAccount )
+			gVal.OBJ_L.Log( "SC", wRes, wStr )
+		
+		#############################
+		# =正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def InsertTimeInfo( self, inAccount ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "InsertTimeInfo"
+		
+		wQy = "insert into tbl_time_data values ("
+		wQy = wQy + "'" + str(inAccount) + "',"				# 記録したユーザ(Twitter ID)
+		
+		wKeylist = list( gVal.STR_Time.keys() )
+		for wKey in gVal.STR_Time :
+			if wKey=="TimeDate" or wKey=="run" :
+				continue
+			
+			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "', "
+		
+		wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "' "	# run分の枠
+		wQy = wQy + ") ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQy )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
 		
 		#############################
 		# =正常
@@ -3615,11 +3713,11 @@ class CLS_DB_IF() :
 ###		gVal.ARR_SearchData.update({ str(wIndex) : wCell })
 		gVal.ARR_SearchData.update({ str(wListNo) : wCell })
 		
-		#############################
-		# ログ記録
-		wRes['Reason'] = "Insert SearchWord : index=" + str(wIndex) + " word=" + str( wCell['word'] )
-		gVal.OBJ_L.Log( "T", wRes )
-		
+###		#############################
+###		# ログ記録
+###		wRes['Reason'] = "Insert SearchWord : index=" + str(wIndex) + " word=" + str( wCell['word'] )
+###		gVal.OBJ_L.Log( "T", wRes )
+###		
 		wRes['Result'] = True
 		return wRes
 

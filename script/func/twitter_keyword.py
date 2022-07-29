@@ -703,7 +703,7 @@ class CLS_TwitterKeyword():
 			
 			#############################
 			# ログに記録
-			wTextReason = "〇検索いいね実施: user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
+			wTextReason = "検索いいね実施: user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
 			gVal.OBJ_L.Log( "T", wRes, wTextReason )
 			
 			### キーワードユーザ 更新
