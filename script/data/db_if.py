@@ -917,6 +917,9 @@ class CLS_DB_IF() :
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			
+			### ログ用の措置
+			gVal.STR_UserInfo['Account'] = wAccount
+			
 			wStr = "Insert new TimeInfo : user=" + str( wAccount )
 			gVal.OBJ_L.Log( "SC", wRes, wStr )
 		
