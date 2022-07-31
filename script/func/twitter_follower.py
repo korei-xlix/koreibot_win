@@ -178,6 +178,14 @@ class CLS_TwitterFollower():
 			if wReactionRes['Responce']==True :
 				wStr = "〇リプライ検出: " + wUserInfoRes['Responce']['screen_name']
 				CLS_OSIF.sPrn( wStr )
+				
+				### トラヒック記録
+				CLS_Traffic.sP( "r_reaction" )
+				CLS_Traffic.sP( "r_rep" )
+				if gVal.OBJ_Tw_IF.CheckFollower( wID )==True :
+					CLS_Traffic.sP( "r_in" )
+				else:
+					CLS_Traffic.sP( "r_out" )
 		
 		#############################
 		# 現時間を設定

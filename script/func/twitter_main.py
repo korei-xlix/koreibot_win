@@ -1261,6 +1261,14 @@ class CLS_TwitterMain():
 			if wReactionRes['Responce']==True :
 				wStr = "〇いいね検出: " + wSubRes['Responce'][wID]['screen_name'] + '\n'
 				CLS_OSIF.sPrn( wStr )
+				
+				### トラヒック記録
+				CLS_Traffic.sP( "r_reaction" )
+				CLS_Traffic.sP( "r_favo" )
+				if gVal.OBJ_Tw_IF.CheckFollower( wID )==True :
+					CLS_Traffic.sP( "r_in" )
+				else:
+					CLS_Traffic.sP( "r_out" )
 		
 		#############################
 		# リツイートチェック
@@ -1282,6 +1290,14 @@ class CLS_TwitterMain():
 			if wReactionRes['Responce']==True :
 				wStr = "〇リツイート検出: " + wSubRes['Responce'][wID]['screen_name'] ;
 				CLS_OSIF.sPrn( wStr )
+				
+				### トラヒック記録
+				CLS_Traffic.sP( "r_reaction" )
+				CLS_Traffic.sP( "r_retweet" )
+				if gVal.OBJ_Tw_IF.CheckFollower( wID )==True :
+					CLS_Traffic.sP( "r_in" )
+				else:
+					CLS_Traffic.sP( "r_out" )
 		
 		#############################
 		# 引用リツイートチェック
@@ -1303,6 +1319,14 @@ class CLS_TwitterMain():
 			if wReactionRes['Responce']==True :
 				wStr = "〇引用リツイート検出: " + wSubRes['Responce'][wID]['screen_name'] ;
 				CLS_OSIF.sPrn( wStr )
+				
+				### トラヒック記録
+				CLS_Traffic.sP( "r_reaction" )
+				CLS_Traffic.sP( "r_iret" )
+				if gVal.OBJ_Tw_IF.CheckFollower( wID )==True :
+					CLS_Traffic.sP( "r_in" )
+				else:
+					CLS_Traffic.sP( "r_out" )
 		
 		#############################
 		# 正常終了

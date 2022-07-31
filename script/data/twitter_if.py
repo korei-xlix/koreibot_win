@@ -11,6 +11,7 @@ from twitter_use import CLS_Twitter_Use
 from traffic import CLS_Traffic
 from ktime import CLS_TIME
 from osif import CLS_OSIF
+from mydisp import CLS_MyDisp
 from gval import gVal
 #####################################################
 class CLS_Twitter_IF() :

@@ -2765,7 +2765,7 @@ class CLS_DB_IF() :
 		wQy = wQy + "follower = True ) "
 		wQy = wQy + ";"
 		
-		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy )
 		if wResDB['Result']!=True :
 			wRes['Reason'] = "Run Query is failed"
 			gVal.OBJ_L.Log( "B", wRes )
@@ -2878,8 +2878,9 @@ class CLS_DB_IF() :
 		
 		#############################
 		# 辞書型に整形
-		wARR_RateFavoData = {}
-		self.OBJ_DB.ChgDict( wResDB['Responce']['Collum'], wResDB['Responce']['Data'], outDict=wARR_RateFavoData )
+###		wARR_RateFavoData = {}
+###		self.OBJ_DB.ChgDict( wResDB['Responce']['Collum'], wResDB['Responce']['Data'], outDict=wARR_RateFavoData )
+		wARR_RateFavoData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
 		
 ###		wRes['Responce'] = wARR_RateFavoData[0]
 		wRes['Responce']['Data'] = wARR_RateFavoData[0]
@@ -3269,24 +3270,30 @@ class CLS_DB_IF() :
 		#############################
 		# ユーザレベルを取得する
 		wQy = "select level_tag from tbl_favouser_data where "
-		wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' and "
+		wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "'"
 		wQy = wQy + " and id = '" + str(inID) + "' ;"
 		wQy = wQy + ";"
 		
-		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy )
 		if wResDB['Result']!=True :
 			wRes['Reason'] = "Run Query is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-		if len(wResDB['Responce']['Data'])!=1 :
+		#############################
+		# 辞書型に整形
+		wARR_DBData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
+		
+###		if len(wResDB['Responce']['Data'])!=1 :
+		if len(wARR_DBData)!=1 :
 			### 1つだけでなければNG（ありえない？）
 			wRes['Reason'] = "data is not one: user id=" + str(inID)
 			gVal.OBJ_L.Log( "A", wRes )
 			return wRes
 		
 		### 現在のユーザレベル
-		wRateUserLevel = wResDB['Responce']['Data'][0]['level_tag']
+###		wRateUserLevel = wResDB['Responce']['Data'][0]['level_tag']
+		wRateUserLevel = wARR_DBData[0]['level_tag']
 		
 		#############################
 		# ユーザレベルに変化がなければ終わり
@@ -3339,24 +3346,30 @@ class CLS_DB_IF() :
 		#############################
 		# 自動削除禁止を取得する
 		wQy = "select screen_name, flg_save from tbl_favouser_data where "
-		wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' and "
+		wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "'"
 		wQy = wQy + " and id = '" + str(inID) + "' ;"
 		wQy = wQy + ";"
 		
-		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy )
 		if wResDB['Result']!=True :
 			wRes['Reason'] = "Run Query is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-		if len(wResDB['Responce']['Data'])!=1 :
+		#############################
+		# 辞書型に整形
+		wARR_DBData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
+		
+###		if len(wResDB['Responce']['Data'])!=1 :
+		if len(wARR_DBData)!=1 :
 			### 1つだけでなければNG（ありえない？）
 			wRes['Reason'] = "data is not one: user id=" + str(inID)
 			gVal.OBJ_L.Log( "A", wRes )
 			return wRes
 		
 		### フラグを反転
-		wFLG_Save = wResDB['Responce']['Data'][0]['flg_save']
+###		wFLG_Save = wResDB['Responce']['Data'][0]['flg_save']
+		wFLG_Save = wARR_DBData[0]['flg_save']
 		if wFLG_Save==True :
 			wFLG_Save = False
 		
@@ -3443,7 +3456,7 @@ class CLS_DB_IF() :
 		wQy = wQy + "rfavo_n_cnt > 0 "
 		wQy = wQy + ";"
 		
-		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy )
 		if wResDB['Result']!=True :
 			wRes['Reason'] = "Run Query is failed"
 			gVal.OBJ_L.Log( "B", wRes )
@@ -3482,13 +3495,18 @@ class CLS_DB_IF() :
 			wQy = wQy + "id = '" + str(wID) + "' "
 			wQy = wQy + ";"
 			
-			wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+			wResDB = gVal.OBJ_DB_IF.RunQuery( wQy )
 			if wResDB['Result']!=True :
 				wRes['Reason'] = "Run Query is failed"
 				gVal.OBJ_L.Log( "B", wRes )
 				continue
 			
-			if len(wResDB['Responce']['Data'])!=1 :
+			#############################
+			# 辞書型に整形
+			wARR_DBData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
+			
+###			if len(wResDB['Responce']['Data'])!=1 :
+			if len(wARR_DBData)!=1 :
 				### 1つだけでなければNG（ありえない？）
 				wRes['Reason'] = "data is not one: user id=" + str(wID)
 				gVal.OBJ_L.Log( "A", wRes )
@@ -3496,7 +3514,8 @@ class CLS_DB_IF() :
 			
 			#############################
 			# カウントアップ
-			wCnt = wResDB['Responce']['Data'][0]['send_cnt']
+###			wCnt = wResDB['Responce']['Data'][0]['send_cnt']
+			wCnt = wARR_DBData[0]['send_cnt']
 			wCnt += 1
 			
 			#############################
@@ -3595,8 +3614,9 @@ class CLS_DB_IF() :
 			
 			#############################
 			# 辞書型に整形
-			wARR_RateFavoData = {}
-			self.OBJ_DB.ChgDict( wResDB['Responce']['Collum'], wResDB['Responce']['Data'], outDict=wARR_RateFavoData )
+###			wARR_RateFavoData = {}
+###			self.OBJ_DB.ChgDict( wResDB['Responce']['Collum'], wResDB['Responce']['Data'], outDict=wARR_RateFavoData )
+			wARR_RateFavoData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
 			wARR_RateFavoData = wARR_RateFavoData[0]	#1個しかないので添え字を消す
 			
 			#############################

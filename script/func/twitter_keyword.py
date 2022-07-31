@@ -574,6 +574,10 @@ class CLS_TwitterKeyword():
 		### 抽出ツイート数
 		wHitCnt = len( wTweetRes['Responce'] )
 		
+		### トラヒック記録（検索実施数・Hit数）
+		CLS_Traffic.sP( "s_run" )
+		CLS_Traffic.sP( "s_hit", wHitCnt )
+		
 		###ウェイト初期化
 		self.OBJ_Parent.Wait_Init( inZanNum=len( wTweetRes['Responce'] ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
 		
@@ -700,6 +704,10 @@ class CLS_TwitterKeyword():
 			wStr = wStr + "いいね済み: @" + str(wTweet['user']['screen_name']) + " " + str(wTweet['created_at']) + '\n' ;
 			wStr = wStr + wTweet['text'] + '\n' ;
 			CLS_OSIF.sPrn( wStr )
+			
+			#############################
+			# トラヒック記録（検索いいね実施数）
+			CLS_Traffic.sP( "s_favo" )
 			
 			#############################
 			# ログに記録
