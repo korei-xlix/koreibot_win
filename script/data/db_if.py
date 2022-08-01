@@ -1873,7 +1873,7 @@ class CLS_DB_IF() :
 				"list_number"	: wListNo,
 				"id"			: wID,
 				"list_name"		: wARR_DBData[wIndex]['list_name'],
-				"user_id"		: wARR_DBData[wIndex]['user_id'],
+				"user_id"		: str( wARR_DBData[wIndex]['user_id'] ),
 				"screen_name"	: wARR_DBData[wIndex]['screen_name'],
 				"valid"			: wARR_DBData[wIndex]['valid'],
 				"follow"		: wARR_DBData[wIndex]['follow'],
@@ -1898,7 +1898,7 @@ class CLS_DB_IF() :
 			if ( gVal.STR_UserInfo['ListID']==wID or \
 			     gVal.STR_UserInfo['mListID']==wID and gVal.STR_UserInfo['AutoRemove']==True or \
 			     gVal.STR_UserInfo['fListID']==wID and gVal.STR_UserInfo['AutoRemove']==True ) \
-			   and gVal.STR_UserInfo['id']==wARR_Data[wIndex]['user_id'] :
+			   and str(gVal.STR_UserInfo['id'])==wARR_Data[wIndex]['user_id'] :
 				wARR_Del.append( wID )
 		
 		for wID in wARR_Del :

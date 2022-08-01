@@ -618,6 +618,14 @@ class CLS_TwitterFavo():
 				wFLG_ZanCountSkip = True
 				continue
 			
+			### VIPの場合
+			### 相互フォローリスト、片フォローリストに未登録か
+			if self.OBJ_Parent.CheckVIPUser( wARR_FollowerData[wUserID] )==True :
+				if gVal.OBJ_Tw_IF.CheckMutualListUser( wUserID )==False and \
+				   gVal.OBJ_Tw_IF.CheckFollowListUser( wUserID )==False :
+					###対象 =除外
+					continue
+			
 			#############################
 			# DBからいいね情報を取得する(1個)
 ###			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wARR_FollowData[wUserID] )
@@ -1435,12 +1443,21 @@ class CLS_TwitterFavo():
 			wRes['Result'] = True
 			return wRes
 		
-		wNum = wNum - 1
-		if wNum<0 or len(gVal.ARR_ListFavo)<=wNum :
+###		wNum = wNum - 1
+###		if wNum<0 or len(gVal.ARR_ListFavo)<=wNum :
+		wKeylist = list( gVal.ARR_ListFavo.keys() )
+		wGetIndex = None
+		for wIndex in wKeylist :
+			if gVal.ARR_ListFavo[wIndex]['list_number']==wNum :
+				wGetIndex = wIndex
+				break
+		
+		if wGetIndex==None :
 			CLS_OSIF.sPrn( "LIST番号が範囲外です" + '\n' )
 			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
 			wRes['Result'] = True
 			return wRes
+		wNum = wGetIndex
 		
 		#############################
 		# コマンドの分岐
@@ -1581,42 +1598,55 @@ class CLS_TwitterFavo():
 		for wID in wKeylist :
 			wID = str( wID )
 			
-			if wARR_FollowerData[wID]['myfollow']==False :
-				### フォロー者じゃないので除外
+###			if wARR_FollowerData[wID]['myfollow']==False :
+###				### フォロー者じゃないので除外
+###				continue
+			### フォロワーか
+			if wARR_FollowerData[wID]['follower']==False :
+				### フォロワーじゃない =除外
 				continue
 			
-			#############################
-			# DBからいいね情報を取得する(1個)
-			#   
-			#   
+			### VIPの場合
+			### 相互フォローリスト、片フォローリストに未登録か
+			if self.OBJ_Parent.CheckVIPUser( wARR_FollowerData[wID] )==True :
+				if gVal.OBJ_Tw_IF.CheckMutualListUser( wID )==False and \
+				   gVal.OBJ_Tw_IF.CheckFollowListUser( wID )==False :
+					###対象 =除外
+					continue
+			
+###			#############################
+###			# DBからいいね情報を取得する(1個)
+###			#   
+###			#   
 ###			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wID )
 ###			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wARR_FollowerData[wID] )
-			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wARR_FollowerData[wID], inFLG_New=False )
-			if wDBRes['Result']!=True :
-				###失敗
-				wRes['Reason'] = "GetFavoDataOne is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			### DB登録なし
+##			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wARR_FollowerData[wID], inFLG_New=False )
+##			if wDBRes['Result']!=True :
+##				###失敗
+##				wRes['Reason'] = "GetFavoDataOne is failed"
+##				gVal.OBJ_L.Log( "B", wRes )
+##				return wRes
+##			### DB登録なし
 ###			if wDBRes['Responce']==None :
-			if wDBRes['Responce']['Data']==None :
-				### 除外
-				continue
-			
+##			if wDBRes['Responce']['Data']==None :
+##				### 除外
+##				continue
+##			
 ###			if str(wDBRes['Responce']['lfavo_date'])==gVal.DEF_TIMEDATE or \
 ###			   wDBRes['Responce']['lfavo_date']==None :
-			if str(wDBRes['Responce']['Data']['lfavo_date'])==gVal.DEF_TIMEDATE or \
-			   wDBRes['Responce']['Data']['lfavo_date']==None :
-				### リストいいねしてないなら除外
-				continue
-			
+###			if str(wDBRes['Responce']['Data']['lfavo_date'])==gVal.DEF_TIMEDATE or \
+###			   wDBRes['Responce']['Data']['lfavo_date']==None :
+##			if str(wDBRes['Responce']['Data']['pfavo_date'])==gVal.DEF_TIMEDATE :
+##				### リストいいねしてないなら除外
+##				continue
+##			
 ###			if wARR_FollowerData[wID]['follower']==False and \
 ###			   wDBRes['Responce']['favo_cnt']==0 :
-			if wARR_FollowerData[wID]['follower']==False and \
-			   wDBRes['Responce']['Data']['favo_cnt']==0 :
-				### フォロワーではない かつ いいね受信=0 は除外
-				continue
-			
+##			if wARR_FollowerData[wID]['follower']==False and \
+##			   wDBRes['Responce']['Data']['favo_cnt']==0 :
+##				### フォロワーではない かつ いいね受信=0 は除外
+##				continue
+##			
 			#############################
 			# 対象なのでセット
 			wCell = {
@@ -1667,7 +1697,8 @@ class CLS_TwitterFavo():
 		#############################
 		# ヘッダの表示
 ###		wStr = "USER NAME         FW者  FW受  FAVO受信(回数/日)   FAVO送信日   最終活動日" + '\n'
-		wStr = "USER NAME         LEVEL   FW者  FW受  FAVO受信(回数/日)   FAVO送信日(回数)   最終活動日" + '\n'
+###		wStr = "USER NAME         LEVEL   FW者  FW受  FAVO受信(回数/日)   FAVO送信日(回数)   最終活動日" + '\n'
+		wStr = "USER NAME         LV  FW者  FAVO受信(回数/日)         FAVO送信日(回数)     最終活動日" + '\n'
 		CLS_OSIF.sPrn( wStr )
 		
 		#############################
@@ -1801,20 +1832,20 @@ class CLS_TwitterFavo():
 				wListData = "--"
 			wStr = wStr + wListData + "    "
 			
-			### フォロワー
-			if gVal.OBJ_Tw_IF.CheckFollower( wID )==True :
-				wListData = "〇"
-			else:
-				wListData = "--"
-			wStr = wStr + wListData + "    "
-			
-			### いいね回数
+###			### フォロワー
+###			if gVal.OBJ_Tw_IF.CheckFollower( wID )==True :
+###				wListData = "〇"
+###			else:
+###				wListData = "--"
+###			wStr = wStr + wListData + "    "
+###			
+###			### いいね回数
 ###			wListNumSpace = 5 - len( str(wARR_DBData['favo_cnt']) )
-			wListNumSpace = 5 - len( str(wARR_DBData['rfavo_cnt']) )
-			if wListNumSpace>0 :
+###			wListNumSpace = 5 - len( str(wARR_DBData['rfavo_cnt']) )
+###			if wListNumSpace>0 :
 ###				wListData = str(wARR_DBData['favo_cnt']) + " " * wListNumSpace
-				wListData = str(wARR_DBData['rfavo_cnt']) + " " * wListNumSpace
-			wStr = wStr + wListData + ": "
+###				wListData = str(wARR_DBData['rfavo_cnt']) + " " * wListNumSpace
+###			wStr = wStr + wListData + ": "
 			
 			### いいね受信日
 ###			if str(wARR_DBData['favo_date'])==gVal.DEF_TIMEDATE or \
@@ -1825,14 +1856,28 @@ class CLS_TwitterFavo():
 ###				wListData = str(wARR_DBData['favo_date']).split(" ")
 				wListData = str(wARR_DBData['rfavo_date']).split(" ")
 				wListData = wListData[0]
-			wStr = wStr + wListData + "   "
+###			wStr = wStr + wListData + "   "
+			wStr = wStr + wListData + "("
 			
-			### いいね実施回数
-			wListNumSpace = 5 - len( str(wARR_DBData['pfavo_cnt']) )
-			if wListNumSpace>0 :
-				wListData = str(wARR_DBData['pfavo_cnt']) + " " * wListNumSpace
-			wStr = wStr + wListData + ": "
+			### いいね回数
+			if wARR_DBData['rfavo_cnt']>0 :
+				wListNumSpace = 5 - len( str(wARR_DBData['rfavo_cnt']) )
+				wListData = str(wARR_DBData['rfavo_cnt']) + " " * wListNumSpace
+				wListData = wListData + "/"
+				wListData = wListData + str(wARR_DBData['rfavo_n_cnt']) + " " * wListNumSpace
+			else:
+				wListNumSpace = 5 - 1
+				wListData = "-" + " " * wListNumSpace
+				wListData = wListData + "/"
+				wListData = wListData + "-" + " " * wListNumSpace
+			wStr = wStr + wListData + ")   "
 			
+###			### いいね実施回数
+###			wListNumSpace = 5 - len( str(wARR_DBData['pfavo_cnt']) )
+###			if wListNumSpace>0 :
+###				wListData = str(wARR_DBData['pfavo_cnt']) + " " * wListNumSpace
+###			wStr = wStr + wListData + ": "
+###			
 			### いいね送信日
 ###			if str(wARR_DBData['lfavo_date'])==gVal.DEF_TIMEDATE or \
 ###			   str(wARR_DBData['lfavo_date'])==None :
@@ -1842,7 +1887,17 @@ class CLS_TwitterFavo():
 ###				wListData = str(wARR_DBData['lfavo_date']).split(" ")
 				wListData = str(wARR_DBData['pfavo_date']).split(" ")
 				wListData = wListData[0]
-			wStr = wStr + wListData + "   "
+###			wStr = wStr + wListData + "   "
+			wStr = wStr + wListData + "("
+			
+			### いいね実施回数
+			if wARR_DBData['pfavo_cnt']>0 :
+				wListNumSpace = 5 - len( str(wARR_DBData['pfavo_cnt']) )
+				wListData = str(wARR_DBData['pfavo_cnt']) + " " * wListNumSpace
+			else:
+				wListNumSpace = 5 - 1
+				wListData = "-" + " " * wListNumSpace
+			wStr = wStr + wListData + ")   "
 			
 			### 最終活動日
 			if str(wARR_DBData['update_date'])==gVal.DEF_TIMEDATE :

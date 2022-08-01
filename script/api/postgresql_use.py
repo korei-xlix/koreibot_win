@@ -250,7 +250,8 @@ class CLS_PostgreSQL_Use():
 			self.QueryStat['Reason'] = "Query is not correct: " + inQuery
 			return False
 		wCommand = wCommand[0]
-		self.QueryStat['Command'] = wCommand[0]
+###		self.QueryStat['Command'] = wCommand[0]
+		self.QueryStat['Command'] = wCommand
 		
 		# チェック
 		if wCommand!="select" and \
