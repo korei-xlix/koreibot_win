@@ -620,7 +620,8 @@ class CLS_TwitterFavo():
 			
 			#############################
 			# DBからいいね情報を取得する(1個)
-			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wARR_FollowData[wUserID] )
+###			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wARR_FollowData[wUserID] )
+			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wARR_FollowData[wUserID], inFLG_New=False )
 			if wDBRes['Result']!=True :
 				###失敗
 				wRes['Reason'] = "GetFavoDataOne is failed"
@@ -874,7 +875,8 @@ class CLS_TwitterFavo():
 		
 		#############################
 		# 1個取り出す
-		wResDBData = gVal.OBJ_DB_IF.GetFavoDataOne( inData )
+###		wResDBData = gVal.OBJ_DB_IF.GetFavoDataOne( inData )
+		wResDBData = gVal.OBJ_DB_IF.GetFavoDataOne( inData, inFLG_New=False )
 		if wResDBData['Result']!=True :
 			###失敗
 			wRes['Reason'] = "GetFavoDataOne is failed"
@@ -1183,11 +1185,20 @@ class CLS_TwitterFavo():
 			return wRes
 		### DB未登録（ありえない）
 		if wSubRes['Responce']['Data']==None :
-			wRes['Reason'] = "GetFavoDataOne(3) is failed"
+###			wRes['Reason'] = "GetFavoDataOne(3) is failed"
+			wRes['Reason'] = "GetFavoDataOne is no data"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		if wSubRes['Responce']['FLG_New']==True :
 			wNewUser = True	#新規登録
+			#############################
+			# 新規情報の設定
+			wSubRes = self.OBJ_Parent.SetNewFavoData( inUser, wSubRes['Responce']['Data'] )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "SetNewFavoData is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
 		
 		wARR_DBData = wSubRes['Responce']['Data']
 		
@@ -1578,7 +1589,8 @@ class CLS_TwitterFavo():
 			#   
 			#   
 ###			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wID )
-			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wARR_FollowerData[wID] )
+###			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wARR_FollowerData[wID] )
+			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wARR_FollowerData[wID], inFLG_New=False )
 			if wDBRes['Result']!=True :
 				###失敗
 				wRes['Reason'] = "GetFavoDataOne is failed"
@@ -1643,7 +1655,6 @@ class CLS_TwitterFavo():
 		wRes['Class'] = "CLS_TwitterFavo"
 		wRes['Func']  = "__view_ListFavoUser_Disp"
 		
-
 		#############################
 		# ユーザなし
 		if len( inARR_Data )==0 :
@@ -1654,7 +1665,8 @@ class CLS_TwitterFavo():
 		
 		#############################
 		# ヘッダの表示
-		wStr = "USER NAME         FW者  FW受  FAVO受信(回数/日)   FAVO送信日   最終活動日" + '\n'
+###		wStr = "USER NAME         FW者  FW受  FAVO受信(回数/日)   FAVO送信日   最終活動日" + '\n'
+		wStr = "USER NAME         LEVEL   FW者  FW受  FAVO受信(回数/日)   FAVO送信日(回数)   最終活動日" + '\n'
 		CLS_OSIF.sPrn( wStr )
 		
 		#############################
@@ -1664,10 +1676,17 @@ class CLS_TwitterFavo():
 			wID = str( wID )
 			
 			wARR_DBData = {
-				"favo_cnt"		: 0,
-				"now_favo_cnt"	: 0,
-				"favo_date"		: gVal.DEF_TIMEDATE,
-				"lfavo_date"	: gVal.DEF_TIMEDATE,
+###				"favo_cnt"		: 0,
+###				"now_favo_cnt"	: 0,
+###				"favo_date"		: gVal.DEF_TIMEDATE,
+###				"lfavo_date"	: gVal.DEF_TIMEDATE,
+				"level_tag"		: None,
+				"rfavo_cnt"		: 0,
+				"rfavo_n_cnt"	: 0,
+				"rfavo_date"	: gVal.DEF_TIMEDATE,
+				"pfavo_date"	: gVal.DEF_TIMEDATE,
+				"pfavo_cnt"		: 0,
+				
 				"update_date"	: gVal.DEF_TIMEDATE,
 				"my_tweet"		: False
 			}
@@ -1738,11 +1757,28 @@ class CLS_TwitterFavo():
 ###				wARR_DBData['now_favo_cnt'] = wDBRes['Responce']['now_favo_cnt']
 ###				wARR_DBData['favo_date']  = wDBRes['Responce']['favo_date']
 ###				wARR_DBData['lfavo_date'] = wDBRes['Responce']['lfavo_date']
-			if wDBRes['Responce']['Data']!=None :
-				wARR_DBData['favo_cnt']     = wDBRes['Responce']['Data']['favo_cnt']
-				wARR_DBData['now_favo_cnt'] = wDBRes['Responce']['Data']['now_favo_cnt']
-				wARR_DBData['favo_date']  = wDBRes['Responce']['Data']['favo_date']
-				wARR_DBData['lfavo_date'] = wDBRes['Responce']['Data']['lfavo_date']
+###			if wDBRes['Responce']['Data']!=None :
+			if wDBRes['Responce']['Data']==None :
+				wRes['Reason'] = "GetFavoDataOne is no data"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if wDBRes['Responce']['FLG_New']==None :
+				wNewUser = True	#新規登録
+				#############################
+				# 新規情報の設定
+				wDBRes = self.OBJ_Parent.SetNewFavoData( inUser, wDBRes['Responce']['Data'] )
+				if wDBRes['Result']!=True :
+					###失敗
+					wRes['Reason'] = "SetNewFavoData is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+			
+			wARR_DBData['level_tag']   = self.OBJ_Parent.LevelTagSttring( wDBRes['Responce']['Data']['level_tag'] )
+			wARR_DBData['rfavo_cnt']   = wDBRes['Responce']['Data']['rfavo_cnt']
+			wARR_DBData['rfavo_n_cnt'] = wDBRes['Responce']['Data']['rfavo_n_cnt']
+			wARR_DBData['rfavo_date']  = wDBRes['Responce']['Data']['rfavo_date']
+			wARR_DBData['pfavo_date']  = wDBRes['Responce']['Data']['pfavo_date']
+			wARR_DBData['pfavo_cnt']   = wDBRes['Responce']['Data']['pfavo_cnt']
 			
 			#############################
 			# 表示するデータ組み立て
@@ -1753,6 +1789,9 @@ class CLS_TwitterFavo():
 			if wListNumSpace>0 :
 				wListData = inARR_Data[wID]['screen_name'] + " " * wListNumSpace
 			wStr = wStr + wListData + "  "
+			
+			### レベル
+			wStr = wStr + wARR_DBData['level_tag'] + "  "
 			
 			### フォロー者
 			if gVal.OBJ_Tw_IF.CheckMyFollow( wID )==True :
@@ -1769,26 +1808,38 @@ class CLS_TwitterFavo():
 			wStr = wStr + wListData + "    "
 			
 			### いいね回数
-			wListNumSpace = 5 - len( str(wARR_DBData['favo_cnt']) )
+###			wListNumSpace = 5 - len( str(wARR_DBData['favo_cnt']) )
+			wListNumSpace = 5 - len( str(wARR_DBData['rfavo_cnt']) )
 			if wListNumSpace>0 :
-				wListData = str(wARR_DBData['favo_cnt']) + " " * wListNumSpace
+###				wListData = str(wARR_DBData['favo_cnt']) + " " * wListNumSpace
+				wListData = str(wARR_DBData['rfavo_cnt']) + " " * wListNumSpace
 			wStr = wStr + wListData + ": "
 			
 			### いいね受信日
-			if str(wARR_DBData['favo_date'])==gVal.DEF_TIMEDATE or \
-			   str(wARR_DBData['favo_date'])==None :
+###			if str(wARR_DBData['favo_date'])==gVal.DEF_TIMEDATE or \
+###			   str(wARR_DBData['favo_date'])==None :
+			if str(wARR_DBData['rfavo_date'])==gVal.DEF_TIMEDATE :
 				wListData = "----/--/--"
 			else:
-				wListData = str(wARR_DBData['favo_date']).split(" ")
+###				wListData = str(wARR_DBData['favo_date']).split(" ")
+				wListData = str(wARR_DBData['rfavo_date']).split(" ")
 				wListData = wListData[0]
 			wStr = wStr + wListData + "   "
 			
+			### いいね実施回数
+			wListNumSpace = 5 - len( str(wARR_DBData['pfavo_cnt']) )
+			if wListNumSpace>0 :
+				wListData = str(wARR_DBData['pfavo_cnt']) + " " * wListNumSpace
+			wStr = wStr + wListData + ": "
+			
 			### いいね送信日
-			if str(wARR_DBData['lfavo_date'])==gVal.DEF_TIMEDATE or \
-			   str(wARR_DBData['lfavo_date'])==None :
+###			if str(wARR_DBData['lfavo_date'])==gVal.DEF_TIMEDATE or \
+###			   str(wARR_DBData['lfavo_date'])==None :
+			if str(wARR_DBData['pfavo_date'])==gVal.DEF_TIMEDATE :
 				wListData = "----/--/--"
 			else:
-				wListData = str(wARR_DBData['lfavo_date']).split(" ")
+###				wListData = str(wARR_DBData['lfavo_date']).split(" ")
+				wListData = str(wARR_DBData['pfavo_date']).split(" ")
 				wListData = wListData[0]
 			wStr = wStr + wListData + "   "
 			

@@ -426,6 +426,15 @@ class CLS_TwitterMain():
 				wRes['Reason'] = "GetFavoDataOne(3) is failed"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
+			if wSubRes['Responce']['FLG_New']==None :
+				#############################
+				# 新規情報の設定
+				wSubRes = self.SetNewFavoData( inUser, wSubRes['Responce']['Data'] )
+				if wSubRes['Result']!=True :
+					###失敗
+					wRes['Reason'] = "SetNewFavoData is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
 			
 ###			wARR_DBData = wSubRes['Responce']
 			wARR_DBData = wSubRes['Responce']['Data']
@@ -1367,11 +1376,19 @@ class CLS_TwitterMain():
 			return wRes
 		### DB未登録
 		if wSubRes['Responce']['Data']==None :
-			wRes['Reason'] = "GetFavoDataOne(1) is failed"
+			wRes['Reason'] = "GetFavoDataOne is no data"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		if wSubRes['Responce']['FLG_New']==None :
 			wNewUser = True	#新規登録
+			#############################
+			# 新規情報の設定
+			wSubRes = self.SetNewFavoData( inUser, wSubRes['Responce']['Data'] )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "SetNewFavoData is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
 		
 		wARR_DBData = wSubRes['Responce']['Data']
 		
@@ -2234,6 +2251,111 @@ class CLS_TwitterMain():
 		wRes['Responce'] = True
 		wRes['Result'] = True
 		return wRes
+
+
+
+#####################################################
+# 新規いいね情報の設定
+#####################################################
+	def SetNewFavoData( self, inUser, inData ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "SetNewFavoData"
+		
+		if inData['level_tag']!=gVal.DEF_NOTEXT :
+			### 既にレベルが設定されてたら終わる
+			wRes['Result'] = True
+			return wRes
+		
+		wID = str(inData['id'])
+		
+		wMyFollow = None
+		wFollower = None
+		wUserLevel = "F"
+		#############################
+		# 関係性チェック
+		wFollowInfoRes = gVal.OBJ_Tw_IF.GetFollowInfo( wID )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "GetFollowInfo is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		if wFollowInfoRes['Responce']['blocked_by']==True :
+			### 被ブロック検知
+			wUserLevel = "G"
+			
+			wStr = "●被ブロック検知"
+			gVal.OBJ_L.Log( "R", wRes, wStr + ": " + inData['screen_name'] )
+		
+		### 片フォロー者の場合
+		elif wFollowInfoRes['Responce']['following']==True and \
+		     wFollowInfoRes['Responce']['followed_by']==False :
+			wMyFollow = True
+			wUserLevel = "D"
+			
+			### 相互フォローリストに追加
+			wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( wID )
+		
+		### フォロワーの場合
+		elif wFollowInfoRes['Responce']['following']==False and \
+		     wFollowInfoRes['Responce']['followed_by']==True :
+			wFollower = True
+			wUserLevel = "E"
+			
+			### 片フォロワーリストに追加
+			wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_AddUser( wID )
+		
+		### 相互フォローの場合
+		elif wFollowInfoRes['Responce']['following']==True and \
+		     wFollowInfoRes['Responce']['followed_by']==True :
+			wMyFollow = True
+			wFollower = True
+			wUserLevel = "C+"
+			
+			### 相互フォローリストに追加
+			wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( wID )
+		
+		#############################
+		# ユーザレベル変更
+		wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
+		
+		#############################
+		# フォロー情報をDBへ反映する
+		if wMyFollow!=None or wFollower!=None :
+			wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Follower( wID, wMyFollow, wFollower )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "UpdateFavoData_Follower is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+		
+		#############################
+		# 更新によりデータリロード
+		wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( inUser, inFLG_New=False )
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "GetFavoDataOne is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		wRes['Responce'] = wSubRes['Responce']
+		#############################
+		# 正常終了
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# レベルタグ出力
+#####################################################
+	def LevelTagSttring( self, inLevelTag ):
+		wLevelTag = str(inLevelTag)
+		if len(inLevelTag)<2 :
+			wLevelTag = wLevelTag + " "
+		return wLevelTag
 
 
 
