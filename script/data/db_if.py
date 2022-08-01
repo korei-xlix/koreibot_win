@@ -1884,6 +1884,7 @@ class CLS_DB_IF() :
 			}
 ###			wARR_Data.update({ wIndex : wCell })
 			wARR_Data.update({ wID : wCell })
+			wListNo += 1
 		
 		#############################
 		# リスト通知リストと

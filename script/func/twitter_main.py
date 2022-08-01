@@ -448,7 +448,7 @@ class CLS_TwitterMain():
 			wUserLevel = None
 			#############################
 			# レベルDの修正→レベルAへ
-			if ( wARR_DBData['myfollow']=="D" and wARR_DBData['myfollow']=="C+" )\
+			if ( wARR_DBData['myfollow']=="D" and wARR_DBData['myfollow']=="C+" ) and \
 			   wFollowerData[wID]['myfollow']==True and \
 			   gVal.OBJ_Tw_IF.CheckSubscribeListUser( wID )==True :
 				if self.CheckMutualListUser( wID )==False and \
@@ -570,7 +570,7 @@ class CLS_TwitterMain():
 ###					     wUserInfoRes['Responce']['protected']==True ) :
 ###					if wFollowerData[wID]['myfollow']==False and \
 ###					   wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel=="A" and \
-					if wARR_DBData['level_tag']=="A" or wARR_DBData['level_tag']=="A+" or wUserLevel=="A" :
+					if wARR_DBData['level_tag']=="A" or wARR_DBData['level_tag']=="A+" or wUserLevel=="A" or wUserLevel=="A+" :
 						wFLG_RemDetect = False
 					
 ###					if wFollowerData[wID]['myfollow']==False and \
@@ -643,7 +643,7 @@ class CLS_TwitterMain():
 						
 ###						if wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel=="A" :
 ###						if wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel!="A" :
-						elif wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel!="A" :
+						elif wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel!="A" and wUserLevel!="A+" :
 							if wFollowerData[wID]['myfollow']==True :
 								### フォローされて相互フォローになった
 								wUserLevel = "C+"

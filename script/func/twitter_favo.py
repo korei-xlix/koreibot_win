@@ -1315,8 +1315,9 @@ class CLS_TwitterFavo():
 			wStr = wStr + "   : "
 			
 			### リスト番号
-			wListData = wI + 1
-			wListData = str(wListData)
+###			wListData = wI + 1
+			wListData = str(gVal.ARR_ListFavo[wI]['list_number'])
+###			wListData = str(wListData)
 			wListNumSpace = 4 - len( wListData )
 			if wListNumSpace>0 :
 				wListData = wListData + " " * wListNumSpace
