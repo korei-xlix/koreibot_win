@@ -447,6 +447,15 @@ class CLS_TwitterMain():
 ###			wDetectRemove = False
 			wUserLevel = None
 			#############################
+			# レベルDの修正→レベルAへ
+			if ( wARR_DBData['myfollow']=="D" and wARR_DBData['myfollow']=="C+" )\
+			   wFollowerData[wID]['myfollow']==True and \
+			   gVal.OBJ_Tw_IF.CheckSubscribeListUser( wID )==True :
+				if self.CheckMutualListUser( wID )==False and \
+				   self.CheckFollowListUser( wID )==False :
+					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, "A" )
+			
+			#############################
 			# フォロー者チェック
 			if wARR_DBData['myfollow']!=wFollowerData[wID]['myfollow'] :
 				#############################
@@ -459,7 +468,12 @@ class CLS_TwitterMain():
 						wStr = "△再フォロー者"
 ###						wFavoUpdate = True
 					
-					if gVal.OBJ_Tw_IF.CheckSubscribeListUser( wID )==True :
+					if wARR_DBData['level_tag']!="A+" and \
+					   self.CheckVIPUser( wFollowerData[wID] )==True :
+						### VIPのフォロー
+						wUserLevel = "A+"
+###					if gVal.OBJ_Tw_IF.CheckSubscribeListUser( wID )==True :
+					elif gVal.OBJ_Tw_IF.CheckSubscribeListUser( wID )==True :
 						### 公式垢などのフォロー
 						wUserLevel = "A"
 					else:
@@ -556,7 +570,14 @@ class CLS_TwitterMain():
 ###					     wUserInfoRes['Responce']['protected']==True ) :
 ###					if wFollowerData[wID]['myfollow']==False and \
 ###					   wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel=="A" and \
-					if wFollowerData[wID]['myfollow']==False and \
+					if wARR_DBData['level_tag']=="A" or wARR_DBData['level_tag']=="A+" or wUserLevel=="A" :
+						wFLG_RemDetect = False
+					
+###					if wFollowerData[wID]['myfollow']==False and \
+###					   wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel!="A" and \
+###					   ( wUserInfoRes['Responce']['statuses_count']==0 or \
+###					     wUserInfoRes['Responce']['protected']==True ) :
+					elif wFollowerData[wID]['myfollow']==False and \
 					   wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel!="A" and \
 					   ( wUserInfoRes['Responce']['statuses_count']==0 or \
 					     wUserInfoRes['Responce']['protected']==True ) :
@@ -615,8 +636,14 @@ class CLS_TwitterMain():
 						else:
 							wStr = "△再フォローされた"
 						
+						if wARR_DBData['level_tag']!="A+" and wUserLevel!="A+" and \
+						   self.CheckVIPUser( wFollowerData[wID] )==True :
+							### VIPのフォロワー
+							wUserLevel = "A+"
+						
 ###						if wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel=="A" :
-						if wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel!="A" :
+###						if wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel!="A" :
+						elif wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel!="A" :
 							if wFollowerData[wID]['myfollow']==True :
 								### フォローされて相互フォローになった
 								wUserLevel = "C+"
@@ -2260,6 +2287,24 @@ class CLS_TwitterMain():
 		wRes['Responce'] = True
 		wRes['Result'] = True
 		return wRes
+
+
+
+#####################################################
+# VIPユーザチェック
+#####################################################
+	def CheckVIPUser( self, inData ):
+		
+		wUserID = str(inData['id'])
+		
+		#############################
+		# 禁止ユーザかチェック
+		if wUserID in gVal.ARR_NotReactionUser :
+			if gVal.ARR_NotReactionUser[wUserID]['vip']==True :
+				### VIP
+				return True
+		
+		return False
 
 
 
