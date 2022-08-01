@@ -391,12 +391,14 @@ class CLS_TwitterMain():
 		
 		wKeylist = list( wFollowerData.keys() )
 		for wID in wKeylist :
-			wUserID = str(wID)
+###			wUserID = str(wID)
+			wID = str(wID)
 			
 			#############################
 			# DBからいいね情報を取得する(1個)
 ###			wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUserID )
-			wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wFollowerData[wUserID] )
+###			wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wFollowerData[wUserID] )
+			wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wFollowerData[wID] )
 			if wSubRes['Result']!=True :
 				###失敗
 				wRes['Reason'] = "GetFavoDataOne is failed"
@@ -469,7 +471,8 @@ class CLS_TwitterMain():
 							wUserLevel = "D"
 						
 						### 相互フォローリストに追加
-						wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( wID )
+###						wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( wID )
+						wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( wFollowerData[wID] )
 					
 					### ユーザレベル変更
 					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
@@ -502,7 +505,8 @@ class CLS_TwitterMain():
 							wUserLevel = "E"
 							
 							### 片フォロワーリストに追加
-							wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_AddUser( wID )
+###							wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_AddUser( wID )
+							wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_AddUser( wFollowerData[wID] )
 						
 						else:
 							### 自発的リムーブ扱い（フォロー者・フォロワーともにOFF）
@@ -510,7 +514,8 @@ class CLS_TwitterMain():
 							wUserLevel = "D-"
 							
 							### リストリムーブ
-							wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_Remove( wID )
+###							wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_Remove( wID )
+							wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_Remove( wFollowerData[wID] )
 						
 						### ユーザレベル変更
 						wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
@@ -620,7 +625,8 @@ class CLS_TwitterMain():
 								wUserLevel = "E"
 								
 								### 片フォロワーリストに追加
-								wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_AddUser( wID )
+###								wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_AddUser( wID )
+								wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_AddUser( wFollowerData[wID] )
 							
 							### ユーザレベル変更
 							wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
@@ -694,7 +700,8 @@ class CLS_TwitterMain():
 ###							wUserLevel = "E-"
 ###							
 							### リストリムーブ
-							wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_Remove( wID )
+###							wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_Remove( wID )
+							wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_Remove( wFollowerData[wID] )
 							
 							### ユーザレベル変更
 							wUserLevel = "E-"
@@ -851,7 +858,8 @@ class CLS_TwitterMain():
 					wStr = "●リムーブ者"
 				
 				### リストリムーブ
-				wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_Remove( wID )
+###				wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_Remove( wID )
+				wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_Remove( wARR_RateFavoDate[wID] )
 				
 				### ユーザレベル変更
 				wUserLevel = "E-"
@@ -871,7 +879,8 @@ class CLS_TwitterMain():
 				wFollower = False
 				
 				### リストリムーブ
-				wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_Remove( wID )
+###				wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_Remove( wID )
+				wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_Remove( wARR_RateFavoDate[wID] )
 				
 				### ユーザレベル変更
 				wUserLevel = "E"
@@ -2296,7 +2305,8 @@ class CLS_TwitterMain():
 			wUserLevel = "D"
 			
 			### 相互フォローリストに追加
-			wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( wID )
+###			wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( wID )
+			wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( inData )
 		
 		### フォロワーの場合
 		elif wFollowInfoRes['Responce']['following']==False and \
@@ -2305,7 +2315,8 @@ class CLS_TwitterMain():
 			wUserLevel = "E"
 			
 			### 片フォロワーリストに追加
-			wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_AddUser( wID )
+###			wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_AddUser( wID )
+			wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_AddUser( inData )
 		
 		### 相互フォローの場合
 		elif wFollowInfoRes['Responce']['following']==True and \
@@ -2315,7 +2326,8 @@ class CLS_TwitterMain():
 			wUserLevel = "C+"
 			
 			### 相互フォローリストに追加
-			wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( wID )
+###			wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( wID )
+			wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( inData )
 		
 		#############################
 		# ユーザレベル変更

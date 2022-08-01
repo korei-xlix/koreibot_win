@@ -467,7 +467,8 @@ class CLS_TwitterFollower():
 					continue
 				
 				### 相互フォローリストに追加
-				wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( wID )
+###				wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( wID )
+				wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( wARR_RateFavoDate[wID] )
 				
 				### ユーザレベル変更
 				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, "C" )
