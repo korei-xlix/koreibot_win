@@ -3741,7 +3741,8 @@ class CLS_DB_IF() :
 			}
 ###			wARR_Data.update({ str(wIndex) : wCell })
 			wARR_Data.update({ str(wListNo) : wCell })
-			wIndex += 1
+###			wIndex += 1
+			wListNo += 1
 		
 		#############################
 		# グローバルに反映
@@ -3882,6 +3883,8 @@ class CLS_DB_IF() :
 		# 有効/無効の切り替え
 		if wFLG_Valid==True :
 			wFLG_Valid = False
+		else:
+			wFLG_Valid = True
 		
 		wWord = gVal.ARR_SearchData[inIndex]['word']
 		#############################

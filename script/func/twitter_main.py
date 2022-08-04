@@ -1535,7 +1535,8 @@ class CLS_TwitterMain():
 		#############################
 		# 自動おかえしいいねする
 		if gVal.DEF_STR_TLNUM['autoRepFavo']==True :
-			wSubRes = self.OBJ_TwitterFavo.AutoFavo( inUser, inData )
+###			wSubRes = self.OBJ_TwitterFavo.AutoFavo( inUser, inData )
+			wSubRes = self.OBJ_TwitterFavo.AutoFavo( inUser, gVal.DEF_STR_TLNUM['forReturnFavoSec'] )
 			if wSubRes['Result']!=True :
 				###失敗
 				wRes['Reason'] = "AutoFavo is failed"

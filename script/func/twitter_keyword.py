@@ -8,8 +8,9 @@
 #####################################################
 
 from osif import CLS_OSIF
-from htmlif import CLS_HTMLIF
-from filectrl import CLS_File
+###from htmlif import CLS_HTMLIF
+###from filectrl import CLS_File
+from traffic import CLS_Traffic
 from mydisp import CLS_MyDisp
 from gval import gVal
 #####################################################
@@ -108,7 +109,8 @@ class CLS_TwitterKeyword():
 			wStr = wStr + "   : "
 			
 			### リスト番号
-			wListData = str(gVal.ARR_SearchData[wI]['id'])
+###			wListData = str(gVal.ARR_SearchData[wI]['id'])
+			wListData = str(gVal.ARR_SearchData[wI]['list_number'])
 			wListNumSpace = 4 - len( wListData )
 			if wListNumSpace>0 :
 				wListData = wListData + " " * wListNumSpace
@@ -216,7 +218,7 @@ class CLS_TwitterKeyword():
 		
 		#############################
 		# リストのインデックス
-		wNum = str(wNum)
+###		wNum = str(wNum)
 		wKeylist = list( gVal.ARR_SearchData.keys() )
 		wGetIndex = None
 		for wIndex in wKeylist :

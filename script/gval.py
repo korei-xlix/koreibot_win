@@ -174,17 +174,29 @@ class gVal() :
 		
 														# リストいいね
 		"forListFavoSec"				: 86400,		#   リストいいねまでの期間   1日  60x60x24
-		"forListFavoAutoFavoTweetSec"	: 28800,		#   リストいいね 自動いいね ツイート期間外   8時間  60x60x8
-		"forListFavoReturnFavoSec"		: 3600,			#   リストいいね お返しいいねへの期間   1時間  60x60x1
-		"forListFavoMyFollowFavoSec"	: 14400,		#   リストいいね フォロー者いいねへの期間       4時間  60x60x4
+###		"forListFavoMyFollowFavoSec"	: 14400,		#   リストいいね フォロー者いいねへの期間       4時間  60x60x4
 		
-		"forListFavoFollowerSec"		: 86400,		#   フォロワー支援いいねまでの期間   1日  60x60x24
-		"forListFavoFollowerFavoSec"	: 432000,		#   リストいいね フォロワー支援いいねへの期間   5日  (60x60x24)x5
+														# フォロワー支援いいね
+###		"forListFavoFollowerSec"		: 86400,		#   フォロワー支援いいねまでの期間   1日  60x60x24
+		"forFollowerFavoSec"				: 14400,	#   フォロワー支援いいねまでの期間   4時間  60x60x4
+		"forFollowerFavoMListMutualSec"		: 14400,	#   相互フォローリスト 相互フォローの いいね期間   4時間  60x60x4
+		"forFollowerFavoMListMyFollowSec"	: 86400,	#   相互フォローリスト 片フォロー者の いいね期間   1日  60x60x24
+		"forFollowerFavoFListAutoFavoSec"	: 28800,	#   片フォロワーリスト・自動いいね期間   8時間  60x60x8
+		"forFollowerFavoFListOverFavoSec"	: 86400,	#   片フォロワーリスト・外部いいね期間   1日  60x60x24
+###		"forListFavoFollowerFavoSec"	: 432000,		#   リストいいね フォロワー支援いいねへの期間   5日  (60x60x24)x5
 		
-		"forListFavoOverTweetSec"		: 28800,		#   リストいいね 外部いいね ツイート期間外   8時間  60x60x8
-		"forListFavoOverMyFollowSec"	: 14400,		#   リストいいね 外部いいね フォロー者への期間   4時間  60x60x4
-		"forListFavoOverNoFollowSec"	: 432000,		#   リストいいね 外部いいね フォロー外への期間   5日  (60x60x24)x5
+														# 自動いいね
+###		"forListFavoAutoFavoTweetSec"	: 28800,		#   リストいいね 自動いいね ツイート期間外   8時間  60x60x8
+		"forAutoFavoTweetSec"			: 28800,		#   対象ツイート期間外   8時間  60x60x8
 		
+														# 外部いいね
+###		"forListFavoOverTweetSec"		: 28800,		#   リストいいね 外部いいね ツイート期間外   8時間  60x60x8
+###		"forListFavoOverMyFollowSec"	: 14400,		#   リストいいね 外部いいね フォロー者への期間   4時間  60x60x4
+###		"forListFavoOverNoFollowSec"	: 432000,		#   リストいいね 外部いいね フォロー外への期間   5日  (60x60x24)x5
+		"forOverFavoTweetSec"			: 28800,		#   対象ツイート期間外   8時間  60x60x8
+		"forOverFavoFavoriteSec"		: 28800,		#   いいね実施期間外     8時間  60x60x8
+		
+		"forReturnFavoSec"				: 3600,			# お返しいいねへの期間   1時間  60x60x1
 		"forRemFavoSec"				: 172800,			# いいね解除までの期間 2日 (60x60x24)x2
 		
 		"forListFavoAutoRemoveSec"	: 604800,			#   リストいいね 自動リムーブまでの期間   7日  (60x60x24)x7
