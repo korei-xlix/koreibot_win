@@ -1115,16 +1115,19 @@ class CLS_TwitterAdmin():
 		for wKey in wKeylist :
 			#############################
 			# 自動削除設定中か
-			if gVal.ARR_NotReactionUser[wKey]['rel_date']==gVal.DEF_TIMEDATE :
+###			if gVal.ARR_NotReactionUser[wKey]['rel_date']==gVal.DEF_TIMEDATE :
+			if str(gVal.ARR_NotReactionUser[wKey]['rel_date'])==gVal.DEF_TIMEDATE :
 				### 設定OFFはスキップ
 				continue
 			
 			#############################
 			# 予定日が過ぎたか
-			wSubRes = CLS_OSIF.sCmpTime( gVal.ARR_NotReactionUser[wKey]['rel_date'], inDstTD=str( gVal.STR_Time['TimeDate'] ) )
+###			wSubRes = CLS_OSIF.sCmpTime( gVal.ARR_NotReactionUser[wKey]['rel_date'], inDstTD=str( gVal.STR_Time['TimeDate'] ) )
+			wSubRes = CLS_OSIF.sCmpTime( str(gVal.ARR_NotReactionUser[wKey]['rel_date']), inDstTD=str( gVal.STR_Time['TimeDate'] ) )
 			if wSubRes['Result']!=True :
 				###失敗
-				wRes['Reason'] = "sCmpTime is failed"
+###				wRes['Reason'] = "sCmpTime is failed"
+				wRes['Reason'] = "sCmpTime is failed: user=" + gVal.ARR_NotReactionUser[wKey]['screen_name']
 				gVal.OBJ_L.Log( "B", wRes )
 				continue
 			if wSubRes['Future']==True :
