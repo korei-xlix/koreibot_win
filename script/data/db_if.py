@@ -1301,6 +1301,7 @@ class CLS_DB_IF() :
 				"screen_name"	: wARR_DBData[wID]['screen_name'],
 				"report"		: wARR_DBData[wID]['report'],
 				"vip"			: wARR_DBData[wID]['vip'],
+				"ope"			: wARR_DBData[wID]['ope'],
 				"rel_date"		: wARR_DBData[wID]['rel_date'],
 				"memo"			: wARR_DBData[wID]['memo']
 			}
@@ -1433,6 +1434,7 @@ class CLS_DB_IF() :
 				wQy = wQy + "report = " + str(inARRData[wID]['report']) + ", "
 ###				wQy = wQy + "vip = " + str(inARRData[wID]['vip']) + " "
 				wQy = wQy + "vip = " + str(inARRData[wID]['vip']) + ", "
+				wQy = wQy + "ope = " + str(inARRData[wID]['ope']) + ", "
 				wQy = wQy + "rel_date = '" + str(inARRData[wID]['rel_date']) + "', "
 				wQy = wQy + "memo = '" + str(inARRData[wID]['memo']) + "' "
 				wQy = wQy + "where id = '" + str(inARRData[wID]['id']) + "' "
@@ -1455,6 +1457,7 @@ class CLS_DB_IF() :
 				wQy = wQy + "'" + str(inARRData[wID]['screen_name']) + "', "
 				wQy = wQy + str(inARRData[wID]['report']) + ", "
 				wQy = wQy + str(inARRData[wID]['vip']) + ", "
+				wQy = wQy + str(inARRData[wID]['ope']) + ", "
 				wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"
 				wQy = wQy + "'' "
 				wQy = wQy + ") ;"
@@ -1487,7 +1490,11 @@ class CLS_DB_IF() :
 			if inARRData[wID]['report']==True :
 				wStr = wStr + " [〇有] "
 			else:
-				wStr = wStr + " [  無] "
+###				wStr = wStr + " [  無] "
+				if inARRData[wID]['ope']==True :
+					wStr = wStr + " [●監] "
+				else:
+					wStr = wStr + " [  無] "
 			
 			### 文字
 ###			wStr = wStr + wKey
@@ -1601,6 +1608,7 @@ class CLS_DB_IF() :
 		wQy = wQy + "'" + str(inData['screen_name']) + "', "
 		wQy = wQy + "False, "
 		wQy = wQy + "False, "
+		wQy = wQy + "False, "
 		wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"
 		wQy = wQy + "'' "
 		wQy = wQy + ") ;"
@@ -1639,6 +1647,7 @@ class CLS_DB_IF() :
 			"screen_name"	: str(inData['screen_name']),
 			"report"		: False,
 			"vip"			: False,
+			"ope"			: False,
 ###			"rel_date"		: "(none)",
 			"rel_date"		: str( gVal.DEF_TIMEDATE ),
 			"memo"			: ""
@@ -1660,7 +1669,8 @@ class CLS_DB_IF() :
 
 	#####################################################
 ###	def UpdateExeUser( self, inName, inReport=None, inVIP=None ):
-	def UpdateExeUser( self, inID, inReport=None, inVIP=None, inRelDate=None, inMemo=None ):
+###	def UpdateExeUser( self, inID, inReport=None, inVIP=None, inRelDate=None, inMemo=None ):
+	def UpdateExeUser( self, inID, inReport=None, inVIP=None, inOpe=None, inRelDate=None, inMemo=None ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -1694,7 +1704,8 @@ class CLS_DB_IF() :
 		#############################
 		# 入力チェック
 ###		if inReport==None and inVIP==None :
-		if inReport==None and inVIP==None and inRelDate==None and inMemo==None :
+###		if inReport==None and inVIP==None and inRelDate==None and inMemo==None :
+		if inReport==None and inVIP==None and inOpe==None and inRelDate==None and inMemo==None :
 			wRes['Reason'] = "input error: screen_name=" + str(gVal.ARR_NotReactionUser[wUserID]['screen_name'])
 			gVal.OBJ_L.Log( "D", wRes )
 			return wRes
@@ -1706,6 +1717,7 @@ class CLS_DB_IF() :
 		wSTR_Value = {
 			"report"		: gVal.ARR_NotReactionUser[wUserID]['report'],
 			"vip"			: gVal.ARR_NotReactionUser[wUserID]['vip'],
+			"ope"			: gVal.ARR_NotReactionUser[wUserID]['ope'],
 			"rel_date"		: gVal.ARR_NotReactionUser[wUserID]['rel_date'],
 			"memo"			: gVal.ARR_NotReactionUser[wUserID]['memo']
 		}
@@ -1718,6 +1730,8 @@ class CLS_DB_IF() :
 		if inVIP!=None :
 ###			wFLR_VIP = inVIP
 			wSTR_Value['vip'] = inVIP
+		if inOpe!=None :
+			wSTR_Value['ope'] = inOpe
 		
 		if inRelDate!=None :
 			wSTR_Value['rel_date'] = inRelDate
@@ -1734,6 +1748,7 @@ class CLS_DB_IF() :
 ###		wQy = wQy + "vip = " + str( wFLR_VIP ) + ", "
 		wQy = wQy + "report = " + str( wSTR_Value['report'] ) + ", "
 		wQy = wQy + "vip = " + str( wSTR_Value['vip'] ) + ", "
+		wQy = wQy + "ope = " + str( wSTR_Value['ope'] ) + ", "
 		wQy = wQy + "rel_date = '" + str( wSTR_Value['rel_date'] ) + "', "
 		wQy = wQy + "memo = '" + str( wSTR_Value['memo'] ) + "' "
 		wQy = wQy + "where id = '" + wUserID + "' "
@@ -1755,6 +1770,7 @@ class CLS_DB_IF() :
 ###		gVal.ARR_NotReactionUser[inName]['vip']    = wFLR_VIP
 		gVal.ARR_NotReactionUser[wUserID]['report'] = wSTR_Value['report']
 		gVal.ARR_NotReactionUser[wUserID]['vip']    = wSTR_Value['vip']
+		gVal.ARR_NotReactionUser[wUserID]['ope']    = wSTR_Value['ope']
 		gVal.ARR_NotReactionUser[wUserID]['rel_date'] = wSTR_Value['rel_date']
 		gVal.ARR_NotReactionUser[wUserID]['memo']     = wSTR_Value['memo']
 		

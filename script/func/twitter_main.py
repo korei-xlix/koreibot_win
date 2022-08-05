@@ -1055,6 +1055,14 @@ class CLS_TwitterMain():
 			return wRes
 		
 		#############################
+		# VIPリアクション監視チェック
+		wSubRes = self.OBJ_TwitterFollower.VIP_ReactionCheck()
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "VIP_ReactionCheck is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
 		# リストいいね（●フル自動監視）
 		if wFLG_Short==False :
 			wSubRes = self.OBJ_TwitterFavo.ListFavo()
@@ -1258,7 +1266,8 @@ class CLS_TwitterMain():
 #####################################################
 # リアクションツイートチェック
 #####################################################
-	def ReactionTweetCheck( self, inTweet ):
+###	def ReactionTweetCheck( self, inTweet ):
+	def ReactionTweetCheck( self, inMyUserID, inTweet ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -1271,10 +1280,17 @@ class CLS_TwitterMain():
 		wUserID = str( wTweet['user']['id'] )
 		#############################
 		# 自分のツイート以外は処理を抜ける
-		if str(gVal.STR_UserInfo['id'])!=wUserID :
+###		if str(gVal.STR_UserInfo['id'])!=wUserID :
+		if inMyUserID!=wUserID :
 			### 自分のツイートではない＝正常終了
 			wRes['Result'] = True
 			return wRes
+		
+		#############################
+		# 自分かのフラグ
+		wFLG_MyUser = False
+		if str(gVal.STR_UserInfo['id'])==wUserID :
+			wFLG_MyUser = True
 		
 		wTweet['id'] = str(wTweet['id'])
 		wTweetID = wTweet['id']
@@ -1298,7 +1314,8 @@ class CLS_TwitterMain():
 		for wID in wKeylist :
 			wID = str(wID)
 			###ユーザ単位のリアクションチェック
-			wReactionRes = self.ReactionUserCheck( wSubRes['Responce'][wID], wTweet )
+###			wReactionRes = self.ReactionUserCheck( wSubRes['Responce'][wID], wTweet )
+			wReactionRes = self.ReactionUserCheck( wSubRes['Responce'][wID], wTweet, wFLG_MyUser )
 			if wReactionRes['Result']!=True :
 				wRes['Reason'] = "Twitter Error(ReactionUserCheck): Tweet ID: " + wTweetID
 				gVal.OBJ_L.Log( "B", wRes )
@@ -1308,12 +1325,15 @@ class CLS_TwitterMain():
 				CLS_OSIF.sPrn( wStr )
 				
 				### トラヒック記録
-				CLS_Traffic.sP( "r_reaction" )
-				CLS_Traffic.sP( "r_favo" )
-				if gVal.OBJ_Tw_IF.CheckFollower( wID )==True :
-					CLS_Traffic.sP( "r_in" )
+				if wFLG_MyUser==True :
+					CLS_Traffic.sP( "r_reaction" )
+					CLS_Traffic.sP( "r_favo" )
+					if gVal.OBJ_Tw_IF.CheckFollower( wID )==True :
+						CLS_Traffic.sP( "r_in" )
+					else:
+						CLS_Traffic.sP( "r_out" )
 				else:
-					CLS_Traffic.sP( "r_out" )
+					CLS_Traffic.sP( "r_vip" )
 		
 		#############################
 		# リツイートチェック
@@ -1327,7 +1347,8 @@ class CLS_TwitterMain():
 		for wID in wKeylist :
 			wID = str(wID)
 			###ユーザ単位のリアクションチェック
-			wReactionRes = self.ReactionUserCheck( wSubRes['Responce'][wID], wTweet )
+###			wReactionRes = self.ReactionUserCheck( wSubRes['Responce'][wID], wTweet )
+			wReactionRes = self.ReactionUserCheck( wSubRes['Responce'][wID], wTweet, wFLG_MyUser )
 			if wReactionRes['Result']!=True :
 				wRes['Reason'] = "Twitter Error(ReactionUserCheck 2): Tweet ID: " + wTweetID
 				gVal.OBJ_L.Log( "B", wRes )
@@ -1337,12 +1358,15 @@ class CLS_TwitterMain():
 				CLS_OSIF.sPrn( wStr )
 				
 				### トラヒック記録
-				CLS_Traffic.sP( "r_reaction" )
-				CLS_Traffic.sP( "r_retweet" )
-				if gVal.OBJ_Tw_IF.CheckFollower( wID )==True :
-					CLS_Traffic.sP( "r_in" )
+				if wFLG_MyUser==True :
+					CLS_Traffic.sP( "r_reaction" )
+					CLS_Traffic.sP( "r_favo" )
+					if gVal.OBJ_Tw_IF.CheckFollower( wID )==True :
+						CLS_Traffic.sP( "r_in" )
+					else:
+						CLS_Traffic.sP( "r_out" )
 				else:
-					CLS_Traffic.sP( "r_out" )
+					CLS_Traffic.sP( "r_vip" )
 		
 		#############################
 		# 引用リツイートチェック
@@ -1356,7 +1380,8 @@ class CLS_TwitterMain():
 		for wID in wKeylist :
 			wID = str(wID)
 			###ユーザ単位のリアクションチェック
-			wReactionRes = self.ReactionUserCheck( wSubRes['Responce'][wID], wTweet )
+###			wReactionRes = self.ReactionUserCheck( wSubRes['Responce'][wID], wTweet )
+			wReactionRes = self.ReactionUserCheck( wSubRes['Responce'][wID], wTweet, wFLG_MyUser )
 			if wReactionRes['Result']!=True :
 				wRes['Reason'] = "Twitter Error(ReactionUserCheck 3): Tweet ID: " + wTweetID
 				gVal.OBJ_L.Log( "B", wRes )
@@ -1366,12 +1391,15 @@ class CLS_TwitterMain():
 				CLS_OSIF.sPrn( wStr )
 				
 				### トラヒック記録
-				CLS_Traffic.sP( "r_reaction" )
-				CLS_Traffic.sP( "r_iret" )
-				if gVal.OBJ_Tw_IF.CheckFollower( wID )==True :
-					CLS_Traffic.sP( "r_in" )
+				if wFLG_MyUser==True :
+					CLS_Traffic.sP( "r_reaction" )
+					CLS_Traffic.sP( "r_favo" )
+					if gVal.OBJ_Tw_IF.CheckFollower( wID )==True :
+						CLS_Traffic.sP( "r_in" )
+					else:
+						CLS_Traffic.sP( "r_out" )
 				else:
-					CLS_Traffic.sP( "r_out" )
+					CLS_Traffic.sP( "r_vip" )
 		
 		#############################
 		# 正常終了
@@ -1383,7 +1411,8 @@ class CLS_TwitterMain():
 #####################################################
 # リアクションユーザチェック
 #####################################################
-	def ReactionUserCheck( self, inUser, inTweet ):
+###	def ReactionUserCheck( self, inUser, inTweet ):
+	def ReactionUserCheck( self, inUser, inTweet, inFLG_MyUser=True ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -1491,7 +1520,8 @@ class CLS_TwitterMain():
 			
 			#############################
 			# リアクションへのリアクション
-			wSubRes = self.__ReactionUserCheck_PutReaction( inUser, wARR_DBData, inTweet, wNewUser )
+###			wSubRes = self.__ReactionUserCheck_PutReaction( inUser, wARR_DBData, inTweet, wNewUser )
+			wSubRes = self.__ReactionUserCheck_PutReaction( inUser, wARR_DBData, inTweet, inFLG_MyUser, wNewUser )
 			if wSubRes['Result']!=True :
 				###失敗
 				wRes['Reason'] = "__ReactionUserCheck_ListInd is failed"
@@ -1507,7 +1537,8 @@ class CLS_TwitterMain():
 	#####################################################
 	# リアクションユーザへのリアクション
 	#####################################################
-	def __ReactionUserCheck_PutReaction( self, inUser, inData, inTweet, inNewUser=False ):
+###	def __ReactionUserCheck_PutReaction( self, inUser, inData, inTweet, inNewUser=False ):
+	def __ReactionUserCheck_PutReaction( self, inUser, inData, inTweet, inFLG_MyUser=True, inNewUser=False ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -1515,33 +1546,34 @@ class CLS_TwitterMain():
 		wRes['Class'] = "CLS_TwitterMain"
 		wRes['Func']  = "__ReactionUserCheck_PutReaction"
 		
-		#############################
-		# 期間外のTweetで 新規ユーザに対しては
-		# リアクションを返さない(仕様)
-		if inNewUser==True :
-			wGetLag = CLS_OSIF.sTimeLag( str( inTweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forReactionTweetSec'] )
-			if wGetLag['Result']!=True :
-				wRes['Reason'] = "sTimeLag failed(1)"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			if wGetLag['Beyond']==True :
-				###期間外= とりま通知しない
-				wStr = "●新規ユーザのため非通知: " + inData['screen_name'] + '\n' ;
-				CLS_OSIF.sPrn( wStr )
-				
-				wRes['Result'] = True
-				return wRes
-		
-		#############################
-		# 自動おかえしいいねする
-		if gVal.DEF_STR_TLNUM['autoRepFavo']==True :
-###			wSubRes = self.OBJ_TwitterFavo.AutoFavo( inUser, inData )
-			wSubRes = self.OBJ_TwitterFavo.AutoFavo( inUser, gVal.DEF_STR_TLNUM['forReturnFavoSec'] )
-			if wSubRes['Result']!=True :
-				###失敗
-				wRes['Reason'] = "AutoFavo is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
+		if inFLG_MyUser==True :
+			#############################
+			# 期間外のTweetで 新規ユーザに対しては
+			# リアクションを返さない(仕様)
+			if inNewUser==True :
+				wGetLag = CLS_OSIF.sTimeLag( str( inTweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forReactionTweetSec'] )
+				if wGetLag['Result']!=True :
+					wRes['Reason'] = "sTimeLag failed(1)"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				if wGetLag['Beyond']==True :
+					###期間外= とりま通知しない
+					wStr = "●新規ユーザのため非通知: " + inData['screen_name'] + '\n' ;
+					CLS_OSIF.sPrn( wStr )
+					
+					wRes['Result'] = True
+					return wRes
+			
+			#############################
+			# 自動おかえしいいねする
+			if gVal.DEF_STR_TLNUM['autoRepFavo']==True :
+###				wSubRes = self.OBJ_TwitterFavo.AutoFavo( inUser, inData )
+				wSubRes = self.OBJ_TwitterFavo.AutoFavo( inUser, gVal.DEF_STR_TLNUM['forReturnFavoSec'] )
+				if wSubRes['Result']!=True :
+					###失敗
+					wRes['Reason'] = "AutoFavo is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
 		
 		#############################
 		# リスト通知をおこなう
@@ -1903,7 +1935,8 @@ class CLS_TwitterMain():
 				if gVal.OBJ_Tw_IF.CheckFollower( wID )==True :
 					continue
 				### 禁止ユーザはスキップ
-				wUserRes = self.CheckExtUser( wARR_ListUsers[wID], "フォロワー以外のリスト登録者", inFLG_Log=False )
+###				wUserRes = self.CheckExtUser( wARR_ListUsers[wID], "フォロワー以外のリスト登録者", inFLG_Log=False )
+				wUserRes = self.CheckExtUser( wARR_ListUsers[wID], "全リストチェック中の検出", inFLG_Log=False )
 				if wUserRes['Result']!=True :
 					wRes['Reason'] = "CheckExtUser failed"
 					gVal.OBJ_L.Log( "B", wRes )
@@ -2306,6 +2339,27 @@ class CLS_TwitterMain():
 				return True
 		
 		return False
+
+
+
+#####################################################
+# VIP監視ユーザリスト取得
+#####################################################
+	def GetVIPUser(self):
+		
+		wARR_List = []
+		wKeylist = list( gVal.ARR_NotReactionUser.keys() )
+		for wID in wKeylist :
+			wID = str( wID )
+			
+			### 自分は監視しない
+			if wID==str(gVal.STR_UserInfo['id']) :
+				continue
+			
+			if gVal.ARR_NotReactionUser[wID]['ope']==True :
+				wARR_List.append( wID )
+		
+		return wARR_List
 
 
 

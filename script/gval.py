@@ -88,6 +88,7 @@ class gVal() :
 		"auto_remove"	: None,			# 自動リムーブ
 		"send_favo"		: None,			# いいね情報送信
 		"auto_delete"	: None,			# 自動削除
+		"vip_ope"		: None,			# VIP監視
 		
 		"TimeDate"		: None			# システム時間
 	}
@@ -119,6 +120,7 @@ class gVal() :
 		"r_favo"			: {0:0,1:"いいね受信回数"},
 		"r_in"				: {0:0,1:"リアクション受信回数(F内)"},
 		"r_out"				: {0:0,1:"リアクション受信回数(F外)"},
+		"r_vip"				: {0:0,1:"リアクション受信回数(VIP)"},
 		
 		"s_run"				: {0:0,1:"検索実施数"},
 		"s_hit"				: {0:0,1:"検索ヒット数"},
@@ -171,6 +173,10 @@ class gVal() :
 		"reactionTweetLine_Short"	: 8,				#   リアクションチェック時の自ツイート取得ライン数(ショート時)
 		"forReactionSec"			: 3600,				#   リアクションまでの期間   1時間  60x60
 		"forReactionTweetSec"		: 172800,			#   リアクションに反応するツイート期間 2日 (60x60x24)x2
+		
+		"forVipOperationSec"		: 28800,			#   VIPリアクション監視までの期間   8時間  60x60x8
+		"vipReactionTweetLine"		: 20,				#   VIPリアクションチェック時のツイート取得ライン数
+		"forVipReactionTweetSec"	: 86400,			#   リアクションに反応するツイート期間 1日  60x60x24
 		
 														# リストいいね
 		"forListFavoSec"				: 86400,		#   リストいいねまでの期間   1日  60x60x24

@@ -704,11 +704,17 @@ class CLS_TwitterAdmin():
 			
 			### VIP 有効/無効
 			if gVal.ARR_NotReactionUser[wI]['report']==True :
-				wStr = wStr + "[－]"
+###				wStr = wStr + "[－]"
+				wStr = wStr + "[－  ]"
 			elif gVal.ARR_NotReactionUser[wI]['vip']==True :
-				wStr = wStr + "[〇]"
+###				wStr = wStr + "[〇]"
+				if gVal.ARR_NotReactionUser[wI]['ope']==True :
+					wStr = wStr + "[〇監]"
+				else:
+					wStr = wStr + "[〇  ]"
 			else:
-				wStr = wStr + "[  ]"
+###				wStr = wStr + "[  ]"
+				wStr = wStr + "[    ]"
 			wStr = wStr + "   "
 			
 			### ユーザ名
@@ -834,8 +840,39 @@ class CLS_TwitterAdmin():
 					return wRes
 				
 				wFLG_Update = True
+			else:
+				if gVal.ARR_NotReactionUser[wGetIndex]['ope']==True :
+					### VIP監視 ONの場合は排他する
+					CLS_OSIF.sPrn( "VIP監視 ONのためVIP設定解除できません" )
+					CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+					wRes['Result'] = True
+					return wRes
 			
 			wSubRes = gVal.OBJ_DB_IF.UpdateExeUser( wGetIndex, inVIP=wFLG_Update )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "UpdateExeUser is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+###			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# o: VIP監視 有効/無効
+		elif wCom=="o" :
+			wFLG_Update = False
+			if gVal.ARR_NotReactionUser[wGetIndex]['ope']==False :
+				if gVal.ARR_NotReactionUser[wGetIndex]['vip']==False :
+					### VIP OFFの場合は排他する
+					CLS_OSIF.sPrn( "VIP OFFのためVIP監視設定できません" )
+					CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+					wRes['Result'] = True
+					return wRes
+				
+				wFLG_Update = True
+			
+			wSubRes = gVal.OBJ_DB_IF.UpdateExeUser( wGetIndex, inOpe=wFLG_Update )
 			if wSubRes['Result']!=True :
 				###失敗
 				wRes['Reason'] = "UpdateExeUser is failed"

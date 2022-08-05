@@ -106,8 +106,22 @@ class CLS_TwitterFollower():
 			wTweet['created_at'] = wTime['TimeDate']
 			
 			#############################
+			# 期間内のTweetか
+			wGetLag = CLS_OSIF.sTimeLag( str( wTweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forReactionTweetSec'] )
+			if wGetLag['Result']!=True :
+				wRes['Reason'] = "sTimeLag failed(1)"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if wGetLag['Beyond']==True :
+				###期間外= 古いツイートなので処理しない
+				wStr = "●古いリプライのためスキップします"
+				CLS_OSIF.sPrn( wStr )
+				continue
+			
+			#############################
 			# ツイートチェック
-			wSubRes = self.OBJ_Parent.ReactionTweetCheck( wTweet )
+###			wSubRes = self.OBJ_Parent.ReactionTweetCheck( wTweet )
+			wSubRes = self.OBJ_Parent.ReactionTweetCheck( str(gVal.STR_UserInfo['id']), wTweet )
 			if wSubRes['Result']!=True :
 				wRes['Reason'] = "ReactionTweetCheck"
 				gVal.OBJ_L.Log( "B", wRes )
@@ -152,7 +166,8 @@ class CLS_TwitterFollower():
 			# 期間内のTweetか
 			wGetLag = CLS_OSIF.sTimeLag( str( wSubRes['Responce'][wReplyID]['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forReactionTweetSec'] )
 			if wGetLag['Result']!=True :
-				wRes['Reason'] = "sTimeLag failed(1)"
+###				wRes['Reason'] = "sTimeLag failed(1)"
+				wRes['Reason'] = "sTimeLag failed(2)"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			if wGetLag['Beyond']==True :
@@ -190,6 +205,188 @@ class CLS_TwitterFollower():
 		#############################
 		# 現時間を設定
 		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "reaction", gVal.STR_Time['TimeDate'] )
+		if wListRes['Result']!=True :
+			wRes['Reason'] = "SetTimeInfo is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		###	gVal.STR_Time['reaction']
+		
+		#############################
+		# 正常終了
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# VIPリアクション監視チェック
+#####################################################
+	def VIP_ReactionCheck( self ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "VIP_ReactionCheck"
+		
+		#############################
+		# VIP監視ユーザの取得
+		wARR_VIPuser = self.OBJ_Parent.GetVIPUser()
+		if len( wARR_VIPuser )==0 :
+			### 規定以内は除外
+			wStr = "●VIP監視対象がないため 処理スキップ" + '\n'
+			CLS_OSIF.sPrn( wStr )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# 取得可能時間か？
+		wGetLag = CLS_OSIF.sTimeLag( str( gVal.STR_Time['vip_ope'] ), inThreshold=gVal.DEF_STR_TLNUM['forVipOperationSec'] )
+		if wGetLag['Result']!=True :
+			wRes['Reason'] = "sTimeLag failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		if wGetLag['Beyond']==False :
+			### 規定以内は除外
+			wStr = "●VIPリアクション監視期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
+			CLS_OSIF.sPrn( wStr )
+			wRes['Result'] = True
+			return wRes
+		
+		self.OBJ_Parent.ARR_ReacrionUserID = []
+		for wUserID in wARR_VIPuser :
+			wUserID = str(wUserID)
+			
+			#############################
+			# 取得開始の表示
+			wResDisp = CLS_MyDisp.sViewHeaderDisp( "VIPリアクションチェック中: user=" + gVal.ARR_NotReactionUser[wUserID]['screen_name'] )
+			wCount = gVal.DEF_STR_TLNUM['vipReactionTweetLine']
+			
+			#############################
+			# 直近のツイートを取得
+			wTweetRes = gVal.OBJ_Tw_IF.GetTL( inTLmode="user", inFLG_Rep=False, inFLG_Rts=False,
+				 inID=wUserID, inCount=wCount )
+			if wTweetRes['Result']!=True :
+				wRes['Reason'] = "Twitter Error: GetTL"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if len(wTweetRes['Responce'])==0 :
+				wRes['Reason'] = "Tweet is not get: user=" + gVal.ARR_NotReactionUser[wUserID]['screen_name']
+				gVal.OBJ_L.Log( "D", wRes )
+				continue
+			
+			#############################
+			# チェック
+			# いいね、リツイート、引用リツイートしたユーザ
+			
+			###ウェイト初期化
+			self.OBJ_Parent.Wait_Init( inZanNum=len( wTweetRes['Responce'] ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
+			
+			for wTweet in wTweetRes['Responce'] :
+				###ウェイトカウントダウン
+				if self.OBJ_Parent.Wait_Next()==False :
+					break	###ウェイト中止
+				
+				###日時の変換
+				wTime = CLS_TIME.sTTchg( wRes, "(1)", wTweet['created_at'] )
+				if wTime['Result']!=True :
+					continue
+				wTweet['created_at'] = wTime['TimeDate']
+				
+				#############################
+				# 期間内のTweetか
+				wGetLag = CLS_OSIF.sTimeLag( str( wTweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forVipReactionTweetSec'] )
+				if wGetLag['Result']!=True :
+					wRes['Reason'] = "sTimeLag failed(1)"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				if wGetLag['Beyond']==True :
+					###期間外= 古いツイートなので処理しない
+					wStr = "●古いリプライのためスキップします"
+					CLS_OSIF.sPrn( wStr )
+					continue
+				
+				#############################
+				# ツイートチェック
+				wSubRes = self.OBJ_Parent.ReactionTweetCheck( wUserID, wTweet )
+				if wSubRes['Result']!=True :
+					wRes['Reason'] = "ReactionTweetCheck"
+					gVal.OBJ_L.Log( "B", wRes )
+					continue
+			
+			#############################
+			# チェック
+			# メンションしたユーザ
+			wResDisp = CLS_MyDisp.sViewHeaderDisp( "VIPリアクションチェック中：メンション: user=" + gVal.ARR_NotReactionUser[wUserID]['screen_name'] )
+			
+			wSubRes = gVal.OBJ_Tw_IF.GetMyMentionLookup( wUserID )
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "Twitter Error(GetRefRetweetLookup): Tweet ID: " + wTweetID + " user=" + gVal.ARR_NotReactionUser[wUserID]['screen_name']
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			
+			###ウェイト初期化
+			self.OBJ_Parent.Wait_Init( inZanNum=len( wSubRes['Responce'] ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
+			
+			wKeylist = list( wSubRes['Responce'].keys() )
+			for wReplyID in wKeylist :
+				###ウェイトカウントダウン
+				if self.OBJ_Parent.Wait_Next()==False :
+					break	###ウェイト中止
+				
+				#############################
+				# チェック対象のツイート表示
+				wStr = '\n' + "--------------------" + '\n' ;
+				wStr = wStr + "チェック中: " + '\n' ;
+				wStr = wStr + wSubRes['Responce'][wReplyID]['reply_text'] ;
+				CLS_OSIF.sPrn( wStr )
+				
+				wID = str(wSubRes['Responce'][wReplyID]['id'])
+				
+				###日時の変換
+				wTime = CLS_TIME.sTTchg( wRes, "(2)", wSubRes['Responce'][wReplyID]['created_at'] )
+				if wTime['Result']!=True :
+					continue
+				wSubRes['Responce'][wReplyID]['created_at'] = wTime['TimeDate']
+				
+				#############################
+				# 期間内のTweetか
+				wGetLag = CLS_OSIF.sTimeLag( str( wSubRes['Responce'][wReplyID]['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forVipReactionTweetSec'] )
+				if wGetLag['Result']!=True :
+###					wRes['Reason'] = "sTimeLag failed(1)"
+					wRes['Reason'] = "sTimeLag failed(2)"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				if wGetLag['Beyond']==True :
+					###期間外= 古いツイートなので処理しない
+					wStr = "●古いリプライのためスキップします"
+					CLS_OSIF.sPrn( wStr )
+					continue
+				
+				#############################
+				# ユーザ情報を取得する
+				wUserInfoRes = gVal.OBJ_Tw_IF.GetUserinfo( inID=wID )
+				if wUserInfoRes['Result']!=True :
+					wRes['Reason'] = "Twitter Error: @" + wUserInfoRes['Responce']['screen_name']
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				
+				###ユーザ単位のリアクションチェック
+				wReactionRes = self.OBJ_Parent.ReactionUserCheck( wUserInfoRes['Responce'], wSubRes['Responce'][wReplyID] )
+				if wReactionRes['Result']!=True :
+					wRes['Reason'] = "Twitter Error(ReactionUserCheck 4): Tweet ID: " + str(wSubRes['Responce'][wReplyID]['id'])
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				if wReactionRes['Responce']==True :
+					wStr = "〇リプライ検出: " + wUserInfoRes['Responce']['screen_name']
+					CLS_OSIF.sPrn( wStr )
+					
+					### トラヒック記録
+					CLS_Traffic.sP( "r_vip" )
+		
+		#############################
+		# 現時間を設定
+		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "vip_ope", gVal.STR_Time['TimeDate'] )
 		if wListRes['Result']!=True :
 			wRes['Reason'] = "SetTimeInfo is failed"
 			gVal.OBJ_L.Log( "B", wRes )

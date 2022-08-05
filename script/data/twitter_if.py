@@ -816,9 +816,10 @@ class CLS_Twitter_IF() :
 
 #####################################################
 # Tweet Mention Lookup取得
-# 自分に対するメンション情報を取得する
+# メンション情報を取得する
 #####################################################
-	def GetMyMentionLookup(self):
+###	def GetMyMentionLookup(self):
+	def GetMyMentionLookup( self, inID=None ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -826,10 +827,21 @@ class CLS_Twitter_IF() :
 		wRes['Class'] = "CLS_Twitter_IF"
 		wRes['Func']  = "GetMyMentionLookup"
 		
-		#############################
-		# 自分へのメンション情報を取得
-		wTwitterRes = self.OBJ_Twitter.GetMentionLookup( inID=gVal.STR_UserInfo['id'] )
+###		#############################
+###		# 自分へのメンション情報を取得
+###		wTwitterRes = self.OBJ_Twitter.GetMentionLookup( inID=gVal.STR_UserInfo['id'] )
 ###		gVal.STR_TrafficInfo['runapi'] += wTweetRes['RunAPI']
+		#############################
+		# IDの指定
+		if inID!=None :
+			wUserID = inID
+		else:
+			### 指定がなければ、自分を設定する
+			wUserID = gVal.STR_UserInfo['id']
+		
+		#############################
+		# メンション情報を取得
+		wTwitterRes = self.OBJ_Twitter.GetMentionLookup( inID=wUserID )
 		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		
 		#############################

@@ -293,24 +293,50 @@ class CLS_Setup():
 			wARR_Word = {}
 			wListNo = 1
 			for wLine in wARR_ExcUser :
-				### 通報設定ありか
-				#      先頭が @@@ の場合
-				wReport = False
-				wVip    = True
-				wIfind = wLine.find("@@@")
+###				### 通報設定ありか
+###				#      先頭が @@@ の場合
+###				wReport = False
+###				wVip    = True
+###				wIfind = wLine.find("@@@")
+###				if wIfind==0 :
+###					wLine = wLine.replace( "@@@", "" )
+###					wReport = True
+###					wVip    = False
+###				
+###				### ダブり登録は除外
+###				if wLine in wARR_Word :
+###					continue
+###				if wLine=="" or wLine==None :
+###					continue
+				### コメントアウトはスキップ
+				wIfind = wLine.find("#")
 				if wIfind==0 :
-					wLine = wLine.replace( "@@@", "" )
-					wReport = True
-					wVip    = False
+					continue
 				
-				### ダブり登録は除外
-				if wLine in wARR_Word :
+				wARR_Line = wLine.split(",")
+				### 要素数が少ないのは除外
+				if len(wARR_Line)!=3 :
 					continue
-				if wLine=="" or wLine==None :
-					continue
+				
+				wVip = False
+				wOpe = False
+				### データ登録
+				### 通報あり
+				wReport = True if wARR_Line[0]=="***" else False
+				if wReport==True :
+					### 通報ありの場合、VIP、VIP監視ではなくなる
+					wVip = False
+					wOpe = False
+				else:
+					### 通報なしの場合、VIP有効
+					wVip = True
+					wOpe = True if wARR_Line[1]=="***" else False
+				### ユーザ名
+				wUser = wARR_Line[2]
 				
 				### Twitterからユーザ情報を取得する
-				wUserInfoRes = gVal.OBJ_Tw_IF.GetUserinfo( inScreenName=wLine )
+###				wUserInfoRes = gVal.OBJ_Tw_IF.GetUserinfo( inScreenName=wLine )
+				wUserInfoRes = gVal.OBJ_Tw_IF.GetUserinfo( inScreenName=wUser )
 				if wUserInfoRes['Result']!=True :
 					continue
 				
@@ -320,10 +346,13 @@ class CLS_Setup():
 				wCell = {
 					"list_number"	: wListNo,
 					"id"			: wUserID,
-					"screen_name"	: wLine,
+###					"screen_name"	: wLine,
+					"screen_name"	: wUser,
 					"report"		: wReport,
 					"vip"			: wVip,
-					"rel_date"		: "(none)",
+					"ope"			: wOpe,
+###					"rel_date"		: "(none)",
+					"rel_date"		: str( gVal.DEF_TIMEDATE ),
 					"memo"			: ""
 				}
 				wARR_Word.update({ wUserID : wCell })
@@ -600,6 +629,7 @@ class CLS_Setup():
 		wQy = wQy + "auto_remove  TIMESTAMP,"			# 自動リムーブ
 		wQy = wQy + "send_favo    TIMESTAMP,"			# いいね情報送信
 		wQy = wQy + "auto_delete  TIMESTAMP,"			# 自動削除
+		wQy = wQy + "vip_ope      TIMESTAMP,"			# VIP監視
 		wQy = wQy + " PRIMARY KEY ( twitterid ) ) ;"
 		
 		inOBJ_DB.RunQuery( wQy )
@@ -748,6 +778,7 @@ class CLS_Setup():
 		wQy = wQy + "screen_name TEXT  NOT NULL, "		# Twitter ユーザ名(英語)
 		wQy = wQy + "report      BOOL  DEFAULT false,"	# 通報対象 True=対象
 		wQy = wQy + "vip         BOOL  DEFAULT false,"	# VIP扱い  True=VIP
+		wQy = wQy + "ope         BOOL  DEFAULT false,"	# リアクション監視  True=監視ON
 		wQy = wQy + "rel_date    TIMESTAMP,"			# 禁止解除日時 (noneは自動解除しない)
 		wQy = wQy + "memo        TEXT, "				# 自由記載(メモ)
 		wQy = wQy + " PRIMARY KEY ( id ) ) ;"
@@ -848,6 +879,7 @@ class CLS_Setup():
 		wQy = wQy + "r_favo      INTEGER DEFAULT 0,"	# いいね受信回数
 		wQy = wQy + "r_in        INTEGER DEFAULT 0,"	# フォロワーからのアクション受信回数
 		wQy = wQy + "r_out       INTEGER DEFAULT 0,"	# フォロワー以外からのアクション受信回数
+		wQy = wQy + "r_vip       INTEGER DEFAULT 0,"	# VIP監視アクション受信回数
 		
 		wQy = wQy + "s_run       INTEGER DEFAULT 0,"	# 検索実施数
 		wQy = wQy + "s_hit       INTEGER DEFAULT 0,"	# 検索ヒット数
