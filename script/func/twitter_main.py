@@ -1119,7 +1119,7 @@ class CLS_TwitterMain():
 		#############################
 		# 自動監視時間に 現時間を設定
 		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "autorun", gVal.STR_Time['TimeDate'] )
-		if wListRes['Result']!=True :
+		if wTimeRes['Result']!=True :
 			wRes['Reason'] = "SetTimeInfo is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
@@ -1180,11 +1180,11 @@ class CLS_TwitterMain():
 #####################################################
 # フォローリスト設定
 #####################################################
-	def SetAutoList(self):
-		wRes = self.OBJ_TwitterAdmin.SetAutoList()
-		return wRes
-
-
+###	def SetAutoList(self):
+###		wRes = self.OBJ_TwitterAdmin.SetAutoList()
+###		return wRes
+###
+###
 
 #####################################################
 # 禁止ユーザ
@@ -1670,7 +1670,9 @@ class CLS_TwitterMain():
 ###			return wRes
 		wGetLag = CLS_OSIF.sCheckNextDay( str( gVal.STR_Time['list_clear'] ), str( gVal.STR_Time['TimeDate'] ) )
 		if wGetLag['Result']!=True :
-			wRes['Reason'] = "sCheckNextDay failed"
+###			wRes['Reason'] = "sCheckNextDay failed"
+###			wRes['Reason'] = "sCheckNextDay failed: list_clear=" + str(gVal.STR_Time['list_clear'])
+			wRes['Reason'] = "sCheckNextDay failed: reason=" + wGetLag['Reason'] + " list_clear=" + str(gVal.STR_Time['list_clear'])
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		if wGetLag['Next']==False :
@@ -1703,7 +1705,7 @@ class CLS_TwitterMain():
 		#############################
 		# 現時間を設定
 		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "list_clear", gVal.STR_Time['TimeDate'] )
-		if wListRes['Result']!=True :
+		if wTimeRes['Result']!=True :
 			wRes['Reason'] = "SetTimeInfo is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
@@ -1735,7 +1737,8 @@ class CLS_TwitterMain():
 		# 通知リストのチェック
 		# 自動リムーブが有効なら、相互フォローリスト、片フォロワーリストのチェック
 		wARR_IndListName = []
-		if gVal.STR_UserInfo['ListID']==gVal.DEF_NOTEXT :
+###		if gVal.STR_UserInfo['ListID']==gVal.DEF_NOTEXT :
+		if gVal.STR_UserInfo['ListID']!=gVal.DEF_NOTEXT :
 			wARR_IndListName.append( gVal.STR_UserInfo['ListName'] )
 		
 		if gVal.STR_UserInfo['AutoRemove']==True and \
@@ -1744,15 +1747,21 @@ class CLS_TwitterMain():
 			wARR_IndListName.append( gVal.STR_UserInfo['mListName'] )
 			wARR_IndListName.append( gVal.STR_UserInfo['fListName'] )
 		
-		wKeylist = list( wARR_IndList.keys() )
-		for wKey in wKeylist :
-			wStr = "〇チェック中リスト: " + wARR_IndListName[wKey]
+###		wKeylist = list( wARR_IndList.keys() )
+###		wKeylist = list( wARR_IndListName.keys() )
+###		for wKey in wKeylist :
+		for wListName in wARR_IndListName :
+###			wStr = "〇チェック中リスト: " + wARR_IndListName[wKey]
+			wStr = "〇チェック中リスト: " + wListName
 			CLS_OSIF.sPrn( wStr )
 			
 			#############################
 			# Twitterからリストの登録ユーザ一覧を取得
+###			wListRes = gVal.OBJ_Tw_IF.GetListSubscribers(
+###			   inListName=wARR_IndListName[wKey],
+###			   inScreenName=gVal.STR_UserInfo['Account'] )
 			wListRes = gVal.OBJ_Tw_IF.GetListSubscribers(
-			   inListName=wARR_IndListName[wKey],
+			   inListName=wListName,
 			   inScreenName=gVal.STR_UserInfo['Account'] )
 			
 			if wListRes['Result']!=True :
@@ -1772,9 +1781,12 @@ class CLS_TwitterMain():
 					if str(gVal.STR_UserInfo['id'])==wID  :
 						continue
 					
-					wSubRes = self.SendTweet_Caution( wListRes['Responce'][wID], gVal.STR_UserInfo['Account'], wARR_IndListName[wKey], inFLG_ListCaution=True )
+###					wSubRes = self.SendTweet_Caution( wListRes['Responce'][wID], gVal.STR_UserInfo['Account'], wARR_IndListName[wKey], inFLG_ListCaution=True )
+###					if wSubRes['Result']!=True :
+###						wRes['Reason'] = "SendTweet_Caution is failed(1): user=" + wListRes['Responce'][wID]['screen_name'] + " list=" + wARR_IndListName[wKey]
+					wSubRes = self.SendTweet_Caution( wListRes['Responce'][wID], gVal.STR_UserInfo['Account'], wListName, inFLG_ListCaution=True )
 					if wSubRes['Result']!=True :
-						wRes['Reason'] = "SendTweet_Caution is failed(1): user=" + wListRes['Responce'][wID]['screen_name'] + " list=" + wARR_IndListName[wKey]
+						wRes['Reason'] = "SendTweet_Caution is failed(1): user=" + wListRes['Responce'][wID]['screen_name'] + " list=" + wListName
 						gVal.OBJ_L.Log( "B", wRes )
 						continue
 		
@@ -2150,7 +2162,8 @@ class CLS_TwitterMain():
 #####################################################
 # 自動リムーブチェック
 #####################################################
-	def CheckAutoRemove( self, inData, inWord ):
+###	def CheckAutoRemove( self, inData, inWord ):
+	def CheckAutoRemove(self):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -2229,7 +2242,7 @@ class CLS_TwitterMain():
 		#############################
 		# 現時間を設定
 		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "auto_remove", gVal.STR_Time['TimeDate'] )
-		if wListRes['Result']!=True :
+		if wTimeRes['Result']!=True :
 			wRes['Reason'] = "SetTimeInfo is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
@@ -2387,7 +2400,7 @@ class CLS_TwitterMain():
 		#############################
 		# 関係性チェック
 		wFollowInfoRes = gVal.OBJ_Tw_IF.GetFollowInfo( wID )
-		if wSubRes['Result']!=True :
+		if wFollowInfoRes['Result']!=True :
 			wRes['Reason'] = "GetFollowInfo is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes

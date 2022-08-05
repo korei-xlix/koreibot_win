@@ -3286,7 +3286,8 @@ class CLS_DB_IF() :
 		
 		#############################
 		# ユーザレベルを取得する
-		wQy = "select level_tag from tbl_favouser_data where "
+###		wQy = "select level_tag from tbl_favouser_data where "
+		wQy = "select screen_name, level_tag from tbl_favouser_data where "
 		wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "'"
 		wQy = wQy + " and id = '" + str(inID) + "' ;"
 		wQy = wQy + ";"
@@ -3337,10 +3338,12 @@ class CLS_DB_IF() :
 		# ログの記録
 		if wRateUserLevel==gVal.DEF_NOTEXT :
 			### 新規の設定
-			wStr = "ユーザレベル設定: " + inUserLevel
+###			wStr = "ユーザレベル設定: " + inUserLevel
+			wStr = "ユーザレベル設定: user=" + str(wARR_DBData[0]['screen_name']) + " level=" + inUserLevel
 		else:
 			### レベル変更
-			wStr = "ユーザレベル変更: 変更前=" + wRateUserLevel + " 変更後=" + inUserLevel
+###			wStr = "ユーザレベル変更: 変更前=" + wRateUserLevel + " 変更後=" + inUserLevel
+			wStr = "ユーザレベル変更: user=" + str(wARR_DBData[0]['screen_name']) + " level:変更前=" + wRateUserLevel + " 変更後=" + inUserLevel
 		
 		gVal.OBJ_L.Log( "RC", wRes, wStr )
 		

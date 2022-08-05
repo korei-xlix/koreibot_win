@@ -307,11 +307,11 @@ class CLS_Main_Console() :
 		elif inCommand=="\\ac" :
 			cls.OBJ_TwitterMain.SetAutoRemove()
 		
-		#############################
-		# フォローリスト設定
-		elif inCommand=="\\fc" :
-			cls.OBJ_TwitterMain.SetAutoList()
-		
+###		#############################
+###		# フォローリスト設定
+###		elif inCommand=="\\fc" :
+###			cls.OBJ_TwitterMain.SetAutoList()
+###		
 	#####################################################
 		#############################
 		# 禁止ユーザ

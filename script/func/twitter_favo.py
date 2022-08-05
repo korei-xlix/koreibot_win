@@ -438,7 +438,7 @@ class CLS_TwitterFavo():
 		#############################
 		# 現時間を設定
 		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "mffavo", gVal.STR_Time['TimeDate'] )
-		if wListRes['Result']!=True :
+		if wTimeRes['Result']!=True :
 			wRes['Reason'] = "SetTimeInfo is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
@@ -640,6 +640,7 @@ class CLS_TwitterFavo():
 				if gVal.OBJ_Tw_IF.CheckMutualListUser( wUserID )==False and \
 				   gVal.OBJ_Tw_IF.CheckFollowListUser( wUserID )==False :
 					###対象 =除外
+					wFLG_ZanCountSkip = True
 					continue
 			
 			wFLG_OverAutoFavo = False
@@ -665,6 +666,7 @@ class CLS_TwitterFavo():
 					continue
 				### DB未登録ならスキップ
 				if wDBRes['Responce']['Data']==None :
+					wFLG_ZanCountSkip = True
 					continue
 				wARR_DBData = wDBRes['Responce']['Data']
 				
@@ -684,6 +686,7 @@ class CLS_TwitterFavo():
 					wThreshold = gVal.DEF_STR_TLNUM['forFollowerFavoFListAutoFavoSec']
 			
 			else:
+				wFLG_ZanCountSkip = True
 				continue
 			
 ###			#############################
@@ -750,7 +753,7 @@ class CLS_TwitterFavo():
 		#############################
 		# 現時間を設定
 		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "flfavo", gVal.STR_Time['TimeDate'] )
-		if wListRes['Result']!=True :
+		if wTimeRes['Result']!=True :
 			wRes['Reason'] = "SetTimeInfo is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
@@ -1241,10 +1244,10 @@ class CLS_TwitterFavo():
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		if wGetLag['Beyond']==True :
-			### 規定外 =古いツイートなので除外
-			wStr = "●外部いいね中止(期間外のツイート): " + wSTR_Tweet['user']['screen_name'] + '\n' ;
-			CLS_OSIF.sPrn( wStr )
-			
+#			### 規定外 =古いツイートなので除外
+#			wStr = "●外部いいね中止(期間外のツイート): " + wSTR_Tweet['user']['screen_name'] + '\n' ;
+#			CLS_OSIF.sPrn( wStr )
+#			
 			wRes['Responce']['flg_favo'] = True		#いいね済み扱い
 			wRes['Result'] = True
 			return wRes
@@ -1257,9 +1260,9 @@ class CLS_TwitterFavo():
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		if wTweetRes['Responce']==True :
-			wStr = "●外部いいね中止(いいね済ユーザ): " + wSTR_Tweet['user']['screen_name'] + '\n' ;
-			CLS_OSIF.sPrn( wStr )
-			
+#			wStr = "●外部いいね中止(いいね済ユーザ): " + wSTR_Tweet['user']['screen_name'] + '\n' ;
+#			CLS_OSIF.sPrn( wStr )
+#			
 			wRes['Responce']['flg_favo'] = True		#いいね済み扱い
 			wRes['Result'] = True
 			return wRes
@@ -1293,7 +1296,8 @@ class CLS_TwitterFavo():
 		wNewUser = False
 		#############################
 		# DBからいいね情報を取得する(1個)
-		wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( inData )
+###		wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( inData )
+		wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wSTR_Tweet['user'] )
 		if wSubRes['Result']!=True :
 			###失敗
 			wRes['Reason'] = "GetFavoDataOne is failed"
@@ -1309,7 +1313,8 @@ class CLS_TwitterFavo():
 			wNewUser = True	#新規登録
 			#############################
 			# 新規情報の設定
-			wSubRes = self.OBJ_Parent.SetNewFavoData( inUser, wSubRes['Responce']['Data'] )
+###			wSubRes = self.OBJ_Parent.SetNewFavoData( inUser, wSubRes['Responce']['Data'] )
+			wSubRes = self.OBJ_Parent.SetNewFavoData( wSTR_Tweet['user'], wSubRes['Responce']['Data'] )
 			if wSubRes['Result']!=True :
 				###失敗
 				wRes['Reason'] = "SetNewFavoData is failed"

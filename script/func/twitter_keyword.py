@@ -583,6 +583,7 @@ class CLS_TwitterKeyword():
 		###ウェイト初期化
 		self.OBJ_Parent.Wait_Init( inZanNum=len( wTweetRes['Responce'] ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
 		
+		wFLG_ZanCountSkip = False
 		wFavoNum = 0
 		#############################
 		# ツイートチェック
@@ -594,8 +595,10 @@ class CLS_TwitterKeyword():
 		# 該当なしは いいねしない
 		for wTweet in wTweetRes['Responce'] :
 			###ウェイトカウントダウン
-			if self.OBJ_Parent.Wait_Next()==False :
+###			if self.OBJ_Parent.Wait_Next()==False :
+			if self.OBJ_Parent.Wait_Next( inZanCountSkip=wFLG_ZanCountSkip )==False :
 				break	###ウェイト中止
+			wFLG_ZanCountSkip = False
 			
 			wID     = str( wTweet['id'] )
 			wUserID = str( wTweet['user']['id'] )
@@ -609,6 +612,7 @@ class CLS_TwitterKeyword():
 			if wSubRes['Responce']!=True :
 				wStr = "●抽出除外(対象外ユーザ): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
 				CLS_OSIF.sPrn( wStr )
+				wFLG_ZanCountSkip = True
 				continue
 			
 			#############################
@@ -623,17 +627,20 @@ class CLS_TwitterKeyword():
 				### いいね済み
 				wStr = "●抽出除外(いいね済み): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
 				CLS_OSIF.sPrn( wStr )
+				wFLG_ZanCountSkip = True
 				continue
 			
 			### ノーマル以外は除外
 			if wTweet['type']!="normal" :
 				wStr = "●抽出除外(通常ツイート以外): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
 				CLS_OSIF.sPrn( wStr )
+				wFLG_ZanCountSkip = True
 				continue
 			### リプライは除外(ツイートの先頭が @文字=リプライ)
 			if wTweet['text'].find("@")>=0 :
 				wStr = "●抽出除外(リプライ): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
 				CLS_OSIF.sPrn( wStr )
+				wFLG_ZanCountSkip = True
 				continue
 			### センシティブなツイートは除外
 ###			if gVal.ARR_SearchData[inIndex]['sensitive']==False :
@@ -641,6 +648,7 @@ class CLS_TwitterKeyword():
 				if str(wTweet['possibly_sensitive'])=="true" :
 					wStr = "●抽出除外(センシティブツイート): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
 					CLS_OSIF.sPrn( wStr )
+					wFLG_ZanCountSkip = True
 					continue
 			
 			#############################
@@ -653,6 +661,7 @@ class CLS_TwitterKeyword():
 				return wRes
 			if wUserRes['Responce']==False :
 				### 禁止あり=除外
+				wFLG_ZanCountSkip = True
 				continue
 			
 			### 範囲時間内のツイートか
@@ -665,6 +674,7 @@ class CLS_TwitterKeyword():
 				### 規定外
 				wStr = "●抽出除外(古いツイート): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
 				CLS_OSIF.sPrn( wStr )
+				wFLG_ZanCountSkip = True
 				continue
 			
 			### discriptionチェック
@@ -675,6 +685,7 @@ class CLS_TwitterKeyword():
 				return wRes
 			if wWordRes['Responce']==False :
 				### 除外
+				wFLG_ZanCountSkip = True
 				continue
 			
 			### ツイートチェック
@@ -685,6 +696,7 @@ class CLS_TwitterKeyword():
 				continue
 			if wWordRes['Responce']==False :
 				### 除外
+				wFLG_ZanCountSkip = True
 				continue
 			
 			### ※いいねツイート確定

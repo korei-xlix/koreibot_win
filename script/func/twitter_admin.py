@@ -1735,7 +1735,7 @@ class CLS_TwitterAdmin():
 		#############################
 		# 現時間を設定
 		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "auto_delete", gVal.STR_Time['TimeDate'] )
-		if wListRes['Result']!=True :
+		if wTimeRes['Result']!=True :
 			wRes['Reason'] = "SetTimeInfo is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes

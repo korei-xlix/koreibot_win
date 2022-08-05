@@ -93,11 +93,14 @@ class CLS_TwitterFollower():
 		###ウェイト初期化
 		self.OBJ_Parent.Wait_Init( inZanNum=len( wTweetRes['Responce'] ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
 		
+		wFLG_ZanCountSkip = False
 		self.OBJ_Parent.ARR_ReacrionUserID = []
 		for wTweet in wTweetRes['Responce'] :
 			###ウェイトカウントダウン
-			if self.OBJ_Parent.Wait_Next()==False :
+###			if self.OBJ_Parent.Wait_Next()==False :
+			if self.OBJ_Parent.Wait_Next( inZanCountSkip=wFLG_ZanCountSkip )==False :
 				break	###ウェイト中止
+			wFLG_ZanCountSkip = False
 			
 			###日時の変換
 			wTime = CLS_TIME.sTTchg( wRes, "(1)", wTweet['created_at'] )
@@ -114,8 +117,9 @@ class CLS_TwitterFollower():
 				return wRes
 			if wGetLag['Beyond']==True :
 				###期間外= 古いツイートなので処理しない
-				wStr = "●古いリプライのためスキップします"
-				CLS_OSIF.sPrn( wStr )
+###				wStr = "●古いリプライのためスキップします"
+###				CLS_OSIF.sPrn( wStr )
+				wFLG_ZanCountSkip = True
 				continue
 			
 			#############################
@@ -141,21 +145,24 @@ class CLS_TwitterFollower():
 		###ウェイト初期化
 		self.OBJ_Parent.Wait_Init( inZanNum=len( wSubRes['Responce'] ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
 		
+		wFLG_ZanCountSkip = False
 		wKeylist = list( wSubRes['Responce'].keys() )
 		for wReplyID in wKeylist :
 			###ウェイトカウントダウン
-			if self.OBJ_Parent.Wait_Next()==False :
+###			if self.OBJ_Parent.Wait_Next()==False :
+			if self.OBJ_Parent.Wait_Next( inZanCountSkip=wFLG_ZanCountSkip )==False :
 				break	###ウェイト中止
+			wFLG_ZanCountSkip = False
 			
-			#############################
-			# チェック対象のツイート表示
-			wStr = '\n' + "--------------------" + '\n' ;
-			wStr = wStr + "チェック中: " + '\n' ;
-			wStr = wStr + wSubRes['Responce'][wReplyID]['reply_text'] ;
-			CLS_OSIF.sPrn( wStr )
-			
-			wID = str(wSubRes['Responce'][wReplyID]['id'])
-			
+###			#############################
+###			# チェック対象のツイート表示
+###			wStr = '\n' + "--------------------" + '\n' ;
+###			wStr = wStr + "チェック中: " + '\n' ;
+###			wStr = wStr + wSubRes['Responce'][wReplyID]['reply_text'] ;
+###			CLS_OSIF.sPrn( wStr )
+###			
+###			wID = str(wSubRes['Responce'][wReplyID]['id'])
+###			
 			###日時の変換
 			wTime = CLS_TIME.sTTchg( wRes, "(2)", wSubRes['Responce'][wReplyID]['created_at'] )
 			if wTime['Result']!=True :
@@ -172,9 +179,19 @@ class CLS_TwitterFollower():
 				return wRes
 			if wGetLag['Beyond']==True :
 				###期間外= 古いツイートなので処理しない
-				wStr = "●古いリプライのためスキップします"
-				CLS_OSIF.sPrn( wStr )
+###				wStr = "●古いリプライのためスキップします"
+###				CLS_OSIF.sPrn( wStr )
+				wFLG_ZanCountSkip = True
 				continue
+			
+			#############################
+			# チェック対象のツイート表示
+			wStr = '\n' + "--------------------" + '\n' ;
+			wStr = wStr + "チェック中: " + '\n' ;
+			wStr = wStr + wSubRes['Responce'][wReplyID]['reply_text'] ;
+			CLS_OSIF.sPrn( wStr )
+			
+			wID = str(wSubRes['Responce'][wReplyID]['id'])
 			
 			#############################
 			# ユーザ情報を取得する
@@ -205,7 +222,7 @@ class CLS_TwitterFollower():
 		#############################
 		# 現時間を設定
 		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "reaction", gVal.STR_Time['TimeDate'] )
-		if wListRes['Result']!=True :
+		if wTimeRes['Result']!=True :
 			wRes['Reason'] = "SetTimeInfo is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
@@ -282,10 +299,13 @@ class CLS_TwitterFollower():
 			###ウェイト初期化
 			self.OBJ_Parent.Wait_Init( inZanNum=len( wTweetRes['Responce'] ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
 			
+			wFLG_ZanCountSkip = False
 			for wTweet in wTweetRes['Responce'] :
 				###ウェイトカウントダウン
-				if self.OBJ_Parent.Wait_Next()==False :
+###				if self.OBJ_Parent.Wait_Next()==False :
+				if self.OBJ_Parent.Wait_Next( inZanCountSkip=wFLG_ZanCountSkip )==False :
 					break	###ウェイト中止
+				wFLG_ZanCountSkip = False
 				
 				###日時の変換
 				wTime = CLS_TIME.sTTchg( wRes, "(1)", wTweet['created_at'] )
@@ -302,8 +322,9 @@ class CLS_TwitterFollower():
 					return wRes
 				if wGetLag['Beyond']==True :
 					###期間外= 古いツイートなので処理しない
-					wStr = "●古いリプライのためスキップします"
-					CLS_OSIF.sPrn( wStr )
+###					wStr = "●古いリプライのためスキップします"
+###					CLS_OSIF.sPrn( wStr )
+					wFLG_ZanCountSkip = True
 					continue
 				
 				#############################
@@ -328,21 +349,24 @@ class CLS_TwitterFollower():
 			###ウェイト初期化
 			self.OBJ_Parent.Wait_Init( inZanNum=len( wSubRes['Responce'] ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
 			
+			wFLG_ZanCountSkip = False
 			wKeylist = list( wSubRes['Responce'].keys() )
 			for wReplyID in wKeylist :
 				###ウェイトカウントダウン
-				if self.OBJ_Parent.Wait_Next()==False :
+###				if self.OBJ_Parent.Wait_Next()==False :
+				if self.OBJ_Parent.Wait_Next( inZanCountSkip=wFLG_ZanCountSkip )==False :
 					break	###ウェイト中止
+				wFLG_ZanCountSkip = False
 				
-				#############################
-				# チェック対象のツイート表示
-				wStr = '\n' + "--------------------" + '\n' ;
-				wStr = wStr + "チェック中: " + '\n' ;
-				wStr = wStr + wSubRes['Responce'][wReplyID]['reply_text'] ;
-				CLS_OSIF.sPrn( wStr )
-				
-				wID = str(wSubRes['Responce'][wReplyID]['id'])
-				
+###				#############################
+###				# チェック対象のツイート表示
+###				wStr = '\n' + "--------------------" + '\n' ;
+###				wStr = wStr + "チェック中: " + '\n' ;
+###				wStr = wStr + wSubRes['Responce'][wReplyID]['reply_text'] ;
+###				CLS_OSIF.sPrn( wStr )
+###				
+###				wID = str(wSubRes['Responce'][wReplyID]['id'])
+###				
 				###日時の変換
 				wTime = CLS_TIME.sTTchg( wRes, "(2)", wSubRes['Responce'][wReplyID]['created_at'] )
 				if wTime['Result']!=True :
@@ -359,9 +383,19 @@ class CLS_TwitterFollower():
 					return wRes
 				if wGetLag['Beyond']==True :
 					###期間外= 古いツイートなので処理しない
-					wStr = "●古いリプライのためスキップします"
-					CLS_OSIF.sPrn( wStr )
+###					wStr = "●古いリプライのためスキップします"
+###					CLS_OSIF.sPrn( wStr )
+					wFLG_ZanCountSkip = True
 					continue
+				
+				#############################
+				# チェック対象のツイート表示
+				wStr = '\n' + "--------------------" + '\n' ;
+				wStr = wStr + "チェック中: " + '\n' ;
+				wStr = wStr + wSubRes['Responce'][wReplyID]['reply_text'] ;
+				CLS_OSIF.sPrn( wStr )
+				
+				wID = str(wSubRes['Responce'][wReplyID]['id'])
 				
 				#############################
 				# ユーザ情報を取得する
@@ -387,7 +421,7 @@ class CLS_TwitterFollower():
 		#############################
 		# 現時間を設定
 		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "vip_ope", gVal.STR_Time['TimeDate'] )
-		if wListRes['Result']!=True :
+		if wTimeRes['Result']!=True :
 			wRes['Reason'] = "SetTimeInfo is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
@@ -706,7 +740,7 @@ class CLS_TwitterFollower():
 		#############################
 		# 現時間を設定
 		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "send_favo", gVal.STR_Time['TimeDate'] )
-		if wListRes['Result']!=True :
+		if wTimeRes['Result']!=True :
 			wRes['Reason'] = "SetTimeInfo is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
