@@ -99,7 +99,6 @@ class CLS_PostgreSQL_Use():
 #####################################################
 # 接続情報の作成
 #####################################################
-###	def Create( self, inHostname, inDatabase, inUsername, inPassword, inFLG_Close=False ):
 	def Create( self, inData, inFLG_Close=False ):
 		#############################
 		# inData構造
@@ -125,10 +124,6 @@ class CLS_PostgreSQL_Use():
 		
 		#############################
 		# 接続情報の仮セット
-###		self.STR_DBdata['hostname'] = inHostname
-###		self.STR_DBdata['database'] = inDatabase
-###		self.STR_DBdata['username'] = inUsername
-###		self.STR_DBdata['password'] = inPassword
 		self.STR_DBdata['hostname'] = inData['hostname']
 		self.STR_DBdata['database'] = inData['database']
 		self.STR_DBdata['username'] = inData['username']
@@ -250,7 +245,6 @@ class CLS_PostgreSQL_Use():
 			self.QueryStat['Reason'] = "Query is not correct: " + inQuery
 			return False
 		wCommand = wCommand[0]
-###		self.QueryStat['Command'] = wCommand[0]
 		self.QueryStat['Command'] = wCommand
 		
 		# チェック

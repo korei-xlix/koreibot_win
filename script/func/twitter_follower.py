@@ -7,7 +7,6 @@
 # ::Class    : Twitter監視 フォロワー監視系
 #####################################################
 
-###from htmlif import CLS_HTMLIF
 from ktime import CLS_TIME
 from osif import CLS_OSIF
 from mydisp import CLS_MyDisp
@@ -97,7 +96,6 @@ class CLS_TwitterFollower():
 		self.OBJ_Parent.ARR_ReacrionUserID = []
 		for wTweet in wTweetRes['Responce'] :
 			###ウェイトカウントダウン
-###			if self.OBJ_Parent.Wait_Next()==False :
 			if self.OBJ_Parent.Wait_Next( inZanCountSkip=wFLG_ZanCountSkip )==False :
 				break	###ウェイト中止
 			wFLG_ZanCountSkip = False
@@ -124,7 +122,6 @@ class CLS_TwitterFollower():
 			
 			#############################
 			# ツイートチェック
-###			wSubRes = self.OBJ_Parent.ReactionTweetCheck( wTweet )
 			wSubRes = self.OBJ_Parent.ReactionTweetCheck( str(gVal.STR_UserInfo['id']), wTweet )
 			if wSubRes['Result']!=True :
 				wRes['Reason'] = "ReactionTweetCheck"
@@ -149,20 +146,10 @@ class CLS_TwitterFollower():
 		wKeylist = list( wSubRes['Responce'].keys() )
 		for wReplyID in wKeylist :
 			###ウェイトカウントダウン
-###			if self.OBJ_Parent.Wait_Next()==False :
 			if self.OBJ_Parent.Wait_Next( inZanCountSkip=wFLG_ZanCountSkip )==False :
 				break	###ウェイト中止
 			wFLG_ZanCountSkip = False
 			
-###			#############################
-###			# チェック対象のツイート表示
-###			wStr = '\n' + "--------------------" + '\n' ;
-###			wStr = wStr + "チェック中: " + '\n' ;
-###			wStr = wStr + wSubRes['Responce'][wReplyID]['reply_text'] ;
-###			CLS_OSIF.sPrn( wStr )
-###			
-###			wID = str(wSubRes['Responce'][wReplyID]['id'])
-###			
 			###日時の変換
 			wTime = CLS_TIME.sTTchg( wRes, "(2)", wSubRes['Responce'][wReplyID]['created_at'] )
 			if wTime['Result']!=True :
@@ -173,7 +160,6 @@ class CLS_TwitterFollower():
 			# 期間内のTweetか
 			wGetLag = CLS_OSIF.sTimeLag( str( wSubRes['Responce'][wReplyID]['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forReactionTweetSec'] )
 			if wGetLag['Result']!=True :
-###				wRes['Reason'] = "sTimeLag failed(1)"
 				wRes['Reason'] = "sTimeLag failed(2)"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
@@ -302,7 +288,6 @@ class CLS_TwitterFollower():
 			wFLG_ZanCountSkip = False
 			for wTweet in wTweetRes['Responce'] :
 				###ウェイトカウントダウン
-###				if self.OBJ_Parent.Wait_Next()==False :
 				if self.OBJ_Parent.Wait_Next( inZanCountSkip=wFLG_ZanCountSkip )==False :
 					break	###ウェイト中止
 				wFLG_ZanCountSkip = False
@@ -353,20 +338,10 @@ class CLS_TwitterFollower():
 			wKeylist = list( wSubRes['Responce'].keys() )
 			for wReplyID in wKeylist :
 				###ウェイトカウントダウン
-###				if self.OBJ_Parent.Wait_Next()==False :
 				if self.OBJ_Parent.Wait_Next( inZanCountSkip=wFLG_ZanCountSkip )==False :
 					break	###ウェイト中止
 				wFLG_ZanCountSkip = False
 				
-###				#############################
-###				# チェック対象のツイート表示
-###				wStr = '\n' + "--------------------" + '\n' ;
-###				wStr = wStr + "チェック中: " + '\n' ;
-###				wStr = wStr + wSubRes['Responce'][wReplyID]['reply_text'] ;
-###				CLS_OSIF.sPrn( wStr )
-###				
-###				wID = str(wSubRes['Responce'][wReplyID]['id'])
-###				
 				###日時の変換
 				wTime = CLS_TIME.sTTchg( wRes, "(2)", wSubRes['Responce'][wReplyID]['created_at'] )
 				if wTime['Result']!=True :
@@ -377,7 +352,6 @@ class CLS_TwitterFollower():
 				# 期間内のTweetか
 				wGetLag = CLS_OSIF.sTimeLag( str( wSubRes['Responce'][wReplyID]['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forVipReactionTweetSec'] )
 				if wGetLag['Result']!=True :
-###					wRes['Reason'] = "sTimeLag failed(1)"
 					wRes['Reason'] = "sTimeLag failed(2)"
 					gVal.OBJ_L.Log( "B", wRes )
 					return wRes
@@ -465,28 +439,6 @@ class CLS_TwitterFollower():
 		# 取得開始の表示
 		wResDisp = CLS_MyDisp.sViewHeaderDisp( "いいね情報送信" )
 		
-###		#############################
-###		# DBのいいね情報取得
-###		# ・送信済 False=送信対象
-###		wQuery = "select * from tbl_favouser_data where " + \
-###					"twitterid = '" + gVal.STR_UserInfo['Account'] + "' and " + \
-###					"sended = False " + \
-###					"order by now_favo_cnt desc " + \
-###					";"
-###		
-###		wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
-###		if wResDB['Result']!=True :
-###			wRes['Reason'] = "Run Query is failed"
-###			gVal.OBJ_L.Log( "B", wRes )
-###			return wRes
-###		
-###		#############################
-###		# 辞書型に整形
-###		wARR_DBData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
-###		
-###		#############################
-###		# 添え字をIDに差し替える
-###		wARR_RateFavoDate = gVal.OBJ_DB_IF.ChgDataID( wARR_DBData )
 		#############################
 		# DBのいいね情報取得
 		wResDB = gVal.OBJ_DB_IF.GetFavoData_SendFavo()
@@ -530,7 +482,6 @@ class CLS_TwitterFollower():
 			
 			#############################
 			# リアクション 規定回以上は送信
-###			if wARR_RateFavoDate[wID]['now_favo_cnt']>=gVal.DEF_STR_TLNUM['favoSendsCnt'] :
 			if wARR_RateFavoDate[wID]['rfavo_n_cnt']>=gVal.DEF_STR_TLNUM['favoSendsCnt'] :
 				
 				### 送信したIDで確定
@@ -539,9 +490,6 @@ class CLS_TwitterFollower():
 				wSendCnt += 1
 				#############################
 				# 1行設定
-###				wLine = wARR_RateFavoDate[wID]['screen_name'] + " : " + \
-###				        str(wARR_RateFavoDate[wID]['now_favo_cnt']) + \
-###				        "(" + str(wARR_RateFavoDate[wID]['favo_cnt']) + ")" + '\n'
 				wLine = wARR_RateFavoDate[wID]['screen_name'] + " : " + \
 				        str(wARR_RateFavoDate[wID]['rfavo_n_cnt']) + \
 				        "(" + str(wARR_RateFavoDate[wID]['rfavo_cnt']) + ")" + '\n'
@@ -628,30 +576,6 @@ class CLS_TwitterFollower():
 		# ログに記録
 		gVal.OBJ_L.Log( "T", wRes, "いいね情報送信(Twitter)" )
 		
-###		#############################
-###		# 送信済 いいね情報を更新する
-###		#   リアクション 2回以上
-###		for wID in wKeylist :
-###			wID = str( wID )
-###			
-###			if wARR_RateFavoDate[wID]['now_favo_cnt']>=gVal.DEF_STR_TLNUM['favoSendsCnt'] :
-###				wSubRes = gVal.OBJ_DB_IF.SendedFavoData( wID, wARR_RateFavoDate[wID]['favo_cnt'] )
-###				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_SendFavoInfo( wID, wARR_RateFavoDate[wID] )
-###				if wSubRes['Result']!=True :
-###					###失敗
-###					wRes['Reason'] = "UpdateFavoData_SendFavoInfo(2) is failed"
-###					gVal.OBJ_L.Log( "B", wRes )
-###					return wRes
-###		
-###		#############################
-###		# いいね者送信日時を更新する
-###		wSubRes = gVal.OBJ_DB_IF.UpdateFavoDate( str( gVal.STR_Time['TimeDate'] ) )
-###		if wSubRes['Result']!=True :
-###			###失敗
-###			wRes['Reason'] = "UpdateFavoDate is failed"
-###			gVal.OBJ_L.Log( "B", wRes )
-###			return wRes
-###		
 		#############################
 		# いいね者送信日時を更新する
 		wResDB = gVal.OBJ_DB_IF.UpdateFavoData_SendFavo( wARR_SendID )
@@ -698,7 +622,6 @@ class CLS_TwitterFollower():
 					continue
 				
 				### 相互フォローリストに追加
-###				wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( wID )
 				wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( wARR_RateFavoDate[wID] )
 				
 				### ユーザレベル変更
@@ -775,8 +698,6 @@ class CLS_TwitterFollower():
 		wARR_DBData = None
 		#############################
 		# DBからいいね情報を取得する(1個)
-###		#   新規の場合、DB登録だけで終わる
-###		wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( inUser )
 		wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( inUser, inFLG_New=False )
 		if wSubRes['Result']!=True :
 			###失敗
@@ -832,9 +753,6 @@ class CLS_TwitterFollower():
 					gVal.OBJ_L.Log( "B", wRes )
 					return wRes
 				
-###				### リストリムーブ
-###				wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_Remove( wUserID )
-###				
 				if wARR_DBData['follower']==True :
 					### フォロー者OFF・フォロワーON
 					wUserLevel = "D-"
@@ -863,28 +781,6 @@ class CLS_TwitterFollower():
 				
 				wRes['Responce'] = True		#自動リムーブ実行
 		
-###		wFLG_ListRemove_Only = False
-###		#############################
-###		# 自動リムーブしていれば
-###		#   リスト解除→自動リムーブリストへ
-###		# 自動リムーブしていなければ
-###		#   リスト解除のみ
-###		if wFLG_Remove==False :
-###			wFLG_ListRemove_Only = True
-###		
-###		#############################
-###		# フォロワーじゃなければ
-###		# リスト解除
-###		if wFLG_Remove==True or \
-###		   gVal.OBJ_Tw_IF.CheckFollower( wUserID )==False :
-###			#############################
-###			# 自動リムーブリストに登録
-###			# (他のリスト登録は全削除)
-###			wTweetRes = gVal.OBJ_Tw_IF.AutoRemove_AddUser( inUser, wFLG_ListRemove_Only )
-###			if wTweetRes['Result']!=True :
-###				wRes['Reason'] = "AutoRemove_AddUser is failed"
-###				gVal.OBJ_L.Log( "B", wRes )
-###				return wRes
 		#############################
 		# 自動リムーブしていれば
 		#   リスト解除→片フォロワーリストへ

@@ -189,10 +189,6 @@ class CLS_Mylog():
 		
 		#############################
 		# ログの組み立て
-###		if ( wLevel=="S" or wLevel=="R" or wLevel=="U" or wLevel=="T" \
-###		   and inText!=None ) :
-###		wNumSpace = self.DEF_LEVEL_SIZE - len( wLevel )
-###		wLevelTag = wLevel + " " * wNumSpace
 		if wLevel=="A" or wLevel=="B" or wLevel=="C" or wLevel=="D" or wLevel=="E" :
 			wLevelTag = "*" + wLevel
 		else:
@@ -203,10 +199,8 @@ class CLS_Mylog():
 		     wLevel=="R" or wLevel=="RC" or wLevel=="RR" or \
 		     wLevel=="T" or wLevel=="N" ) \
 		   and inText!=None :
-###			wOutLog = wLevel + ": " + wSTR_Log['Reason']
 			wOutLog = wLevelTag + ": " + wSTR_Log['Reason']
 		else:
-###			wOutLog = wLevel + ": "
 			wOutLog = wLevelTag + ": "
 			wOutLog = wOutLog + wSTR_Log['LogClass'] + ": "
 			wOutLog = wOutLog + wSTR_Log['LogFunc'] + ": "

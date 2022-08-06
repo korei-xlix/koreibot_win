@@ -503,7 +503,6 @@ class CLS_OSIF() :
 		try:
 			#############################
 			# 文字列を日時型に変換する
-###			wSrcTD = datetime.strptime( inSrcTD, "%Y-%m-%d")
 			wSrcTD = datetime.strptime( inSrcTD, "%Y-%m-%d %H:%M:%S")
 			wSrcTD = str( wSrcTD )
 			wSrcTD = wSrcTD.split(" ")
@@ -516,7 +515,6 @@ class CLS_OSIF() :
 			else:
 				wNowTD = inDstTD
 				if isinstance( inDstTD, datetime )==False :
-###					wNowTD = datetime.strptime( inDstTD, "%Y-%m-%d")
 					wNowTD = datetime.strptime( inDstTD, "%Y-%m-%d %H:%M:%S")
 					wNowTD = str( wNowTD )
 					wNowTD = wNowTD.split(" ")
@@ -526,11 +524,6 @@ class CLS_OSIF() :
 			wRes['Reason'] = "Exception error: " + str(err)
 			return wRes
 		
-###		#############################
-###		# 年月日をバラす
-###		wSrcTD = wSrcTD.split("-")
-###		wNowTD = wSrcTD.split("-")
-###		
 		#############################
 		# SrcとDstが違う=翌日
 		if wSrcTD[0]!=wNowTD[0] or \
@@ -916,13 +909,6 @@ class CLS_OSIF() :
 #####################################################
 	@classmethod
 	def sGetRound( cls, inValue, inFLen=2 ):
-###		wStr = "{:." + str(inFLen) + "f}"
-###		print("xxx3: " + str( inValue ))
-###		wVal = float( inValue )
-###		print("xxx3: " + str( inValue ))
-###		print("xxx5: " + str( wStr ))
-###		wVal = print( wStr.format( inValue ) )
-###		wVal = float( wVal )
 		wVal = round( inValue, inFLen )
 		return wVal
 

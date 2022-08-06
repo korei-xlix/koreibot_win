@@ -28,7 +28,6 @@ class CLS_Setup():
 #####################################################
 # セットアップ
 #####################################################
-###	def Setup( self, inPassWD=None ):
 	def Setup( self, inData ):
 		#############################
 		# 応答形式の取得
@@ -42,7 +41,6 @@ class CLS_Setup():
 		#############################
 		# DBに接続
 		gVal.OBJ_DB_IF = CLS_DB_IF()
-###		wSubRes = gVal.OBJ_DB_IF.Connect( inPassWD=inPassWD )
 		wSubRes = gVal.OBJ_DB_IF.Connect( inData )
 		if wSubRes['Result']!=True :
 			return False
@@ -116,7 +114,6 @@ class CLS_Setup():
 # 全初期化
 #   作業ファイルとDBを全て初期化する
 #####################################################
-###	def AllInit(self):
 	def AllInit( self, inData ):
 		#############################
 		# 応答形式の取得
@@ -137,7 +134,6 @@ class CLS_Setup():
 		#############################
 		# DBに接続 (接続情報の作成)
 		gVal.OBJ_DB_IF = CLS_DB_IF()
-###		wSubRes = gVal.OBJ_DB_IF.Connect()
 		wSubRes = gVal.OBJ_DB_IF.Connect( inData )
 		if wSubRes['Result']!=True :
 			return False
@@ -170,8 +166,6 @@ class CLS_Setup():
 #####################################################
 # データ追加モード
 #####################################################
-###	def Add( self, inWordOnly=False, inDBInit=False ):
-###	def Add( self, inData, inWordOnly=False, inDBInit=False ):
 	def Add( self, inData, inWordOnly=False, inDBconn=True ):
 		#############################
 		# 応答形式の取得
@@ -249,12 +243,6 @@ class CLS_Setup():
 			if wSubRes['Result']!=True or wSubRes['Responce']!=True :
 				return False
 		
-###		#############################
-###		# データベースを初期化する
-###		# ※初期化しないほうが便利
-###		if inDBInit==True and inWordOnly==False :
-###			self.__create_TBL_EXC_WORD( gVal.OBJ_DB_IF.OBJ_DB )
-###		
 		#############################
 		# ログオブジェクトの生成
 		gVal.OBJ_L = CLS_Mylog()
@@ -293,21 +281,6 @@ class CLS_Setup():
 			wARR_Word = {}
 			wListNo = 1
 			for wLine in wARR_ExcUser :
-###				### 通報設定ありか
-###				#      先頭が @@@ の場合
-###				wReport = False
-###				wVip    = True
-###				wIfind = wLine.find("@@@")
-###				if wIfind==0 :
-###					wLine = wLine.replace( "@@@", "" )
-###					wReport = True
-###					wVip    = False
-###				
-###				### ダブり登録は除外
-###				if wLine in wARR_Word :
-###					continue
-###				if wLine=="" or wLine==None :
-###					continue
 				### コメントアウトはスキップ
 				wIfind = wLine.find("#")
 				if wIfind==0 :
@@ -335,7 +308,6 @@ class CLS_Setup():
 				wUser = wARR_Line[2]
 				
 				### Twitterからユーザ情報を取得する
-###				wUserInfoRes = gVal.OBJ_Tw_IF.GetUserinfo( inScreenName=wLine )
 				wUserInfoRes = gVal.OBJ_Tw_IF.GetUserinfo( inScreenName=wUser )
 				if wUserInfoRes['Result']!=True :
 					continue
@@ -346,12 +318,10 @@ class CLS_Setup():
 				wCell = {
 					"list_number"	: wListNo,
 					"id"			: wUserID,
-###					"screen_name"	: wLine,
 					"screen_name"	: wUser,
 					"report"		: wReport,
 					"vip"			: wVip,
 					"ope"			: wOpe,
-###					"rel_date"		: "(none)",
 					"rel_date"		: str( gVal.DEF_TIMEDATE ),
 					"memo"			: ""
 				}
@@ -410,12 +380,9 @@ class CLS_Setup():
 					continue
 				wListID = None
 				wKeylist = list( wListRes['Responce'].keys() )
-###				for wROW in wListRes['Responce'] :
-###					if wROW['name']!=wListName :
 				for wKey in wKeylist :
 					if wListRes['Responce'][wKey]['name']!=wListName :
 						continue
-###					wListID = str( wROW['id'] )
 					wListID = str( wListRes['Responce'][wKey]['id'] )
 					break
 				if wListID==None :
@@ -695,7 +662,6 @@ class CLS_Setup():
 		wQy = wQy + "pfavo_date    TIMESTAMP, "			# いいね送信日時
 		wQy = wQy + "pfavo_cnt     INTEGER DEFAULT 0,"	# いいね送信回数(総数)
 		
-###		wQy = wQy + "list_date     TIMESTAMP,"			# リスト日時
 		wQy = wQy + "list_ind_date TIMESTAMP,"			# リスト通知日時
 		
 		wQy = wQy + "myfollow      BOOL  DEFAULT false,"# フォロー者 true=フォロー者
@@ -854,7 +820,6 @@ class CLS_Setup():
 		wQy = wQy + "regdate     TIMESTAMP,"			# 登録日時
 		wQy = wQy + "upddate     TIMESTAMP,"			# 記録日時(更新)
 		wQy = wQy + "day         TEXT  NOT NULL,"		# 記録日
-###		wQy = wQy + "reported    BOOL  DEFAULT false,"	# 報告済か True=報告済
 		wQy = wQy + "run         INTEGER DEFAULT 0,"	# bot実行回数
 		wQy = wQy + "run_time    NUMERIC DEFAULT 0,"	# 実行時間
 		

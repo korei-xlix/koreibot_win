@@ -35,9 +35,7 @@ class CLS_Traffic():
 			gVal.OBJ_L.Log( "A", wRes )
 			return wRes
 		
-###		gVal.STR_TrafficInfo['upddate'] = str( gVal.STR_UserInfo['TimeDate'] )
 		gVal.STR_TrafficInfo['upddate'] = str( gVal.STR_Time['TimeDate'] )
-###		gVal.STR_TrafficInfo[inTag][0] += inCnt
 		if inFLG_Add==True :
 			gVal.STR_TrafficInfo[inTag][0] += inCnt
 		else:
@@ -95,11 +93,9 @@ class CLS_Traffic():
 		if len(wARR_RateTraffic)==0 :
 			#############################
 			# DBに空行を挿入
-###			wResIns = cls.__insert_Traffic( wTD['TimeDate'] )
 			wResIns = cls.sChg( wTD['TimeDate'] )
 			if wResIns['Result']!=True :
 				##失敗
-###				wRes['Reason'] = "sChg is failed: " + CLS_OSIF.sCatErr( wResIns )
 				wRes['Reason'] = "sChg is failed"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
@@ -131,14 +127,12 @@ class CLS_Traffic():
 # トラヒック切替
 #####################################################
 	@classmethod
-###	def __insert_Traffic( cls, inTimeDate ):
 	def sChg( cls, inTimeDate ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
 		wRes = CLS_OSIF.sGet_Resp()
 		wRes['Class'] = "CLS_Traffic"
-###		wRes['Func']  = "__insert_Traffic"
 		wRes['Func']  = "sChg"
 		
 		#############################
@@ -155,7 +149,6 @@ class CLS_Traffic():
 		wQy = wQy + "'" + str( inTimeDate ) + "', "		# 登録日時
 		wQy = wQy + "'" + str( inTimeDate ) + "', "		# 記録日時(更新)
 		wQy = wQy + "'" + str( wARR_TD ) + "', "		# 記録日
-###		wQy = wQy + "false, "							# 報告済か True=報告済
 		
 		for wKey in wKeylist :
 			if wKey=="db_req" or wKey=="db_ins" or wKey=="db_up" or wKey=="db_del" or \
@@ -180,9 +173,6 @@ class CLS_Traffic():
 				gVal.STR_TrafficInfo[wKey] = inTimeDate
 			else :
 				gVal.STR_TrafficInfo[wKey][0] = 0
-		
-###		gVal.OBJ_L.Log( "N", wRes, "DB: Insert Traffic: " + str(wARR_TD[0]) )
-###		
 		
 		#############################
 		# insert分のトラヒックを計上する
@@ -212,7 +202,6 @@ class CLS_Traffic():
 		wRes['Class'] = "CLS_Traffic"
 		wRes['Func']  = "Set"
 		
-###		wRes['Responce'] = False
 		wRes['Responce'] = {
 			"Chg"	: False,	#トラヒック切替
 			"Rep"	: False		#トラヒック報告
@@ -222,15 +211,10 @@ class CLS_Traffic():
 		wTD = CLS_OSIF.sGetTime()
 		if wTD['Result']!=True :
 			###時間取得失敗  時計壊れた？
-###			wRes['Reason'] = "PC時間の取得に失敗しました"
-###			return wRes
 			wRes['Reason'] = "PC time get is failer"
 			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
 		### wTD['TimeDate']
-###		wARR_NowTD = wTD['TimeDate'].split(" ")
-###		wARR_NowTD = wARR_NowTD[0].split("-")
-###		wARR_NowTD = wARR_NowTD[0] + wARR_NowTD[1]
 		wARR_NowTD = str( wTD['TimeDate'] )
 		wARR_NowTD = wARR_NowTD.split(" ")
 		wARR_NowTD = wARR_NowTD[0]
@@ -263,26 +247,13 @@ class CLS_Traffic():
 		if wARR_NowTD!=wARR_TD :
 			### 月=変わった
 			###   DBに空行を挿入
-###			wResIns = cls.__insert_Traffic( wTD['TimeDate'] )
 			wResIns = cls.sChg( wTD['TimeDate'] )
 			if wResIns['Result']!=True :
 				##失敗
-###				wRes['Reason'] = "__insert_Traffic is failed: " + CLS_OSIF.sCatErr( wResIns )
 				wRes['Reason'] = "sChg is failed"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
-			
-###			wRes['Responce'] = True	#トラヒックが変更したことを知らせる
 		
-###		#############################
-###		# トラヒックを報告する
-###		wSubRes = cls.sReport( inCrear=False )
-###		if wSubRes['Result']!=True :
-###			##失敗
-###			wRes['Reason'] = "sReport is failed"
-###			gVal.OBJ_L.Log( "B", wRes )
-###			return wRes
-###		
 		#############################
 		# 正常終了
 		wRes['Result'] = True
@@ -294,7 +265,6 @@ class CLS_Traffic():
 # トラヒック情報を報告する
 #####################################################
 	@classmethod
-###	def sReport( cls, inToday=False, inAll=True ):
 	def sReport( cls, inCrear=True ):
 		#############################
 		# 応答形式の取得
@@ -309,13 +279,10 @@ class CLS_Traffic():
 		wTD = CLS_OSIF.sGetTime()
 		if wTD['Result']!=True :
 			###時間取得失敗  時計壊れた？
-###			wRes['Reason'] = "PC時間の取得に失敗しました"
-###			return wRes
 			wRes['Reason'] = "PC time get is failer"
 			gVal.OBJ_L.Log( "C", wRes )
 			return wRes
 		### wTD['TimeDate']
-###		wARR_TD = wTD['TimeDate'].split(" ")
 		wARR_NowTD = str( wTD['TimeDate'] )
 		wARR_NowTD = wARR_NowTD.split(" ")
 		wARR_NowTD = wARR_NowTD[0]
@@ -378,7 +345,6 @@ class CLS_Traffic():
 			for wKey in wARR_Komoku :
 				if wKey=="upddate" :
 					continue
-###				wARR_Traffic[2][wKey] = wARR_Traffic[2][wKey] / wReportNum
 				wValHarf = wARR_Traffic[2][wKey] / wReportNum
 				wARR_Traffic[2][wKey] = CLS_OSIF.sGetRound( wValHarf )
 		
@@ -410,31 +376,22 @@ class CLS_Traffic():
 				continue
 			
 			### 項目
-###			wListNumSpace = cls.DEF_KOMOKU_LEN - len( gVal.STR_TrafficInfo[wKey][1] )
-###			wListData = gVal.STR_TrafficInfo[wKey][1] + " " * wListNumSpace + "  "
 			wCharCnt = CLS_OSIF.sDCharaCount( gVal.STR_TrafficInfo[wKey][1] )
 			wListNumSpace = cls.DEF_KOMOKU_LEN - wCharCnt
 			wListData = gVal.STR_TrafficInfo[wKey][1] + " " * wListNumSpace + "   "
 			
 			### 1列目
-###			wListData = wListData + str(wARR_Traffic[0][wKey])
 			wListNumSpace = cls.DEF_KOMOKU_NUM_LEN - len( str(wARR_Traffic[0][wKey]) )
 			wListData = wListData + " " * wListNumSpace + str(wARR_Traffic[0][wKey])
 			if wReportNum>=2 :
 				### 1行目:スペース
 				wListData = wListData + "     "
-###				wListNumSpace = cls.DEF_KOMOKU_NUM_LEN - len( str(wARR_Traffic[0][wKey]) )
-###				wListData = wListData + " " * wListNumSpace + "  "
 				
 				### 2行目
-###				wListData = wListData + str(wARR_Traffic[1][wKey])
-###				wListNumSpace = cls.DEF_KOMOKU_NUM_LEN - len( str(wARR_Traffic[1][wKey]) )
-###				wListData = wListData + " " * wListNumSpace + "  "
 				wListNumSpace = cls.DEF_KOMOKU_NUM_LEN - len( str(wARR_Traffic[1][wKey]) )
 				wListData = wListData + " " * wListNumSpace + str(wARR_Traffic[1][wKey]) + "     "
 				
 				### 3行目
-###				wListData = wListData + str(wARR_Traffic[2][wKey])
 				wListNumSpace = cls.DEF_KOMOKU_NUM_LEN - len( str(wARR_Traffic[2][wKey]) )
 				wListData = wListData + " " * wListNumSpace + str(wARR_Traffic[2][wKey])
 			
@@ -445,188 +402,19 @@ class CLS_Traffic():
 		# 画面表示
 		wResDisp = CLS_MyDisp.sViewDisp( "TrafficReport", inClear=inCrear, inData=wARR_ViewTraffic )
 		if wResDisp['Result']==False :
-###			wRes['Reason'] = "sViewDisp is failed"
-###			gVal.OBJ_L.Log( "B", wRes )
 			wRes['Reason'] = "sViewDisp is failed: reason=" + wResDisp['Reason']
 			gVal.OBJ_L.Log( "A", wRes )
 			return wRes
-		
-###		wReported = 0	#報告した数
-###		wIndex = 0
-###		while True :
-###			#############################
-###			# 全て報告した
-###			if wReportNum<=wIndex :
-###				break
-###			
-###			#############################
-###			# 今日分はスキップする
-###			if wARR_RateTraffic[wIndex]['day']==wARR_TD[0] and inToday==False :
-###				wIndex += 1
-###				continue
-###			
-###			#############################
-###			# 表示する
-###			cls.__view_Traffic( wARR_RateTraffic[wIndex] )
-###			
-###			#############################
-###			# 報告済みにする
-###			wQy = "update tbl_traffic_data set " + \
-###						"reported = True " + \
-###						"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
-###						" and day = '" + str( wARR_TD[0] ) + "' ;"
-###			
-###			wResDB = gVal.OBJ_DB_IF.RunQuery( wQy, False )
-###			if wResDB['Result']!=True :
-###				wRes['Reason'] = "Run Query is failed"
-###				gVal.OBJ_L.Log( "B", wRes )
-###				return wRes
-###			wReported += 1
-###			wIndex += 1
-###			
-###			#############################
-###			# 1回だけならループ終了
-###			if inAll==False :
-###				break
-###			
 		
 		#############################
 		# 1件以上報告した
 		if wReportNum>=1 :
 			wRes['Responce'] = True
 		
-###		CLS_OSIF.sInp( "確認したらリターンキーを押してください。[RT]" )
-###		
 		#############################
 		# 正常終了
 		wRes['Result'] = True
 		return wRes
 
 
-
-###	#####################################################
-###	@classmethod
-###	def __view_Traffic( cls, inTraffic, inConfirm=True ):
-###		#############################
-###		# ヘッダ表示
-###		wResDisp = CLS_MyDisp.sViewHeaderDisp( "トラヒック情報 報告", False )
-###		wStr = str( inTraffic['update'] ) + '\n'
-###		
-###		#############################
-###		# 情報の作成
-###		wStr = wStr + '\n'
-###		wStr = wStr + "いいね情報" + '\n'
-###		wStr = wStr + "--------------------" + '\n'
-###		wStr = wStr + "現いいね数           : " + str( inTraffic['now_favo'] ) + '\n'
-###		wStr = wStr + "いいね実施数         : " + str( inTraffic['get_favo'] ) + '\n'
-###		wStr = wStr + "いいね解除数         : " + str( inTraffic['rem_favo'] ) + '\n'
-###		
-###		wStr = wStr + '\n'
-###		wStr = wStr + "リアクション情報" + '\n'
-###		wStr = wStr + "--------------------" + '\n'
-###		wStr = wStr + "リアクション受信数   : " + str( inTraffic['get_reaction'] ) + '\n'
-###		
-###		wStr = wStr + '\n'
-###		wStr = wStr + "ツイート情報" + '\n'
-###		wStr = wStr + "--------------------" + '\n'
-###		wStr = wStr + "ツイート送信数       : " + str( inTraffic['send_tweet'] ) + '\n'
-###		
-###		wStr = wStr + '\n'
-###		wStr = wStr + "データベース情報" + '\n'
-###		wStr = wStr + "--------------------" + '\n'
-###		wStr = wStr + "クエリ要求回数       : " + str( inTraffic['db_req'] ) + '\n'
-###		wStr = wStr + "DB挿入回数           : " + str( inTraffic['db_ins'] ) + '\n'
-###		wStr = wStr + "DB更新回数           : " + str( inTraffic['db_up'] ) + '\n'
-###		wStr = wStr + "DB削除回数           : " + str( inTraffic['db_del'] ) + '\n'
-###		
-###		wStr = wStr + '\n'
-###		wStr = wStr + "取得タイムライン数   : " + str( inTraffic['timeline'] ) + '\n'
-###		wStr = wStr + "Bot実行回数          : " + str( inTraffic['runbot'] ) + '\n'
-###		wStr = wStr + "Twitter API実行回数  : " + str( inTraffic['runapi'] ) + '\n'
-###		
-###		CLS_OSIF.sPrn( wStr )
-###		
-###		#############################
-###		# 確認しなくていいなら終了
-###		if inConfirm==False :
-###			return
-###		
-###		CLS_OSIF.sInp( "確認したらリターンキーを押してください。[RT]" )
-###		return
-###
-###
-
-#####################################################
-# トラヒック情報を表示する
-#####################################################
-###	@classmethod
-###	def sView(cls):
-###		#############################
-###		# 応答形式の取得
-###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-###		wRes = CLS_OSIF.sGet_Resp()
-###		wRes['Class'] = "CLS_Traffic"
-###		wRes['Func']  = "sView"
-###		
-###		#############################
-###		# DBの未報告のトラヒック情報取得
-###		wQy = "select * from tbl_traffic_data where " + \
-###					"twitterid = '" + gVal.STR_UserInfo['Account'] + "' " + \
-###					" order by day desc ;"
-###		
-###		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy, False )
-###		if wResDB['Result']!=True :
-###			wRes['Reason'] = "Run Query is failed"
-###			gVal.OBJ_L.Log( "B", wRes )
-###			return wRes
-###		
-###		#############################
-###		# 辞書型に整形
-###		wARR_RateTraffic = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
-###		
-###		wReportNum = len( wARR_RateTraffic )
-###		#############################
-###		# トラヒックがなければ終わり
-###		if wReportNum==0 :
-###			wRes['Result'] = True
-###			return wRes
-###		
-###		wIndex = 0
-###		while True :
-###			#############################
-###			# 表示する
-###			cls.__view_Traffic( wARR_RateTraffic[wIndex], False )
-###			wIndex += 1
-###			
-###			#############################
-###			# 全て報告した
-###			if wReportNum<=wIndex :
-###				break
-###			
-###			#############################
-###			# 停止するか
-###			wResNext = CLS_OSIF.sInp( '\n' + "次のトラヒック情報を表示しますか？(q=中止 / other=表示する)=> " )
-###			if wResNext=="y" :
-###				break
-###		
-###		#############################
-###		# 正常終了
-###		wRes['Result'] = True
-###		return wRes
-###
-###
-###
-
-#####################################################
-# 現トラヒック表示
-#####################################################
-###	@classmethod
-###	def sNowView(cls):
-###		#############################
-###		# 現トラヒック表示(コンソール)
-###		cls.__view_Traffic( gVal.STR_TrafficInfo, inConfirm=False )
-###		
-###		return
-###
-###
 

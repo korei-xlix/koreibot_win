@@ -12,9 +12,6 @@ class gVal() :
 
 #############################
 # ※ユーザ自由変更※
-###	DEF_BD_HOST         = 'localhost'						#データベースホスト名
-###	DEF_BD_NAME         = 'koreibot'						#データベース名
-###	DEF_BD_USER         = 'koreibot'						#データベースユーザ名
 	DEF_TIMEZONE = 9										# 9=日本時間 最終更新日補正用
 	DEF_MOJI_ENCODE = 'utf-8'								#文字エンコード
 
@@ -30,16 +27,6 @@ class gVal() :
 		"PythonVer"		: 0,
 		"HostName"		: "",
 		
-###		"Week"			: False,
-###		"Day"			: False,
-###		
-###		"TimeDate"		: None,
-###		"RateTimeDate"	: None,
-###			# 前回実行日時
-###		"RateLockTD"	: None,
-###			# 前回ロック日時
-###		"APIrect"		: "",
-###		
 		"EXT_FilePath"	: None,
 		
 		"RunMode"		: "normal"
@@ -56,7 +43,6 @@ class gVal() :
 		"id"			: "",			#Twitter ID(番号)
 		
 		"TrendTag"		: "",			#トレンドタグ設定
-###		"FavoDate"		: None,			#いいね者送信日時(直近)
 		
 		"ListID"		: None,			#リスト通知 リストID
 		"ListName"		: None,			#リスト通知 リスト名
@@ -66,11 +52,6 @@ class gVal() :
 		"mListName"		: None,			#相互フォローリスト リスト名
 		"fListID"		: None,			#片フォロワーリスト リストID
 		"fListName"		: None,			#片フォロワーリスト リスト名
-		
-###		"ListDate"	: None,			#リスト通知日時
-###		"LFavoDate"	: None,			#リストいいね日時
-###		
-###		"ArListName": "",			#自動リムーブ先リスト
 		
 		"Traffic"		: False			#Twitterにトラヒックを報告するか
 	}
@@ -180,25 +161,18 @@ class gVal() :
 		
 														# リストいいね
 		"forListFavoSec"				: 86400,		#   リストいいねまでの期間   1日  60x60x24
-###		"forListFavoMyFollowFavoSec"	: 14400,		#   リストいいね フォロー者いいねへの期間       4時間  60x60x4
 		
 														# フォロワー支援いいね
-###		"forListFavoFollowerSec"		: 86400,		#   フォロワー支援いいねまでの期間   1日  60x60x24
 		"forFollowerFavoSec"				: 14400,	#   フォロワー支援いいねまでの期間   4時間  60x60x4
 		"forFollowerFavoMListMutualSec"		: 14400,	#   相互フォローリスト 相互フォローの いいね期間   4時間  60x60x4
 		"forFollowerFavoMListMyFollowSec"	: 86400,	#   相互フォローリスト 片フォロー者の いいね期間   1日  60x60x24
 		"forFollowerFavoFListAutoFavoSec"	: 28800,	#   片フォロワーリスト・自動いいね期間   8時間  60x60x8
 		"forFollowerFavoFListOverFavoSec"	: 86400,	#   片フォロワーリスト・外部いいね期間   1日  60x60x24
-###		"forListFavoFollowerFavoSec"	: 432000,		#   リストいいね フォロワー支援いいねへの期間   5日  (60x60x24)x5
 		
 														# 自動いいね
-###		"forListFavoAutoFavoTweetSec"	: 28800,		#   リストいいね 自動いいね ツイート期間外   8時間  60x60x8
 		"forAutoFavoTweetSec"			: 28800,		#   対象ツイート期間外   8時間  60x60x8
 		
 														# 外部いいね
-###		"forListFavoOverTweetSec"		: 28800,		#   リストいいね 外部いいね ツイート期間外   8時間  60x60x8
-###		"forListFavoOverMyFollowSec"	: 14400,		#   リストいいね 外部いいね フォロー者への期間   4時間  60x60x4
-###		"forListFavoOverNoFollowSec"	: 432000,		#   リストいいね 外部いいね フォロー外への期間   5日  (60x60x24)x5
 		"forOverFavoTweetSec"			: 28800,		#   対象ツイート期間外   8時間  60x60x8
 		"forOverFavoFavoriteSec"		: 28800,		#   いいね実施期間外     8時間  60x60x8
 		
