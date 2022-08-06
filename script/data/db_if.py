@@ -921,6 +921,46 @@ class CLS_DB_IF() :
 		wRes['Result'] = True
 		return wRes
 
+	#####################################################
+	def ResetTimeInfo( self, inAccount ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "ResetTimeInfo"
+		
+		wKeylist = list( gVal.STR_Time.keys() )
+		for wKey in wKeylist :
+			if wKey=="TimeDate" :
+				### システム時間は、スキップ
+				continue
+			
+			#############################
+			# 時間リセット
+			wQy = "update tbl_time_data set "
+			wQy = wQy + wKey + " = '" + str( gVal.DEF_TIMEDATE ) + "' "
+			wQy = wQy + "where twitterid = '" + str(inAccount) + "' ;"
+			
+			#############################
+			# クエリの実行
+			wResDB = self.OBJ_DB.RunQuery( wQy )
+			wResDB = self.OBJ_DB.GetQueryStat()
+			if wResDB['Result']!=True :
+				##失敗
+				wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+				gVal.OBJ_L.Log( "C", wRes )
+				return wRes
+			
+			#############################
+			# グローバルもリセット
+			gVal.STR_Time[wKey] = str( gVal.DEF_TIMEDATE )
+		
+		#############################
+		# =正常
+		wRes['Result'] = True
+		return wRes
+
 
 
 #####################################################
@@ -1597,11 +1637,12 @@ class CLS_DB_IF() :
 		#############################
 		# 除外文字データを登録する
 		wKeylist = list( wARR_DBData.keys() )
-		wListNo = 1
+###		wListNo = 1
 		for wIndex in wKeylist :
 			wID = str( wARR_DBData[wIndex]['id'] )
 			wCell = {
-				"list_number"	: wListNo,
+###				"list_number"	: wListNo,
+				"list_number"	: -1,
 				"id"			: wID,
 				"list_name"		: wARR_DBData[wIndex]['list_name'],
 				"user_id"		: str( wARR_DBData[wIndex]['user_id'] ),
@@ -1614,7 +1655,7 @@ class CLS_DB_IF() :
 				"update"		: False
 			}
 			wARR_Data.update({ wID : wCell })
-			wListNo += 1
+###			wListNo += 1
 		
 		#############################
 		# リスト通知リストと
@@ -1631,9 +1672,33 @@ class CLS_DB_IF() :
 			   and str(gVal.STR_UserInfo['id'])==wARR_Data[wIndex]['user_id'] :
 				wARR_Del.append( wID )
 		
+		#############################
+		# 削除対象をリストとDBから削除する
 		for wID in wARR_Del :
 			wID = str( wID )
+			
+			### レコードを消す
+			wQy = "delete from tbl_list_favo "
+			wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "' and "
+			wQy = wQy + "id = '" + wID + "' ;"
+			
+			wResDB = self.OBJ_DB.RunQuery( wQy )
+			wResDB = self.OBJ_DB.GetQueryStat()
+			if wResDB['Result']!=True :
+				##失敗
+				wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+				gVal.OBJ_L.Log( "C", wRes )
+				return wRes
+			
 			del wARR_Data[wID]
+		
+		#############################
+		# リスト番号を振る
+		wKeylist = list( wARR_Data.keys() )
+		wListNo = 1
+		for wIndex in wKeylist :
+			wARR_Data[wIndex]['list_number'] = wListNo
+			wListNo += 1
 		
 		gVal.ARR_ListFavo = wARR_Data
 		

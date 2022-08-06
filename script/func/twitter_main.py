@@ -733,7 +733,12 @@ class CLS_TwitterMain():
 			return wRes
 		if wGetLag['Beyond']==False :
 			### 規定以内= ショート処理
+			wStr = "●ショート監視実行: 次回のフル監視日時= " + str(wGetLag['RateTime']) + '\n'
+			CLS_OSIF.sPrn( wStr )
 			wFLG_Short = True
+		else:
+			wStr = "〇フル監視実行" + '\n'
+			CLS_OSIF.sPrn( wStr )
 		
 		#############################
 		# Twitter情報取得
@@ -932,6 +937,15 @@ class CLS_TwitterMain():
 #####################################################
 	def ExcuteUser(self):
 		wRes = self.OBJ_TwitterAdmin.ExcuteUser()
+		return wRes
+
+
+
+#####################################################
+# 時間リセット
+#####################################################
+	def ResetTimeInfo(self):
+		wRes = self.OBJ_TwitterAdmin.ResetTimeInfo()
 		return wRes
 
 

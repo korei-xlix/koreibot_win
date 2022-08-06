@@ -458,6 +458,10 @@ class CLS_TwitterFavo():
 		#     外部いいね
 		# ・片フォロワーリストかつ期間外
 		#     自動いいね・ロング
+		# ・相互フォロー
+		#     自動いいね・ショート
+		# ・フォロワー
+		#     外部いいね
 		
 		#############################
 		# 取得可能時間か？
@@ -554,6 +558,21 @@ class CLS_TwitterFavo():
 				# 片フォロワーリストかつ期間外
 				else:
 					wThreshold = gVal.DEF_STR_TLNUM['forFollowerFavoFListAutoFavoSec']
+			
+			#############################
+			# 相互フォローかフォロワー
+			elif wARR_FollowData[wUserID]['follower']==True :
+				#############################
+				# 相互フォロー
+				if wARR_FollowData[wUserID]['myfollow']==True :
+					### 自動いいね
+					wThreshold = gVal.DEF_STR_TLNUM['forFollowerFavoMListMutualSec']
+				
+				#############################
+				# フォロワー
+				else:
+					### 外部いいね
+					wFLG_OverAutoFavo = True
 			
 			else:
 				wFLG_ZanCountSkip = True
@@ -676,7 +695,8 @@ class CLS_TwitterFavo():
 		
 		#############################
 		# DBからいいね情報を取得する(1個)
-		wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wARR_FollowData[wUserID], inFLG_New=False )
+###		wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wARR_FollowData[wUserID], inFLG_New=False )
+		wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( inData, inFLG_New=False )
 		if wDBRes['Result']!=True :
 			###失敗
 			wRes['Reason'] = "GetFavoDataOne is failed"

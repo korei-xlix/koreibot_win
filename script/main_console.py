@@ -342,6 +342,11 @@ class CLS_Main_Console() :
 				wRes['Reason'] = "Set Twitter API failed: " + wResAPI['Reason']
 				gVal.OBJ_L.Log( "D", wRes )
 		
+		#############################
+		# 時間リセット
+		elif inCommand=="\\tres" :
+			cls.OBJ_TwitterMain.ResetTimeInfo()
+		
 	#####################################################
 		#############################
 		# ないコマンド

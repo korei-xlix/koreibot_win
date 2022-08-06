@@ -1955,6 +1955,46 @@ class CLS_TwitterAdmin():
 
 
 #####################################################
+# 時間リセット
+#####################################################
+	def ResetTimeInfo(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterAdmin"
+		wRes['Func']  = "ResetTimeInfo"
+		
+		#############################
+		# 実行の確認
+		wStr = "全スケジュール時間をリセットします"
+		CLS_OSIF.sPrn( wStr )
+		wAns = CLS_OSIF.sInp( "y=Yes / other=cancel => " )
+		if wAns!="y" :
+			###  終わる
+			wRes['Result'] = True
+			return wRes
+		
+		wStr = "リセット処理実行中..."
+		CLS_OSIF.sPrn( wStr )
+		#############################
+		# 時間リセット
+		wTimeRes = gVal.OBJ_DB_IF.ResetTimeInfo( gVal.STR_UserInfo['Account'] )
+		if wTimeRes['Result']!=True :
+			wRes['Reason'] = "ResetTimeInfo is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# ログ記録
+		gVal.OBJ_L.Log( "SC", wRes, "全時間リセット実行" )
+		
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
 # システム情報の表示
 #####################################################
 	def View_Sysinfo(self):
