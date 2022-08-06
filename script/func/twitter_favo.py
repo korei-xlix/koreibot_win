@@ -821,19 +821,22 @@ class CLS_TwitterFavo():
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-		wStr = "--------------------" + '\n' ;
+###		wStr = "--------------------" + '\n' ;
 		if wSubRes['Responce']['Run']==True :
-			if inMode==self.DEF_AUTOFAVO_FOLLOWER_FAVO :
-				### フォロワー支援いいね
-				wTextReason = "自動いいね（フォロワー支援） 実施: user=" + inData['screen_name'] + " id=" + str(wFavoID)
-			else:
-				### お返しいいね
-				wTextReason = "自動いいね（お返し） 実施: user=" + inData['screen_name'] + " id=" + str(wFavoID)
-			gVal.OBJ_L.Log( "T", wRes, wTextReason )
+###			if inMode==self.DEF_AUTOFAVO_FOLLOWER_FAVO :
+###				### フォロワー支援いいね
+###				wTextReason = "自動いいね（フォロワー支援） 実施: user=" + inData['screen_name'] + " id=" + str(wFavoID)
+###			else:
+###				### お返しいいね
+###				wTextReason = "自動いいね（お返し） 実施: user=" + inData['screen_name'] + " id=" + str(wFavoID)
+###			gVal.OBJ_L.Log( "T", wRes, wTextReason )
+			wStr = "自動いいね実施: user=" + inData['screen_name'] + " id=" + str(wFavoID)
+			gVal.OBJ_L.Log( "T", wRes, wStr )
 			
 			wRes['Responce']['flg_favo_run'] = True		#いいね済み
 		else :
-			wStr = wStr + "●自動いいね中止(いいね被り): " + inData['screen_name'] + '\n' ;
+###			wStr = wStr + "●自動いいね中止(いいね被り): " + inData['screen_name'] + '\n' ;
+			wStr = "●自動いいね中止(いいね被り): " + inData['screen_name'] + '\n' ;
 			CLS_OSIF.sPrn( wStr )
 		
 		#############################
