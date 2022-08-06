@@ -2923,8 +2923,10 @@ class CLS_DB_IF() :
 		
 		wFavoID   = str( inData['id'] )
 ###		wFavoDate = str( gVal.STR_Time['TimeDate'] )
-		wCnt      = inFavoData['favo_cnt']
-		wNowCnt   = inFavoData['now_favo_cnt']
+###		wCnt      = inFavoData['favo_cnt']
+###		wNowCnt   = inFavoData['now_favo_cnt']
+		wCnt      = inFavoData['rfavo_cnt']
+		wNowCnt   = inFavoData['rfavo_n_cnt']
 		if inCountUp==True :
 			wCnt    += 1
 			wNowCnt += 1

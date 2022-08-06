@@ -770,7 +770,8 @@ class CLS_TwitterFavo():
 # 自動いいね
 #####################################################
 ###	def AutoFavo( self, inUser, inData, inMode=DEF_AUTOFAVO_RETURN_FAVO ):
-	def AutoFavo( self, inUser, inThreshold=None ):
+###	def AutoFavo( self, inUser, inThreshold=None ):
+	def AutoFavo( self, inData, inThreshold=None ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -859,16 +860,19 @@ class CLS_TwitterFavo():
 ###		
 ###		if inData['lfavo_date']!=None and inData['lfavo_date']!="" :
 ###			wGetLag = CLS_OSIF.sTimeLag( str( inData['lfavo_date'] ), inThreshold=wLFavoDateLen )
-		if inData['pfavo_date']==gVal.DEF_NOTEXT :
+###		if inData['pfavo_date']==gVal.DEF_NOTEXT :
 ###			wGetLag = CLS_OSIF.sTimeLag( str( inData['pfavo_date'] ), inThreshold=wLFavoDateLen )
-			wGetLag = CLS_OSIF.sTimeLag( str( inData['pfavo_date'] ), inThreshold=inThreshold )
+###			wGetLag = CLS_OSIF.sTimeLag( str( inData['pfavo_date'] ), inThreshold=inThreshold )
+		if wARR_DBData['pfavo_date']==gVal.DEF_NOTEXT :
+			wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData['pfavo_date'] ), inThreshold=inThreshold )
 			if wGetLag['Result']!=True :
 				wRes['Reason'] = "sTimeLag failed"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			if wGetLag['Beyond']==False :
 				### 規定内は処理しない
-				wStr = "●自動いいね中止(いいね期間内): " + inData['screen_name'] + " timedate=" + str(inData['lfavo_date']) + '\n' ;
+###				wStr = "●自動いいね中止(いいね期間内): " + inData['screen_name'] + " timedate=" + str(inData['lfavo_date']) + '\n' ;
+				wStr = "●自動いいね中止(いいね期間内): " + inData['screen_name'] + " timedate=" + str(wARR_DBData['lfavo_date']) + '\n' ;
 				CLS_OSIF.sPrn( wStr )
 				
 				wRes['Result'] = True
@@ -932,16 +936,17 @@ class CLS_TwitterFavo():
 				### 規定外 =古いツイートなので除外
 				continue
 			
-			### discriptionチェック
-			wWordRes = self.OBJ_Parent.CheckExtWord( inData, inUser['description'] )
-			if wWordRes['Result']!=True :
-				wRes['Reason'] = "CheckExtWord failed(description)"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			if wWordRes['Responce']==False :
-				### 除外
-				continue
-			
+###			### discriptionチェック
+####		wWordRes = self.OBJ_Parent.CheckExtWord( inData, inUser['description'] )
+###			wWordRes = self.OBJ_Parent.CheckExtWord( inData, inData['description'] )
+###			if wWordRes['Result']!=True :
+###				wRes['Reason'] = "CheckExtWord failed(description)"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			if wWordRes['Responce']==False :
+###				### 除外
+###				continue
+###			
 			### ツイートチェック
 			wWordRes = self.OBJ_Parent.CheckExtWord( inData, wTweet['text'] )
 			if wWordRes['Result']!=True :

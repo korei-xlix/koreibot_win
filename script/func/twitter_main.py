@@ -1460,7 +1460,8 @@ class CLS_TwitterMain():
 		wTweetID = str( inTweet['id'] )
 		#############################
 		# 同じアクションはノーリアクション
-		if wARR_DBData['favo_id']==wTweetID :
+###		if wARR_DBData['favo_id']==wTweetID :
+		if wARR_DBData['rfavo_id']==wTweetID :
 			wFLG_Action = False	#除外
 		
 		#############################
@@ -1496,8 +1497,8 @@ class CLS_TwitterMain():
 					wRes['Reason'] = "UpdateFavoData is failed"
 					gVal.OBJ_L.Log( "B", wRes )
 					return wRes
-				wStr = "●リアクション禁止: " + wARR_DBData['screen_name'] + '\n'
-				CLS_OSIF.sPrn( wStr )
+###				wStr = "●リアクション禁止: " + wARR_DBData['screen_name'] + '\n'
+###				CLS_OSIF.sPrn( wStr )
 			
 			wRes['Result'] = True
 			return wRes
@@ -2269,16 +2270,22 @@ class CLS_TwitterMain():
 		wRes['Class'] = "CLS_TwitterMain"
 		wRes['Func']  = "CheckExtWord"
 		
+		wWord = inWord.replace( '\n', '' )
+		
 		wRes['Responce'] = False
 		#############################
 		# 除外文字があるかチェック
 		for wExeWord in gVal.ARR_ExeWordKeys :
-			if inWord.find( wExeWord )>=0 :
+###			if inWord.find( wExeWord )>=0 :
+			if wWord.find( wExeWord )>=0 :
 				if gVal.ARR_ExeWord[wExeWord]['report']==True :
-					### 報告対象の表示と、ログに記録(テストログ)
-					gVal.OBJ_L.Log( "N", wRes, "●報告対象の文字除外: id=" + inData['screen_name'] + " word=" + inWord )
+###					### 報告対象の表示と、ログに記録(テストログ)
+###					gVal.OBJ_L.Log( "N", wRes, "●報告対象の文字除外: id=" + inData['screen_name'] + " word=" + inWord )
+					### 報告対象の表示と、ログに記録
+					gVal.OBJ_L.Log( "RR", wRes, "●報告対象の文字除外: id=" + inData['screen_name'] + " word=" + inWord )
 				else:
-					### 報告対象の表示と、ログに記録(テストログ)
+###					### 報告対象の表示と、ログに記録(テストログ)
+					### ログに記録
 					gVal.OBJ_L.Log( "N", wRes, "文字除外: id=" + inData['screen_name'] + " word=" + inWord )
 				
 				### 除外
@@ -2321,9 +2328,11 @@ class CLS_TwitterMain():
 			
 ###			if gVal.ARR_NotReactionUser[inName]['report']==True and inFLG_Log==True :
 			if gVal.ARR_NotReactionUser[wUserID]['report']==True and inFLG_Log==True :
-				### 報告対象の表示と、ログに記録(テストログ)
+###				### 報告対象の表示と、ログに記録(テストログ)
 ###				gVal.OBJ_L.Log( "N", wRes, "●禁止ユーザ: user=" + inName + " reason=" + inReason )
-				gVal.OBJ_L.Log( "N", wRes, "●禁止ユーザ: screen_name=" + inData['screen_name'] + " reason=" + inReason )
+###				gVal.OBJ_L.Log( "N", wRes, "●禁止ユーザ: screen_name=" + inData['screen_name'] + " reason=" + inReason )
+				### 報告対象の表示と、ログに記録
+				gVal.OBJ_L.Log( "RR", wRes, "●禁止ユーザ: screen_name=" + inData['screen_name'] + " reason=" + inReason )
 			
 			### 除外
 			wRes['Result'] = True
