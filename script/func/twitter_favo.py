@@ -538,7 +538,12 @@ class CLS_TwitterFavo():
 		wResult = {
 			"timeline"	: 0,
 			"tweets"	: 0,
-			"favo_cnt"	: 0
+			"favo_cnt"	: 0,
+			
+			"myfollow"	: 0,	#相互フォロー、フォロー者 処理数
+			"follower"	: 0,	#片フォロワー 処理数
+			"overuser"	: 0		#外部いいね   処理数
+			
 		}
 		
 		wSTR_Param = {
@@ -599,6 +604,7 @@ class CLS_TwitterFavo():
 				###
 				wStr = "▽相互フォローリスト: 相互フォロー: user=" + str( wARR_FollowData[wUserID]['screen_name'] )
 				CLS_OSIF.sPrn( wStr )
+				wResult['myfollow'] += 1
 			
 			#############################
 			# 相互フォローリストかつ片フォロー者
@@ -613,6 +619,7 @@ class CLS_TwitterFavo():
 				###
 				wStr = "▽相互フォローリスト: 片フォロー者: user=" + str( wARR_FollowData[wUserID]['screen_name'] )
 				CLS_OSIF.sPrn( wStr )
+				wResult['myfollow'] += 1
 			
 			elif gVal.OBJ_Tw_IF.CheckFollowListUser( wUserID )==True and \
 			     gVal.STR_UserInfo['AutoRemove']==True :
@@ -645,6 +652,7 @@ class CLS_TwitterFavo():
 					###
 					wStr = "▽片フォロワーリスト: 期間内: user=" + str( wARR_FollowData[wUserID]['screen_name'] )
 					CLS_OSIF.sPrn( wStr )
+					wResult['overuser'] += 1
 				
 				#############################
 				# 片フォロワーリストかつ期間外
@@ -657,6 +665,7 @@ class CLS_TwitterFavo():
 					###
 					wStr = "▽片フォロワーリスト: 期間外: user=" + str( wARR_FollowData[wUserID]['screen_name'] )
 					CLS_OSIF.sPrn( wStr )
+					wResult['follower'] += 1
 			
 			elif wARR_FollowData[wUserID]['follower']==True :
 				#############################
@@ -671,6 +680,7 @@ class CLS_TwitterFavo():
 					###
 					wStr = "▽相互フォロー: user=" + str( wARR_FollowData[wUserID]['screen_name'] )
 					CLS_OSIF.sPrn( wStr )
+					wResult['myfollow'] += 1
 				
 				#############################
 				# フォロワー
@@ -704,6 +714,7 @@ class CLS_TwitterFavo():
 						###
 						wStr = "▽フォロワー: 期間内: user=" + str( wARR_FollowData[wUserID]['screen_name'] )
 						CLS_OSIF.sPrn( wStr )
+						wResult['overuser'] += 1
 					
 					#############################
 					# フォロワーかつ期間外
@@ -715,6 +726,7 @@ class CLS_TwitterFavo():
 						###
 						wStr = "▽フォロワー: 期間外: user=" + str( wARR_FollowData[wUserID]['screen_name'] )
 						CLS_OSIF.sPrn( wStr )
+						wResult['follower'] += 1
 			
 			#############################
 			# 片フォロー者
@@ -732,8 +744,9 @@ class CLS_TwitterFavo():
 				wSTR_Param['Sensitive'] = True
 				wSTR_Param['ListID']    = None
 				###
-				wStr = "▽片フォロー者: user=" + str( wARR_FollowData[wUserID]['screen_name'] )
+				wStr = "▽片フォロー者: " +str(wMyfollowCnt) + "個目: user=" + str( wARR_FollowData[wUserID]['screen_name'] )
 				CLS_OSIF.sPrn( wStr )
+				wResult['myfollow'] += 1
 			
 			else:
 ###				wFLG_ZanCountSkip = True
@@ -761,9 +774,12 @@ class CLS_TwitterFavo():
 			wStr = "------------------------------" + '\n'
 ###		wStr = wStr + "支援 対象ユーザ数  : " + str( wResult['UserNum'] )+ '\n'
 ###		wStr = wStr + "支援 いいね実施数  : " + str( wResult['RunFavo'] )+ '\n'
-		wStr = wStr + "抽出タイムライン数 : " + str( wResult['timeline'] )+ '\n'
-		wStr = wStr + "抽出ツイート数     : " + str( wResult['tweets'] )+ '\n'
-		wStr = wStr + "いいね実施数       : " + str( wResult['favo_cnt'] )+ '\n'
+		wStr = wStr + "抽出タイムライン数   : " + str( wResult['timeline'] )+ '\n'
+		wStr = wStr + "抽出ツイート数       : " + str( wResult['tweets'] )+ '\n'
+		wStr = wStr + "いいね実施数         : " + str( wResult['favo_cnt'] )+ '\n'
+		wStr = wStr + "  相互・片フォロー者 : " + str( wResult['myfollow'] )+ '\n'
+		wStr = wStr + "  片フォロワー       : " + str( wResult['follower'] )+ '\n'
+		wStr = wStr + "  外部いいね         : " + str( wResult['overuser'] )+ '\n'
 		CLS_OSIF.sPrn( wStr )
 		
 		#############################
@@ -805,7 +821,7 @@ class CLS_TwitterFavo():
 		# いいね状態
 		wRes['Responce'] = {
 			"FLG_Favo_Run"		: False,	# いいね実施
-			"FLG_Check"			: False,	# いいね実施 扱い(Twitter Favo未実施)
+###			"FLG_Check"			: False,	# いいね実施 扱い(Twitter Favo未実施)
 			"timeline"			: 0,
 			"tweets"			: 0,
 			"FavoID"			: None
@@ -983,9 +999,9 @@ class CLS_TwitterFavo():
 				return wRes
 			if wSubRes['Responce']==True :
 				### いいね済み
-				wStr = "  ::いいね済みユーザ"
-				CLS_OSIF.sPrn( wStr )
-				
+#				wStr = "  ::いいね済みユーザ"
+#				CLS_OSIF.sPrn( wStr )
+#				
 				wFLG_ZanCountSkip = True
 				continue
 			
@@ -993,9 +1009,9 @@ class CLS_TwitterFavo():
 			# リプライの場合は除外
 			#   リプはいいねしない
 			if wSTR_Tweet['kind']=="reply" :
-				wStr = "  ::リプライ"
-				CLS_OSIF.sPrn( wStr )
-				
+#				wStr = "  ::リプライ"
+#				CLS_OSIF.sPrn( wStr )
+#				
 				wFLG_ZanCountSkip = True
 				continue
 			
@@ -1006,9 +1022,9 @@ class CLS_TwitterFavo():
 					wSTR_Tweet['sensitive'] = True
 			
 			if inFLG_Sensitive==False and wSTR_Tweet['sensitive']==True :
-				wStr = "  ::センシティブ"
-				CLS_OSIF.sPrn( wStr )
-				
+#				wStr = "  ::センシティブ"
+#				CLS_OSIF.sPrn( wStr )
+#				
 				wFLG_ZanCountSkip = True
 				continue
 			
@@ -1021,9 +1037,9 @@ class CLS_TwitterFavo():
 				return wRes
 			if wGetLag['Beyond']==True :
 				### 規定外 =古いツイートなので除外
-				wStr = "  ::期間外ツイート"
-				CLS_OSIF.sPrn( wStr )
-				
+#				wStr = "  ::期間外ツイート"
+#				CLS_OSIF.sPrn( wStr )
+#				
 				wFLG_ZanCountSkip = True
 				continue
 			
@@ -1224,7 +1240,7 @@ class CLS_TwitterFavo():
 		
 		#############################
 		# 正常終了
-		wRes['Responce']['FLG_Check'] = True		#いいね済み
+###		wRes['Responce']['FLG_Check'] = True		#いいね済み
 		wRes['Result'] = True
 		return wRes
 
