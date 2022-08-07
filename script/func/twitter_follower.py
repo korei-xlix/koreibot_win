@@ -449,6 +449,15 @@ class CLS_TwitterFollower():
 		wARR_RateFavoDate = wResDB['Responce']
 		
 		if len( wARR_RateFavoDate )==0 :
+			#############################
+			# 現時間を設定
+			wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "send_favo", gVal.STR_Time['TimeDate'] )
+			if wTimeRes['Result']!=True :
+				wRes['Reason'] = "SetTimeInfo is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			###	gVal.STR_Time['send_favo']
+			
 			wStr = "●いいね情報 送信者はいませんでした" + '\n'
 			CLS_OSIF.sPrn( wStr )
 			wRes['Result'] = True
@@ -509,6 +518,16 @@ class CLS_TwitterFollower():
 		if wSendCnt==0 :
 			#############################
 			# 送信者がいない場合
+			
+			#############################
+			# 現時間を設定
+			wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "send_favo", gVal.STR_Time['TimeDate'] )
+			if wTimeRes['Result']!=True :
+				wRes['Reason'] = "SetTimeInfo is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			###	gVal.STR_Time['send_favo']
+			
 			wStr = "●いいね情報 送信者はいませんでした" + '\n'
 			CLS_OSIF.sPrn( wStr )
 			wRes['Result'] = True

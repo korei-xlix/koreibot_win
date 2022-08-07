@@ -1230,6 +1230,25 @@ class CLS_TwitterAdmin():
 				### 設定解除
 				break
 			
+			#############################
+			# 名称被りチェック
+			if gVal.STR_UserInfo['ListName']==wInputName or \
+			   gVal.STR_UserInfo['mListName']==wInputName or \
+			   gVal.STR_UserInfo['fListName']==wInputName :
+				CLS_OSIF.sPrn( "設定済みリストのため設定できません" + '\n' )
+				continue
+			
+			wFLG_Detect = False
+			wKeylist = list( gVal.ARR_ListFavo.keys() )
+			for wKey in wKeylist :
+				if gVal.ARR_ListFavo[wKey]['screen_name']==gVal.STR_UserInfo['Account'] and \
+				   gVal.ARR_ListFavo[wKey]['list_name']==wInputName :
+					wFLG_Detect = True
+					break
+			if wFLG_Detect==True :
+				CLS_OSIF.sPrn( "いいねリスト設定済みため設定できません" + '\n' )
+				continue
+			
 			wStr = "Twitterの情報確認中..."
 			CLS_OSIF.sPrn( wStr )
 			#############################
@@ -1343,6 +1362,25 @@ class CLS_TwitterAdmin():
 				# 相互フォローリスト設定
 				wInputName = CLS_OSIF.sInp( "   相互フォローリスト名 ？=> " )
 				
+				#############################
+				# 名称被りチェック
+				if gVal.STR_UserInfo['ListName']==wInputName or \
+				   gVal.STR_UserInfo['mListName']==wInputName or \
+				   gVal.STR_UserInfo['fListName']==wInputName :
+					CLS_OSIF.sPrn( "設定済みリストのため設定できません" + '\n' )
+					continue
+				
+				wFLG_Detect = False
+				wKeylist = list( gVal.ARR_ListFavo.keys() )
+				for wKey in wKeylist :
+					if gVal.ARR_ListFavo[wKey]['screen_name']==gVal.STR_UserInfo['Account'] and \
+					   gVal.ARR_ListFavo[wKey]['list_name']==wInputName :
+						wFLG_Detect = True
+						break
+				if wFLG_Detect==True :
+					CLS_OSIF.sPrn( "いいねリスト設定済みため設定できません" + '\n' )
+					continue
+				
 				wStr = "Twitterの情報確認中..."
 				CLS_OSIF.sPrn( wStr )
 				### リストがTwitterにあるか確認
@@ -1360,6 +1398,25 @@ class CLS_TwitterAdmin():
 				#############################
 				# 片フォロワーリスト設定
 				wInputName = CLS_OSIF.sInp( "   片フォロワーリスト名 ？=> " )
+				
+				#############################
+				# 名称被りチェック
+				if gVal.STR_UserInfo['ListName']==wInputName or \
+				   gVal.STR_UserInfo['mListName']==wInputName or \
+				   gVal.STR_UserInfo['fListName']==wInputName :
+					CLS_OSIF.sPrn( "設定済みリストのため設定できません" + '\n' )
+					continue
+				
+				wFLG_Detect = False
+				wKeylist = list( gVal.ARR_ListFavo.keys() )
+				for wKey in wKeylist :
+					if gVal.ARR_ListFavo[wKey]['screen_name']==gVal.STR_UserInfo['Account'] and \
+					   gVal.ARR_ListFavo[wKey]['list_name']==wInputName :
+						wFLG_Detect = True
+						break
+				if wFLG_Detect==True :
+					CLS_OSIF.sPrn( "いいねリスト設定済みため設定できません" + '\n' )
+					continue
 				
 				wStr = "Twitterの情報確認中..."
 				CLS_OSIF.sPrn( wStr )

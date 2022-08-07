@@ -1780,6 +1780,95 @@ class CLS_DB_IF() :
 		return wRes
 
 	#####################################################
+	def InsertListFavo( self, inUserID, inUserName, inListID, inListName ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "InsertListFavo"
+		
+		#############################
+		# 重複チェック
+		wKeylist = list( gVal.ARR_ListFavo.keys() )
+		for wID in wKeylist :
+			wID = str(wID)
+			
+			if gVal.ARR_ListFavo[wID]['list_name']==inListName and \
+			   gVal.ARR_ListFavo[wID]['screen_name']==inUserName :
+				wRes['Reason'] = "Dual input: user=" + inUserName + " list=" + inListName
+				gVal.OBJ_L.Log( "A", wRes )
+				return wRes
+		
+		#############################
+		# データの組み立て
+		
+		### リスト番号の割り当て
+		wListNumber = 1
+		wFLG_Detect = False
+		while True :
+			wFLG_Detect = False
+			for wID in wKeylist :
+				wID = str(wID)
+				if gVal.ARR_ListFavo[wID]['list_number']==wListNumber :
+					wListNumber += 1
+					wFLG_Detect = True
+					break
+			if wFLG_Detect==False :
+				break
+		
+		wCell = {
+			"list_number"	: wListNumber,
+			"id"			: str( inListID ),
+			"list_name"		: inListName,
+			"user_id"		: str( inUserID ),
+			"screen_name"	: inUserName,
+			"valid"			: True,
+			"follow"		: False,
+			"caution"		: False,
+			"sensitive"		: False,
+			"auto_rem"		: False,
+			"update"		: False
+		}
+		
+		#############################
+		# データベースに登録する
+		wQy = "insert into tbl_list_favo values ("
+		wQy = wQy + "'" + gVal.STR_UserInfo['Account'] + "', "
+		wQy = wQy + "'" + str( inListID ) + "', "
+		wQy = wQy + "'" + str( inListName ) + "', "
+		wQy = wQy + "'" + str( inUserID ) + "', "
+		wQy = wQy + "'" + str( inUserName ) + "', "
+		wQy = wQy + "True, "
+		wQy = wQy + "False, "
+		wQy = wQy + "False, "
+		wQy = wQy + "False, "
+		wQy = wQy + "False "
+		wQy = wQy + ") ;"
+		
+		#############################
+		# クエリの実行
+		wResDB = self.OBJ_DB.RunQuery( wQy )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed: RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
+		# グローバルを更新する
+		gVal.ARR_ListFavo.update({ str( inListID ) : wCell })
+		
+		#############################
+		# ログに記録する
+		wStr = "データ更新: list favo data: user=" + str( inUserName ) + " list=" + str( inListName )
+		gVal.OBJ_L.Log( "SC", wRes, wStr )
+		
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
 	def SaveListFavo(self):
 		#############################
 		# 応答形式の取得

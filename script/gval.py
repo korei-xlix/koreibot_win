@@ -148,6 +148,7 @@ class gVal() :
 		"defWaitSec"		: 5,						#   デフォルト待ち時間(秒)
 		"defWaitSkip"		: 10,						#   デフォルトスキップ時間(秒)
 		"defLongWaitSec"	: 60,						#   デフォルト 長い待ち時間(秒)
+		"defPeriodSec"		: 86400,					#   デフォルト期間   1日  (60x60x24)x1
 		
 														# リアクションチェック
 		"reactionTweetLine"			: 40,				#   リアクションチェック時の自ツイート取得ライン数
@@ -166,17 +167,28 @@ class gVal() :
 		"forFollowerFavoSec"				: 14400,	#   フォロワー支援いいねまでの期間   4時間  60x60x4
 		"forFollowerFavoMListMutualSec"		: 14400,	#   相互フォローリスト 相互フォローの いいね期間   4時間  60x60x4
 		"forFollowerFavoMListMyFollowSec"	: 86400,	#   相互フォローリスト 片フォロー者の いいね期間   1日  60x60x24
-		"forFollowerFavoFListAutoFavoSec"	: 28800,	#   片フォロワーリスト・自動いいね期間   8時間  60x60x8
-		"forFollowerFavoFListOverFavoSec"	: 86400,	#   片フォロワーリスト・外部いいね期間   1日  60x60x24
+		"forFollowerFavoFListSec"			: 115200,	#   片フォロワーリスト期間                         32時間  60x60x32
+		"forFollowerFavoFListIntimeSec"		: 86400,	#   片フォロワーリスト・期間内の いいね期間        1日  60x60x24
+		"forFollowerFavoFListOverSec"		: 172800,	#   片フォロワーリスト・期間外の いいね期間        2日 (60x60x24)x2
+		"forFollowerFavoMutualSec"			: 14400,	#   相互フォローの いいね期間                      4時間  60x60x4
+		"forFollowerFavoFollowerSec"		: 115200,	#   フォロワー期間                                 32時間  60x60x32
+		"forFollowerFavoIntimeSec"			: 86400,	#   フォロワー・期間内の いいね期間                1日  60x60x24
+		"forFollowerFavoOverSec"			: 172800,	#   フォロワー・期間外の いいね期間                2日 (60x60x24)x2
+		"forFollowerFavoHarfMyfollowSec"	: 288000,	#   片フォロー者の いいね期間                      3日+8時間 (60x60x24)x3+(60x60x8)
+		"forFollowerFavoHarfMyfollowCnt"	: 10,		#   片フォロー者 初回無条件実施回数
+		"forFollowerFavoHarfMyfollowRand"	: 30,		#   片フォロー者 ランダム実施値 パーセンテージ (1-100)   30％で実施
 		
 														# 自動いいね
-		"forAutoFavoTweetSec"			: 28800,		#   対象ツイート期間外   8時間  60x60x8
-		
-														# 外部いいね
-		"forOverFavoTweetSec"			: 28800,		#   対象ツイート期間外   8時間  60x60x8
-		"forOverFavoFavoriteSec"		: 28800,		#   いいね実施期間外     8時間  60x60x8
-		
-		"forReturnFavoSec"				: 3600,			# お返しいいねへの期間   1時間  60x60x1
+		"forAutoFavoTweetSec"				: 86400,	#   対象ツイート期間       1日  60x60x24
+		"forAutoFavoReturnFavoSec"			: 3600,		#   お返しいいねへの期間   1時間  60x60x1
+		"forAutoFavoListFavoSec"			: 86400,	#   リストいいねへの期間   1日  (60x60x24)x1
+###		"forAutoFavoTweetSec"			: 28800,		#   対象ツイート期間外   8時間  60x60x8
+###		
+###														# 外部いいね
+###		"forOverFavoTweetSec"			: 28800,		#   対象ツイート期間外   8時間  60x60x8
+###		"forOverFavoFavoriteSec"		: 28800,		#   いいね実施期間外     8時間  60x60x8
+###		
+###		"forReturnFavoSec"				: 3600,			# お返しいいねへの期間   1時間  60x60x1
 		"forRemFavoSec"				: 172800,			# いいね解除までの期間 2日 (60x60x24)x2
 		
 		"forListFavoAutoRemoveSec"	: 604800,			#   リストいいね 自動リムーブまでの期間   7日  (60x60x24)x7

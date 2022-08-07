@@ -818,6 +818,14 @@ class CLS_TwitterMain():
 			return wRes
 		
 		#############################
+		# フォロワー支援
+		wSubRes = self.OBJ_TwitterFavo.FollowerFavo()
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "FollowerFavo"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
 		# リストいいね（●フル自動監視）
 		if wFLG_Short==False :
 			wSubRes = self.OBJ_TwitterFavo.ListFavo()
@@ -826,14 +834,14 @@ class CLS_TwitterMain():
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 		
-		#############################
-		# フォロワー支援
-		wSubRes = self.OBJ_TwitterFavo.FollowerFavo()
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "FollowerFavo"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
+###		#############################
+###		# フォロワー支援
+###		wSubRes = self.OBJ_TwitterFavo.FollowerFavo()
+###		if wSubRes['Result']!=True :
+###			wRes['Reason'] = "FollowerFavo"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
 		#############################
 		# いいね情報送信
 		wSubRes = self.OBJ_TwitterFollower.SendFavoDate()
@@ -1310,7 +1318,8 @@ class CLS_TwitterMain():
 			#############################
 			# 自動おかえしいいねする
 			if gVal.DEF_STR_TLNUM['autoRepFavo']==True :
-				wSubRes = self.OBJ_TwitterFavo.AutoFavo( inUser, gVal.DEF_STR_TLNUM['forReturnFavoSec'] )
+###				wSubRes = self.OBJ_TwitterFavo.AutoFavo( inUser, gVal.DEF_STR_TLNUM['forReturnFavoSec'] )
+				wSubRes = self.OBJ_TwitterFavo.AutoFavo( inUser, gVal.DEF_STR_TLNUM['forAutoFavoReturnFavoSec'] )
 				if wSubRes['Result']!=True :
 					###失敗
 					wRes['Reason'] = "AutoFavo is failed"
