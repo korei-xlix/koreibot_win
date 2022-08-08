@@ -1788,6 +1788,7 @@ class CLS_DB_IF() :
 		wRes['Class'] = "CLS_DB_IF"
 		wRes['Func']  = "InsertListFavo"
 		
+		wRes['Responce'] = False
 		#############################
 		# 重複チェック
 		wKeylist = list( gVal.ARR_ListFavo.keys() )
@@ -1796,8 +1797,9 @@ class CLS_DB_IF() :
 			
 			if gVal.ARR_ListFavo[wID]['list_name']==inListName and \
 			   gVal.ARR_ListFavo[wID]['screen_name']==inUserName :
-				wRes['Reason'] = "Dual input: user=" + inUserName + " list=" + inListName
-				gVal.OBJ_L.Log( "A", wRes )
+###				wRes['Reason'] = "Dual input: user=" + inUserName + " list=" + inListName
+###				gVal.OBJ_L.Log( "A", wRes )
+				wRes['Result'] = True
 				return wRes
 		
 		#############################
@@ -1865,6 +1867,55 @@ class CLS_DB_IF() :
 		wStr = "データ更新: list favo data: user=" + str( inUserName ) + " list=" + str( inListName )
 		gVal.OBJ_L.Log( "SC", wRes, wStr )
 		
+		wRes['Responce'] = True
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def DeleteListFavo( self, inListID ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "DeleteListFavo"
+		
+		wRes['Responce'] = False
+		wKeyID = None
+		#############################
+		# 入力チェック
+		if inListID not in gVal.ARR_ListFavo :
+			### キーなし
+			wRes['Result'] = True
+			return wRes
+		
+		wObjUserName = gVal.ARR_ListFavo[inListID]['screen_name']
+		wObjListName = gVal.ARR_ListFavo[inListID]['list_name']
+		#############################
+		# データの組み立て
+		wQy = "delete from tbl_list_favo "
+		wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "' and "
+		wQy = wQy + "id = '" + str(gVal.ARR_ListFavo[inListID]['id']) + "' and "
+		wQy = wQy + "user_id = '" + str(gVal.ARR_ListFavo[inListID]['user_id']) + "' ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQy )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed: RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
+		# グローバルを更新する
+		del gVal.ARR_ListFavo[inListID]
+		
+		#############################
+		# ログに記録する
+		wStr = "データ削除: list favo data: user=" + str( wObjUserName ) + " list=" + str( wObjListName )
+		gVal.OBJ_L.Log( "SC", wRes, wStr )
+		
+		wRes['Responce'] = True
 		wRes['Result'] = True
 		return wRes
 

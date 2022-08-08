@@ -2105,6 +2105,16 @@ class CLS_TwitterFavo():
 			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
 		
 		#############################
+		# d: リスト削除
+		elif wCom=="d" :
+			wSubRes = self.__del_ListFavo( wNum )
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "__del_ListFavo is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+		
+		#############################
 		# 範囲外のコマンド
 		else:
 			CLS_OSIF.sPrn( "コマンドが違います" + '\n' )
@@ -2471,21 +2481,25 @@ class CLS_TwitterFavo():
 			
 			#############################
 			# ユーザIDの取得
-
-
-
-#					wUserInfoRes = gVal.OBJ_Tw_IF.GetUserinfo( inScreenName=wFollowerData[wID]['screen_name'] )
-#					if wUserInfoRes['Result']!=True :
-#						wRes['Reason'] = "Twitter API Error(GetUserinfo): " + wUserInfoRes['Reason'] + " screen_name=" + wFollowerData[wID]['screen_name']
-#						gVal.OBJ_L.Log( "B", wRes )
-#						continue
-#
-#
-
-
+			if gVal.STR_UserInfo['Account']==wUserName :
+				### 自IDの場合
+				wUserID = str( gVal.STR_UserInfo['id'] )
+			else:
+				### 自分でない場合、IDを取得する
+				wUserInfoRes = gVal.OBJ_Tw_IF.GetUserinfo( inScreenName=wFollowerData[wID]['screen_name'] )
+				if wUserInfoRes['Result']!=True :
+					if wUserInfoRes['StatusCode']==404 :
+						CLS_OSIF.sPrn( "存在しないユーザです" + '\n' )
+						continue
+					else:
+						wRes['Reason'] = "Twitter API Error(GetUserinfo): " + wUserInfoRes['Reason'] + " screen_name=" + wFollowerData[wID]['screen_name']
+						gVal.OBJ_L.Log( "B", wRes )
+						return wRes
+				wUserID = str( wUserInfoRes['Responce']['id'] )
+			
 			#############################
 			# リストがTwitterにあるか確認
-			wSubRes = gVal.OBJ_Tw_IF.GetListID( inListName=wInputName )
+			wSubRes = gVal.OBJ_Tw_IF.GetListID( inListName=wListName, inScreenName=wUserName )
 			if wSubRes['Result']!=True :
 				wRes['Reason'] = "GetListID is failed"
 				gVal.OBJ_L.Log( "B", wRes )
@@ -2496,17 +2510,55 @@ class CLS_TwitterFavo():
 			
 			###ここまでで入力は完了した
 			wListID = wSubRes['Responce'] # ListID
+			
+			#############################
+			# リストの登録
+			wDBRes = gVal.OBJ_DB_IF.InsertListFavo( wUserID, wUserName, wListID, wListName )
+			if wDBRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "InsertListFavo is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if wDBRes['Responce']==False :
+				CLS_OSIF.sPrn( "重複したリストは設定できません" + '\n' )
+				continue
+			
+			#※完了
 			break
-
-
-
 		
 		#############################
 		# 完了
 		wRes['Result'] = True
 		return wRes
 
-
+	#####################################################
+	# リスト削除
+	#####################################################
+	def __del_ListFavo( self, inListID ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "__del_ListFavo"
+		
+		#############################
+		# リストの登録
+		wDBRes = gVal.OBJ_DB_IF.DeleteListFavo( inListID )
+		if wDBRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "DeleteListFavo is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		if wDBRes['Responce']==False :
+			CLS_OSIF.sPrn( "存在しないリスト番号です" + '\n' )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
+		return wRes
 
 
 
