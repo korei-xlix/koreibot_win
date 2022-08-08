@@ -2013,6 +2013,12 @@ class CLS_TwitterMain():
 			wStr = "●被ブロック検知"
 			gVal.OBJ_L.Log( "R", wRes, wStr + ": " + inData['screen_name'] )
 		
+		### 公式垢の場合
+		elif gVal.OBJ_Tw_IF.CheckSubscribeListUser( wID )==True :
+			wMyFollow = wFollowInfoRes['Responce']['following']
+			wFollower = wFollowInfoRes['Responce']['followed_by']
+			wUserLevel = "A"
+		
 		### 片フォロー者の場合
 		elif wFollowInfoRes['Responce']['following']==True and \
 		     wFollowInfoRes['Responce']['followed_by']==False :

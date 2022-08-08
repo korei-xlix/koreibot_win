@@ -565,8 +565,8 @@ class CLS_TwitterKeyword():
 				gVal.OBJ_L.Log( "B", wRes )
 				continue
 			if wSubRes['Responce']!=True :
-				wStr = "●抽出除外(対象外ユーザ): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
-				CLS_OSIF.sPrn( wStr )
+#				wStr = "●抽出除外(対象外ユーザ): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
+#				CLS_OSIF.sPrn( wStr )
 				wFLG_ZanCountSkip = True
 				continue
 			
@@ -580,28 +580,28 @@ class CLS_TwitterKeyword():
 				return wRes
 			if wResFavoUser['Responce']==True :
 				### いいね済み
-				wStr = "●抽出除外(いいね済み): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
-				CLS_OSIF.sPrn( wStr )
+#				wStr = "●抽出除外(いいね済み): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
+#				CLS_OSIF.sPrn( wStr )
 				wFLG_ZanCountSkip = True
 				continue
 			
 			### ノーマル以外は除外
 			if wTweet['type']!="normal" :
-				wStr = "●抽出除外(通常ツイート以外): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
-				CLS_OSIF.sPrn( wStr )
+#				wStr = "●抽出除外(通常ツイート以外): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
+#				CLS_OSIF.sPrn( wStr )
 				wFLG_ZanCountSkip = True
 				continue
 			### リプライは除外(ツイートの先頭が @文字=リプライ)
 			if wTweet['text'].find("@")>=0 :
-				wStr = "●抽出除外(リプライ): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
-				CLS_OSIF.sPrn( wStr )
+#				wStr = "●抽出除外(リプライ): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
+#				CLS_OSIF.sPrn( wStr )
 				wFLG_ZanCountSkip = True
 				continue
 			### センシティブなツイートは除外
 			if "possibly_sensitive" in wTweet :
 				if str(wTweet['possibly_sensitive'])=="true" :
-					wStr = "●抽出除外(センシティブツイート): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
-					CLS_OSIF.sPrn( wStr )
+#					wStr = "●抽出除外(センシティブツイート): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
+#					CLS_OSIF.sPrn( wStr )
 					wFLG_ZanCountSkip = True
 					continue
 			
@@ -625,8 +625,8 @@ class CLS_TwitterKeyword():
 				return wRes
 			if wGetLag['Beyond']==True :
 				### 規定外
-				wStr = "●抽出除外(古いツイート): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
-				CLS_OSIF.sPrn( wStr )
+#				wStr = "●抽出除外(古いツイート): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
+#				CLS_OSIF.sPrn( wStr )
 				wFLG_ZanCountSkip = True
 				continue
 			

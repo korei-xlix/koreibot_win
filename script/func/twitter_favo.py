@@ -450,7 +450,8 @@ class CLS_TwitterFavo():
 ###				continue
 		#############################
 		# 自動いいね
-		wResFavo = self.AutoFavo( wUserInfoRes['Responce'], gVal.DEF_STR_TLNUM['forAutoFavoListFavoSec'], gVal.ARR_ListFavo[wKey]['follow'], gVal.ARR_ListFavo[wKey]['sensitive'], wListID )
+###		wResFavo = self.AutoFavo( wUserInfoRes['Responce'], gVal.DEF_STR_TLNUM['forAutoFavoListFavoSec'], gVal.ARR_ListFavo[wKey]['follow'], gVal.ARR_ListFavo[wKey]['sensitive'], wListID )
+		wResFavo = self.AutoFavo( wUserInfoRes['Responce'], gVal.DEF_STR_TLNUM['forAutoFavoListFavoSec'], gVal.ARR_ListFavo[inIndex]['follow'], gVal.ARR_ListFavo[inIndex]['sensitive'], wListID )
 		if wResFavo['Result']!=True :
 			wRes['Reason'] = "Twitter Error"
 			gVal.OBJ_L.Log( "B", wRes )
@@ -458,7 +459,7 @@ class CLS_TwitterFavo():
 		
 			wResult['timeline'] += wResFavo['Responce']['timeline']
 			wResult['tweets']   += wResFavo['Responce']['tweets']
-		if wResFavo['Responce']['flg_favo_run']==True :
+		if wResFavo['Responce']['FLG_Favo_Run']==True :
 			### いいね実施数をカウント
 ###			wResult['Over_RunFavo'] += 1
 			wResult['favo_cnt'] += 1
@@ -733,12 +734,14 @@ class CLS_TwitterFavo():
 			elif wARR_FollowData[wUserID]['myfollow']==True :
 				### 最初の10回は通して、それ以降はランダム抽選する
 				### 7割りは切り捨て
-				wMyfollowCnt += 1
-				if wMyfollowCnt>gVal.DEF_STR_TLNUM['forFollowerFavoHarfMyfollowCnt'] :
+###				wMyfollowCnt += 1
+###				if wMyfollowCnt>gVal.DEF_STR_TLNUM['forFollowerFavoHarfMyfollowCnt'] :
+				if wMyfollowCnt>=gVal.DEF_STR_TLNUM['forFollowerFavoHarfMyfollowCnt'] :
 					wRand = CLS_OSIF.sGetRand(100)
 					if wRand>gVal.DEF_STR_TLNUM['forFollowerFavoHarfMyfollowRand'] :
 						continue
 				
+				wMyfollowCnt += 1
 				wSTR_Param['Threshold'] = gVal.DEF_STR_TLNUM['forFollowerFavoHarfMyfollowSec']
 				wSTR_Param['Follower']  = True	### フォロワーモード
 				wSTR_Param['Sensitive'] = True
@@ -758,7 +761,8 @@ class CLS_TwitterFavo():
 			if wResFavo['Result']!=True :
 				wRes['Reason'] = "Twitter Error"
 				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
+###				return wRes
+				continue
 			
 			wResult['timeline'] += wResFavo['Responce']['timeline']
 			wResult['tweets']   += wResFavo['Responce']['tweets']
