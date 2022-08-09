@@ -166,6 +166,14 @@ class CLS_TwitterKeyword():
 			return wRes
 		
 		#############################
+		# g: リスト未登録で検索実行
+		elif inWord=="\\ng" :
+			self.RunKeywordSearchFavo_noRegist()
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
 		# s: 検索ワード追加
 		elif inWord=="\\s" :
 			self.__set_KeywordFavo()
@@ -510,6 +518,47 @@ class CLS_TwitterKeyword():
 		return wRes
 
 	#####################################################
+	def RunKeywordSearchFavo_noRegist(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterKeyword"
+		wRes['Func']  = "RunKeywordSearchFavo_noRegist"
+		
+		#############################
+		# コンソールを表示
+		wStr = "入力した検索ワードで検索します（リストは登録されません）"
+		CLS_OSIF.sPrn( wStr )
+		wWord = CLS_OSIF.sInp( "  word=検索ワード / \\q=中止 => " )
+		if wWord=="\\q" :
+			### 中止の場合
+			wRes['Result'] = True
+			return wRes
+		
+		# ※検索実行
+		self.STR_KeywordFavoInfo['searchnum'] = 0
+		self.STR_KeywordFavoInfo['usernum']      = len( self.ARR_KeywordFavoUser )
+		self.STR_KeywordFavoInfo['now_usernum']  = 0
+		self.STR_KeywordFavoInfo['favo_usernum'] = 0
+		
+		CLS_OSIF.sPrn( "抽出したツイートをいいねしていきます。しばらくお待ちください......" )
+		#############################
+		# 検索実行
+		wSubRes = self.__running_KeywordSearchFavo( wWord )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "__running_KeywordSearchFavo is failed: word=" + str(wWord)
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 正常終了
+		wStr = '\n' + "キーワードいいねが正常終了しました" + '\n'
+		CLS_OSIF.sPrn( wStr )
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
 	def __runKeywordSearchFavo( self, inIndex ):
 		#############################
 		# 応答形式の取得
@@ -519,6 +568,38 @@ class CLS_TwitterKeyword():
 		wRes['Func']  = "__runKeywordSearchFavo"
 		
 		wWord = gVal.ARR_SearchData[inIndex]['word']
+		#############################
+		# 検索の本実行
+		wSubRes = self.__running_KeywordSearchFavo( wWord )
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "__running_KeywordSearchFavo is failed: word=" + str(wWord)
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# カウンタを進行
+		wSubRes = gVal.OBJ_DB_IF.CountSearchWord( inIndex, inHitCnt=wHitCnt, inFavoCnt=wFavoNum )
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "CountSearchWord is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def __running_KeywordSearchFavo( self, inWord ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterKeyword"
+		wRes['Func']  = "__running_KeywordSearchFavo"
+		
+###		wWord = gVal.ARR_SearchData[inIndex]['word']
+		wWord = inWord
 		CLS_OSIF.sPrn( "検索中のツイート: word=" + wWord )
 		#############################
 		# ツイートを検索する
@@ -688,15 +769,15 @@ class CLS_TwitterKeyword():
 				gVal.OBJ_L.Log( "B", wRes )
 				continue
 		
-		#############################
-		# カウンタを進行
-		wSubRes = gVal.OBJ_DB_IF.CountSearchWord( inIndex, inHitCnt=wHitCnt, inFavoCnt=wFavoNum )
-		if wSubRes['Result']!=True :
-			###失敗
-			wRes['Reason'] = "CountSearchWord is failed"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
+###		#############################
+###		# カウンタを進行
+###		wSubRes = gVal.OBJ_DB_IF.CountSearchWord( inIndex, inHitCnt=wHitCnt, inFavoCnt=wFavoNum )
+###		if wSubRes['Result']!=True :
+###			###失敗
+###			wRes['Reason'] = "CountSearchWord is failed"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
 		wRes['Result'] = True
 		return wRes
 

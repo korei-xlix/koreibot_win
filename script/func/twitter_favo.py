@@ -329,11 +329,11 @@ class CLS_TwitterFavo():
 			wResult['run']      += wResFavo['Responce']['run']
 			wResult['agent']    += wResFavo['Responce']['agent']
 			wResult['cnt']      += wResFavo['Responce']['cnt']
-			if wResFavo['Responce']['FLG_Favo_Run']==True :
-				### いいね実施数をカウント
+###			if wResFavo['Responce']['FLG_Favo_Run']==True :
+###				### いいね実施数をカウント
 ###				wResult['Over_RunFavo'] += 1
-				wResult['favo_cnt'] += 1
-				CLS_OSIF.sSleep( 5 )
+###				wResult['favo_cnt'] += 1
+###				CLS_OSIF.sSleep( 5 )
 ###			else:
 ###				### いいねを実実行しなければループ待機スキップする
 ###				wFLG_ZanCountSkip = True
@@ -477,10 +477,10 @@ class CLS_TwitterFavo():
 			wResult['run']      += wResFavo['Responce']['run']
 			wResult['agent']    += wResFavo['Responce']['agent']
 			wResult['cnt']      += wResFavo['Responce']['cnt']
-		if wResFavo['Responce']['FLG_Favo_Run']==True :
-			### いいね実施数をカウント
+###		if wResFavo['Responce']['FLG_Favo_Run']==True :
+###			### いいね実施数をカウント
 ###			wResult['Over_RunFavo'] += 1
-			wResult['favo_cnt'] += 1
+###			wResult['favo_cnt'] += 1
 ###			else:
 ###				### いいねを実実行しなければループ待機スキップする
 ###				wFLG_ZanCountSkip = True
