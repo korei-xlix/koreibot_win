@@ -176,12 +176,13 @@ class gVal() :
 		"forFollowerFavoOverSec"			: 172800,	#   フォロワー・期間外の いいね期間                2日 (60x60x24)x2
 		"forFollowerFavoHarfMyfollowSec"	: 288000,	#   片フォロー者の いいね期間                      3日+8時間 (60x60x24)x3+(60x60x8)
 		"forFollowerFavoHarfMyfollowCnt"	: 10,		#   片フォロー者 初回無条件実施回数
-		"forFollowerFavoHarfMyfollowRand"	: 30,		#   片フォロー者 ランダム実施値 パーセンテージ (1-100)   30％で実施
+		"forFollowerFavoHarfMyfollowRand"	: 20,		#   片フォロー者 ランダム実施値 パーセンテージ (1-100)   30％で実施
 		
 														# 自動いいね
 		"forAutoFavoTweetSec"				: 86400,	#   対象ツイート期間       1日  60x60x24
 		"forAutoFavoReturnFavoSec"			: 3600,		#   お返しいいねへの期間   1時間  60x60x1
 		"forAutoFavoListFavoSec"			: 86400,	#   リストいいねへの期間   1日  (60x60x24)x1
+		"forAutoFavoLevelCCnt"				: 2,		#   レベルC以前の場合、1度でいいねする数
 ###		"forAutoFavoTweetSec"			: 28800,		#   対象ツイート期間外   8時間  60x60x8
 ###		
 ###														# 外部いいね

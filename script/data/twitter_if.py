@@ -216,6 +216,48 @@ class CLS_Twitter_IF() :
 		wRes['Class'] = "CLS_Twitter_IF"
 		wRes['Func']  = "AddFavoUserID"
 		
+		#############################
+		# ツイート本文部分
+		wSubRes = self.__add_AddFavoUserID( inTweet )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "__add_AddFavoUserID is failed(1)"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# リツイートの場合、リツイート部分を追加
+		if "retweeted_status" in inTweet :
+			wSubRes = self.__add_AddFavoUserID( inTweet['retweeted_status'] )
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "__add_AddFavoUserID is failed(2)"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+		
+		#############################
+		# 引用リツイートの場合、引用リツイート部分を追加
+		if "quoted_status" in inTweet :
+			wSubRes = self.__add_AddFavoUserID( inTweet['quoted_status'] )
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "__add_AddFavoUserID is failed(3)"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+		
+		#############################
+		# 正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	# 排他ユーザ追加
+	#####################################################
+	def __add_AddFavoUserID( self, inTweet ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_Twitter_IF"
+		wRes['Func']  = "__add_AddFavoUserID"
+		
 		wID = str( inTweet['id'] )
 		wText = str(inTweet['text']).replace( "'", "''" )
 		wUserID = str( inTweet['user']['id'] )
@@ -228,8 +270,9 @@ class CLS_Twitter_IF() :
 		#############################
 		# 重複があるか
 		if wID in self.ARR_Favo :
-			wRes['Reason'] = "ID is exist : id=" + str( wID )
-			gVal.OBJ_L.Log( "D", wRes )
+###			wRes['Reason'] = "ID is exist : id=" + str( wID )
+###			gVal.OBJ_L.Log( "D", wRes )
+			wRes['Result'] = True
 			return wRes
 		
 		#############################
