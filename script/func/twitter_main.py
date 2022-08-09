@@ -881,12 +881,13 @@ class CLS_TwitterMain():
 		
 		#############################
 		# 自動監視時間に 現時間を設定
-		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "autorun", gVal.STR_Time['TimeDate'] )
-		if wTimeRes['Result']!=True :
-			wRes['Reason'] = "SetTimeInfo is failed"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		###	gVal.STR_Time['autorun']
+		if wFLG_Short==False :
+			wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "autorun", gVal.STR_Time['TimeDate'] )
+			if wTimeRes['Result']!=True :
+				wRes['Reason'] = "SetTimeInfo is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+		###		gVal.STR_Time['autorun']
 		
 		#############################
 		# 完了
