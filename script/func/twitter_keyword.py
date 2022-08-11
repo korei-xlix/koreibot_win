@@ -579,7 +579,8 @@ class CLS_TwitterKeyword():
 		
 		#############################
 		# カウンタを進行
-		wSubRes = gVal.OBJ_DB_IF.CountSearchWord( inIndex, inHitCnt=wHitCnt, inFavoCnt=wFavoNum )
+###		wSubRes = gVal.OBJ_DB_IF.CountSearchWord( inIndex, inHitCnt=wHitCnt, inFavoCnt=wFavoNum )
+		wSubRes = gVal.OBJ_DB_IF.CountSearchWord( inIndex, inHitCnt=wSubRes['Responce']['HitCnt'], inFavoCnt=wSubRes['Responce']['FavoNum'] )
 		if wSubRes['Result']!=True :
 			###失敗
 			wRes['Reason'] = "CountSearchWord is failed"
@@ -597,6 +598,11 @@ class CLS_TwitterKeyword():
 		wRes = CLS_OSIF.sGet_Resp()
 		wRes['Class'] = "CLS_TwitterKeyword"
 		wRes['Func']  = "__running_KeywordSearchFavo"
+		
+		wRes['Responce'] = {
+			"HitCnt"	: 0,
+			"FavoNum"	: 0
+		}
 		
 ###		wWord = gVal.ARR_SearchData[inIndex]['word']
 		wWord = inWord
@@ -616,6 +622,8 @@ class CLS_TwitterKeyword():
 		### トラヒック記録（検索実施数・Hit数）
 		CLS_Traffic.sP( "s_run" )
 		CLS_Traffic.sP( "s_hit", wHitCnt )
+		
+		wRes['Responce']['HitCnt'] = wHitCnt
 		
 		###ウェイト初期化
 		self.OBJ_Parent.Wait_Init( inZanNum=len( wTweetRes['Responce'] ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
@@ -778,6 +786,7 @@ class CLS_TwitterKeyword():
 ###			gVal.OBJ_L.Log( "B", wRes )
 ###			return wRes
 ###		
+		wRes['Responce']['FavoNum'] = wFavoNum
 		wRes['Result'] = True
 		return wRes
 

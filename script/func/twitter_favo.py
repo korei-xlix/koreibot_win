@@ -685,13 +685,75 @@ class CLS_TwitterFavo():
 				# 片フォロワーリストかつ期間外
 				else:
 ###					wThreshold = gVal.DEF_STR_TLNUM['forFollowerFavoFListAutoFavoSec']
-					wSTR_Param['Threshold'] = gVal.DEF_STR_TLNUM['forFollowerFavoFListOverSec']
-					wSTR_Param['Follower']  = True	### フォロワーモード
-					wSTR_Param['Sensitive'] = False
-					wSTR_Param['ListID']    = gVal.STR_UserInfo['fListID']	### 片フォロワーリスト
-					###
-					wStr = "▽片フォロワーリスト: 期間外: user=" + str( wARR_FollowData[wUserID]['screen_name'] )
-					CLS_OSIF.sPrn( wStr )
+###					wSTR_Param['Threshold'] = gVal.DEF_STR_TLNUM['forFollowerFavoFListOverSec']
+###					wSTR_Param['Follower']  = True	### フォロワーモード
+###					wSTR_Param['Sensitive'] = False
+###					wSTR_Param['ListID']    = gVal.STR_UserInfo['fListID']	### 片フォロワーリスト
+###					###
+###					wStr = "▽片フォロワーリスト: 期間外: user=" + str( wARR_FollowData[wUserID]['screen_name'] )
+###					CLS_OSIF.sPrn( wStr )
+					
+					### いいね実行からの期間チェック
+					wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData['pfavo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['forFollowerFavoFListpfavoSec'] )
+					if wGetLag['Result']!=True :
+						wRes['Reason'] = "sTimeLag failed"
+						gVal.OBJ_L.Log( "B", wRes )
+						continue
+					#############################
+					# いいね実行から期間内
+					if wGetLag['Beyond']==False :
+						### 今週いいねありならいいねする
+						if wARR_DBData['rfavo_n_cnt']>=1 :
+							wSTR_Param['Threshold'] = gVal.DEF_STR_TLNUM['forFollowerFavoFListOverSec']
+							wSTR_Param['Follower']  = True	### フォロワーモード
+							wSTR_Param['Sensitive'] = False
+							wSTR_Param['ListID']    = gVal.STR_UserInfo['fListID']	### 片フォロワーリスト
+							###
+							wStr = "▽片フォロワーリスト: 期間外: user=" + str( wARR_FollowData[wUserID]['screen_name'] )
+							CLS_OSIF.sPrn( wStr )
+						else:
+							### 規定回数スルーされたら関係リセット
+							if gVal.DEF_STR_TLNUM['forFollowerFavoFListRemoveCnt']<=wARR_DBData['pfavo_cnt'] :
+								### 関係リセット
+								
+								#############################
+								# ブロック→リムーブする
+								wBlockRes = gVal.OBJ_Tw_IF.BlockRemove( wUserID )
+								if wBlockRes['Result']!=True :
+									wRes['Reason'] = "Twitter API Error(BlockRemove): " + wBlockRes['Reason'] + " screen_name=" + wARR_FollowData[wUserID]['screen_name']
+									gVal.OBJ_L.Log( "B", wRes )
+									continue
+								
+								### ユーザレベル変更
+								wUserLevel = "F+"
+								wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
+								
+								### トラヒック記録（フォロワー減少）
+								CLS_Traffic.sP( "d_follower" )
+								
+								### ユーザ記録
+								wStr = "●規定数スルーされたため追い出し"
+								gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wARR_FollowData[wUserID]['screen_name'] )
+								continue
+							
+							else:
+								wSTR_Param['Threshold'] = gVal.DEF_STR_TLNUM['forFollowerFavoFListIntimeSec']
+								wSTR_Param['Follower']  = False	### 外部いいねモード
+								wSTR_Param['Sensitive'] = False
+								wSTR_Param['ListID']    = None
+								###
+								wStr = "▽片フォロワーリスト: 期間外(外部): user=" + str( wARR_FollowData[wUserID]['screen_name'] )
+								CLS_OSIF.sPrn( wStr )
+					
+					else:
+						wSTR_Param['Threshold'] = gVal.DEF_STR_TLNUM['forFollowerFavoFListOverSec']
+						wSTR_Param['Follower']  = True	### フォロワーモード
+						wSTR_Param['Sensitive'] = False
+						wSTR_Param['ListID']    = gVal.STR_UserInfo['fListID']	### 片フォロワーリスト
+						###
+						wStr = "▽片フォロワーリスト: 期間外: user=" + str( wARR_FollowData[wUserID]['screen_name'] )
+						CLS_OSIF.sPrn( wStr )
+					
 					wResult['follower'] += 1
 			
 			elif wARR_FollowData[wUserID]['follower']==True :
@@ -1287,6 +1349,7 @@ class CLS_TwitterFavo():
 ###			gVal.OBJ_L.Log( "B", wRes )
 ###			return wRes
 		
+		wFLG_Me = False
 		wKeylist = list( wARR_Tweet.keys() )
 		for wID in wKeylist :
 			wFavoID = str(wID)
@@ -1301,7 +1364,12 @@ class CLS_TwitterFavo():
 			if wARR_Tweet[wFavoID]['kind']=="retweet" or wARR_Tweet[wFavoID]['kind']=="quoted" :
 				wFavoUser = wARR_Tweet[wFavoID]['src_user']
 			else:
+				### 自分ツイートは1回だけ
+				if wFLG_Me==True :
+					continue
+				
 				wFavoUser = wARR_Tweet[wFavoID]['user']
+				wFLG_Me = True
 			
 			#############################
 			# いいねする
@@ -1360,12 +1428,13 @@ class CLS_TwitterFavo():
 			if inListID!=None :
 				continue
 			
-			### 通常の場合 A+, B+ B, Cの場合
+###			### 通常の場合 A+, B+ B, Cの場合
 			###   規定数いいねする
 			if gVal.DEF_STR_TLNUM['forAutoFavoLevelCCnt']>=wRes['Responce']['run'] :
-				if wARR_DBData['level_tag']=="A+" or wARR_DBData['level_tag']=="B+" or \
-				   wARR_DBData['level_tag']=="B" or wARR_DBData['level_tag']=="C" :
-					continue
+###				if wARR_DBData['level_tag']=="A+" or wARR_DBData['level_tag']=="B+" or \
+###				   wARR_DBData['level_tag']=="B" or wARR_DBData['level_tag']=="C" :
+###					continue
+				continue
 		
 		#############################
 		# 正常終了

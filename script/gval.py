@@ -170,6 +170,8 @@ class gVal() :
 		"forFollowerFavoFListSec"			: 115200,	#   片フォロワーリスト期間                         32時間  60x60x32
 		"forFollowerFavoFListIntimeSec"		: 86400,	#   片フォロワーリスト・期間内の いいね期間        1日  60x60x24
 		"forFollowerFavoFListOverSec"		: 172800,	#   片フォロワーリスト・期間外の いいね期間        2日 (60x60x24)x2
+		"forFollowerFavoFListpfavoSec"		: 432000,	#   片フォロワーリスト・期間外時 いいね実行からの期間  5日 (60x60x24)x5
+		"forFollowerFavoFListRemoveCnt"		: 10,		#   片フォロワーリスト・無視時関係リセット回数
 		"forFollowerFavoMutualSec"			: 14400,	#   相互フォローの いいね期間                      4時間  60x60x4
 		"forFollowerFavoFollowerSec"		: 115200,	#   フォロワー期間                                 32時間  60x60x32
 		"forFollowerFavoIntimeSec"			: 86400,	#   フォロワー・期間内の いいね期間                1日  60x60x24
@@ -258,6 +260,8 @@ class gVal() :
 								#     フォローされてたけど、リムーブされた場合（フォロー者なし・フォローなし）
 		"F"		: "",			# F : 非フォロワーでいいねされたことがあるアカウント
 								#     非フォロワーでいいねされた場合
+		"F+"	: "",			# F : フォローされてたけど、1度もいいねされず、関係リセットしたアカウント
+								#     規定回数いいね実行時、いいね受信数0回
 		"G"		: "",			# G : ブロックされたアカウント
 								#     被ブロックを検知した場合
 		"G-"	: "",			# G-: 追い出したことがあるフォロワー
