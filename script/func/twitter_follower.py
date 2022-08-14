@@ -782,8 +782,10 @@ class CLS_TwitterFollower():
 				### ユーザレベル変更
 				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
 				
-				### トラヒック記録（フォロワー減少）
-				CLS_Traffic.sP( "d_follower" )
+###				### トラヒック記録（フォロワー減少）
+###				CLS_Traffic.sP( "d_follower" )
+				### トラヒック記録（フォロー者減少）
+				CLS_Traffic.sP( "d_myfollow" )
 				
 				#############################
 				# ログに記録
@@ -819,6 +821,60 @@ class CLS_TwitterFollower():
 				wRes['Reason'] = "FollowerList_Remove is failed"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
+		
+		wFLG_Remove = False
+		#############################
+		# 片フォロワー かつ 片フォローリストの場合
+		# あまりにスルーが酷ければ追い出す
+		if gVal.OBJ_Tw_IF.CheckFollowListUser( wUserID )==True and \
+		   gVal.OBJ_Tw_IF.CheckMyFollow( wUserID )==False and \
+		   gVal.OBJ_Tw_IF.CheckFollower( wUserID )==True :
+			if wARR_DBData!=None :
+				#############################
+				# 期間比較値
+				# いいねありの場合、
+				#   =いいね日時
+				# いいねなしの場合、
+				#   =登録日時
+				if str(wARR_DBData['favo_date'])!=gVal.DEF_TIMEDATE :
+					### いいねあり= いいね日時
+					wCompTimeDate = str(wARR_DBData['rfavo_date'])
+				else:
+					### いいねなし= 登録日時
+					wCompTimeDate = str(wARR_DBData['regdate'])
+				
+				#############################
+				# 自動リムーブ期間か
+				wGetLag = CLS_OSIF.sTimeLag( wCompTimeDate, inThreshold=gVal.DEF_STR_TLNUM['forAutoRemoveIgnoreCompletelySec'] )
+				if wGetLag['Result']!=True :
+					wRes['Reason'] = "sTimeLag failed(1)"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				if wGetLag['Beyond']==True :
+					###期間外= 自動リムーブ対象
+					wFLG_Remove = True
+			else:
+				wFLG_Remove = True
+			
+			if wFLG_Remove==True :
+				#############################
+				# ブロック→リムーブする
+				wBlockRes = gVal.OBJ_Tw_IF.BlockRemove( wUserID )
+				if wBlockRes['Result']!=True :
+					wRes['Reason'] = "Twitter API Error(BlockRemove): " + wBlockRes['Reason'] + " screen_name=" + wARR_FollowData[wUserID]['screen_name']
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				
+				### ユーザレベル変更
+				wUserLevel = "F+"
+				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
+				
+				### トラヒック記録（フォロワー減少）
+				CLS_Traffic.sP( "d_follower" )
+				
+				### ユーザ記録
+				wStr = "●完全スルー期間外のため追い出し"
+				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wARR_FollowData[wUserID]['screen_name'] )
 		
 		#############################
 		# 正常終了

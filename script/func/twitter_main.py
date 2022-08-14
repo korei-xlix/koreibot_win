@@ -1806,6 +1806,47 @@ class CLS_TwitterMain():
 		wResDisp = CLS_MyDisp.sViewHeaderDisp( "自動リムーブチェック" )
 		
 		#############################
+		# 自動リムーブが有効なら、相互フォローリスト、片フォロワーリストのチェック
+		wARR_IndListName = []
+		if gVal.STR_UserInfo['AutoRemove']==True and \
+		   ( gVal.STR_UserInfo['mListID']!=gVal.DEF_NOTEXT or \
+		     gVal.STR_UserInfo['fListID']!=gVal.DEF_NOTEXT ) :
+			wARR_IndListName.append( gVal.STR_UserInfo['mListName'] )
+			wARR_IndListName.append( gVal.STR_UserInfo['fListName'] )
+		
+		for wListName in wARR_IndListName :
+			wStr = "〇チェック中リスト: " + wListName
+			CLS_OSIF.sPrn( wStr )
+			
+			#############################
+			# Twitterからリストの登録ユーザ一覧を取得
+			wListRes = gVal.OBJ_Tw_IF.GetListSubscribers(
+			   inListName=wListName,
+			   inScreenName=gVal.STR_UserInfo['Account'] )
+			
+			if wListRes['Result']!=True :
+				wRes['Reason'] = "Twitter API Error(GetListSubscribers:List): " + wListRes['Reason']
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if len(wListRes['Responce'])>=1 :
+				### 登録者あり
+				wKeylistUser = list( wListRes['Responce'].keys() )
+				for wID in wKeylistUser :
+					wID = str(wID)
+					
+				###自分は除外する
+				if str(gVal.STR_UserInfo['id'])==wID :
+					continue
+				
+				#############################
+				# 自動リムーブ
+				wSubRes = self.OBJ_TwitterFollower.AutoRemove( wListRes['Responce'][wID] )
+				if wSubRes['Result']!=True :
+					wRes['Reason'] = "AutoRemove is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+		
+		#############################
 		# ListFavo一覧のうち
 		# 自動リムーブ有効のリストをチェックする
 		wKeylist = list( gVal.ARR_ListFavo.keys() )
