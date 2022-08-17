@@ -3608,7 +3608,7 @@ class CLS_DB_IF() :
 		
 		#############################
 		# ログ記録
-		gVal.OBJ_L.Log( "N", wRes, "DB: Delete SearchWord: index=" + str(wIndex) + " word=" + str( wWord ) )
+		gVal.OBJ_L.Log( "N", wRes, "DB: Delete SearchWord: index=" + str(inIndex) + " word=" + str( wWord ) )
 		
 		wRes['Result'] = True
 		return wRes

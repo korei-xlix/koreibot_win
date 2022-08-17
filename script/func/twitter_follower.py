@@ -842,6 +842,10 @@ class CLS_TwitterFollower():
 				else:
 					### いいねなし= 登録日時
 					wCompTimeDate = str(wARR_DBData['regdate'])
+					
+					### 送信回数が規定回数超えてれば、追い出し対象にする
+					if gVal.DEF_STR_TLNUM['forAutoRemoveIgnoreCompletelyCnt']<=wARR_DBData['pfavo_cnt'] :
+						wFLG_Remove = True
 				
 				#############################
 				# 自動リムーブ期間か

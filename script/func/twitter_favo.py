@@ -1087,7 +1087,8 @@ class CLS_TwitterFavo():
 		#############################
 		# フォロワーモード かつ 候補がない場合
 		# リツイート、引用リツイートから候補を決める（再抽選）
-		if inFLG_Follower==True and wRes['Responce']['agent']>0 :
+###		if inFLG_Follower==True and wRes['Responce']['agent']>0 :
+		if inFLG_Follower==True and wRes['Responce']['agent']==0 :
 			
 			wKeylist = list( wARR_Tweet.keys() )
 			for wID in wKeylist :
