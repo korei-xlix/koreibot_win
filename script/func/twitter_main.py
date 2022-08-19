@@ -684,7 +684,8 @@ class CLS_TwitterMain():
 				wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_Remove( wARR_RateFavoDate[wID] )
 				
 				### ユーザレベル変更
-				wUserLevel = "E"
+###				wUserLevel = "E"
+				wUserLevel = "E-"
 				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
 				
 				### 通信記録（フォロー者OFF・フォロワーから、フォロー者・フォロワーOFFへ）

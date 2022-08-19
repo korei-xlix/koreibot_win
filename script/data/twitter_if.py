@@ -2406,7 +2406,8 @@ class CLS_Twitter_IF() :
 		#############################
 		# 片フォロワーリストに追加されていたら
 		#   リストから削除する
-		if self.CheckMutualListUser( wID )==True :
+###		if self.CheckMutualListUser( wID )==True :
+		if self.CheckFollowListUser( wID )==True :
 			wTwitterRes = self.OBJ_Twitter.RemoveUserList( gVal.STR_UserInfo['fListName'], wID )
 			CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 			if wTwitterRes['Result']!=True :

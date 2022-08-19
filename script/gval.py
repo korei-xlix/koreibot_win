@@ -156,7 +156,8 @@ class gVal() :
 		"forReactionSec"			: 3600,				#   リアクションまでの期間   1時間  60x60
 		"forReactionTweetSec"		: 172800,			#   リアクションに反応するツイート期間 2日 (60x60x24)x2
 		
-		"forVipOperationSec"		: 28800,			#   VIPリアクション監視までの期間   8時間  60x60x8
+###		"forVipOperationSec"		: 28800,			#   VIPリアクション監視までの期間   8時間  60x60x8
+		"forVipOperationSec"		: 3600,				#   VIPリアクション監視までの期間   1時間  60x60x1
 		"vipReactionTweetLine"		: 20,				#   VIPリアクションチェック時のツイート取得ライン数
 		"forVipReactionTweetSec"	: 86400,			#   リアクションに反応するツイート期間 1日  60x60x24
 		
