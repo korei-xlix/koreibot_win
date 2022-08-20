@@ -970,6 +970,22 @@ class CLS_TwitterMain():
 
 
 #####################################################
+# 強制いいね情報送信
+#####################################################
+	def ForceSendFavoDate(self):
+		#############################
+		# いいね情報送信
+		wSubRes = self.OBJ_TwitterFollower.SendFavoDate( inFLG_Force=True )
+		if wSubRes['Result']!=True :
+###			wRes['Reason'] = "SendFavoDate"
+			gVal.OBJ_L.Log( "B", wSubRes )
+#			return wSubRes
+		
+		return wSubRes
+
+
+
+#####################################################
 # トレンドツイート
 #####################################################
 ###	def TrendTweet(self):

@@ -411,7 +411,8 @@ class CLS_TwitterFollower():
 #####################################################
 # いいね情報送信
 #####################################################
-	def SendFavoDate(self):
+###	def SendFavoDate(self):
+	def SendFavoDate( self, inFLG_Force=False ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -426,13 +427,16 @@ class CLS_TwitterFollower():
 			wRes['Reason'] = "sTimeLag failed(1)"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		if wGetLag['Beyond']==False :
-			###期間内
-			###  次へ
-			wStr = "●いいね送信期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
-			CLS_OSIF.sPrn( wStr )
-			wRes['Result'] = True
-			return wRes
+		
+		###強制じゃなければ判定する
+		if inFLG_Force==False :
+			if wGetLag['Beyond']==False :
+				###期間内
+				###  次へ
+				wStr = "●いいね送信期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
+				CLS_OSIF.sPrn( wStr )
+				wRes['Result'] = True
+				return wRes
 		
 		wRes['Responce'] = False
 		#############################
@@ -622,10 +626,10 @@ class CLS_TwitterFollower():
 			if wARR_RateFavoDate[wID]['follower']==False :
 				### フォロワーでなければ、スキップ
 				continue
-			if wARR_RateFavoDate[wID]['level_tag']!="B" :
-				### レベルB以外は、スキップ
-				continue
-			
+###			if wARR_RateFavoDate[wID]['level_tag']!="B" :
+###				### レベルB以外は、スキップ
+###				continue
+###			
 			wCnt = wARR_RateFavoDate[wID]['send_cnt']
 			#############################
 			# 昇格トロフィー回数=0の場合

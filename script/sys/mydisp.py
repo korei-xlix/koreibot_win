@@ -168,7 +168,8 @@ class CLS_MyDisp():
 			   inData['rfavo_cnt']==0 :
 				wStr = "－－－"
 			else:
-				wStr = str( inData['favo_date'] )
+###				wStr = str( inData['favo_date'] )
+				wStr = str( inData['rfavo_date'] )
 			if inData['flg_db_set']==True and inData['rfavo_cnt']>=0 :
 				wStr = wStr + " [総計=" +str( inData['rfavo_cnt'] ) + " / 今週=" + str( inData['rfavo_n_cnt'] ) + "]"
 			pRes['Responce'] = "    最終いいね受信日            : " + wStr

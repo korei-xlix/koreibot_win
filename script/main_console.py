@@ -285,6 +285,11 @@ class CLS_Main_Console() :
 		if inCommand=="\\rm" :
 			cls.OBJ_TwitterMain.AllFavoRemove()
 		
+		#############################
+		# 強制いいね情報送信
+		elif inCommand=="\\ff" :
+			cls.OBJ_TwitterMain.ForceSendFavoDate()
+		
 	#####################################################
 		#############################
 		# トレンドタグ設定
