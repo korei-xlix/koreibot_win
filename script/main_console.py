@@ -286,6 +286,11 @@ class CLS_Main_Console() :
 			cls.OBJ_TwitterMain.AllFavoRemove()
 		
 		#############################
+		# 強制自動リムーブ
+		elif inCommand=="\\fr" :
+			cls.OBJ_TwitterMain.ForceCheckAutoRemove()
+		
+		#############################
 		# 強制いいね情報送信
 		elif inCommand=="\\ff" :
 			cls.OBJ_TwitterMain.ForceSendFavoDate()

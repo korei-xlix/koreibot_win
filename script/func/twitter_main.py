@@ -970,6 +970,30 @@ class CLS_TwitterMain():
 
 
 #####################################################
+# 強制自動リムーブ
+#####################################################
+	def ForceCheckAutoRemove(self):
+		#############################
+		# Twitter情報取得
+		wFavoRes = self.GetTwitterInfo()
+		if wFavoRes['Result']!=True :
+###			wRes['Reason'] = "GetTwitterInfo is failed"
+			gVal.OBJ_L.Log( "B", wFavoRes )
+			return wFavoRes
+		
+		#############################
+		# 自動リムーブ
+		wSubRes = self.CheckAutoRemove( inFLG_Force=True )
+		if wSubRes['Result']!=True :
+###			wRes['Reason'] = "CheckAutoRemove"
+			gVal.OBJ_L.Log( "B", wSubRes )
+#			return wSubRes
+		
+		return wSubRes
+
+
+
+#####################################################
 # 強制いいね情報送信
 #####################################################
 	def ForceSendFavoDate(self):
@@ -1789,7 +1813,8 @@ class CLS_TwitterMain():
 #####################################################
 # 自動リムーブチェック
 #####################################################
-	def CheckAutoRemove(self):
+###	def CheckAutoRemove(self):
+	def CheckAutoRemove( self, inFLG_Force=False ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -1811,12 +1836,15 @@ class CLS_TwitterMain():
 			wRes['Reason'] = "sTimeLag failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		if wGetLag['Beyond']==False :
-			### 規定以内は除外
-			wStr = "●自動リムーブチェック期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
-			CLS_OSIF.sPrn( wStr )
-			wRes['Result'] = True
-			return wRes
+		
+		###強制じゃなければ判定する
+		if inFLG_Force==False :
+			if wGetLag['Beyond']==False :
+				### 規定以内は除外
+				wStr = "●自動リムーブチェック期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
+				CLS_OSIF.sPrn( wStr )
+				wRes['Result'] = True
+				return wRes
 		
 		#############################
 		# 取得開始の表示
@@ -1837,20 +1865,33 @@ class CLS_TwitterMain():
 			
 			#############################
 			# Twitterからリストの登録ユーザ一覧を取得
-			wListRes = gVal.OBJ_Tw_IF.GetListSubscribers(
+###			wListRes = gVal.OBJ_Tw_IF.GetListSubscribers(
+			wListRes = gVal.OBJ_Tw_IF.GetListMember(
 			   inListName=wListName,
 			   inScreenName=gVal.STR_UserInfo['Account'] )
 			
 			if wListRes['Result']!=True :
-				wRes['Reason'] = "Twitter API Error(GetListSubscribers:List): " + wListRes['Reason']
+###				wRes['Reason'] = "Twitter API Error(GetListSubscribers:List): " + wListRes['Reason']
+				wRes['Reason'] = "Twitter API Error(GetListMember:List): " + wListRes['Reason']
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
-			if len(wListRes['Responce'])>=1 :
-				### 登録者あり
-				wKeylistUser = list( wListRes['Responce'].keys() )
-				for wID in wKeylistUser :
-					wID = str(wID)
-					
+###			if len(wListRes['Responce'])>=1 :
+###				### 登録者あり
+###				wKeylistUser = list( wListRes['Responce'].keys() )
+###				for wID in wKeylistUser :
+###					wID = str(wID)
+###					
+###				###自分は除外する
+###				if str(gVal.STR_UserInfo['id'])==wID :
+###					continue
+			if len(wListRes['Responce'])==0 :
+				### 登録者なしはスキップ
+				continue
+			
+			wKeylistUser = list( wListRes['Responce'].keys() )
+			for wID in wKeylistUser :
+				wID = str(wID)
+				
 				###自分は除外する
 				if str(gVal.STR_UserInfo['id'])==wID :
 					continue
