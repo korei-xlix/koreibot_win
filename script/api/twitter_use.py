@@ -3081,7 +3081,8 @@ class CLS_Twitter_Use():
 				wCHR_StatusCode = wCHR_StatusCode + ": Error Code=" + str(wUsers['errors'][0]['code']) + ":" + str(wUsers['errors'][0]['message'])
 			
 			wStr = "Twitter responce failed: Status Code=" + str(wTweetRes.status_code) + ":" + wCHR_StatusCode
-			wStr = wStr + " list_name=" + str(inListName) + " owner=" + wListOwner
+###			wStr = wStr + " list_name=" + str(inListName) + " owner=" + wListOwner
+			wStr = wStr + " list_name=" + str(inListName) + " owner=" + inScreenName
 			wRes['Reason'] = wStr
 			return wRes
 		

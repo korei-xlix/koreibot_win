@@ -219,6 +219,12 @@ class CLS_TwitterAdmin():
 			wRes = self.__run_UserAdmin_memo()
 		
 		#############################
+		# コマンド：レベル強制変更
+		elif inWord=="\\fl" :
+			wRes = self.__run_UserAdmin_LevelChange()
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+		
+		#############################
 		# 不明なコマンド
 		else :
 			CLS_OSIF.sPrn( "不明なコマンドです" + '\n' )
@@ -498,6 +504,69 @@ class CLS_TwitterAdmin():
 		
 		wStr = "禁止ユーザを削除しました"
 		CLS_OSIF.sInp( wStr )
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# レベル強制変更
+#####################################################
+	def __run_UserAdmin_LevelChange(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterAdmin"
+		wRes['Func']  = "__run_UserAdmin_LevelChange"
+		
+		#############################
+		# DBがなければ終わり
+		if self.STR_UserAdminInfo['flg_db_set']==False :
+			wStr = "DBがないため設定できません"
+			CLS_OSIF.sInp( wStr )
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# コンソールを表示
+		wStr = "ユーザレベルを変更します。変更後のレベルタグを入力してください。" + '\n'
+		wStr = wStr + "  \\q=中止 / other=change" + '\n'
+		CLS_OSIF.sPrn( wStr )
+		wWord = CLS_OSIF.sInp( "  => " )
+		if wWord=="\\q" :
+			wStr = "中止しました。" + '\n'
+			CLS_OSIF.sPrn( wStr )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# 入力チェック
+		if wWord not in gVal.DEF_STR_USER_LEVEL :
+			wStr = "対応しないレベルタグのため、変更できませんでした。" + '\n'
+			CLS_OSIF.sPrn( wStr )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# ユーザレベルの変更の実行
+		wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( self.STR_UserAdminInfo['id'], wWord )
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "UpdateFavoData_UserLevel is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# ユーザ管理へ変更
+		self.STR_UserAdminInfo['level_tag'] = wWord
+		
+		wStr = "レベルタグを変更しました"
+		CLS_OSIF.sPrn( wStr )
 		
 		#############################
 		# 完了

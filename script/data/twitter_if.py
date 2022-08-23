@@ -2417,7 +2417,8 @@ class CLS_Twitter_IF() :
 			
 			gVal.OBJ_L.Log( "RC", wRes, "●リスト解除: list=" + gVal.STR_UserInfo['fListName'] + " user=" + inUser['screen_name'] )
 			
-			self.ARR_MutualListUserID.remove( wID )
+###			self.ARR_MutualListUserID.remove( wID )
+			self.ARR_FollowerListUserID.remove( wID )
 		
 		#############################
 		# 相互フォローリストに追加されていたら
