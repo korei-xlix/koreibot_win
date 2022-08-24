@@ -891,7 +891,8 @@ class CLS_TwitterFollower():
 				# ブロック→リムーブする
 				wBlockRes = gVal.OBJ_Tw_IF.BlockRemove( wUserID )
 				if wBlockRes['Result']!=True :
-					wRes['Reason'] = "Twitter API Error(BlockRemove): " + wBlockRes['Reason'] + " screen_name=" + wARR_FollowData[wUserID]['screen_name']
+###					wRes['Reason'] = "Twitter API Error(BlockRemove): " + wBlockRes['Reason'] + " screen_name=" + wARR_FollowData[wUserID]['screen_name']
+					wRes['Reason'] = "Twitter API Error(BlockRemove): " + wBlockRes['Reason'] + " screen_name=" + str(inUser['screen_name'])
 					gVal.OBJ_L.Log( "B", wRes )
 					return wRes
 				
@@ -904,7 +905,17 @@ class CLS_TwitterFollower():
 				
 				### ユーザ記録
 				wStr = "●完全スルー期間外のため追い出し"
-				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wARR_FollowData[wUserID]['screen_name'] )
+###				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wARR_FollowData[wUserID]['screen_name'] )
+				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']) )
+				
+				#############################
+				# DBに反映
+				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Follower( wUserID, inFLG_Follower=False )
+				if wSubRes['Result']!=True :
+					###失敗
+					wRes['Reason'] = "UpdateFavoData_Follower is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
 		
 		#############################
 		# 正常終了
