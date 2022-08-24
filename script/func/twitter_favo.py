@@ -1042,6 +1042,16 @@ class CLS_TwitterFavo():
 			
 			wARR_DBData = wSubRes['Responce']['Data']
 			#############################
+			# レベルタグによる除外
+			if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="D-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or \
+			   wARR_DBData['level_tag']=="F+" or wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G-" or wUserLevel=="G-" :
+				
+				wStr = "  ::レベルタグ除外: level=" + wARR_DBData['level_tag']
+				CLS_OSIF.sPrn( wStr )
+				
+				continue
+			
+			#############################
 			# 前回からのいいね期間内は除外
 			if wARR_DBData['pfavo_date']==gVal.DEF_NOTEXT :
 				wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData['pfavo_date'] ), inThreshold=inThreshold )

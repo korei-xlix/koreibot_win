@@ -511,15 +511,22 @@ class CLS_TwitterMain():
 							wUserLevel = "A+"
 						
 						elif wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel!="A" and wUserLevel!="A+" :
-							if wFollowerData[wID]['myfollow']==True :
-								### フォローされて相互フォローになった
-								wUserLevel = "C+"
-							else:
-								### フォロワー
-								wUserLevel = "E"
-								
+							
+							### 過去にリムーブしてた、されてた場合はフォローリスト追加のみ
+							if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="D-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or \
+							   wARR_DBData['level_tag']=="F+" or wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G-" or wUserLevel=="G-" :
 								### 片フォロワーリストに追加
 								wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_AddUser( wFollowerData[wID] )
+							else:
+								if wFollowerData[wID]['myfollow']==True :
+									### フォローされて相互フォローになった
+									wUserLevel = "C+"
+								else:
+									### フォロワー
+									wUserLevel = "E"
+									
+									### 片フォロワーリストに追加
+									wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_AddUser( wFollowerData[wID] )
 							
 							### ユーザレベル変更
 							wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
@@ -1298,6 +1305,26 @@ class CLS_TwitterMain():
 			return wRes
 		
 		#############################
+		# 無反応のレベルタグ
+		if wARR_DBData['level_tag']=="D-" or wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G-" :
+			### 報告対象の表示と、ログに記録
+			gVal.OBJ_L.Log( "RR", wRes, "●反応外のレベルタグ ユーザ: screen_name=" + inData['screen_name'] + " level=" + wARR_DBData['level_tag'] )
+			
+			if wFLG_Action==True :
+				### 除外してない場合
+				
+				### いいね情報を更新する
+				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Recive( inUser, inTweet, wARR_DBData, False )
+				if wSubRes['Result']!=True :
+					###失敗
+					wRes['Reason'] = "UpdateFavoData is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+			
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
 		# アクションが有効なら、リアクション済みにする
 		if wFLG_Action==True :
 			#############################
@@ -1311,7 +1338,25 @@ class CLS_TwitterMain():
 			
 			#############################
 			# リアクション済みID
-			self.ARR_ReacrionUserID.append( inUser['id'] )
+###			self.ARR_ReacrionUserID.append( inUser['id'] )
+			self.ARR_ReacrionUserID.append( wUserID )
+			
+			#############################
+			# レベル昇格
+			# 前提: フォロワー
+			wUserLevel = None
+			if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or wARR_DBData['level_tag']=="F+" :
+				if gVal.OBJ_Tw_IF.CheckMyFollow( wUserID )==True and \
+				   gVal.OBJ_Tw_IF.CheckFollower( wUserID )==True :
+					wUserLevel = "C+"
+				
+				elif gVal.OBJ_Tw_IF.CheckMyFollow( wUserID )==False and \
+				   gVal.OBJ_Tw_IF.CheckFollower( wUserID )==True :
+					wUserLevel = "E"
+				
+				if wUserLevel!=None :
+					### ユーザレベル変更
+					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
 			
 			#############################
 			# リアクションへのリアクション
