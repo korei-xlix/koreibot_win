@@ -1044,7 +1044,7 @@ class CLS_TwitterFavo():
 			#############################
 			# レベルタグによる除外
 			if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="D-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or \
-			   wARR_DBData['level_tag']=="F+" or wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G-" or wUserLevel=="G-" :
+			   wARR_DBData['level_tag']=="F+" or wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G-" :
 				
 				wStr = "  ::レベルタグ除外: level=" + wARR_DBData['level_tag']
 				CLS_OSIF.sPrn( wStr )

@@ -870,10 +870,12 @@ class CLS_TwitterMain():
 		#############################
 		# 警告ツイートの削除（●フル自動監視）
 		if wFLG_Short==False :
-			wSubRes = self.OBJ_TwitterAdmin.RemoveCautionTweet()
+###			wSubRes = self.OBJ_TwitterAdmin.RemoveCautionTweet()
+			wSubRes = self.OBJ_TwitterAdmin.RemoveCautionUser( inFLR_Recheck=True )
 			if wSubRes['Result']!=True :
 				###失敗
-				wRes['Reason'] = "RemoveCautionTweet is failed"
+###				wRes['Reason'] = "RemoveCautionTweet is failed"
+				wRes['Reason'] = "RemoveCautionUser is failed"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 		
@@ -1590,6 +1592,10 @@ class CLS_TwitterMain():
 						wRes['Reason'] = "SendTweet_Caution is failed(1): user=" + wListRes['Responce'][wID]['screen_name'] + " list=" + wListName
 						gVal.OBJ_L.Log( "B", wRes )
 						continue
+					
+					### ユーザレベル変更
+					wUserLevel = "L"
+					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
 		
 		#############################
 		# ListFavo一覧のうち
@@ -1633,6 +1639,10 @@ class CLS_TwitterMain():
 					wRes['Reason'] = "SendTweet_Caution is failed(1): user=" + wListRes['Responce'][wID]['screen_name'] + " list=" + gVal.ARR_ListFavo[wKey]['list_name']
 					gVal.OBJ_L.Log( "B", wRes )
 					continue
+				
+				### ユーザレベル変更
+				wUserLevel = "L"
+				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
 		
 		wStr = "チェック終了" + '\n'
 		CLS_OSIF.sPrn( wStr )
@@ -1751,6 +1761,10 @@ class CLS_TwitterMain():
 						wRes['Reason'] = "SendTweet_Caution is failed(2): user=" + wARR_ListUsers[wID]['screen_name'] + " list=" + wARR_Lists[wKey]['name']
 						gVal.OBJ_L.Log( "B", wRes )
 						continue
+					
+					### ユーザレベル変更
+					wUserLevel = "L"
+					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
 		
 		wStr = "チェック終了" + '\n'
 		CLS_OSIF.sPrn( wStr )
