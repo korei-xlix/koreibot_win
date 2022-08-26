@@ -2005,7 +2005,23 @@ class CLS_DB_IF() :
 		
 		#############################
 		# グローバルに保存する
-		gVal.ARR_CautionTweet = wARR_DBData
+###		gVal.ARR_CautionTweet = wARR_DBData
+###		
+		gVal.ARR_CautionTweet = {}
+		#############################
+		# 除外文字データを登録する
+		wKeylist = list( wARR_DBData.keys() )
+		wListNo = 1
+		for wKey in wKeylist :
+			wCell = {
+				"list_number"	: wListNo,
+				"regdate"		: str(wARR_DBData[wKey]['regdate']),
+				"tweet_id"		: str(wARR_DBData[wKey]['regdate']),
+				"id"			: str(wARR_DBData[wKey]['regdate']),
+				"screen_name"	: str(wARR_DBData[wKey]['regdate'])
+			}
+			gVal.ARR_CautionTweet.update({ str(wListNo) : wCell })
+			wListNo += 1
 		
 		#############################
 		# =正常
