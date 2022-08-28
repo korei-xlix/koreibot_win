@@ -632,39 +632,39 @@ class CLS_TwitterFollower():
 ###				continue
 ###			
 			wCnt = wARR_RateFavoDate[wID]['send_cnt']
-			#############################
-			# 昇格トロフィー回数=0の場合
-			#   自動フォローしてレベルC昇格へ
-			if wCnt==0 and \
-			   wARR_RateFavoDate[wID]['level_tag']=="E" :
-				
-				### フォロー＆ミュートする
-				wTweetRes = gVal.OBJ_Tw_IF.Follow( wID, inMute=True )
-				if wTweetRes['Result']!=True :
-					wRes['Reason'] = "Twitter API Error: Follow" + wTweetRes['Reason']
-					gVal.OBJ_L.Log( "B", wRes )
-					continue
-				
-				### 相互フォローリストに追加
-				wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( wARR_RateFavoDate[wID] )
-				
-				### ユーザレベル変更
-				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, "C" )
-				
-				### トラヒック記録（フォロー者増加）
-				CLS_Traffic.sP( "p_myfollow" )
-				
-				### ログに記録
-				gVal.OBJ_L.Log( "R", wRes, "自動フォロー（昇格）: " + wARR_RateFavoDate[wID]['screen_name'] )
-				
-				### DBに反映
-				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Follower( wID, inFLG_MyFollow=True )
-				if wSubRes['Result']!=True :
-					###失敗
-					wRes['Reason'] = "UpdateFavoData_Follower is failed"
-					gVal.OBJ_L.Log( "B", wRes )
-				continue
-			
+###			#############################
+###			# 昇格トロフィー回数=0の場合
+###			#   自動フォローしてレベルC昇格へ
+###			if wCnt==0 and \
+###			   wARR_RateFavoDate[wID]['level_tag']=="E" :
+###				
+###				### フォロー＆ミュートする
+###				wTweetRes = gVal.OBJ_Tw_IF.Follow( wID, inMute=True )
+###				if wTweetRes['Result']!=True :
+###					wRes['Reason'] = "Twitter API Error: Follow" + wTweetRes['Reason']
+###					gVal.OBJ_L.Log( "B", wRes )
+###					continue
+###				
+###				### 相互フォローリストに追加
+###				wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( wARR_RateFavoDate[wID] )
+###				
+###				### ユーザレベル変更
+###				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, "C" )
+###				
+###				### トラヒック記録（フォロー者増加）
+###				CLS_Traffic.sP( "p_myfollow" )
+###				
+###				### ログに記録
+###				gVal.OBJ_L.Log( "R", wRes, "自動フォロー（昇格）: " + wARR_RateFavoDate[wID]['screen_name'] )
+###				
+###				### DBに反映
+###				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Follower( wID, inFLG_MyFollow=True )
+###				if wSubRes['Result']!=True :
+###					###失敗
+###					wRes['Reason'] = "UpdateFavoData_Follower is failed"
+###					gVal.OBJ_L.Log( "B", wRes )
+###				continue
+###			
 			#############################
 			# レベルB or C以外か、B+じゃなければここで終わり
 			if ( wARR_RateFavoDate[wID]['level_tag']!="B" and \

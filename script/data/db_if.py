@@ -2016,11 +2016,12 @@ class CLS_DB_IF() :
 			wCell = {
 				"list_number"	: wListNo,
 				"regdate"		: str(wARR_DBData[wKey]['regdate']),
-				"tweet_id"		: str(wARR_DBData[wKey]['regdate']),
-				"id"			: str(wARR_DBData[wKey]['regdate']),
-				"screen_name"	: str(wARR_DBData[wKey]['regdate'])
+				"tweet_id"		: str(wARR_DBData[wKey]['tweet_id']),
+				"id"			: str(wARR_DBData[wKey]['id']),
+				"screen_name"	: str(wARR_DBData[wKey]['screen_name'])
 			}
-			gVal.ARR_CautionTweet.update({ str(wListNo) : wCell })
+###			gVal.ARR_CautionTweet.update({ str(wListNo) : wCell })
+			gVal.ARR_CautionTweet.update({ wListNo : wCell })
 			wListNo += 1
 		
 		#############################
@@ -2090,7 +2091,8 @@ class CLS_DB_IF() :
 		return wRes
 
 	#####################################################
-	def DeleteCautionTweet( self, inUser):
+###	def DeleteCautionTweet( self, inUser):
+	def DeleteCautionTweet( self, inListNum ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -2098,15 +2100,19 @@ class CLS_DB_IF() :
 		wRes['Class'] = "CLS_DB_IF"
 		wRes['Func']  = "DeleteCautionTweet"
 		
-		wUserID = str( inUser['id'] )
-		
+###		wUserID = str( inUser['id'] )
+###		
 		#############################
 		# 登録チェック
-		if wUserID not in gVal.ARR_CautionTweet :
-			wRes['Reason'] = "Not regist user: screen_name=" + str( inUser['screen_name'] )
+###		if wUserID not in gVal.ARR_CautionTweet :
+		if inListNum not in gVal.ARR_CautionTweet :
+###			wRes['Reason'] = "Not regist user: screen_name=" + str( inUser['screen_name'] )
+			wRes['Reason'] = "Not regist user: list num=" + str( inListNum )
 			gVal.OBJ_L.Log( "D", wRes )
 			return wRes
 		
+		wUserID = str( gVal.ARR_CautionTweet[inListNum]['id'] )
+		wSN     = str( gVal.ARR_CautionTweet[inListNum]['screen_name'] )
 		#############################
 		# レコードから削除する
 		wQy = "delete from tbl_caution_tweet "
@@ -2123,11 +2129,13 @@ class CLS_DB_IF() :
 		
 		#############################
 		# グローバルを更新する
-		del gVal.ARR_CautionTweet[wUserID]
+###		del gVal.ARR_CautionTweet[wUserID]
+		del gVal.ARR_CautionTweet[inListNum]
 		
 		#############################
 		# ログに記録する
-		wStr = "データ削除: caution tweet: screen_name=" + str(inUser['screen_name'])
+###		wStr = "データ削除: caution tweet: screen_name=" + str(inUser['screen_name'])
+		wStr = "データ削除: caution tweet: screen_name=" + wSN
 		gVal.OBJ_L.Log( "RR", wRes, wStr )
 		
 		wRes['Result'] = True

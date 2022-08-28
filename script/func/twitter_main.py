@@ -509,6 +509,9 @@ class CLS_TwitterMain():
 						   self.CheckVIPUser( wFollowerData[wID] )==True :
 							### VIPのフォロワー
 							wUserLevel = "A+"
+							
+							### ユーザレベル変更
+							wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
 						
 						elif wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel!="A" and wUserLevel!="A+" :
 							
@@ -527,9 +530,12 @@ class CLS_TwitterMain():
 									
 									### 片フォロワーリストに追加
 									wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_AddUser( wFollowerData[wID] )
+								
+								### ユーザレベル変更
+								wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
 							
-							### ユーザレベル変更
-							wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
+###							### ユーザレベル変更
+###							wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
 						
 						### トラヒック記録（フォロワー獲得）
 						CLS_Traffic.sP( "p_follower" )
@@ -1346,7 +1352,8 @@ class CLS_TwitterMain():
 			#############################
 			# レベル昇格
 			# 前提: フォロワー
-			wUserLevel = None
+###			wUserLevel = None
+			wCnt = wARR_DBData['rfavo_n_cnt'] + 1
 			if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or wARR_DBData['level_tag']=="F+" :
 				if gVal.OBJ_Tw_IF.CheckMyFollow( wUserID )==True and \
 				   gVal.OBJ_Tw_IF.CheckFollower( wUserID )==True :
@@ -1359,6 +1366,42 @@ class CLS_TwitterMain():
 				if wUserLevel!=None :
 					### ユーザレベル変更
 					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
+			
+			#############################
+			# 相互レベルCへ昇格
+			# ・トロフィー資格者
+			# ・レベルE
+			# ・フォロー者OFF
+			# ・フォロワーON
+			elif wCnt>=gVal.DEF_STR_TLNUM['favoSendsCnt'] and \
+			     wARR_DBData['level_tag']=="E" and \
+			     gVal.OBJ_Tw_IF.CheckMyFollow( wUserID )==False and \
+			     gVal.OBJ_Tw_IF.CheckFollower( wUserID )==True :
+				
+				### フォロー＆ミュートする
+				wTweetRes = gVal.OBJ_Tw_IF.Follow( wUserID, inMute=True )
+				if wTweetRes['Result']!=True :
+					wRes['Reason'] = "Twitter API Error: Follow" + wTweetRes['Reason']
+					gVal.OBJ_L.Log( "B", wRes )
+				
+				### 相互フォローリストに追加
+				wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( wARR_DBData )
+				
+				### ユーザレベル変更
+				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, "C" )
+				
+				### トラヒック記録（フォロー者増加）
+				CLS_Traffic.sP( "p_myfollow" )
+				
+				### ログに記録
+				gVal.OBJ_L.Log( "R", wRes, "自動フォロー（昇格）: " + wARR_DBData['screen_name'] )
+				
+				### DBに反映
+				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Follower( wUserID, inFLG_MyFollow=True )
+				if wSubRes['Result']!=True :
+					###失敗
+					wRes['Reason'] = "UpdateFavoData_Follower is failed"
+					gVal.OBJ_L.Log( "B", wRes )
 			
 			#############################
 			# リアクションへのリアクション
