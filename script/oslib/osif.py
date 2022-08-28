@@ -349,6 +349,43 @@ class CLS_OSIF() :
 
 
 #####################################################
+# 時間分加算して返す
+#####################################################
+	@classmethod
+	def sTimeAddHour( cls, inTimedate=None, inSec=None ):
+		#############################
+		# 応答形式
+		wRes = {
+			"Result"	: False,	# 結果
+			"Reason"	: None,
+			
+			"TimeDate"	: None,
+			"NextTD"	: None		#
+		}
+		
+		#############################
+		# 時間形式に変換する
+		try:
+			wTD = str( inTimedate )
+			wTD = datetime.strptime( wTD, "%Y-%m-%d %H:%M:%S")
+		except:
+			wRes['Reason'] = "inTimedate1 exception error: " + str(inTimedate1)
+			return wRes	#失敗
+		wRes['TimeDate'] = wTD
+		
+		#############################
+		# 加算
+		wTD = wTD + timedelta( seconds=inSec )
+		
+		wRes['NextTD'] = wTD
+		#############################
+		# 正常
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
 # 時間差
 #   inTimedate   比べる日時
 #   inThreshold  比べる時間差(秒)

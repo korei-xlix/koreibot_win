@@ -906,6 +906,15 @@ class CLS_TwitterMain():
 		###		gVal.STR_Time['autorun']
 		
 		#############################
+		# スケジュール表示
+		wSubRes = self.OBJ_TwitterAdmin.View_Schedule()
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "View_Schedule is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
 		# 完了
 		wRes['Result'] = True
 		return wRes
@@ -2288,6 +2297,15 @@ class CLS_TwitterMain():
 		if len(inLevelTag)<2 :
 			wLevelTag = wLevelTag + " "
 		return wLevelTag
+
+
+
+#####################################################
+# スケジュールの表示
+#####################################################
+	def View_Schedule(self):
+		wRes = self.OBJ_TwitterAdmin.View_Schedule()
+		return wRes
 
 
 

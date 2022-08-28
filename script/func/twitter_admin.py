@@ -2251,6 +2251,133 @@ class CLS_TwitterAdmin():
 
 
 #####################################################
+# スケジュールの表示
+#####################################################
+	def View_Schedule( self, inFLG_FirstDisp=True ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterAdmin"
+		wRes['Func']  = "View_Sysinfo"
+		
+		#############################
+		# 取得開始の表示
+		if inFLG_FirstDisp==True :
+			wResDisp = CLS_MyDisp.sViewHeaderDisp( "スケジュール表示", False )
+		
+		#############################
+		# 自動監視
+		wTimeRes = CLS_OSIF.sTimeAddHour( inTimedate=gVal.STR_Time['autorun'], inSec=gVal.DEF_STR_TLNUM['forAutoAllRunSec'] )
+		if wTimeRes['Result']!=True :
+			wRes['Reason'] = "sTimeAddHour is failed(autorun)"
+			gVal.OBJ_L.Log( "A", wTimeRes )
+			return wRes
+		
+		wStr = "自動監視        ：" + str(gVal.STR_Time['autorun'])
+		wStr = wStr + "  次回フル監視：" + str(wTimeRes['NextTD'])
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# リアクションチェック
+		wTimeRes = CLS_OSIF.sTimeAddHour( inTimedate=gVal.STR_Time['reaction'], inSec=gVal.DEF_STR_TLNUM['forReactionSec'] )
+		if wTimeRes['Result']!=True :
+			wRes['Reason'] = "sTimeAddHour is failed(reaction)"
+			gVal.OBJ_L.Log( "A", wTimeRes )
+			return wRes
+		
+		wStr = "リアクション    ：" + str(gVal.STR_Time['reaction'])
+		wStr = wStr + "  次回予定    ：" + str(wTimeRes['NextTD'])
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# リストいいね
+		wTimeRes = CLS_OSIF.sTimeAddHour( inTimedate=gVal.STR_Time['mffavo'], inSec=gVal.DEF_STR_TLNUM['forListFavoSec'] )
+		if wTimeRes['Result']!=True :
+			wRes['Reason'] = "sTimeAddHour is failed(mffavo)"
+			gVal.OBJ_L.Log( "A", wTimeRes )
+			return wRes
+		
+		wStr = "リストいいね    ：" + str(gVal.STR_Time['mffavo'])
+		wStr = wStr + "  次回予定    ：" + str(wTimeRes['NextTD'])
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# リストいいね
+		wTimeRes = CLS_OSIF.sTimeAddHour( inTimedate=gVal.STR_Time['flfavo'], inSec=gVal.DEF_STR_TLNUM['forFollowerFavoSec'] )
+		if wTimeRes['Result']!=True :
+			wRes['Reason'] = "sTimeAddHour is failed(flfavo)"
+			gVal.OBJ_L.Log( "A", wTimeRes )
+			return wRes
+		
+		wStr = "フォロワー支援  ：" + str(gVal.STR_Time['flfavo'])
+		wStr = wStr + "  次回予定    ：" + str(wTimeRes['NextTD'])
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# リスト通知クリア
+		wStr = "リスト通知クリア：" + str(gVal.STR_Time['list_clear'])
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# 自動リムーブ
+		wTimeRes = CLS_OSIF.sTimeAddHour( inTimedate=gVal.STR_Time['auto_remove'], inSec=gVal.DEF_STR_TLNUM['forCheckAutoRemoveSec'] )
+		if wTimeRes['Result']!=True :
+			wRes['Reason'] = "sTimeAddHour is failed(auto_remove)"
+			gVal.OBJ_L.Log( "A", wTimeRes )
+			return wRes
+		
+		wStr = "自動リムーブ    ：" + str(gVal.STR_Time['auto_remove'])
+		wStr = wStr + "  次回予定    ：" + str(wTimeRes['NextTD'])
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# 自動リムーブ
+		wTimeRes = CLS_OSIF.sTimeAddHour( inTimedate=gVal.STR_Time['send_favo'], inSec=gVal.DEF_VAL_WEEK )
+		if wTimeRes['Result']!=True :
+			wRes['Reason'] = "sTimeAddHour is failed(send_favo)"
+			gVal.OBJ_L.Log( "A", wTimeRes )
+			return wRes
+		
+		wStr = "いいね送信      ：" + str(gVal.STR_Time['send_favo'])
+		wStr = wStr + "  次回予定    ：" + str(wTimeRes['NextTD'])
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# VIPリアクション
+		wTimeRes = CLS_OSIF.sTimeAddHour( inTimedate=gVal.STR_Time['vip_ope'], inSec=gVal.DEF_STR_TLNUM['forVipOperationSec'] )
+		if wTimeRes['Result']!=True :
+			wRes['Reason'] = "sTimeAddHour is failed(vip_ope)"
+			gVal.OBJ_L.Log( "A", wTimeRes )
+			return wRes
+		
+		wStr = "VIPリアクション ：" + str(gVal.STR_Time['vip_ope'])
+		wStr = wStr + "  次回予定    ：" + str(wTimeRes['NextTD'])
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# 自動削除
+		wTimeRes = CLS_OSIF.sTimeAddHour( inTimedate=gVal.STR_Time['auto_delete'], inSec=gVal.DEF_STR_TLNUM['forCheckAutoDeleteSec'] )
+		if wTimeRes['Result']!=True :
+			wRes['Reason'] = "sTimeAddHour is failed(auto_delete)"
+			gVal.OBJ_L.Log( "A", wTimeRes )
+			return wRes
+		
+		wStr = "自動削除        ：" + str(gVal.STR_Time['auto_delete'])
+		wStr = wStr + "  次回予定    ：" + str(wTimeRes['NextTD'])
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# システム時刻
+		wStr = "システム時刻    ：" + str(gVal.STR_Time['TimeDate']) + '\n'
+		CLS_OSIF.sPrn( wStr )
+		
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
 # システム情報の表示
 #####################################################
 	def View_Sysinfo(self):

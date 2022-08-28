@@ -221,6 +221,11 @@ class CLS_Main_Console() :
 			gVal.OBJ_L.View()
 		
 		#############################
+		# スケジュールの表示
+		elif inCommand=="\\vt" :
+			cls.OBJ_TwitterMain.View_Schedule()
+		
+		#############################
 		# システム情報の表示
 		elif inCommand=="\\v" :
 			cls.OBJ_TwitterMain.View_Sysinfo()
