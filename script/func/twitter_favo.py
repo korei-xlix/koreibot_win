@@ -638,35 +638,47 @@ class CLS_TwitterFavo():
 						continue
 					wARR_DBData = wDBRes['Responce']['Data']
 					
-					wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData['rfavo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['forFollowerFavoFollowerSec'] )
-					if wGetLag['Result']!=True :
-						wRes['Reason'] = "sTimeLag failed"
-						gVal.OBJ_L.Log( "B", wRes )
-						continue
-					
 					#############################
-					# フォロワーかつ期間内
-					if wGetLag['Beyond']==False :
-						wSTR_Param['Threshold'] = gVal.DEF_STR_TLNUM['forFollowerFavoIntimeSec']
-						wSTR_Param['Follower']  = False	### 外部いいねモード
-						wSTR_Param['Sensitive'] = False
-						wSTR_Param['ListID']    = None
-						###
-						wStr = "▽フォロワー: 期間内: user=" + str( wARR_FollowData[wUserID]['screen_name'] )
-						CLS_OSIF.sPrn( wStr )
-						wResult['overuser'] += 1
-					
-					#############################
-					# フォロワーかつ期間外
-					else:
+					# いいねしたことなければ1回だけフォロワーモードでいいねする
+					if wARR_DBData['pfavo_cnt']==0 :
 						wSTR_Param['Threshold'] = gVal.DEF_STR_TLNUM['forFollowerFavoOverSec']
 						wSTR_Param['Follower']  = True	### フォロワーモード
 						wSTR_Param['Sensitive'] = True
 						wSTR_Param['ListID']    = None
 						###
-						wStr = "▽フォロワー: 期間外: user=" + str( wARR_FollowData[wUserID]['screen_name'] )
+						wStr = "▽フォロワー: 初回: user=" + str( wARR_FollowData[wUserID]['screen_name'] )
 						CLS_OSIF.sPrn( wStr )
 						wResult['follower'] += 1
+					else:
+						wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData['rfavo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['forFollowerFavoFollowerSec'] )
+						if wGetLag['Result']!=True :
+							wRes['Reason'] = "sTimeLag failed"
+							gVal.OBJ_L.Log( "B", wRes )
+							continue
+						
+						#############################
+						# フォロワーかつ期間内
+						if wGetLag['Beyond']==False :
+							wSTR_Param['Threshold'] = gVal.DEF_STR_TLNUM['forFollowerFavoIntimeSec']
+							wSTR_Param['Follower']  = False	### 外部いいねモード
+							wSTR_Param['Sensitive'] = False
+							wSTR_Param['ListID']    = None
+							###
+							wStr = "▽フォロワー: 期間内: user=" + str( wARR_FollowData[wUserID]['screen_name'] )
+							CLS_OSIF.sPrn( wStr )
+							wResult['overuser'] += 1
+						
+						#############################
+						# フォロワーかつ期間外
+						else:
+							wSTR_Param['Threshold'] = gVal.DEF_STR_TLNUM['forFollowerFavoOverSec']
+							wSTR_Param['Follower']  = True	### フォロワーモード
+							wSTR_Param['Sensitive'] = True
+							wSTR_Param['ListID']    = None
+							###
+							wStr = "▽フォロワー: 期間外: user=" + str( wARR_FollowData[wUserID]['screen_name'] )
+							CLS_OSIF.sPrn( wStr )
+							wResult['follower'] += 1
 			
 			#############################
 			# 片フォロー者
@@ -1050,6 +1062,16 @@ class CLS_TwitterFavo():
 				CLS_OSIF.sPrn( wStr )
 				
 				continue
+			
+			#############################
+			# レベルタグによるランダム実行
+			if wARR_DBData['level_tag']=="B-" :
+				
+				wRand = CLS_OSIF.sGetRand(100)
+				if wRand>gVal.DEF_STR_TLNUM['forAutoFavoLevelRunRand'] :
+					wStr = "  ::レベルタグ乱数判定による中止: level=" + wARR_DBData['level_tag']
+					CLS_OSIF.sPrn( wStr )
+					continue
 			
 			#############################
 			# 前回からのいいね期間内は除外

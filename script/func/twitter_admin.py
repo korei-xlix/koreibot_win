@@ -200,6 +200,12 @@ class CLS_TwitterAdmin():
 			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
 		
 		#############################
+		# コマンド：相互レベル変更
+		elif inWord=="\\ml" :
+			wRes = self.__run_ChangeLevel()
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+		
+		#############################
 		# コマンド：ブラウザで表示
 		elif inWord=="\\p" :
 			wRes = self.__view_Profile( self.STR_UserAdminInfo['screen_name'] )
@@ -275,6 +281,79 @@ class CLS_TwitterAdmin():
 		# 正常終了
 		gVal.OBJ_L.Log( "R", wRes, "●リムーブ者: " + self.STR_UserAdminInfo['screen_name'] )
 		
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# 相互レベル変更
+#####################################################
+	def __run_ChangeLevel(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterAdmin"
+		wRes['Func']  = "__run_ChangeLevel"
+		
+		#############################
+		# 相互フォロー中か
+		if self.STR_UserAdminInfo['myfollow']!=True or \
+		   self.STR_UserAdminInfo['follower']!=True :
+			CLS_OSIF.sPrn( "そのユーザは相互フォローではありません" + '\n' )
+			return wRes
+		
+		#############################
+		# 変更できるユーザレベルか
+		if self.STR_UserAdminInfo['level_tag']!="C" and \
+		   self.STR_UserAdminInfo['level_tag']!="B-" and \
+		   self.STR_UserAdminInfo['level_tag']!="B+" and \
+		   self.STR_UserAdminInfo['level_tag']!="B" and \
+		   self.STR_UserAdminInfo['level_tag']!="C+" :
+			CLS_OSIF.sPrn( "そのユーザは変更できないレベルです" + '\n' )
+			return wRes
+		
+		#############################
+		# ユーザレベルの変更設定
+		
+		wUserLevel = None
+		#############################
+		# 非絡みON
+		if self.STR_UserAdminInfo['level_tag']=="C" or \
+		   self.STR_UserAdminInfo['level_tag']=="B+" or \
+		   self.STR_UserAdminInfo['level_tag']=="B" or \
+		   self.STR_UserAdminInfo['level_tag']=="C+" :
+		
+			wUserLevel = "B-"
+		
+		else:
+			
+			if self.STR_UserAdminInfo['send_cnt']>=gVal.DEF_STR_TLNUM['LEVEL_B_Cnt'] :
+				wUserLevel = "B+"
+			elif self.STR_UserAdminInfo['send_cnt']>=1 :
+				wUserLevel = "B"
+			else:
+				wUserLevel = "C"
+		
+		#############################
+		# ユーザレベルの変更の実行
+		wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( self.STR_UserAdminInfo['id'], wUserLevel )
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "UpdateFavoData_UserLevel is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# ユーザ管理へ変更
+		self.STR_UserAdminInfo['level_tag'] = wWord
+		
+		wStr = "レベルタグを変更しました"
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# 正常終了
 		wRes['Result'] = True
 		return wRes
 
