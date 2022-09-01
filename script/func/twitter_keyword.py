@@ -134,6 +134,13 @@ class CLS_TwitterKeyword():
 				wStr = wStr + "[  ]"
 			wStr = wStr + "  "
 			
+			### 自動フォロー  有効/無効
+			if gVal.ARR_SearchData[wI]['auto_follow']==True :
+				wStr = wStr + "[〇]"
+			else:
+				wStr = wStr + "[  ]"
+			wStr = wStr + "  "
+			
 			### 検索ワード
 			wListData = gVal.ARR_SearchData[wI]['word']
 			wStr = wStr + wListData + '\n'
@@ -236,6 +243,14 @@ class CLS_TwitterKeyword():
 		# コマンドなし: 指定の番号のリストの設定変更をする
 		if wCom==None :
 			self.__valid_KeywordFavo( wGetIndex )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# a: 自動フォロー変更
+		elif wCom=="a" :
+			self.__autoFollow_KeywordFavo( wGetIndex )
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
 			wRes['Result'] = True
 			return wRes
 		
@@ -370,6 +385,31 @@ class CLS_TwitterKeyword():
 		if wSubRes['Result']!=True :
 			###失敗
 			wRes['Reason'] = "ValidSearchWord is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	# 自動フォロー 有効/無効
+	#####################################################
+	def __autoFollow_KeywordFavo( self, inNum ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterFavo"
+		wRes['Func']  = "__autoFollow_KeywordFavo"
+		
+		#############################
+		# 実行の確認
+		wSubRes = gVal.OBJ_DB_IF.SearchWord_AutoFollow( inNum )
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "SearchWord_AutoFollow is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
@@ -568,9 +608,11 @@ class CLS_TwitterKeyword():
 		wRes['Func']  = "__runKeywordSearchFavo"
 		
 		wWord = gVal.ARR_SearchData[inIndex]['word']
+		wAutoFollow = gVal.ARR_SearchData[inIndex]['auto_follow']
 		#############################
 		# 検索の本実行
-		wSubRes = self.__running_KeywordSearchFavo( wWord )
+###		wSubRes = self.__running_KeywordSearchFavo( wWord )
+		wSubRes = self.__running_KeywordSearchFavo( wWord, wAutoFollow )
 		if wSubRes['Result']!=True :
 			###失敗
 			wRes['Reason'] = "__running_KeywordSearchFavo is failed: word=" + str(wWord)
@@ -591,7 +633,8 @@ class CLS_TwitterKeyword():
 		return wRes
 
 	#####################################################
-	def __running_KeywordSearchFavo( self, inWord ):
+###	def __running_KeywordSearchFavo( self, inWord ):
+	def __running_KeywordSearchFavo( self, inWord, inFLG_AutoFollow=False ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -776,16 +819,51 @@ class CLS_TwitterKeyword():
 				wRes['Reason'] = "Twitter API Error(Favo): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wFavoID)
 				gVal.OBJ_L.Log( "B", wRes )
 				continue
+			
+			#############################
+			# 自動フォローが無効なら終わり
+			if inFLG_AutoFollow==False :
+				continue
+			
+			#############################
+			# 自動フォロー
+			wSubRes = self.OBJ_Parent.OBJ_TwitterFollower.AutoFollow( wTweet['user'] )
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "AutoFollow is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			
+			if wSubRes['Responce']==False :
+				continue
+			
+			#############################
+			# 自動フォローしてDBができていれば
+			# いいね情報を記録する
+			
+			#############################
+			# DBからいいね情報を取得する(1個)
+			wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wTweet['user'], inFLG_New=False )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "GetFavoDataOne is failed(2)"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			### DB未登録（ありえない）
+			if wSubRes['Responce']['Data']==None :
+				wRes['Reason'] = "GetFavoDataOne is no data"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			
+			wARR_DBData = wSubRes['Responce']['Data']
+			#############################
+			# いいね情報：いいね送信更新
+			wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Put( wTweet['user'], wID, wARR_DBData )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "UpdateListFavoData is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
 		
-###		#############################
-###		# カウンタを進行
-###		wSubRes = gVal.OBJ_DB_IF.CountSearchWord( inIndex, inHitCnt=wHitCnt, inFavoCnt=wFavoNum )
-###		if wSubRes['Result']!=True :
-###			###失敗
-###			wRes['Reason'] = "CountSearchWord is failed"
-###			gVal.OBJ_L.Log( "B", wRes )
-###			return wRes
-###		
 		wRes['Responce']['FavoNum'] = wFavoNum
 		wRes['Result'] = True
 		return wRes

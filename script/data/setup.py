@@ -796,7 +796,8 @@ class CLS_Setup():
 		wQy = wQy + "valid       BOOL  DEFAULT false, "	# 有効 True=有効
 		wQy = wQy + "word        TEXT  NOT NULL, "		# 検索ワード(キー)
 		wQy = wQy + "hit_cnt     INTEGER DEFAULT 0,"	# 検索ヒット数
-		wQy = wQy + "favo_cnt    INTEGER DEFAULT 0 "	# いいね数
+		wQy = wQy + "favo_cnt    INTEGER DEFAULT 0, "	# いいね数
+		wQy = wQy + "auto_follow BOOL  DEFAULT false "	# 自動フォロー True=有効
 		wQy = wQy + " ) ;"
 		
 		inOBJ_DB.RunQuery( wQy )

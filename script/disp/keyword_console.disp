@@ -13,7 +13,8 @@
 
 
 #   : LIST  HIT   有効     検索  セン
-   : LIST  HIT   有効     検索
+#   : LIST  HIT   有効     検索
+   : LIST  HIT   有効    自動      検索
 
 [@KEYWORD-LIST@]
 
@@ -26,6 +27,7 @@
     [LIST番号]-c : 検索ワード 変更
     [LIST番号]-d : 検索ワード 削除
 #    [LIST番号]-n : センシティブツイートを含める
+    [LIST番号]-a : 自動フォロー 有効ON/OFF
     [\s]         : 検索ワード追加
     [\r]         : 全カウンタクリア
 

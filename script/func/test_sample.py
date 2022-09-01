@@ -110,45 +110,24 @@ class CLS_Test():
 		wRes['Class'] = "CLS_TwitterMain"
 		wRes['Func']  = "TestRun"
 		
-#		#############################
-#		# リアクションチェック
-#		wSubRes = self.OBJ_TwitterFollower.ReactionCheck()
-#		if wSubRes['Result']!=True :
-#			wRes['Reason'] = "ReactionCheck"
-#			gVal.OBJ_L.Log( "B", wRes )
-#			return wRes
-#		
-#		#############################
-#		# いいね情報送信
-#		wSubRes = self.OBJ_TwitterFollower.SendFavoDate()
-#		if wSubRes['Result']!=True :
-#			wRes['Reason'] = "SendFavoDate"
-#			gVal.OBJ_L.Log( "B", wRes )
-#			return wRes
-		
-###		#############################
-###		# ふぁぼ一覧 取得
-###		wFavoRes = gVal.OBJ_Tw_IF.GetFavo()
-###		if wFavoRes['Result']!=True :
-###			wRes['Reason'] = "GetFavoData is failed"
-###			gVal.OBJ_L.Log( "C", wRes )
-###			return wRes
-###		
-###		#############################
-###		# リストいいね
-###		wSubRes = self.OBJ_TwitterFavo.ListFavo()
-###		if wSubRes['Result']!=True :
-###			wRes['Reason'] = "ListFavo"
-###			gVal.OBJ_L.Log( "B", wRes )
-###			return wRes
+		#############################
+		# Twitter情報取得
+		wFavoRes = self.OBJ_Parent.GetTwitterInfo()
+		if wFavoRes['Result']!=True :
+			wRes['Reason'] = "GetTwitterInfo is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
 		
 		#############################
-		# リストいいね
-		wSubRes = gVal.OBJ_Tw_IF.GetFollowListUser()
+		# リストいいね（●フル自動監視）
+		wSubRes = self.OBJ_Parent.OBJ_TwitterFavo.ListFavo( inFLG_Test=True )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "ListFavo"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
+		
+
+
 		
 		#############################
 		# 完了

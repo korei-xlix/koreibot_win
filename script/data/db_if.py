@@ -3340,7 +3340,8 @@ class CLS_DB_IF() :
 				"valid"			: wARR_DBData[wKey]['valid'],
 				"word"			: str(wARR_DBData[wKey]['word']),
 				"hit_cnt"		: wARR_DBData[wKey]['hit_cnt'],
-				"favo_cnt"		: wARR_DBData[wKey]['favo_cnt']
+				"favo_cnt"		: wARR_DBData[wKey]['favo_cnt'],
+				"auto_follow"	: wARR_DBData[wKey]['auto_follow']
 			}
 			wARR_Data.update({ str(wListNo) : wCell })
 			wListNo += 1
@@ -3400,7 +3401,8 @@ class CLS_DB_IF() :
 			"valid"			: True,
 			"word"			: wWord,
 			"hit_cnt"		: 0,
-			"favo_cnt"		: 0
+			"favo_cnt"		: 0,
+			"auto_follow"	: False
 		}
 		
 		#############################
@@ -3412,7 +3414,8 @@ class CLS_DB_IF() :
 		wQy = wQy + str( wCell['valid'] ) + ", "
 		wQy = wQy + "'" + str( wCell['word'] ) + "', "
 		wQy = wQy + str( wCell['hit_cnt'] ) + ", "
-		wQy = wQy + str( wCell['favo_cnt'] ) + " "
+		wQy = wQy + str( wCell['favo_cnt'] ) + ", "
+		wQy = wQy + str( wCell['auto_follow'] ) + " "
 		wQy = wQy + ") ;"
 		
 		#############################
@@ -3471,6 +3474,49 @@ class CLS_DB_IF() :
 		#############################
 		# データ変更
 		gVal.ARR_SearchData[inIndex]['valid'] = wFLG_Valid
+		
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def SearchWord_AutoFollow( self, inIndex ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "SearchWord_AutoFollow"
+		
+		wFLG_AutoFollow = gVal.ARR_SearchData[inIndex]['auto_follow']
+		#############################
+		# 有効/無効の切り替え
+		if wFLG_AutoFollow==True :
+			wFLG_AutoFollow = False
+		else:
+			wFLG_AutoFollow = True
+		
+		wWord = gVal.ARR_SearchData[inIndex]['word']
+		#############################
+		# データベースを更新する
+		wQy = "update tbl_search_word set "
+		wQy = wQy + "auto_follow = " + str(wFLG_AutoFollow) + " "
+		wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "' and "
+		wQy = wQy + "word = '" + wWord + "' "
+		wQy = wQy + ";"
+		
+		#############################
+		# クエリの実行
+		wResDB = self.OBJ_DB.RunQuery( wQy )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			CLS_OSIF.sErr( wRes )
+			return wRes
+		
+		#############################
+		# データ変更
+		gVal.ARR_SearchData[inIndex]['auto_follow'] = wFLG_AutoFollow
 		
 		wRes['Result'] = True
 		return wRes

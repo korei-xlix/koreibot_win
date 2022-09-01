@@ -748,7 +748,6 @@ class CLS_TwitterFollower():
 				#   =いいね日時
 				# いいねなしの場合、
 				#   =登録日時
-###				if str(wARR_DBData['favo_date'])!=gVal.DEF_TIMEDATE :
 				if str(wARR_DBData['rfavo_date'])!=gVal.DEF_TIMEDATE :
 					### いいねあり= いいね日時
 					wCompTimeDate = str(wARR_DBData['rfavo_date'])
@@ -788,8 +787,6 @@ class CLS_TwitterFollower():
 				### ユーザレベル変更
 				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
 				
-###				### トラヒック記録（フォロワー減少）
-###				CLS_Traffic.sP( "d_follower" )
 				### トラヒック記録（フォロー者減少）
 				CLS_Traffic.sP( "d_myfollow" )
 				
@@ -810,27 +807,11 @@ class CLS_TwitterFollower():
 		
 		#############################
 		# 自動リムーブしていれば
-###		#   リスト解除→片フォロワーリストへ
-###		# 自動リムーブしていなければ
-###		#   リスト解除のみ
 		# フォロワーなら
 		#   リスト解除→片フォロワーリストへ
 		# フォロワーでなければ
 		#   リスト解除のみ
 		if wFLG_Remove==True :
-###			### 片フォロワーリストへ
-###			wTweetRes = gVal.OBJ_Tw_IF.FollowerList_AddUser( inUser )
-###			if wTweetRes['Result']!=True :
-###				wRes['Reason'] = "FollowerList_AddUser is failed"
-###				gVal.OBJ_L.Log( "B", wRes )
-###				return wRes
-###		else:
-###			### リスト解除へ
-###			wTweetRes = gVal.OBJ_Tw_IF.FollowerList_Remove( inUser )
-###			if wTweetRes['Result']!=True :
-###				wRes['Reason'] = "FollowerList_Remove is failed"
-###				gVal.OBJ_L.Log( "B", wRes )
-###				return wRes
 			if gVal.OBJ_Tw_IF.CheckFollower( wUserID )==True :
 				### 片フォロワーリストへ
 				wTweetRes = gVal.OBJ_Tw_IF.FollowerList_AddUser( inUser )
@@ -861,7 +842,6 @@ class CLS_TwitterFollower():
 				#   =いいね日時
 				# いいねなしの場合、
 				#   =登録日時
-###				if str(wARR_DBData['favo_date'])!=gVal.DEF_TIMEDATE :
 				if str(wARR_DBData['rfavo_date'])!=gVal.DEF_TIMEDATE :
 					### いいねあり= いいね日時
 					wCompTimeDate = str(wARR_DBData['rfavo_date'])
@@ -891,7 +871,6 @@ class CLS_TwitterFollower():
 				# ブロック→リムーブする
 				wBlockRes = gVal.OBJ_Tw_IF.BlockRemove( wUserID )
 				if wBlockRes['Result']!=True :
-###					wRes['Reason'] = "Twitter API Error(BlockRemove): " + wBlockRes['Reason'] + " screen_name=" + wARR_FollowData[wUserID]['screen_name']
 					wRes['Reason'] = "Twitter API Error(BlockRemove): " + wBlockRes['Reason'] + " screen_name=" + str(inUser['screen_name'])
 					gVal.OBJ_L.Log( "B", wRes )
 					return wRes
@@ -905,7 +884,6 @@ class CLS_TwitterFollower():
 				
 				### ユーザ記録
 				wStr = "●完全スルー期間外のため追い出し"
-###				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wARR_FollowData[wUserID]['screen_name'] )
 				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']) )
 				
 				#############################
@@ -916,6 +894,139 @@ class CLS_TwitterFollower():
 					wRes['Reason'] = "UpdateFavoData_Follower is failed"
 					gVal.OBJ_L.Log( "B", wRes )
 					return wRes
+		
+		#############################
+		# 正常終了
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# 自動フォロー
+#####################################################
+	def AutoFollow( self, inUser ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterFollower"
+		wRes['Func']  = "AutoFollow"
+		
+		wRes['Responce'] = False	#自動フォロー実行有無
+		
+		wUserID = str(inUser['id'])
+		
+		#############################
+		# 自動リムーブが無効ならここで終わる
+		if gVal.STR_UserInfo['AutoRemove']==False :
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# ユーザ情報の取得
+		wUserInfoRes = gVal.OBJ_Tw_IF.GetUserinfo( inID=wUserID )
+		if wUserInfoRes['Result']!=True :
+			wRes['Reason'] = "Twitter Error: @" + inUser['screen_name']
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		wUser = wUserInfoRes['Responce']
+		
+		#############################
+		# ユーザの状態チェック
+		# 以下は除外
+		# ・鍵垢
+		# ・公式垢
+		# ・フォロー者数=0
+		# ・フォロー者数=1000以上
+		# ・フォロワー数=100未満
+		# ・フォロー者＜フォロワー数
+		# ・いいね数=0
+		# ・ツイート数=100未満
+		if wUser['protected']==True or \
+		   wUser['verified']==True or \
+		   wUser['friends_count']==0 or \
+		   wUser['friends_count']>=1000 or \
+		   wUser['followers_count']<100 or \
+		   wUser['friends_count']<wUser['followers_count'] or \
+		   wUser['favourites_count']==0 or \
+		   wUser['statuses_count']<100 :
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# DBからいいね情報を取得する(1個)
+		wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUser )
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "GetFavoDataOne is failed(2)"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		### DB未登録（ありえない）
+		if wSubRes['Responce']['Data']==None :
+			wRes['Reason'] = "GetFavoDataOne is no data"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		if wSubRes['Responce']['FLG_New']==True :
+			#############################
+			# 新規情報の設定
+			wSubRes = self.OBJ_Parent.SetNewFavoData( wUser, wSubRes['Responce']['Data'] )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "SetNewFavoData is failed(2)"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+		
+		wARR_DBData = wSubRes['Responce']['Data']
+		
+		#############################
+		# いいね情報のチェック
+		# 以下は除外
+		# ・ユーザレベル F以外
+		# ・フォロー者ON
+		# ・フォロワーON
+		# ・過去にフォローしたこと、されたことがある
+		if wARR_DBData['level_tag']!="F" or \
+		   wARR_DBData['myfollow']==True or \
+		   str(wARR_DBData['myfollow_date'])!=gVal.DEF_TIMEDATE or \
+		   wARR_DBData['follower']==True or \
+		   str(wARR_DBData['follower_date'])!=gVal.DEF_TIMEDATE :
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# フォローする
+		wTweetRes = gVal.OBJ_Tw_IF.Follow( wUserID, inMute=True )
+		if wTweetRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error(Follow): " + wTweetRes['Reason'] + " screen_name=" + str(inUser['screen_name'])
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		wRes['Responce'] = True		#自動フォロー実行
+		
+		### 相互フォローリストに追加
+		wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( wARR_DBData )
+		
+		### ユーザレベル変更
+		wUserLevel = "D+"
+		wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
+		
+		### トラヒック記録（フォロー者増加）
+		CLS_Traffic.sP( "p_myfollow" )
+		
+		### ユーザ記録
+		wStr = "〇自動フォロー"
+		gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']) )
+		
+		#############################
+		# DBに反映
+		wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Follower( wUserID, inFLG_MyFollow=True )
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "UpdateFavoData_Follower is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
 		
 		#############################
 		# 正常終了
