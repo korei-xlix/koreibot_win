@@ -196,7 +196,8 @@ class gVal() :
 ###		"forReturnFavoSec"				: 3600,			# お返しいいねへの期間   1時間  60x60x1
 		"forRemFavoSec"				: 172800,			# いいね解除までの期間 2日 (60x60x24)x2
 		
-		"forListFavoAutoRemoveSec"	: 604800,			#   リストいいね 自動リムーブまでの期間   7日  (60x60x24)x7
+		"forListFavoAutoRemoveSec"			: 604800,	#   リストいいね 自動リムーブまでの期間   7日  (60x60x24)x7
+		"forListFavoAutoRemoveSec_Short"	: 115200,	#   リストいいね 自動リムーブまでの期間(短期)   32時間  (60x60x32)
 		"forCheckAutoRemoveSec"		: 86400,			#   自動リムーブチェック期間 1日 (60x60x24)x1
 		"forOverListFavoCount"		: 3,				#   外部いいね数(1ユーザ)
 		"forCheckAutoDeleteSec"		: 172800,			#   自動削除チェック期間 2日 (60x60x24)x2
@@ -218,6 +219,7 @@ class gVal() :
 		
 														# キーワードいいね
 		"KeywordTweetLen"			: 80,				#   キーワードいいねツイート取得数
+		"KeywordTweetLen_LongCircle"	: 2,			#   キーワードいいねツイート取得数
 		"forKeywordTweetSec"		: 28800,			#   キーワードいいね いいね期間   8時間  60x60x8
 		"forKeywordObjectTweetSec"	: 86400,			#   キーワードいいね 対象いいね期間   1日  (60x60x24)x1
 		

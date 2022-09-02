@@ -755,9 +755,18 @@ class CLS_TwitterFollower():
 					### いいねなし= 登録日時
 					wCompTimeDate = str(wARR_DBData['regdate'])
 				
+				### 期間切替
+#				if wARR_DBData['level_tag']=="D+" and wARR_DBData['rfavo_date']!=gVal.DEF_TIMEDATE and \
+				if wARR_DBData['level_tag']=="D+" and gVal.OBJ_Tw_IF.CheckFollower( wUserID )==False :
+					### 片フォロー者で、botからフォローしたフォロー者は期間が短い
+					wThreshold = gVal.DEF_STR_TLNUM['forListFavoAutoRemoveSec_Short']
+				else:
+					wThreshold = gVal.DEF_STR_TLNUM['forListFavoAutoRemoveSec']
+				
 				#############################
 				# 自動リムーブ期間か
-				wGetLag = CLS_OSIF.sTimeLag( wCompTimeDate, inThreshold=gVal.DEF_STR_TLNUM['forListFavoAutoRemoveSec'] )
+###				wGetLag = CLS_OSIF.sTimeLag( wCompTimeDate, inThreshold=gVal.DEF_STR_TLNUM['forListFavoAutoRemoveSec'] )
+				wGetLag = CLS_OSIF.sTimeLag( wCompTimeDate, inThreshold=wThreshold )
 				if wGetLag['Result']!=True :
 					wRes['Reason'] = "sTimeLag failed(1)"
 					gVal.OBJ_L.Log( "B", wRes )

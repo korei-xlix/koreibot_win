@@ -1376,11 +1376,14 @@ class CLS_Twitter_IF() :
 		# ツイートの情報を取得する
 		wTweetInfoRes = self.GetTweetLookup( inID )
 		if wTweetInfoRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error: " + wTweetInfoRes['Reason']
+###			wRes['Reason'] = "Twitter API Error(GetTweetLookup): " + wTweetInfoRes['Reason']
+			wStr = "Twitter API Error(GetTweetLookup): " + wTwitterRes['Reason']
+			wStr = wStr + " id=" + str(inID)
+			wStr = wStr + " screen_name=" + self.ARR_Favo[inID]['user']['screen_name']
+			wRes['Reason'] = wStr
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-
 		#############################
 		# いいねする
 		wTwitterRes = self.OBJ_Twitter.CreateFavo( inID )
@@ -1389,7 +1392,11 @@ class CLS_Twitter_IF() :
 		#############################
 		# 結果チェック
 		if wTwitterRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error: " + wTwitterRes['Reason']
+###			wRes['Reason'] = "Twitter API Error(CreateFavo): " + wTwitterRes['Reason']
+			wStr = "Twitter API Error(CreateFavo): " + wTwitterRes['Reason']
+			wStr = wStr + " id=" + str(inID)
+			wStr = wStr + " screen_name=" + self.ARR_Favo[inID]['user']['screen_name']
+			wRes['Reason'] = wStr
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
@@ -1446,7 +1453,11 @@ class CLS_Twitter_IF() :
 		#############################
 		# 結果チェック
 		if wTwitterRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error: " + wTwitterRes['Reason']
+###			wRes['Reason'] = "Twitter API Error: " + wTwitterRes['Reason']
+			wStr = "Twitter API Error(RemoveFavo): " + wTwitterRes['Reason']
+			wStr = wStr + " id=" + str(inID)
+			wStr = wStr + " screen_name=" + self.ARR_Favo[inID]['user']['screen_name']
+			wRes['Reason'] = wStr
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		

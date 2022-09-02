@@ -119,15 +119,20 @@ class CLS_Test():
 			return wRes
 		
 		#############################
-		# リストいいね（●フル自動監視）
-		wSubRes = self.OBJ_Parent.OBJ_TwitterFavo.ListFavo( inFLG_Test=True )
+		# いいね解除（●フル自動監視）
+		wSubRes = self.OBJ_Parent.OBJ_TwitterFavo.RemFavo()
 		if wSubRes['Result']!=True :
-			wRes['Reason'] = "ListFavo"
+			wRes['Reason'] = "RemFavo"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-
-
+#		#############################
+#		# リストいいね（●フル自動監視）
+#		wSubRes = self.OBJ_Parent.OBJ_TwitterFavo.ListFavo( inFLG_Test=True )
+#		if wSubRes['Result']!=True :
+#			wRes['Reason'] = "ListFavo"
+#			gVal.OBJ_L.Log( "B", wRes )
+#			return wRes
 		
 		#############################
 		# 完了

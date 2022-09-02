@@ -17,6 +17,8 @@ class CLS_TwitterKeyword():
 	STR_KeywordFavoInfo = None
 	ARR_KeywordFavoUser = {}
 
+	DEF_KEYWORDTWEETLEN = 80
+
 	OBJ_Parent = ""				#親クラス実体
 
 #####################################################
@@ -49,6 +51,7 @@ class CLS_TwitterKeyword():
 		
 		self.STR_KeywordFavoInfo = {
 			"max_searchnum"		: gVal.DEF_STR_TLNUM['KeywordTweetLen'],
+			"search_circle"		: 1,
 			"searchnum"			: 0,
 			"usernum"			: 0,
 			"now_usernum"		: 0,
@@ -516,7 +519,8 @@ class CLS_TwitterKeyword():
 				### 有効じゃなければスキップ
 				continue
 			
-			wSubRes = self.__runKeywordSearchFavo( wIndex )
+###			wSubRes = self.__runKeywordSearchFavo( wIndex )
+			wSubRes = self.__runKeywordSearchFavo( wIndex, inCircle=1 )
 			if wSubRes['Result']!=True :
 				wRes['Reason'] = "RunKeywordSearchFavo is failed"
 				gVal.OBJ_L.Log( "B", wRes )
@@ -544,7 +548,8 @@ class CLS_TwitterKeyword():
 		CLS_OSIF.sPrn( "抽出したツイートをいいねしていきます。しばらくお待ちください......" )
 		#############################
 		# 検索実行
-		wSubRes = self.__runKeywordSearchFavo( inIndex )
+###		wSubRes = self.__runKeywordSearchFavo( inIndex )
+		wSubRes = self.__runKeywordSearchFavo( inIndex, inCircle=gVal.DEF_STR_TLNUM['KeywordTweetLen_LongCircle'] )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "RunKeywordSearchFavo is failed"
 			gVal.OBJ_L.Log( "B", wRes )
@@ -585,7 +590,8 @@ class CLS_TwitterKeyword():
 		CLS_OSIF.sPrn( "抽出したツイートをいいねしていきます。しばらくお待ちください......" )
 		#############################
 		# 検索実行
-		wSubRes = self.__running_KeywordSearchFavo( wWord )
+###		wSubRes = self.__running_KeywordSearchFavo( wWord )
+		wSubRes = self.__running_KeywordSearchFavo( wWord, inCircle=gVal.DEF_STR_TLNUM['KeywordTweetLen_LongCircle'] )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "__running_KeywordSearchFavo is failed: word=" + str(wWord)
 			gVal.OBJ_L.Log( "B", wRes )
@@ -599,7 +605,8 @@ class CLS_TwitterKeyword():
 		return wRes
 
 	#####################################################
-	def __runKeywordSearchFavo( self, inIndex ):
+###	def __runKeywordSearchFavo( self, inIndex ):
+	def __runKeywordSearchFavo( self, inIndex, inCircle=1 ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -612,7 +619,9 @@ class CLS_TwitterKeyword():
 		#############################
 		# 検索の本実行
 ###		wSubRes = self.__running_KeywordSearchFavo( wWord )
-		wSubRes = self.__running_KeywordSearchFavo( wWord, wAutoFollow )
+###		wSubRes = self.__running_KeywordSearchFavo( wWord, wAutoFollow )
+###		wSubRes = self.__running_KeywordSearchFavo( wWord, wAutoFollow )
+		wSubRes = self.__running_KeywordSearchFavo( wWord, inCircle=inCircle )
 		if wSubRes['Result']!=True :
 			###失敗
 			wRes['Reason'] = "__running_KeywordSearchFavo is failed: word=" + str(wWord)
@@ -634,7 +643,8 @@ class CLS_TwitterKeyword():
 
 	#####################################################
 ###	def __running_KeywordSearchFavo( self, inWord ):
-	def __running_KeywordSearchFavo( self, inWord, inFLG_AutoFollow=False ):
+###	def __running_KeywordSearchFavo( self, inWord, inFLG_AutoFollow=False ):
+	def __running_KeywordSearchFavo( self, inWord, inCircle=1, inFLG_AutoFollow=False ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -649,221 +659,235 @@ class CLS_TwitterKeyword():
 		
 ###		wWord = gVal.ARR_SearchData[inIndex]['word']
 		wWord = inWord
+		wCircleCnt = 0
+		wHitCnt = 0
+		
 		CLS_OSIF.sPrn( "検索中のツイート: word=" + wWord )
-		#############################
-		# ツイートを検索する
-		wTweetRes = gVal.OBJ_Tw_IF.GetSearch( 
-		   wWord, inMaxResult=self.STR_KeywordFavoInfo['max_searchnum'] )
-		if wTweetRes['Result']!=True :
-			wRes['Reason'] = "GetSearch is failed: " + wTweetRes['Reason']
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		### 抽出ツイート数
-		wHitCnt = len( wTweetRes['Responce'] )
-		
-		### トラヒック記録（検索実施数・Hit数）
-		CLS_Traffic.sP( "s_run" )
-		CLS_Traffic.sP( "s_hit", wHitCnt )
-		
-		wRes['Responce']['HitCnt'] = wHitCnt
-		
-		###ウェイト初期化
-		self.OBJ_Parent.Wait_Init( inZanNum=len( wTweetRes['Responce'] ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
-		
-		wFLG_ZanCountSkip = False
-		wFavoNum = 0
-		#############################
-		# ツイートチェック
-		# 以下は除外
-		# ・リプライ
-		# ・リツイート
-		# ・引用リツイート
-		# ・規定期間外のツイート
-		# 該当なしは いいねしない
-		for wTweet in wTweetRes['Responce'] :
-			###ウェイトカウントダウン
-			if self.OBJ_Parent.Wait_Next( inZanCountSkip=wFLG_ZanCountSkip )==False :
-				break	###ウェイト中止
-			wFLG_ZanCountSkip = False
+		while True :
+			wCircleCnt += 1
+			if inCircle<wCircleCnt :
+				break
 			
-			wID     = str( wTweet['id'] )
-			wUserID = str( wTweet['user']['id'] )
+			wStr = "検索周回: " + str(wCircleCnt) + " 回目" + '\n'
+			CLS_OSIF.sPrn( wStr )
 			#############################
-			# キーワードユーザ 追加 and チェック
-			wSubRes = self.AddKeywordFavoUser( wTweet )
-			if wSubRes['Result']!=True :
-				wRes['Reason'] = "Twitter API Error(Favo): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
-				gVal.OBJ_L.Log( "B", wRes )
-				continue
-			if wSubRes['Responce']!=True :
-#				wStr = "●抽出除外(対象外ユーザ): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
-#				CLS_OSIF.sPrn( wStr )
-				wFLG_ZanCountSkip = True
-				continue
-			
-			#############################
-			# いいね一覧にあるユーザへは
-			# おかえししない
-			wResFavoUser = gVal.OBJ_Tw_IF.CheckFavoUser( wUserID )
-			if wResFavoUser['Result']!=True :
-				wRes['Reason'] = "Twitter Error: CheckFavoUser"
+			# ツイートを検索する
+			wTweetRes = gVal.OBJ_Tw_IF.GetSearch( 
+			   wWord, inMaxResult=self.STR_KeywordFavoInfo['max_searchnum'] )
+			if wTweetRes['Result']!=True :
+				wRes['Reason'] = "GetSearch is failed: " + wTweetRes['Reason']
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
-			if wResFavoUser['Responce']==True :
-				### いいね済み
-#				wStr = "●抽出除外(いいね済み): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
-#				CLS_OSIF.sPrn( wStr )
-				wFLG_ZanCountSkip = True
-				continue
 			
-			### ノーマル以外は除外
-			if wTweet['type']!="normal" :
-#				wStr = "●抽出除外(通常ツイート以外): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
-#				CLS_OSIF.sPrn( wStr )
-				wFLG_ZanCountSkip = True
-				continue
-			### リプライは除外(ツイートの先頭が @文字=リプライ)
-			if wTweet['text'].find("@")>=0 :
-#				wStr = "●抽出除外(リプライ): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
-#				CLS_OSIF.sPrn( wStr )
-				wFLG_ZanCountSkip = True
-				continue
-			### センシティブなツイートは除外
-			if "possibly_sensitive" in wTweet :
-				if str(wTweet['possibly_sensitive'])=="true" :
-#					wStr = "●抽出除外(センシティブツイート): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
+			### 抽出ツイート数
+###			wHitCnt = len( wTweetRes['Responce'] )
+			wHitCnt += len( wTweetRes['Responce'] )
+			
+			### トラヒック記録（検索実施数・Hit数）
+			CLS_Traffic.sP( "s_run" )
+			CLS_Traffic.sP( "s_hit", wHitCnt )
+			
+			wRes['Responce']['HitCnt'] = wHitCnt
+			
+			###ウェイト初期化
+			self.OBJ_Parent.Wait_Init( inZanNum=len( wTweetRes['Responce'] ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
+			
+			wFLG_ZanCountSkip = False
+			wFavoNum = 0
+			#############################
+			# ツイートチェック
+			# 以下は除外
+			# ・リプライ
+			# ・リツイート
+			# ・引用リツイート
+			# ・規定期間外のツイート
+			# 該当なしは いいねしない
+			for wTweet in wTweetRes['Responce'] :
+				###ウェイトカウントダウン
+				if self.OBJ_Parent.Wait_Next( inZanCountSkip=wFLG_ZanCountSkip )==False :
+					break	###ウェイト中止
+				wFLG_ZanCountSkip = False
+				
+				wID     = str( wTweet['id'] )
+				wUserID = str( wTweet['user']['id'] )
+				#############################
+				# キーワードユーザ 追加 and チェック
+				wSubRes = self.AddKeywordFavoUser( wTweet )
+				if wSubRes['Result']!=True :
+					wRes['Reason'] = "Twitter API Error(Favo): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
+					gVal.OBJ_L.Log( "B", wRes )
+					continue
+				if wSubRes['Responce']!=True :
+#					wStr = "●抽出除外(対象外ユーザ): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
 #					CLS_OSIF.sPrn( wStr )
 					wFLG_ZanCountSkip = True
 					continue
+				
+				#############################
+				# いいね一覧にあるユーザへは
+				# おかえししない
+				wResFavoUser = gVal.OBJ_Tw_IF.CheckFavoUser( wUserID )
+				if wResFavoUser['Result']!=True :
+					wRes['Reason'] = "Twitter Error: CheckFavoUser"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				if wResFavoUser['Responce']==True :
+					### いいね済み
+#					wStr = "●抽出除外(いいね済み): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
+#					CLS_OSIF.sPrn( wStr )
+					wFLG_ZanCountSkip = True
+					continue
+				
+				### ノーマル以外は除外
+				if wTweet['type']!="normal" :
+#					wStr = "●抽出除外(通常ツイート以外): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
+#					CLS_OSIF.sPrn( wStr )
+					wFLG_ZanCountSkip = True
+					continue
+				### リプライは除外(ツイートの先頭が @文字=リプライ)
+				if wTweet['text'].find("@")>=0 :
+#					wStr = "●抽出除外(リプライ): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
+#					CLS_OSIF.sPrn( wStr )
+					wFLG_ZanCountSkip = True
+					continue
+				### センシティブなツイートは除外
+				if "possibly_sensitive" in wTweet :
+					if str(wTweet['possibly_sensitive'])=="true" :
+#						wStr = "●抽出除外(センシティブツイート): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
+#						CLS_OSIF.sPrn( wStr )
+						wFLG_ZanCountSkip = True
+						continue
+				
+				#############################
+				# 禁止ユーザは除外
+				wUserRes = self.OBJ_Parent.CheckExtUser( wTweet['user'], "検索実行中" )
+				if wUserRes['Result']!=True :
+					wRes['Reason'] = "CheckExtUser failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				if wUserRes['Responce']==False :
+					### 禁止あり=除外
+					wFLG_ZanCountSkip = True
+					continue
+				
+				### 範囲時間内のツイートか
+				wGetLag = CLS_OSIF.sTimeLag( str( wTweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forKeywordObjectTweetSec'] )
+				if wGetLag['Result']!=True :
+					wRes['Reason'] = "sTimeLag failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				if wGetLag['Beyond']==True :
+					### 規定外
+#					wStr = "●抽出除外(古いツイート): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
+#					CLS_OSIF.sPrn( wStr )
+					wFLG_ZanCountSkip = True
+					continue
+				
+				### discriptionチェック
+				wWordRes = self.OBJ_Parent.CheckExtWord( wTweet['user'], wTweet['user']['description'] )
+				if wWordRes['Result']!=True :
+					wRes['Reason'] = "CheckExtWord failed(description)"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				if wWordRes['Responce']==False :
+					### 除外
+					wFLG_ZanCountSkip = True
+					continue
+				
+				### ツイートチェック
+				wWordRes = self.OBJ_Parent.CheckExtWord( wTweet['user'], wTweet['text'] )
+				if wWordRes['Result']!=True :
+					wRes['Reason'] = "CheckExtWord failed(word)"
+					gVal.OBJ_L.Log( "B", wRes )
+					continue
+				if wWordRes['Responce']==False :
+					### 除外
+					wFLG_ZanCountSkip = True
+					continue
+				
+				### ※いいねツイート確定
+				#############################
+				# いいねする
+				wSubRes = gVal.OBJ_Tw_IF.Favo( wID )
+				if wSubRes['Result']!=True :
+					wRes['Reason'] = "Twitter API Error(Favo): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
+					gVal.OBJ_L.Log( "B", wRes )
+					continue
+				if wSubRes['Responce']['Run']!=True :
+					continue
+				
+				self.STR_KeywordFavoInfo['favo_usernum'] += 1
+				wFavoNum += 1
+				#############################
+				# いいね成功
+				wStr = '\n' + "--------------------" + '\n' ;
+				wStr = wStr + "いいね済み: @" + str(wTweet['user']['screen_name']) + " " + str(wTweet['created_at']) + '\n' ;
+				wStr = wStr + wTweet['text'] + '\n' ;
+				CLS_OSIF.sPrn( wStr )
+				
+				#############################
+				# トラヒック記録（検索いいね実施数）
+				CLS_Traffic.sP( "s_favo" )
+				
+				#############################
+				# ログに記録
+				wTextReason = "検索いいね実施: user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
+				gVal.OBJ_L.Log( "T", wRes, wTextReason )
+				
+				### キーワードユーザ 更新
+				wSubRes = self.UpdateKeywordFavoUser( wTweet )
+				if wSubRes['Result']!=True :
+					wRes['Reason'] = "Twitter API Error(Favo): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wFavoID)
+					gVal.OBJ_L.Log( "B", wRes )
+					continue
+				
+				#############################
+				# 自動フォローが無効なら終わり
+				if inFLG_AutoFollow==False :
+					continue
+				
+				#############################
+				# 自動フォロー
+				wSubRes = self.OBJ_Parent.OBJ_TwitterFollower.AutoFollow( wTweet['user'] )
+				if wSubRes['Result']!=True :
+					wRes['Reason'] = "AutoFollow is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				
+				if wSubRes['Responce']==False :
+					continue
+				
+				#############################
+				# 自動フォローしてDBができていれば
+				# いいね情報を記録する
+				
+				#############################
+				# DBからいいね情報を取得する(1個)
+				wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wTweet['user'], inFLG_New=False )
+				if wSubRes['Result']!=True :
+					###失敗
+					wRes['Reason'] = "GetFavoDataOne is failed(2)"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				### DB未登録（ありえない）
+				if wSubRes['Responce']['Data']==None :
+					wRes['Reason'] = "GetFavoDataOne is no data"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				
+				wARR_DBData = wSubRes['Responce']['Data']
+				#############################
+				# いいね情報：いいね送信更新
+				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Put( wTweet['user'], wID, wARR_DBData )
+				if wSubRes['Result']!=True :
+					###失敗
+					wRes['Reason'] = "UpdateListFavoData is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
 			
-			#############################
-			# 禁止ユーザは除外
-			wUserRes = self.OBJ_Parent.CheckExtUser( wTweet['user'], "検索実行中" )
-			if wUserRes['Result']!=True :
-				wRes['Reason'] = "CheckExtUser failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			if wUserRes['Responce']==False :
-				### 禁止あり=除外
-				wFLG_ZanCountSkip = True
-				continue
-			
-			### 範囲時間内のツイートか
-			wGetLag = CLS_OSIF.sTimeLag( str( wTweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forKeywordObjectTweetSec'] )
-			if wGetLag['Result']!=True :
-				wRes['Reason'] = "sTimeLag failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			if wGetLag['Beyond']==True :
-				### 規定外
-#				wStr = "●抽出除外(古いツイート): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
-#				CLS_OSIF.sPrn( wStr )
-				wFLG_ZanCountSkip = True
-				continue
-			
-			### discriptionチェック
-			wWordRes = self.OBJ_Parent.CheckExtWord( wTweet['user'], wTweet['user']['description'] )
-			if wWordRes['Result']!=True :
-				wRes['Reason'] = "CheckExtWord failed(description)"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			if wWordRes['Responce']==False :
-				### 除外
-				wFLG_ZanCountSkip = True
-				continue
-			
-			### ツイートチェック
-			wWordRes = self.OBJ_Parent.CheckExtWord( wTweet['user'], wTweet['text'] )
-			if wWordRes['Result']!=True :
-				wRes['Reason'] = "CheckExtWord failed(word)"
-				gVal.OBJ_L.Log( "B", wRes )
-				continue
-			if wWordRes['Responce']==False :
-				### 除外
-				wFLG_ZanCountSkip = True
-				continue
-			
-			### ※いいねツイート確定
-			#############################
-			# いいねする
-			wSubRes = gVal.OBJ_Tw_IF.Favo( wID )
-			if wSubRes['Result']!=True :
-				wRes['Reason'] = "Twitter API Error(Favo): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
-				gVal.OBJ_L.Log( "B", wRes )
-				continue
-			if wSubRes['Responce']['Run']!=True :
-				continue
-			
-			self.STR_KeywordFavoInfo['favo_usernum'] += 1
-			wFavoNum += 1
-			#############################
-			# いいね成功
-			wStr = '\n' + "--------------------" + '\n' ;
-			wStr = wStr + "いいね済み: @" + str(wTweet['user']['screen_name']) + " " + str(wTweet['created_at']) + '\n' ;
-			wStr = wStr + wTweet['text'] + '\n' ;
-			CLS_OSIF.sPrn( wStr )
-			
-			#############################
-			# トラヒック記録（検索いいね実施数）
-			CLS_Traffic.sP( "s_favo" )
-			
-			#############################
-			# ログに記録
-			wTextReason = "検索いいね実施: user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
-			gVal.OBJ_L.Log( "T", wRes, wTextReason )
-			
-			### キーワードユーザ 更新
-			wSubRes = self.UpdateKeywordFavoUser( wTweet )
-			if wSubRes['Result']!=True :
-				wRes['Reason'] = "Twitter API Error(Favo): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wFavoID)
-				gVal.OBJ_L.Log( "B", wRes )
-				continue
-			
-			#############################
-			# 自動フォローが無効なら終わり
-			if inFLG_AutoFollow==False :
-				continue
-			
-			#############################
-			# 自動フォロー
-			wSubRes = self.OBJ_Parent.OBJ_TwitterFollower.AutoFollow( wTweet['user'] )
-			if wSubRes['Result']!=True :
-				wRes['Reason'] = "AutoFollow is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			
-			if wSubRes['Responce']==False :
-				continue
-			
-			#############################
-			# 自動フォローしてDBができていれば
-			# いいね情報を記録する
-			
-			#############################
-			# DBからいいね情報を取得する(1個)
-			wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wTweet['user'], inFLG_New=False )
-			if wSubRes['Result']!=True :
-				###失敗
-				wRes['Reason'] = "GetFavoDataOne is failed(2)"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			### DB未登録（ありえない）
-			if wSubRes['Responce']['Data']==None :
-				wRes['Reason'] = "GetFavoDataOne is no data"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			
-			wARR_DBData = wSubRes['Responce']['Data']
-			#############################
-			# いいね情報：いいね送信更新
-			wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Put( wTweet['user'], wID, wARR_DBData )
-			if wSubRes['Result']!=True :
-				###失敗
-				wRes['Reason'] = "UpdateListFavoData is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-		
+
+
+
 		wRes['Responce']['FavoNum'] = wFavoNum
 		wRes['Result'] = True
 		return wRes
