@@ -885,6 +885,15 @@ class CLS_TwitterMain():
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 		
+#		#############################
+#		# トレンドツイート
+#		wSubRes = self.OBJ_TwitterKeyword.TrendTweet()
+#		if wSubRes['Result']!=True :
+#			###失敗
+#			wRes['Reason'] = "TrendTweet is failed"
+#			gVal.OBJ_L.Log( "B", wRes )
+#			return wRes
+#		
 		#############################
 		# 古いいいね情報の削除（●フル自動監視）
 		if wFLG_Short==False :
@@ -1036,30 +1045,12 @@ class CLS_TwitterMain():
 #####################################################
 # トレンドツイート
 #####################################################
-###	def TrendTweet(self):
-###		#############################
-###		# 応答形式の取得
-###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-###		wRes = CLS_OSIF.sGet_Resp()
-###		wRes['Class'] = "CLS_TwitterMain"
-###		wRes['Func']  = "TrendTweet"
-###		
-###		#############################
-###		# リスト通知 リストとユーザの更新
-###		wSubRes = self.UpdateListIndUser()
-###		if wSubRes['Result']!=True :
-###			wRes['Reason'] = "UpdateListIndUser error"
-###			gVal.OBJ_L.Log( "B", wRes )
-###			return wRes
-###		
-###		wRes = self.OBJ_TwitterKeyword.TrendTweet()
-###		
-###		#############################
-###		# 完了
-###		wRes['Result'] = True
-###		return wRes
-###
-###
+	def TrendTweet(self):
+		wRes = self.OBJ_TwitterKeyword.TrendTweet()
+		wRes['Result'] = True
+		return wRes
+
+
 
 #####################################################
 # キーワードいいね

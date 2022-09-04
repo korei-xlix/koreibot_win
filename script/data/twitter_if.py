@@ -216,51 +216,37 @@ class CLS_Twitter_IF() :
 		wRes['Class'] = "CLS_Twitter_IF"
 		wRes['Func']  = "AddFavoUserID"
 		
-		#############################
-		# ツイート本文部分
-		wSubRes = self.__add_AddFavoUserID( inTweet )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "__add_AddFavoUserID is failed(1)"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# リツイートの場合、リツイート部分を追加
-		if "retweeted_status" in inTweet :
-			wSubRes = self.__add_AddFavoUserID( inTweet['retweeted_status'] )
-			if wSubRes['Result']!=True :
-				wRes['Reason'] = "__add_AddFavoUserID is failed(2)"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-		
-		#############################
-		# 引用リツイートの場合、引用リツイート部分を追加
-		if "quoted_status" in inTweet :
-			wSubRes = self.__add_AddFavoUserID( inTweet['quoted_status'] )
-			if wSubRes['Result']!=True :
-				wRes['Reason'] = "__add_AddFavoUserID is failed(3)"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-		
-		#############################
-		# 正常
-		wRes['Result'] = True
-		return wRes
-
-	#####################################################
-	# 排他ユーザ追加
-	#####################################################
-	def __add_AddFavoUserID( self, inTweet ):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_Twitter_IF"
-		wRes['Func']  = "__add_AddFavoUserID"
-		
+###		#############################
+###		# ツイート本文部分
+###		wSubRes = self.__add_AddFavoUserID( inTweet, "normal" )
+###		if wSubRes['Result']!=True :
+###			wRes['Reason'] = "__add_AddFavoUserID is failed(1)"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		#############################
+###		# リツイートの場合、リツイート部分を追加
+###		if "retweeted_status" in inTweet :
+###			wSubRes = self.__add_AddFavoUserID( inTweet['retweeted_status'], "retweet" )
+###			if wSubRes['Result']!=True :
+###				wRes['Reason'] = "__add_AddFavoUserID is failed(2)"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###		
+###		#############################
+###		# 引用リツイートの場合、引用リツイート部分を追加
+###		if "quoted_status" in inTweet :
+###			wSubRes = self.__add_AddFavoUserID( inTweet['quoted_status'], "quoted" )
+###			if wSubRes['Result']!=True :
+###				wRes['Reason'] = "__add_AddFavoUserID is failed(3)"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###		
 		wID = str( inTweet['id'] )
 		wText = str(inTweet['text']).replace( "'", "''" )
 		wUserID = str( inTweet['user']['id'] )
+		
+		wRes['Responce'] = False	#重複なし True=なし, False=あり
 		#############################
 		# 時間の変換
 		wTime = CLS_TIME.sTTchg( wRes, "(1)", inTweet['created_at'] )
@@ -268,12 +254,29 @@ class CLS_Twitter_IF() :
 			return wRes
 		
 		#############################
+		# 種別のチェック
+		wKind  = "normal"
+		wRetID = None
+		if "retweeted_status" in inTweet :
+			wKind = "retweet"
+			wRetID = str(inTweet['retweeted_status']['id'])
+		elif "quoted_status" in inTweet :
+			wKind = "quoted"
+			wRetID = str(inTweet['quoted_status']['id'])
+		
+		#############################
 		# 重複があるか
 		if wID in self.ARR_Favo :
-###			wRes['Reason'] = "ID is exist : id=" + str( wID )
-###			gVal.OBJ_L.Log( "D", wRes )
 			wRes['Result'] = True
 			return wRes
+		
+		### リツイートの場合、ツイ元のIDの重複もみる
+		if wKind=="retweet" :
+			wKeylist = list( self.ARR_Favo.keys() )
+			for wIndex in wKeylist :
+				if self.ARR_Favo[wIndex]['ret_id']==wID :
+					wRes['Result'] = True
+					return wRes
 		
 		#############################
 		# いいね情報の詰め込み
@@ -284,7 +287,9 @@ class CLS_Twitter_IF() :
 		}
 		
 		wCell = {
+			"kind"			: wKind,
 			"id"			: wID,
+			"ret_id"		: wRetID,
 			"text"			: wText,
 			"created_at"	: str(wTime['TimeDate']),
 			"user"			: wCellUser
@@ -309,7 +314,8 @@ class CLS_Twitter_IF() :
 				"user"			: wCellUser
 			}
 			self.ARR_FavoUser.update({ wUserID : wCell })
-
+			wRes['Responce'] = True		#重複なし
+		
 		#############################
 		# 重複あり
 		else:
@@ -325,12 +331,96 @@ class CLS_Twitter_IF() :
 				### 最新
 				self.ARR_FavoUser[wUserID]['id']         = wID
 				self.ARR_FavoUser[wUserID]['created_at'] = str(wTime['TimeDate'])
+				wRes['Responce'] = True		#重複なし
 		
 		#############################
 		# 正常
 		wRes['Result'] = True
 		return wRes
 
+###	#####################################################
+###	# 排他ユーザ追加
+###	#####################################################
+###	def __add_AddFavoUserID( self, inTweet, inKind ):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_Twitter_IF"
+###		wRes['Func']  = "__add_AddFavoUserID"
+###		
+###		wID = str( inTweet['id'] )
+###		wText = str(inTweet['text']).replace( "'", "''" )
+###		wUserID = str( inTweet['user']['id'] )
+###		#############################
+###		# 時間の変換
+###		wTime = CLS_TIME.sTTchg( wRes, "(1)", inTweet['created_at'] )
+###		if wTime['Result']!=True :
+###			return wRes
+###		
+###		#############################
+###		# 重複があるか
+###		if wID in self.ARR_Favo :
+###			wRes['Result'] = True
+###			return wRes
+###		
+###		#############################
+###		# いいね情報の詰め込み
+###		wCellUser = {
+###			"id"			: wUserID,
+###			"screen_name"	: inTweet['user']['screen_name'],
+###			"description"	: inTweet['user']['description']
+###		}
+###		
+###		wCell = {
+###			"kind"			: inKind,
+###			"id"			: wID,
+###			"text"			: wText,
+###			"created_at"	: str(wTime['TimeDate']),
+###			"user"			: wCellUser
+###		}
+###		self.ARR_Favo.update({ wID : wCell })
+###		
+###		#############################
+###		# ユーザの重複があるか
+###		
+###		#############################
+###		# 重複なし
+###		#   新規追加
+###		if wUserID not in self.ARR_FavoUser :
+###			wCellUser = {
+###				"id"			: wUserID,
+###				"screen_name"	: inTweet['user']['screen_name'],
+###				"description"	: inTweet['user']['description']
+###			}
+###			wCell = {
+###				"id"			: wID,
+###				"created_at"	: str(wTime['TimeDate']),
+###				"user"			: wCellUser
+###			}
+###			self.ARR_FavoUser.update({ wUserID : wCell })
+###
+###		#############################
+###		# 重複あり
+###		else:
+###			#############################
+###			# 前の日付より新しければ新アクション
+###			wSubRes = CLS_OSIF.sCmpTime( str(wTime['TimeDate']), self.ARR_FavoUser[wUserID]['created_at'] )
+###			if wSubRes['Result']!=True :
+###				###失敗
+###				wRes['Reason'] = "sCmpTime is failed"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			if wSubRes['Future']==True :
+###				### 最新
+###				self.ARR_FavoUser[wUserID]['id']         = wID
+###				self.ARR_FavoUser[wUserID]['created_at'] = str(wTime['TimeDate'])
+###		
+###		#############################
+###		# 正常
+###		wRes['Result'] = True
+###		return wRes
+###
 	#####################################################
 	# いいねデータ取得
 	#####################################################
@@ -1364,24 +1454,37 @@ class CLS_Twitter_IF() :
 			"Run"	: False,
 			"Data"	: None
 		}
-		#############################
-		# いいね済みなら抜ける
-		wID = str( inID )
-		if wID in self.ARR_Favo :
-			### いいね済み
-			wRes['Result'] = True
-			return wRes
-		
+###		#############################
+###		# いいね済みなら抜ける
+###		wID = str( inID )
+###		if wID in self.ARR_Favo :
+###			### いいね済み
+###			wRes['Result'] = True
+###			return wRes
+###		
 		#############################
 		# ツイートの情報を取得する
 		wTweetInfoRes = self.GetTweetLookup( inID )
 		if wTweetInfoRes['Result']!=True :
 ###			wRes['Reason'] = "Twitter API Error(GetTweetLookup): " + wTweetInfoRes['Reason']
 			wStr = "Twitter API Error(GetTweetLookup): " + wTwitterRes['Reason']
+###			wStr = wStr + " kind=" + self.ARR_Favo[inID]['kind']
 			wStr = wStr + " id=" + str(inID)
-			wStr = wStr + " screen_name=" + self.ARR_Favo[inID]['user']['screen_name']
+###			wStr = wStr + " screen_name=" + self.ARR_Favo[inID]['user']['screen_name']
 			wRes['Reason'] = wStr
 			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# いいね情報を登録する
+		wResSub =self.AddFavoUserID( wTweetInfoRes['Responce'] )
+		if wResSub['Result']!=True :
+			wRes['Reason'] = "sTimeLag failed(1)"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		if wResSub['Responce']==False :
+			### 重複あり= 抜ける
+			wRes['Result'] = True
 			return wRes
 		
 		#############################
@@ -1394,28 +1497,31 @@ class CLS_Twitter_IF() :
 		if wTwitterRes['Result']!=True :
 ###			wRes['Reason'] = "Twitter API Error(CreateFavo): " + wTwitterRes['Reason']
 			wStr = "Twitter API Error(CreateFavo): " + wTwitterRes['Reason']
+###			wStr = wStr + " kind=" + self.ARR_Favo[inID]['kind']
 			wStr = wStr + " id=" + str(inID)
-			wStr = wStr + " screen_name=" + self.ARR_Favo[inID]['user']['screen_name']
+			wStr = wStr + " screen_name=" + wTweetInfoRes['Responce']['user']['screen_name']
 			wRes['Reason'] = wStr
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-		#############################
-		# いいね情報を登録する
-		wResSub =self.AddFavoUserID( wTweetInfoRes['Responce'] )
-		if wResSub['Result']!=True :
-			wRes['Reason'] = "sTimeLag failed(1)"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		wRes['Responce']['Data'] = self.ARR_Favo[wID]
-		
+###		#############################
+###		# いいね情報を登録する
+###		wResSub =self.AddFavoUserID( wTweetInfoRes['Responce'] )
+###		if wResSub['Result']!=True :
+###			wRes['Reason'] = "sTimeLag failed(1)"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		wRes['Responce']['Data'] = self.ARR_Favo[wID]
+###		
 		#############################
 		# トラヒック計測：いいね実施数
 		CLS_Traffic.sP( "p_favo" )
 		
 		#############################
 		# 完了
+		wRes['Responce']['Data'] = self.ARR_Favo[inID]
 		wRes['Responce']['Run']  = True
+		
 		wRes['Result'] = True
 		return wRes
 
@@ -1455,6 +1561,7 @@ class CLS_Twitter_IF() :
 		if wTwitterRes['Result']!=True :
 ###			wRes['Reason'] = "Twitter API Error: " + wTwitterRes['Reason']
 			wStr = "Twitter API Error(RemoveFavo): " + wTwitterRes['Reason']
+			wStr = wStr + " kind=" + self.ARR_Favo[inID]['kind']
 			wStr = wStr + " id=" + str(inID)
 			wStr = wStr + " screen_name=" + self.ARR_Favo[inID]['user']['screen_name']
 			wRes['Reason'] = wStr

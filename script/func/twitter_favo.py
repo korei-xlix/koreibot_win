@@ -823,7 +823,8 @@ class CLS_TwitterFavo():
 				"created_at"		: None,
 				"user"				: wSTR_User,
 				"src_user"			: wSTR_SrcUser,
-				"FLG_agent"			: False				# いいね候補
+				"FLG_agent"			: False,			# いいね候補
+				"reason"			: None				# NG理由
 			}
 			
 			### リツイート
@@ -876,28 +877,36 @@ class CLS_TwitterFavo():
 				wSTR_Tweet['user']['screen_name'] = wTweet['user']['screen_name']
 				wSTR_Tweet['user']['description'] = wTweet['user']['description']
 			
+			#############################
+			# ●配列に格納●
+			wARR_Tweet.update({ wTweetID : wSTR_Tweet })
+			wRes['Responce']['cnt'] += 1
+			
 			### 日時の変換
 			wTime = CLS_TIME.sTTchg( wRes, "(1)", wSTR_Tweet['created_at'] )
 			if wTime['Result']!=True :
+				wSTR_Tweet['reason'] = "時刻変換失敗"
 				continue
 			wSTR_Tweet['created_at'] = wTime['TimeDate']
 			
-			#############################
-			# 今処理で同一ユーザへの処理は除外
-			if wSTR_Tweet['user']['id'] in self.ARR_FavoUserID :
-				### 同一ユーザ検出
-				wFLG_ZanCountSkip = True
-				continue
-				
-			else:
-				### ユーザをメモする
-				self.ARR_FavoUserID.append( wSTR_Tweet['user']['id'] )
-			
+###			#############################
+###			# 今処理で同一ユーザへの処理は除外
+###			if wSTR_Tweet['user']['id'] in self.ARR_FavoUserID :
+###				### 同一ユーザ検出
+###				wSTR_Tweet['reason'] = "同一ユーザ検出"
+###				wFLG_ZanCountSkip = True
+###				continue
+###				
+###			else:
+###				### ユーザをメモする
+###				self.ARR_FavoUserID.append( wSTR_Tweet['user']['id'] )
+###			
 			#############################
 			# リツイ元が自分の場合は除外
 			if wSTR_Tweet['kind']=="retweet" or wSTR_Tweet['kind']=="quoted" :
 				if wSTR_Tweet['src_user']['id']==str(gVal.STR_UserInfo['id']) :
 					### 自分は除外
+					wSTR_Tweet['reason'] = "リツイ元が自分"
 					wFLG_ZanCountSkip = True
 					continue
 			
@@ -906,6 +915,7 @@ class CLS_TwitterFavo():
 			if wSTR_Tweet['kind']=="retweet" or wSTR_Tweet['kind']=="quoted" :
 				if wSTR_Tweet['src_user']['id'] in self.ARR_OverFavoUserID :
 					### リツイ元同一ユーザ検出 =終了
+					wSTR_Tweet['reason'] = "リツイ元が同一ユーザ"
 					wFLG_ZanCountSkip = True
 					continue
 			
@@ -927,19 +937,21 @@ class CLS_TwitterFavo():
 				return wRes
 			if wSubRes['Responce']==True :
 				### いいね済み
-#				wStr = "  ::いいね済みユーザ"
-#				CLS_OSIF.sPrn( wStr )
-#				
-				wFLG_ZanCountSkip = True
-				continue
+				wSTR_Tweet['reason'] = "いいね済ユーザ"
+###				wFLG_ZanCountSkip = True
+###				continue
+				if inListID!=None :
+					### リストいいねの場合はスキップ
+					wFLG_ZanCountSkip = True
+					continue
+				else:
+					break
 			
 			#############################
 			# リプライの場合は除外
 			#   リプはいいねしない
 			if wSTR_Tweet['kind']=="reply" :
-#				wStr = "  ::リプライ"
-#				CLS_OSIF.sPrn( wStr )
-#				
+				wSTR_Tweet['reason'] = "リプライ"
 				wFLG_ZanCountSkip = True
 				continue
 			
@@ -950,9 +962,7 @@ class CLS_TwitterFavo():
 					wSTR_Tweet['sensitive'] = True
 			
 			if inFLG_Sensitive==False and wSTR_Tweet['sensitive']==True :
-#				wStr = "  ::センシティブ"
-#				CLS_OSIF.sPrn( wStr )
-#				
+				wSTR_Tweet['reason'] = "センシティブ"
 				wFLG_ZanCountSkip = True
 				continue
 			
@@ -965,9 +975,7 @@ class CLS_TwitterFavo():
 				return wRes
 			if wGetLag['Beyond']==True :
 				### 規定外 =古いツイートなので除外
-#				wStr = "  ::期間外ツイート"
-#				CLS_OSIF.sPrn( wStr )
-#				
+				wSTR_Tweet['reason'] = "古いツイート"
 				wFLG_ZanCountSkip = True
 				continue
 			
@@ -984,20 +992,37 @@ class CLS_TwitterFavo():
 				return wRes
 			if wExtUserRes['Responce']==False :
 				### 禁止あり=除外
-				wFLG_ZanCountSkip = True
-				continue
+				wSTR_Tweet['reason'] = "禁止ユーザ"
+###				wFLG_ZanCountSkip = True
+###				continue
+				if inListID!=None :
+					### リストいいねの場合はスキップ
+					wFLG_ZanCountSkip = True
+					continue
+				else:
+					break
 			
 			#############################
 			# 禁止文字を含む場合は除外
+			
+			### 外部いいねモードの場合
 			### プロフ文字
-			wWordRes = self.OBJ_Parent.CheckExtWord( wFavoUser, wFavoUser['description'] )
-			if wWordRes['Result']!=True :
-				wRes['Reason'] = "CheckExtWord failed(description)"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			if wWordRes['Responce']==False :
-				wFLG_ZanCountSkip = True
-				continue
+			if inFLG_Follower==False :
+				wWordRes = self.OBJ_Parent.CheckExtWord( wFavoUser, wFavoUser['description'] )
+				if wWordRes['Result']!=True :
+					wRes['Reason'] = "CheckExtWord failed(description)"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				if wWordRes['Responce']==False :
+					wFLG_ZanCountSkip = True
+					wSTR_Tweet['reason'] = "禁止文字（プロフ）"
+###					continue
+					if inListID!=None :
+						### リストいいねの場合はスキップ
+						wFLG_ZanCountSkip = True
+						continue
+					else:
+						break
 			
 			### ツイート文
 			wWordRes = self.OBJ_Parent.CheckExtWord( wFavoUser, wSTR_Tweet['text'] )
@@ -1007,6 +1032,7 @@ class CLS_TwitterFavo():
 				return wRes
 			if wWordRes['Responce']==False :
 				wFLG_ZanCountSkip = True
+				wSTR_Tweet['reason'] = "禁止文字（ツイート）"
 				continue
 			
 			#############################
@@ -1072,18 +1098,25 @@ class CLS_TwitterFavo():
 					wStr = "  ::いいね実施期間内"
 					CLS_OSIF.sPrn( wStr )
 					
-					continue
+###					continue
+					if inListID!=None :
+						### リストいいねの場合はスキップ
+						wFLG_ZanCountSkip = True
+						continue
+					else:
+						break
 			
-			#############################
-			# ●配列に格納●
-			wARR_Tweet.update({ wTweetID : wSTR_Tweet })
-			wRes['Responce']['cnt'] += 1
-			
+###			#############################
+###			# ●配列に格納●
+###			wARR_Tweet.update({ wTweetID : wSTR_Tweet })
+###			wRes['Responce']['cnt'] += 1
+###			
 			#############################
 			# リツイート、引用リツイートは除外（フォロワーモードの場合除外）
 			if inFLG_Follower==True :
 				if wARR_Tweet[wTweetID]['kind']=="retweet" or wARR_Tweet[wTweetID]['kind']=="quoted" :
 					wFLG_ZanCountSkip = True
+					wSTR_Tweet['reason'] = "リツイート除外"
 					continue
 			
 			#############################
@@ -1091,12 +1124,46 @@ class CLS_TwitterFavo():
 			if inFLG_Follower==False :
 				if gVal.OBJ_Tw_IF.CheckMyFollow( wFavoUser['id'] )==True :
 					wFLG_ZanCountSkip = True
-					continue
+					wSTR_Tweet['reason'] = "フォロー者"
+###					continue
+					if inListID!=None :
+						### リストいいねの場合はスキップ
+						wFLG_ZanCountSkip = True
+						continue
+					else:
+						break
 				
 				if gVal.OBJ_Tw_IF.CheckFollower( wFavoUser['id'] )==True :
 					wFLG_ZanCountSkip = True
-					continue
+					wSTR_Tweet['reason'] = "フォロワー"
+###					continue
+					if inListID!=None :
+						### リストいいねの場合はスキップ
+						wFLG_ZanCountSkip = True
+						continue
+					else:
+						break
 			
+			# ※ほぼ確定
+			#############################
+			# 今処理で同一ユーザへの処理は除外
+			if wSTR_Tweet['user']['id'] in self.ARR_FavoUserID :
+				### 同一ユーザ検出
+				wSTR_Tweet['reason'] = "同一ユーザ検出"
+				wFLG_ZanCountSkip = True
+###				continue
+				if inListID!=None :
+					### リストいいねの場合はスキップ
+					wFLG_ZanCountSkip = True
+					continue
+				else:
+					break
+				
+			else:
+				### ユーザをメモする
+				self.ARR_FavoUserID.append( wSTR_Tweet['user']['id'] )
+			
+			# ※確定
 			#############################
 			# ●いいねツイート確定●
 			wARR_Tweet[wTweetID]['FLG_agent'] = True
@@ -1126,7 +1193,14 @@ class CLS_TwitterFavo():
 		#############################
 		# 候補なし
 		if wRes['Responce']['agent']==0 :
-			wStr = "  ::いいね候補なし"
+###			wStr = "  ::いいね候補なし"
+			wStr = "  ::いいね候補なし" + '\n'
+			
+			wKeylist2 = list( wARR_Tweet.keys() )
+			for wIndex in wKeylist2 :
+				wStr = wStr + "  id=" + str(wARR_Tweet[wIndex]['id'])
+				wStr = wStr + " reason=" + wARR_Tweet[wIndex]['reason'] + '\n'
+			
 			CLS_OSIF.sPrn( wStr )
 			
 			wRes['Result'] = True

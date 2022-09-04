@@ -177,6 +177,11 @@ class CLS_Main_Console() :
 		if inCommand=="\\a" :
 			cls.OBJ_TwitterMain.AllRun()
 		
+		#############################
+		# トレンドツイート
+		elif inCommand=="\\tt" :
+			cls.OBJ_TwitterMain.TrendTweet()
+		
 	#####################################################
 		#############################
 		# キーワードいいね
