@@ -1316,7 +1316,7 @@ class CLS_TwitterMain():
 		# 無反応のレベルタグ
 		if wARR_DBData['level_tag']=="D-" or wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G-" :
 			### 報告対象の表示と、ログに記録
-			gVal.OBJ_L.Log( "RR", wRes, "●反応外のレベルタグ ユーザ: screen_name=" + inData['screen_name'] + " level=" + wARR_DBData['level_tag'] )
+			gVal.OBJ_L.Log( "RR", wRes, "●反応外のレベルタグ ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wARR_DBData['level_tag'] )
 			
 			if wFLG_Action==True :
 				### 除外してない場合

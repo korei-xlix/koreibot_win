@@ -347,7 +347,7 @@ class CLS_TwitterAdmin():
 		
 		#############################
 		# ユーザ管理へ変更
-		self.STR_UserAdminInfo['level_tag'] = wWord
+		self.STR_UserAdminInfo['level_tag'] = wUserLevel
 		
 		wStr = "レベルタグを変更しました"
 		CLS_OSIF.sPrn( wStr )

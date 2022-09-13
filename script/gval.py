@@ -172,7 +172,7 @@ class gVal() :
 		"forFollowerFavoFListIntimeSec"		: 86400,	#   片フォロワーリスト・期間内の いいね期間        1日  60x60x24
 		"forFollowerFavoFListOverSec"		: 172800,	#   片フォロワーリスト・期間外の いいね期間        2日 (60x60x24)x2
 		"forFollowerFavoFListpfavoSec"		: 432000,	#   片フォロワーリスト・期間外時 いいね実行からの期間  5日 (60x60x24)x5
-		"forFollowerFavoFListRemoveCnt"		: 10,		#   片フォロワーリスト・無視時関係リセット回数
+###		"forFollowerFavoFListRemoveCnt"		: 10,		#   片フォロワーリスト・無視時関係リセット回数
 		"forFollowerFavoMutualSec"			: 14400,	#   相互フォローの いいね期間                      4時間  60x60x4
 		"forFollowerFavoFollowerSec"		: 115200,	#   フォロワー期間                                 32時間  60x60x32
 		"forFollowerFavoIntimeSec"			: 86400,	#   フォロワー・期間内の いいね期間                1日  60x60x24
@@ -203,7 +203,8 @@ class gVal() :
 		"forCheckAutoDeleteSec"		: 172800,			#   自動削除チェック期間 2日 (60x60x24)x2
 ###		"forAutoRemoveIgnoreCompletelySec"	: 1814400,	#   完全スルーのため追い出し期間   21日  (60x60x24)x21
 		"forAutoRemoveIgnoreCompletelySec"	: 1209600,	#   完全スルーのため追い出し期間   14日  (60x60x24)x14
-		"forAutoRemoveIgnoreCompletelyCnt"	: 10,		#   いいねがない場合の無条件追い出しまでのいいね実施回数
+###		"forAutoRemoveIgnoreCompletelyCnt"	: 10,		#   いいねがない場合の無条件追い出しまでのいいね実施回数
+		"forAutoRemoveIgnoreCompletelyCnt"	: 4,		#   いいねがない場合の無条件追い出しまでのいいね実施回数
 		
 		"forAutoUserRemoveSec"		: 2592000,			# ユーザ削除までの期間  30日 (60x60x24)x30
 		
@@ -261,7 +262,7 @@ class gVal() :
 								#     自発的にフォローした場合
 		"D+"	: "",			# D+: 自動フォロー
 								#     botから自動的にフォローした場合
-		"D-"	: "",			# D : 自発的リムーブ者
+		"D-"	: "",			# D-: 自発的リムーブ者
 								#     フォローしてたけど、自発的にリムーブした場合
 		"E"		: "",			# E : フォロワー
 								#     フォローされた場合
