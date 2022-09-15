@@ -384,6 +384,13 @@ class CLS_TwitterMain():
 						
 						### 相互フォローリストに追加
 						wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( wFollowerData[wID] )
+						
+						### ミュートする
+						wMuteRes = gVal.OBJ_Tw_IF.Mute( wID )
+						if wMuteRes['Result']!=True :
+							wRes['Reason'] = "Mute is failed"
+							gVal.OBJ_L.Log( "B", wRes )
+###							continue
 					
 					### ユーザレベル変更
 					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
