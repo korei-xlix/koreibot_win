@@ -17,6 +17,8 @@ class CLS_TwitterFollower():
 #####################################################
 	OBJ_Parent = ""				#親クラス実体
 	
+	ARR_AgentUsers = {}
+	
 #####################################################
 # Init
 #####################################################
@@ -1055,6 +1057,252 @@ class CLS_TwitterFollower():
 		# 正常終了
 		wRes['Result'] = True
 		return wRes
+
+
+
+#####################################################
+# タイムラインフォロー
+#####################################################
+	def TimelineFollow(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterFollower"
+		wRes['Func']  = "TimelineFollow"
+		
+		#############################
+		# 取得可能時間か？
+		wGetLag = CLS_OSIF.sTimeLag( str( gVal.STR_Time['tl_follow'] ), inThreshold=gVal.DEF_STR_TLNUM['forTimelineFollowSec'] )
+		if wGetLag['Result']!=True :
+			wRes['Reason'] = "sTimeLag failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		if wGetLag['Beyond']==False :
+			### 規定以内は除外
+			wStr = "●タイムラインフォロー期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
+			CLS_OSIF.sPrn( wStr )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# 取得開始の表示
+		wResDisp = CLS_MyDisp.sViewHeaderDisp( "タイムラインフォロー中" )
+		
+		#############################
+		# ツイートj情報
+		# ※元ソースは見ない仕様とする
+		wSTR_User = {
+			"id"				: None,
+			"name"				: None,
+			"screen_name"		: None,
+			"description"		: None
+		}
+#		wSTR_SrcUser = {
+#			"id"				: None,
+#			"name"				: None,
+#			"screen_name"		: None,
+#			"description"		: None
+#		}
+		wSTR_Tweet = {
+			"kind"				: None,
+			"id"				: None,
+			"text"				: None,
+#			"sensitive"			: False,
+			"created_at"		: None,
+			"user"				: wSTR_User,
+#			"src_user"			: wSTR_SrcUser,
+#			"FLG_agent"			: False,			# いいね候補
+			"reason"			: None				# NG理由
+		}
+		
+		#############################
+		# 直近のホームタイムラインを取得
+		wTweetRes = gVal.OBJ_Tw_IF.GetTL( inTLmode="home", inFLG_Rep=False, inFLG_Rts=True,
+			 inID=gVal.STR_UserInfo['id'], inCount=gVal.DEF_STR_TLNUM['TimelineFollowTweetLine'] )
+		if wTweetRes['Result']!=True :
+			wRes['Reason'] = "Twitter Error: GetTL"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		if len(wTweetRes['Responce'])==0 :
+			wRes['Reason'] = "Tweet is not get: home timeline"
+			gVal.OBJ_L.Log( "D", wRes )
+			return wRes
+		
+		###ウェイト初期化
+		self.OBJ_Parent.Wait_Init( inZanNum=len( wTweetRes['Responce'] ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
+		
+		#############################
+		# チェック
+		
+		wFLG_ZanCountSkip  = False
+		self.ARR_AgentUser = {}
+		wTLCnt   = 0
+		wFavoCnt = 0
+		wFollowNum = 0
+		for wTweet in wTweetRes['Responce'] :
+			wTLCnt += 1
+			###先頭スキップ
+			if gVal.DEF_STR_TLNUM['TimelineFollowTweetLine_Skip']>=wTLCnt :
+				continue
+			
+			###ウェイトカウントダウン
+			if self.OBJ_Parent.Wait_Next( inZanCountSkip=wFLG_ZanCountSkip )==False :
+				break	###ウェイト中止
+			wFLG_ZanCountSkip = False
+			
+			### いいねチェック回数の限界
+			if gVal.DEF_STR_TLNUM['TimelineFollowFavoCheckNum']<=wFavoCnt :
+				wStr = "〇完了: いいねチェック回数に到達" ;
+				CLS_OSIF.sPrn( wStr )
+				break
+			
+			### フォロー人数の限界
+			if gVal.DEF_STR_TLNUM['TimelineFollowNum']<=wFollowNum :
+				wStr = "〇完了: フォロー人数の上限に到達" ;
+				CLS_OSIF.sPrn( wStr )
+				break
+			
+			###日時の変換
+			wTime = CLS_TIME.sTTchg( wRes, "(1)", wTweet['created_at'] )
+			if wTime['Result']!=True :
+				continue
+			wSTR_Tweet['created_at'] = wTime['TimeDate']
+			
+			#############################
+			# ツイート情報を取得
+			wSTR_Tweet['id']   = str(wTweet['id'])
+			wSTR_Tweet['text'] = str(wTweet['text'])
+			wSTR_Tweet['user']['id']          = str(wTweet['user']['id'])
+			wSTR_Tweet['user']['name']        = str(wTweet['user']['name'])
+			wSTR_Tweet['user']['screen_name'] = str(wTweet['user']['screen_name'])
+			wSTR_Tweet['user']['description'] = str(wTweet['user']['description'])
+			
+			### リツイート
+			if "retweeted_status" in wTweet :
+				wSTR_Tweet['kind'] = "retweet"
+			
+			### 引用リツイート
+			elif "quoted_status" in wTweet :
+				wSTR_Tweet['kind'] = "quoted"
+			
+			### リプライ
+			elif wSTR_Tweet['text'].find("@")>=0 :
+				wSTR_Tweet['kind'] = "reply"
+			
+			### 通常ツイート
+			else:
+				wSTR_Tweet['kind'] = "normal"
+			
+			#############################
+			# チェック対象のツイート表示
+			wStr = '\n' + "--------------------" + '\n' ;
+			wStr = wStr + wSTR_Tweet['text'] + '\n' ;
+			wStr = wStr + "  time: " + wSTR_Tweet['created_at'] + "  screen_name: " + wSTR_Tweet['user']['screen_name'] + '\n' ;
+			CLS_OSIF.sPrn( wStr )
+			
+			#############################
+			# 相互フォロー もしくは 片フォローの場合
+			# スキップする
+			if gVal.OBJ_Tw_IF.CheckMutualListUser( wSTR_Tweet['user']['id'] )==True or \
+			   gVal.OBJ_Tw_IF.CheckFollowListUser( wSTR_Tweet['user']['id'] )==True :
+				wStr = "●スキップ: 相互もしくは片フォロワー" ;
+				CLS_OSIF.sPrn( wStr )
+				continue
+			
+			#############################
+			# いいね、リツイートしてるユーザ一覧を取得する
+			
+			#############################
+			# いいねの場合
+			wSubRes = gVal.OBJ_Tw_IF.GetLikesLookup( wSTR_Tweet['id'] )
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "Twitter Error(GetLikesLookup): Tweet ID: " + wSTR_Tweet['id']
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			
+			self.__add_TimelineFollow_AgentUser( wSubRes['Responce'] )
+			
+			#############################
+			# リツイートの場合
+			wSubRes = gVal.OBJ_Tw_IF.GetRetweetLookup( wSTR_Tweet['id'] )
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "Twitter Error(GetRetweetLookup): Tweet ID: " + wSTR_Tweet['id']
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			
+			self.__add_TimelineFollow_AgentUser( wSubRes['Responce'] )
+			
+			#############################
+			# 引用リツイートの場合
+			wSubRes = gVal.OBJ_Tw_IF.GetRefRetweetLookup( wSTR_Tweet['id'] )
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "Twitter Error(GetRefRetweetLookup): Tweet ID: " + wSTR_Tweet['id']
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			
+			self.__add_TimelineFollow_AgentUser( wSubRes['Responce'] )
+			
+			wFavoCnt += 1
+			
+			#############################
+			# 自動フォローしていく
+			wKeylist = list( self.ARR_AgentUsers.keys() )
+			for wID in wKeylist :
+				wID = str(wID)
+				
+				### フォロー人数の限界
+				if gVal.DEF_STR_TLNUM['TimelineFollowNum']<=wFollowNum :
+					break
+				
+				### 自動フォロー
+				wSubRes = self.OBJ_Parent.OBJ_TwitterFollower.AutoFollow( self.ARR_AgentUsers[wID] )
+				if wSubRes['Result']!=True :
+					wRes['Reason'] = "AutoFollow is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				
+				if wSubRes['Responce']==False :
+					### 未フォロー
+					continue
+				
+				wFollowNum += 1	#フォローしたのでカウント
+		
+		#############################
+		# 現時間を設定
+		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "tl_follow", gVal.STR_Time['TimeDate'] )
+		if wTimeRes['Result']!=True :
+			wRes['Reason'] = "SetTimeInfo is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		###	gVal.STR_Time['reaction']
+		
+		#############################
+		# 正常終了
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def __add_TimelineFollow_AgentUser( self, inARR_Users ):
+		
+		wKeylist = list( inARR_Users.keys() )
+		for wID in wKeylist :
+			wID = str(wID)
+			
+			if wID in self.ARR_AgentUsers :
+				continue
+			
+			wSTR_User = {
+				"id"				: str(inARR_Users[wID]['id']),
+				"name"				: str(inARR_Users[wID]['name']),
+				"screen_name"		: str(inARR_Users[wID]['screen_name']),
+				"description"		: str(inARR_Users[wID]['description'])
+###				
+###				"FLG_Checked"		: False
+			}
+			self.ARR_AgentUsers.update({ wID : wSTR_User })
+		
+		return
 
 
 

@@ -178,6 +178,11 @@ class CLS_Main_Console() :
 			cls.OBJ_TwitterMain.AllRun()
 		
 		#############################
+		# タイムラインフォロー
+		elif inCommand=="\\f" :
+			cls.OBJ_TwitterMain.TimelineFollow()
+		
+		#############################
 		# トレンドツイート
 		elif inCommand=="\\tt" :
 			cls.OBJ_TwitterMain.TrendTweet()

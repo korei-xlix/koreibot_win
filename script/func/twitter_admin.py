@@ -2535,6 +2535,18 @@ class CLS_TwitterAdmin():
 		CLS_OSIF.sPrn( wStr )
 		
 		#############################
+		# タイムラインフォロー
+		wTimeRes = CLS_OSIF.sTimeAddHour( inTimedate=gVal.STR_Time['tl_follow'], inSec=gVal.DEF_STR_TLNUM['forTimelineFollowSec'] )
+		if wTimeRes['Result']!=True :
+			wRes['Reason'] = "sTimeAddHour is failed(tl_follow)"
+			gVal.OBJ_L.Log( "A", wTimeRes )
+			return wRes
+		
+		wStr = "TLフォロー      ：" + str(gVal.STR_Time['tl_follow'])
+		wStr = wStr + "  次回予定    ：" + str(wTimeRes['NextTD'])
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
 		# システム時刻
 		wStr = "システム時刻    ：" + str(gVal.STR_Time['TimeDate']) + '\n'
 		CLS_OSIF.sPrn( wStr )

@@ -598,6 +598,7 @@ class CLS_Setup():
 		wQy = wQy + "send_favo    TIMESTAMP,"			# いいね情報送信
 		wQy = wQy + "auto_delete  TIMESTAMP,"			# 自動削除
 		wQy = wQy + "vip_ope      TIMESTAMP,"			# VIP監視
+		wQy = wQy + "tl_follow    TIMESTAMP,"			# タイムラインフォロー
 		wQy = wQy + " PRIMARY KEY ( twitterid ) ) ;"
 		
 		inOBJ_DB.RunQuery( wQy )

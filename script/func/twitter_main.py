@@ -850,6 +850,14 @@ class CLS_TwitterMain():
 			return wRes
 		
 		#############################
+		# タイムラインフォロー
+		wSubRes = self.OBJ_TwitterFollower.TimelineFollow()
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "TimelineFollow error"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
 		# リアクションチェック
 		wSubRes = self.OBJ_TwitterFollower.ReactionCheck( inFLG_Short=wFLG_Short )
 		if wSubRes['Result']!=True :
@@ -1092,6 +1100,16 @@ class CLS_TwitterMain():
 #			return wSubRes
 		
 		return wSubRes
+
+
+
+#####################################################
+# タイムラインフォロー
+#####################################################
+	def TimelineFollow(self):
+		wRes = self.OBJ_TwitterFollower.TimelineFollow()
+		wRes['Result'] = True
+		return wRes
 
 
 

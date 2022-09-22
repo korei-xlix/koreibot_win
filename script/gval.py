@@ -72,6 +72,7 @@ class gVal() :
 		"send_favo"		: None,			# いいね情報送信
 		"auto_delete"	: None,			# 自動削除
 		"vip_ope"		: None,			# VIP監視
+		"tl_follow"		: None,			# タイムラインフォロー
 		
 		"TimeDate"		: None			# システム時間
 	}
@@ -231,6 +232,12 @@ class gVal() :
 		"checkListUnfollower"		: True,				# リスト登録チェック時 フォロワーでないユーザへ警告を送信するか  True=送信
 #		"checkListUnfollower"		: False,			# リスト登録チェック時 フォロワーでないユーザへ警告を送信するか  True=送信
 		"forDeleteCautionTweetSec"	: 172800,			# 警告メッセージを削除する期間  2日 (60x60x24)x2
+		
+		"forTimelineFollowSec"			: 14400,		# タイムラインフォロー チェック期間 4時間  (60x60x4)
+		"TimelineFollowNum"				: 4,			#   フォローする最大人数
+		"TimelineFollowTweetLine"		: 200,			#   ツイート取得ライン数
+		"TimelineFollowTweetLine_Skip"	: 40,			#   ツイート取得ライン 先頭スキップ数
+		"TimelineFollowFavoCheckNum"	: 32,			#   いいね、リツイート、引用リツイートのチェック回数(Limit)
 		
 		"trafficReportLimit"		: 30,				# トラヒック報告取得数
 		
