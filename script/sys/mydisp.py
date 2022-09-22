@@ -232,6 +232,14 @@ class CLS_MyDisp():
 				wStr = str( inData['regdate'] )
 			pRes['Responce'] = "    DB登録日                    : " + wStr
 		
+		###インプリ：操作ログ
+		elif "[@USERADMIN-LOG@]"==inLine and len(inData['log'])!=0 :
+			wKeylist = list(inData['log'].keys() )
+			for wIndex in wKeylist :
+				wLog = inData['log'][wIndex] + '\n'
+				wStr = wStr + wLog
+			pRes['Responce'] = wStr
+		
 		#############################
 		# 正常
 		pRes['Result'] = True
@@ -386,6 +394,15 @@ class CLS_MyDisp():
 				wStr = wStr + "(なし)"
 			else:
 				wStr = wStr + inData['Sys_TrendTag']
+			pRes['Responce'] = wStr
+		
+		###インプリ：VIPタグ
+		elif "[@SYS-VIPTAG@]"==inLine :
+			wStr = "    VIPタグ           : "
+			if inData['Sys_VipTag']==None or inData['Sys_VipTag']=="" :
+				wStr = wStr + "(なし)"
+			else:
+				wStr = wStr + inData['Sys_VipTag']
 			pRes['Responce'] = wStr
 		
 		###インプリ：リスト通知

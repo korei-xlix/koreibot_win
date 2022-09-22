@@ -53,7 +53,9 @@ class gVal() :
 		"fListID"		: None,			#片フォロワーリスト リストID
 		"fListName"		: None,			#片フォロワーリスト リスト名
 		
-		"Traffic"		: False			#Twitterにトラヒックを報告するか
+		"Traffic"		: False,		#Twitterにトラヒックを報告するか
+		
+		"VipTag"		: None			#VIPリツイート 対象タグ
 	}
 
 #############################
@@ -337,6 +339,8 @@ class gVal() :
 	
 	DEF_TIMEDATE = "1901-01-01 00:00:00"
 	DEF_NOTEXT   = "(none)"
+
+	DEF_ADMINLOG_POINT = 12
 
 #############################
 # 変数

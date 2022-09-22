@@ -315,9 +315,10 @@ class CLS_TwitterFollower():
 				
 				#############################
 				# ツイートチェック
-				wSubRes = self.OBJ_Parent.ReactionTweetCheck( wUserID, wTweet )
+###				wSubRes = self.OBJ_Parent.ReactionTweetCheck( wUserID, wTweet )
+				wSubRes = self.OBJ_Parent.ReactionTweetCheck( wUserID, wTweet, True )
 				if wSubRes['Result']!=True :
-					wRes['Reason'] = "ReactionTweetCheck"
+					wRes['Reason'] = "ReactionTweetCheck is failed"
 					gVal.OBJ_L.Log( "B", wRes )
 					continue
 			
@@ -751,18 +752,28 @@ class CLS_TwitterFollower():
 				if str(wARR_DBData['rfavo_date'])!=gVal.DEF_TIMEDATE :
 					### いいねあり= いいね日時
 					wCompTimeDate = str(wARR_DBData['rfavo_date'])
+					wThreshold = gVal.DEF_STR_TLNUM['forListFavoAutoRemoveSec']
+				
 				else:
 					### いいねなし= 登録日時
 					wCompTimeDate = str(wARR_DBData['regdate'])
+					
+					if ( wARR_DBData['level_tag']=="D" or wARR_DBData['level_tag']=="D+" ) and \
+					   gVal.OBJ_Tw_IF.CheckFollower( wUserID )==False and \
+					   str(wARR_DBData['pfavo_date'])!=gVal.DEF_TIMEDATE :
+						### 片フォロー者で、いいねしたことがあるユーザは期間が短い
+						wThreshold = gVal.DEF_STR_TLNUM['forListFavoAutoRemoveSec_Short']
+					else:
+						wThreshold = gVal.DEF_STR_TLNUM['forListFavoAutoRemoveSec']
 				
-				### 期間切替
-#				if wARR_DBData['level_tag']=="D+" and wARR_DBData['rfavo_date']!=gVal.DEF_TIMEDATE and \
-				if wARR_DBData['level_tag']=="D+" and gVal.OBJ_Tw_IF.CheckFollower( wUserID )==False :
-					### 片フォロー者で、botからフォローしたフォロー者は期間が短い
-					wThreshold = gVal.DEF_STR_TLNUM['forListFavoAutoRemoveSec_Short']
-				else:
-					wThreshold = gVal.DEF_STR_TLNUM['forListFavoAutoRemoveSec']
-				
+###				### 期間切替
+####			if wARR_DBData['level_tag']=="D+" and wARR_DBData['rfavo_date']!=gVal.DEF_TIMEDATE and \
+###				if wARR_DBData['level_tag']=="D+" and gVal.OBJ_Tw_IF.CheckFollower( wUserID )==False :
+###					### 片フォロー者で、botからフォローしたフォロー者は期間が短い
+###					wThreshold = gVal.DEF_STR_TLNUM['forListFavoAutoRemoveSec_Short']
+###				else:
+###					wThreshold = gVal.DEF_STR_TLNUM['forListFavoAutoRemoveSec']
+###				
 				#############################
 				# 自動リムーブ期間か
 ###				wGetLag = CLS_OSIF.sTimeLag( wCompTimeDate, inThreshold=gVal.DEF_STR_TLNUM['forListFavoAutoRemoveSec'] )
@@ -801,7 +812,8 @@ class CLS_TwitterFollower():
 				
 				#############################
 				# ログに記録
-				gVal.OBJ_L.Log( "R", wRes, "●自動リムーブ: " + inUser['screen_name'] )
+###				gVal.OBJ_L.Log( "R", wRes, "●自動リムーブ: " + inUser['screen_name'] )
+				gVal.OBJ_L.Log( "R", wRes, "●自動リムーブ: " + inUser['screen_name'], inID=wUserID )
 				
 				#############################
 				# DBに反映
@@ -893,7 +905,8 @@ class CLS_TwitterFollower():
 				
 				### ユーザ記録
 				wStr = "●完全スルー期間外のため追い出し"
-				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']) )
+###				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']) )
+				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']), inID=wUserID )
 				
 				#############################
 				# DBに反映
@@ -1026,7 +1039,8 @@ class CLS_TwitterFollower():
 		
 		### ユーザ記録
 		wStr = "〇自動フォロー"
-		gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']) )
+###		gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']) )
+		gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']), inID=wUserID )
 		
 		#############################
 		# DBに反映

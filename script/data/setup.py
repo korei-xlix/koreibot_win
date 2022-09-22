@@ -542,6 +542,7 @@ class CLS_Setup():
 		wQy = wQy + "mlist_name  TEXT  NOT NULL,"		# 相互フォローリスト リスト名
 		wQy = wQy + "flist_id    TEXT  NOT NULL,"		# 片フォロワーリスト リストID(数値)
 		wQy = wQy + "flist_name  TEXT  NOT NULL,"		# 片フォロワーリスト リスト名
+		wQy = wQy + "viptag      TEXT  NOT NULL,"		# VIPリツイート タグ
 		wQy = wQy + " PRIMARY KEY ( twitterid ) ) ;"
 		
 		inOBJ_DB.RunQuery( wQy )
@@ -621,7 +622,8 @@ class CLS_Setup():
 		wQy = wQy + "level       CHAR(2) DEFAULT '-',"	# ログレベル
 		wQy = wQy + "log_class   TEXT  NOT NULL,"		# ログクラス
 		wQy = wQy + "log_func    TEXT  NOT NULL,"		# ログ関数
-		wQy = wQy + "reason      TEXT  NOT NULL "		# 理由
+		wQy = wQy + "reason      TEXT  NOT NULL,"		# 理由
+		wQy = wQy + "id          TEXT "					# ユーザID
 		wQy = wQy + " ) ;"
 		
 		inOBJ_DB.RunQuery( wQy )

@@ -87,7 +87,8 @@ class CLS_TwitterAdmin():
 			"myfollow_date"		: None,
 			"follower_date"		: None,
 			
-			"memo"				: None
+			"memo"				: None, 
+			"log"				: {}
 		}
 		return
 
@@ -279,7 +280,8 @@ class CLS_TwitterAdmin():
 		
 		#############################
 		# 正常終了
-		gVal.OBJ_L.Log( "R", wRes, "●リムーブ者: " + self.STR_UserAdminInfo['screen_name'] )
+###		gVal.OBJ_L.Log( "R", wRes, "●リムーブ者: " + self.STR_UserAdminInfo['screen_name'] )
+		gVal.OBJ_L.Log( "R", wRes, "●リムーブ者: " + self.STR_UserAdminInfo['screen_name'], inID=self.STR_UserAdminInfo['id'] )
 		
 		wRes['Result'] = True
 		return wRes
@@ -404,7 +406,8 @@ class CLS_TwitterAdmin():
 		
 		#############################
 		# 正常終了
-		gVal.OBJ_L.Log( "R", wRes, "●関係リセットによるリムーブ: " + self.STR_UserAdminInfo['screen_name'] )
+###		gVal.OBJ_L.Log( "R", wRes, "●関係リセットによるリムーブ: " + self.STR_UserAdminInfo['screen_name'] )
+		gVal.OBJ_L.Log( "R", wRes, "●関係リセットによるリムーブ: " + self.STR_UserAdminInfo['screen_name'], inID=self.STR_UserAdminInfo['id'] )
 		
 		wRes['Result'] = True
 		return wRes
@@ -753,6 +756,21 @@ class CLS_TwitterAdmin():
 			self.STR_UserAdminInfo['memo'] = str( wARR_DBData['memo'] )
 			
 			self.STR_UserAdminInfo['flg_db_set'] = True
+		
+		#############################
+		# 操作ログの取得
+		self.STR_UserAdminInfo['log'] = {}
+		wARR_Log = gVal.OBJ_L.GetLog( wID )
+		wKeylist = list( wARR_Log.keys() )
+		wCnt = 1
+		for wIndex in wKeylist :
+			if gVal.DEF_ADMINLOG_POINT<wCnt :
+				break
+			
+			wLog = wARR_Log[wIndex]['regdate'] + "  " + wARR_Log[wIndex]['level'] + " : "
+			wLog = wLog + wARR_Log[wIndex]['reason']
+			self.STR_UserAdminInfo['log'].update({ wCnt : wLog })
+			wCnt += 1
 		
 		### データセット
 		self.STR_UserAdminInfo['flg_set'] = True
@@ -1330,6 +1348,74 @@ class CLS_TwitterAdmin():
 
 
 #####################################################
+# VIPタグ設定
+#####################################################
+	def SetVipTag(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "SetVipTag"
+		
+		#############################
+		# 入力画面表示
+		wStr = "VIPタグの設定をおこないます。" + '\n'
+		wStr = wStr + "タグに設定する名前を入力してください。" + '\n'
+		wStr = wStr + '\n'
+		wStr = wStr + "  \\q=キャンセル  /  \\n=設定解除  /  other=設定値" + '\n'
+		wStr = wStr + "---------------------------------------" + '\n'
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# 入力
+		while True :
+			#############################
+			# 現在の設定の表示
+			wStr = "[現在の設定] "
+			wStr = wStr + "VIPタグ名="
+			if gVal.STR_UserInfo['VipTag']!=gVal.DEF_NOTEXT :
+				wStr = wStr + gVal.STR_UserInfo['VipTag']
+			else:
+				wStr = wStr + "(設定解除)"
+			wStr = wStr + '\n'
+			CLS_OSIF.sPrn( wStr )
+			
+			wInputName = CLS_OSIF.sInp( "Tag Name ？=> " )
+			
+			if wInputName=="" :
+				CLS_OSIF.sPrn( "タグ名かコマンドが未入力です" + '\n' )
+				continue
+			
+			elif wInputName=="\\q" :
+				# 完了
+				wRes['Result'] = True
+				return wRes
+			
+			###ここまでで入力は完了した
+			break
+		
+		#############################
+		# 設定解除の場合
+		if wInputName=="\\n" :
+			wInputName = gVal.DEF_NOTEXT
+		
+		#############################
+		# DBに設定
+		wSubRes = gVal.OBJ_DB_IF.SetVipTag( inTagName=wInputName )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "SetVipTag is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
 # リスト通知設定
 #####################################################
 	def SetListName(self):
@@ -1720,7 +1806,8 @@ class CLS_TwitterAdmin():
 			
 			#############################
 			# ログに記録
-			gVal.OBJ_L.Log( "R", wRes, "追い出し: " + wFollowerData[wID]['screen_name'] )
+###			gVal.OBJ_L.Log( "R", wRes, "追い出し: " + wFollowerData[wID]['screen_name'] )
+			gVal.OBJ_L.Log( "R", wRes, "追い出し: " + wFollowerData[wID]['screen_name'], inID=wID )
 			
 			wRes['Responce'] = True		#自動リムーブ実行
 			#############################
@@ -2033,7 +2120,8 @@ class CLS_TwitterAdmin():
 			
 			### ログに記録
 ###			gVal.OBJ_L.Log( "U", wRes, "▼リスト登録者 追い出し(手動): screen_name=" + gVal.ARR_CautionTweet[wUserID]['screen_name'] )
-			gVal.OBJ_L.Log( "U", wRes, "▼リスト登録者 追い出し(手動): screen_name=" + gVal.ARR_CautionTweet[inListNum]['screen_name'] )
+###			gVal.OBJ_L.Log( "U", wRes, "▼リスト登録者 追い出し(手動): screen_name=" + gVal.ARR_CautionTweet[inListNum]['screen_name'] )
+			gVal.OBJ_L.Log( "RC", wRes, "▼リスト登録者 追い出し(手動): screen_name=" + gVal.ARR_CautionTweet[inListNum]['screen_name'], inID=wUserID )
 			
 			### トラヒック記録（フォロワー減少）
 			CLS_Traffic.sP( "d_follower" )
@@ -2495,7 +2583,9 @@ class CLS_TwitterAdmin():
 			"Sys_ListName"		: gVal.STR_UserInfo['ListName'],
 			"Sys_AutoRemove"	: gVal.STR_UserInfo['AutoRemove'],
 			"Sys_mListName"		: gVal.STR_UserInfo['mListName'],
-			"Sys_fListName"		: gVal.STR_UserInfo['fListName']
+###			"Sys_fListName"		: gVal.STR_UserInfo['fListName']
+			"Sys_fListName"		: gVal.STR_UserInfo['fListName'],
+			"Sys_VipTag"		: gVal.STR_UserInfo['VipTag'],
 		}
 		
 		#############################

@@ -387,6 +387,7 @@ class CLS_DB_IF() :
 			wQy = wQy + "'" + gVal.DEF_NOTEXT + "', "			# 相互フォローリスト リスト名
 			wQy = wQy + "'" + gVal.DEF_NOTEXT + "', "			# 片フォロワーリスト リストID(数値)
 			wQy = wQy + "'" + gVal.DEF_NOTEXT + "' "			# 片フォロワーリスト リスト名
+			wQy = wQy + "'" + gVal.DEF_NOTEXT + "' "			# VIPリツイート タグ
 			wQy = wQy + ") ;"
 			
 			wResDB = self.OBJ_DB.RunQuery( wQy )
@@ -1458,7 +1459,8 @@ class CLS_DB_IF() :
 		#############################
 		# ログに記録する
 		wStr = "禁止ユーザ設定: exe user data: user=" + gVal.ARR_NotReactionUser[str(inData['id'])]['screen_name']
-		gVal.OBJ_L.Log( "RR", wRes, wStr )
+###		gVal.OBJ_L.Log( "RR", wRes, wStr )
+		gVal.OBJ_L.Log( "RR", wRes, wStr, inID=inData['id'] )
 		
 		#############################
 		# =正常
@@ -1548,7 +1550,8 @@ class CLS_DB_IF() :
 		#############################
 		# ログに記録する
 		wStr = "禁止ユーザ更新: exe user data: user=" + gVal.ARR_NotReactionUser[wUserID]['screen_name']
-		gVal.OBJ_L.Log( "RR", wRes, wStr )
+###		gVal.OBJ_L.Log( "RR", wRes, wStr )
+		gVal.OBJ_L.Log( "RR", wRes, wStr, inID=inID )
 		
 		#############################
 		# =正常
@@ -1596,7 +1599,8 @@ class CLS_DB_IF() :
 		#############################
 		# ログに記録する
 		wStr = "禁止ユーザ解除: exe user data: user=" + wScreenName
-		gVal.OBJ_L.Log( "RR", wRes, wStr )
+###		gVal.OBJ_L.Log( "RR", wRes, wStr )
+		gVal.OBJ_L.Log( "RR", wRes, wStr, inID=wUserID )
 		
 		#############################
 		# =正常
@@ -2085,7 +2089,8 @@ class CLS_DB_IF() :
 		#############################
 		# ログに記録する
 		wStr = "データ追加: caution tweet: screen_name=" + str(wCell['screen_name']) + " tweet_id=" + str(wCell['tweet_id'])
-		gVal.OBJ_L.Log( "RR", wRes, wStr )
+###		gVal.OBJ_L.Log( "RR", wRes, wStr )
+		gVal.OBJ_L.Log( "RR", wRes, wStr, inID=wUserID )
 		
 		wRes['Result'] = True
 		return wRes
@@ -2136,7 +2141,8 @@ class CLS_DB_IF() :
 		# ログに記録する
 ###		wStr = "データ削除: caution tweet: screen_name=" + str(inUser['screen_name'])
 		wStr = "データ削除: caution tweet: screen_name=" + wSN
-		gVal.OBJ_L.Log( "RR", wRes, wStr )
+###		gVal.OBJ_L.Log( "RR", wRes, wStr )
+		gVal.OBJ_L.Log( "RR", wRes, wStr, inID=wUserID )
 		
 		wRes['Result'] = True
 		return wRes
@@ -2158,7 +2164,8 @@ class CLS_DB_IF() :
 		# データ取得
 		wQy = "select "
 		wQy = wQy + "trendtag, list_id, list_name, "
-		wQy = wQy + "autoremove, mlist_id, mlist_name, flist_id, flist_name "
+###		wQy = wQy + "autoremove, mlist_id, mlist_name, flist_id, flist_name "
+		wQy = wQy + "autoremove, mlist_id, mlist_name, flist_id, flist_name, viptag "
 		wQy = wQy + "from tbl_user_data "
 		wQy = wQy + "where twitterid = '" + str(inAccount) + "' ;"
 		
@@ -2192,6 +2199,7 @@ class CLS_DB_IF() :
 		gVal.STR_UserInfo['mListName']  = wARR_DBData[0]['mlist_name']
 		gVal.STR_UserInfo['fListID']    = wARR_DBData[0]['flist_id']
 		gVal.STR_UserInfo['fListName']  = wARR_DBData[0]['flist_name']
+		gVal.STR_UserInfo['VipTag']     = wARR_DBData[0]['viptag']
 		
 		#############################
 		# =正常
@@ -2392,6 +2400,51 @@ class CLS_DB_IF() :
 			gVal.OBJ_L.Log( "SC", wRes, wStr )
 			wStr = "片フォロワーリスト解除: screen_name=" + str(gVal.STR_UserInfo['Account'])
 			gVal.OBJ_L.Log( "SC", wRes, wStr )
+		
+		#############################
+		# 正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def SetVipTag( self, inTagName ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "SetVipTag"
+		
+		#############################
+		# 入力切替
+		wTrendTag = gVal.DEF_NOTEXT
+		if inTagName!=gVal.DEF_NOTEXT :
+			wTrendTag = inTagName
+		
+		wQy = "update tbl_user_data set "
+		wQy = wQy + "viptag = '" + str(wTrendTag) + "' "
+		wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQy )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
+		# データをグローバルに反映
+		if inTagName!=None :
+			gVal.STR_UserInfo['VipTag'] = wTrendTag
+		
+		#############################
+		# ログに記録する
+		if inTagName!=gVal.DEF_NOTEXT :
+			wStr = "VIPタグ設定: name=" + str(wTrendTag) + " screen_name=" + str(gVal.STR_UserInfo['Account'])
+		else:
+			wStr = "VIPタグ解除: screen_name=" + str(gVal.STR_UserInfo['Account'])
+		gVal.OBJ_L.Log( "SC", wRes, wStr )
 		
 		#############################
 		# 正常
@@ -2960,7 +3013,8 @@ class CLS_DB_IF() :
 			### レベル変更
 			wStr = "ユーザレベル変更: user=" + str(wARR_DBData[0]['screen_name']) + " level:変更前=" + wRateUserLevel + " 変更後=" + inUserLevel
 		
-		gVal.OBJ_L.Log( "RC", wRes, wStr )
+###		gVal.OBJ_L.Log( "RC", wRes, wStr )
+		gVal.OBJ_L.Log( "RC", wRes, wStr, inID=inID )
 		
 		#############################
 		# 正常
@@ -3031,7 +3085,8 @@ class CLS_DB_IF() :
 			wStr = "自動削除禁止: OFF"
 		wStr = wStr + " : user=" + str(wResDB['Responce']['Data'][0]['screen_name'])
 		
-		gVal.OBJ_L.Log( "RC", wRes, wStr )
+###		gVal.OBJ_L.Log( "RC", wRes, wStr )
+		gVal.OBJ_L.Log( "RC", wRes, wStr, inID=inID )
 		
 		#############################
 		# 正常

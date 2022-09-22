@@ -2421,7 +2421,8 @@ class CLS_Twitter_IF() :
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-		gVal.OBJ_L.Log( "RC", wRes, "〇リスト追加: list=" + gVal.STR_UserInfo['mListName'] + " user=" + inUser['screen_name'] )
+###		gVal.OBJ_L.Log( "RC", wRes, "〇リスト追加: list=" + gVal.STR_UserInfo['mListName'] + " user=" + inUser['screen_name'] )
+		gVal.OBJ_L.Log( "RC", wRes, "〇リスト追加: list=" + gVal.STR_UserInfo['mListName'] + " user=" + inUser['screen_name'], inID=wID )
 		wRes['Responce'] = True		#追加
 		
 		self.ARR_MutualListUserID.append( wID )
@@ -2437,7 +2438,8 @@ class CLS_Twitter_IF() :
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			
-			gVal.OBJ_L.Log( "RC", wRes, "●リスト解除: list=" + gVal.STR_UserInfo['fListName'] + " user=" + inUser['screen_name'] )
+###			gVal.OBJ_L.Log( "RC", wRes, "●リスト解除: list=" + gVal.STR_UserInfo['fListName'] + " user=" + inUser['screen_name'] )
+			gVal.OBJ_L.Log( "RC", wRes, "●リスト解除: list=" + gVal.STR_UserInfo['fListName'] + " user=" + inUser['screen_name'], inID=wID )
 			
 			self.ARR_FollowerListUserID.remove( wID )
 		
@@ -2479,7 +2481,8 @@ class CLS_Twitter_IF() :
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-		gVal.OBJ_L.Log( "RC", wRes, "〇リスト追加: list=" + gVal.STR_UserInfo['fListName'] + " user=" + inUser['screen_name'] )
+###		gVal.OBJ_L.Log( "RC", wRes, "〇リスト追加: list=" + gVal.STR_UserInfo['fListName'] + " user=" + inUser['screen_name'] )
+		gVal.OBJ_L.Log( "RC", wRes, "〇リスト追加: list=" + gVal.STR_UserInfo['fListName'] + " user=" + inUser['screen_name'], inID=wID )
 		wRes['Responce'] = True		#追加
 		
 		self.ARR_FollowerListUserID.append( wID )
@@ -2495,7 +2498,8 @@ class CLS_Twitter_IF() :
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			
-			gVal.OBJ_L.Log( "RC", wRes, "●リスト解除: list=" + gVal.STR_UserInfo['mListName'] + " user=" + inUser['screen_name'] )
+###			gVal.OBJ_L.Log( "RC", wRes, "●リスト解除: list=" + gVal.STR_UserInfo['mListName'] + " user=" + inUser['screen_name'] )
+			gVal.OBJ_L.Log( "RC", wRes, "●リスト解除: list=" + gVal.STR_UserInfo['mListName'] + " user=" + inUser['screen_name'], inID=wID )
 			
 			self.ARR_MutualListUserID.remove( wID )
 		
@@ -2533,7 +2537,8 @@ class CLS_Twitter_IF() :
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			
-			gVal.OBJ_L.Log( "RC", wRes, "●リスト解除: list=" + gVal.STR_UserInfo['fListName'] + " user=" + inUser['screen_name'] )
+###			gVal.OBJ_L.Log( "RC", wRes, "●リスト解除: list=" + gVal.STR_UserInfo['fListName'] + " user=" + inUser['screen_name'] )
+			gVal.OBJ_L.Log( "RC", wRes, "●リスト解除: list=" + gVal.STR_UserInfo['fListName'] + " user=" + inUser['screen_name'], inID=wID )
 			
 ###			self.ARR_MutualListUserID.remove( wID )
 			self.ARR_FollowerListUserID.remove( wID )
@@ -2549,7 +2554,8 @@ class CLS_Twitter_IF() :
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			
-			gVal.OBJ_L.Log( "RC", wRes, "●リスト解除: list=" + gVal.STR_UserInfo['mListName'] + " user=" + inUser['screen_name'] )
+###			gVal.OBJ_L.Log( "RC", wRes, "●リスト解除: list=" + gVal.STR_UserInfo['mListName'] + " user=" + inUser['screen_name'] )
+			gVal.OBJ_L.Log( "RC", wRes, "●リスト解除: list=" + gVal.STR_UserInfo['mListName'] + " user=" + inUser['screen_name'], inID=wID )
 			
 			self.ARR_MutualListUserID.remove( wID )
 		
@@ -2590,7 +2596,8 @@ class CLS_Twitter_IF() :
 				gVal.OBJ_L.Log( "B", wRes )
 				continue
 			
-			gVal.OBJ_L.Log( "U", wRes, "●リスト解除: list=" + wARR_SubsList[wKey]['name'] + " user=" + inUser['screen_name'] )
+###			gVal.OBJ_L.Log( "U", wRes, "●リスト解除: list=" + wARR_SubsList[wKey]['name'] + " user=" + inUser['screen_name'] )
+			gVal.OBJ_L.Log( "RC", wRes, "●リスト解除: list=" + wARR_SubsList[wKey]['name'] + " user=" + inUser['screen_name'], inID=wID )
 		
 		wRes['Result'] = True
 		return wRes

@@ -312,6 +312,11 @@ class CLS_Main_Console() :
 			cls.OBJ_TwitterMain.SetTrendTag()
 		
 		#############################
+		# VIPタグ設定
+		elif inCommand=="\\vc" :
+			cls.OBJ_TwitterMain.SetVipTag()
+		
+		#############################
 		# リスト通知設定
 		elif inCommand=="\\ic" :
 			cls.OBJ_TwitterMain.SetListName()

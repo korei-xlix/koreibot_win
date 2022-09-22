@@ -399,7 +399,8 @@ class CLS_TwitterMain():
 					CLS_Traffic.sP( "p_myfollow" )
 					
 					### ユーザ記録
-					gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'] )
+###					gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'] )
+					gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'], inID=wID )
 				
 				else:
 				#############################
@@ -428,7 +429,8 @@ class CLS_TwitterMain():
 					CLS_Traffic.sP( "d_myfollow" )
 					
 					### ユーザ記録
-					gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'] )
+###					gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'] )
+					gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'], inID=wID )
 				
 				wMyFollow = wFollowerData[wID]['myfollow']
 			
@@ -503,7 +505,8 @@ class CLS_TwitterMain():
 						
 						### ユーザ記録
 						wStr = "●追い出し"
-						gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'] )
+###						gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'] )
+						gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'], inID=wID )
 					
 					else:
 						wFollower = True
@@ -548,7 +551,8 @@ class CLS_TwitterMain():
 						CLS_Traffic.sP( "p_follower" )
 						
 						### ユーザ記録
-						gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'] )
+###						gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'] )
+						gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'], inID=wID )
 				
 				else:
 				#############################
@@ -573,7 +577,8 @@ class CLS_TwitterMain():
 								
 								### ユーザ記録
 								wStr = "●リムーブされた"
-								gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'] )
+###								gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'] )
+								gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'], inID=wID )
 						
 						else:
 							### リストリムーブ
@@ -585,7 +590,8 @@ class CLS_TwitterMain():
 							
 							### ユーザ記録
 							wStr = "●リムーブされた"
-							gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'] )
+###							gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'] )
+							gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'], inID=wID )
 					
 					### トラヒック記録（フォロワー減少）
 					CLS_Traffic.sP( "d_follower" )
@@ -635,18 +641,37 @@ class CLS_TwitterMain():
 			#############################
 			# ブロックチェック
 			wFollowInfoRes = gVal.OBJ_Tw_IF.GetFollowInfo( wID )
-			if wSubRes['Result']!=True :
-				wRes['Reason'] = "GetFollowInfo is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
+			if wFollowInfoRes['Result']!=True :
+###				wRes['Reason'] = "GetFollowInfo is failed"
+				if str(wFollowInfoRes['Responce'])=="404" :
+					### Twitterに存在しないため削除する
+					wQuery = "delete from tbl_favouser_data " + \
+								"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
+								" and id = '" + str(wID) + "' ;"
+					
+					wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+					if wResDB['Result']!=True :
+						wRes['Reason'] = "Run Query is failed"
+						gVal.OBJ_L.Log( "B", wRes )
+					
+					wStr = "●Twitterに存在しないユーザのため削除"
+					continue
+				else:
+					wStr = "GetFollowInfo is failed: screen_name=" + wARR_RateFavoDate[wID]['screen_name']
+					wStr = wStr + " status_code=" + str(wFollowInfoRes['Responce'])
+					wRes['Reason'] = wStr
+					gVal.OBJ_L.Log( "B", wRes )
+###					return wRes
+					continue
 			if wFollowInfoRes['Responce']['blocked_by']==True :
 				### 被ブロック検知
 				wBlockBy = True
 				
 				### 通信記録
 				wStr = "●被ブロック検知"
-				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wARR_RateFavoDate[wID]['screen_name'] )
-
+###				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wARR_RateFavoDate[wID]['screen_name'] )
+				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wARR_RateFavoDate[wID]['screen_name'], inID=wID )
+				
 				### ユーザレベル変更
 				wUserLevel = "G"
 				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
@@ -688,7 +713,8 @@ class CLS_TwitterMain():
 				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
 				
 				### 通信記録
-				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wARR_RateFavoDate[wID]['screen_name'] )
+###				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wARR_RateFavoDate[wID]['screen_name'] )
+				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wARR_RateFavoDate[wID]['screen_name'], inID=wID )
 				
 				### トラヒック記録
 				CLS_Traffic.sP( "d_myfollow" )
@@ -710,7 +736,8 @@ class CLS_TwitterMain():
 				
 				### 通信記録（フォロー者OFF・フォロワーから、フォロー者・フォロワーOFFへ）
 				wStr = "●リムーブされた"
-				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wARR_RateFavoDate[wID]['screen_name'] )
+###				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wARR_RateFavoDate[wID]['screen_name'] )
+				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wARR_RateFavoDate[wID]['screen_name'], inID=wID )
 				
 				### トラヒック記録
 				CLS_Traffic.sP( "d_follower" )
@@ -912,6 +939,16 @@ class CLS_TwitterMain():
 				return wRes
 		
 		#############################
+		# ミュート解除(できるだけ)（●フル自動監視）
+		if wFLG_Short==False :
+			wSubRes = gVal.OBJ_Tw_IF.AllMuteRemove()
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "AllMuteRemove is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+		
+		#############################
 		# 自動監視時間に 現時間を設定
 		if wFLG_Short==False :
 			wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "autorun", gVal.STR_Time['TimeDate'] )
@@ -960,6 +997,15 @@ class CLS_TwitterMain():
 #####################################################
 	def SetTrendTag(self):
 		wRes = self.OBJ_TwitterAdmin.SetTrendTag()
+		return wRes
+
+
+
+#####################################################
+# VIPタグ設定
+#####################################################
+	def SetVipTag(self):
+		wRes = self.OBJ_TwitterAdmin.SetVipTag()
 		return wRes
 
 
@@ -1092,7 +1138,8 @@ class CLS_TwitterMain():
 #####################################################
 # リアクションツイートチェック
 #####################################################
-	def ReactionTweetCheck( self, inMyUserID, inTweet ):
+###	def ReactionTweetCheck( self, inMyUserID, inTweet ):
+	def ReactionTweetCheck( self, inMyUserID, inTweet, inVIPon=False ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -1158,6 +1205,16 @@ class CLS_TwitterMain():
 				else:
 					CLS_Traffic.sP( "r_vip" )
 		
+		wFLG_VIPretweet = False
+		#############################
+		# VIP かつ VIPリツイートが有効で
+		# VIPリツイートタグを含む場合
+		#   VIPリツイート対象にする
+		if inVIPon==True and gVal.STR_UserInfo['VipTag']!=gVal.DEF_NOTEXT :
+			wTag = "#" + gVal.STR_UserInfo['VipTag']
+			if wTweet['text'].find( wTag )>=0 :
+				wFLG_VIPretweet = True
+		
 		#############################
 		# リツイートチェック
 		wSubRes = gVal.OBJ_Tw_IF.GetRetweetLookup( wTweetID )
@@ -1169,6 +1226,13 @@ class CLS_TwitterMain():
 		wKeylist = list( wSubRes['Responce'].keys() )
 		for wID in wKeylist :
 			wID = str(wID)
+			
+			### VIPリツイート対象のツイートで
+			### 既にリツイート済みなら フラグを落とす
+			if wFLG_VIPretweet==True :
+				if str(gVal.STR_UserInfo['id'])==wID :
+					wFLG_VIPretweet = False	#フラグ落とす
+			
 			###ユーザ単位のリアクションチェック
 			wReactionRes = self.ReactionUserCheck( wSubRes['Responce'][wID], wTweet, wFLG_MyUser )
 			if wReactionRes['Result']!=True :
@@ -1176,7 +1240,7 @@ class CLS_TwitterMain():
 				gVal.OBJ_L.Log( "B", wRes )
 				continue
 			if wReactionRes['Responce']==True :
-				wStr = "〇リツイート検出: " + wSubRes['Responce'][wID]['screen_name'] ;
+				wStr = "〇リツイート検出: " + wSubRes['Responce'][wID]['screen_name']
 				CLS_OSIF.sPrn( wStr )
 				
 				### トラヒック記録
@@ -1189,6 +1253,20 @@ class CLS_TwitterMain():
 						CLS_Traffic.sP( "r_out" )
 				else:
 					CLS_Traffic.sP( "r_vip" )
+		
+		#############################
+		# VIPリツイート対象なら
+		# リツイートする
+		if wFLG_VIPretweet==True :
+			### リツイート実施
+			wSubRes = gVal.OBJ_Tw_IF.Retweet( wTweetID )
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "Twitter Error(Retweet): Tweet ID: " + wTweetID
+				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+			else:
+				wStr = "〇VIPリツイート実行"
+				CLS_OSIF.sPrn( wStr )
 		
 		#############################
 		# 引用リツイートチェック
@@ -1323,7 +1401,8 @@ class CLS_TwitterMain():
 		# 無反応のレベルタグ
 		if wARR_DBData['level_tag']=="D-" or wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G-" :
 			### 報告対象の表示と、ログに記録
-			gVal.OBJ_L.Log( "RR", wRes, "●反応外のレベルタグ ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wARR_DBData['level_tag'] )
+###			gVal.OBJ_L.Log( "RR", wRes, "●反応外のレベルタグ ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wARR_DBData['level_tag'] )
+			gVal.OBJ_L.Log( "RR", wRes, "●反応外のレベルタグ ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wARR_DBData['level_tag'], inID=wUserID )
 			
 			if wFLG_Action==True :
 				### 除外してない場合
@@ -1401,7 +1480,8 @@ class CLS_TwitterMain():
 				CLS_Traffic.sP( "p_myfollow" )
 				
 				### ログに記録
-				gVal.OBJ_L.Log( "R", wRes, "自動フォロー（昇格）: " + wARR_DBData['screen_name'] )
+###				gVal.OBJ_L.Log( "R", wRes, "自動フォロー（昇格）: " + wARR_DBData['screen_name'] )
+				gVal.OBJ_L.Log( "R", wRes, "自動フォロー（昇格）: " + wARR_DBData['screen_name'], inID=wUserID )
 				
 				### DBに反映
 				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Follower( wUserID, inFLG_MyFollow=True )
@@ -1529,7 +1609,8 @@ class CLS_TwitterMain():
 			return wRes
 		
 		wTextReason = "リスト通知: " + inData['screen_name']
-		gVal.OBJ_L.Log( "RR", wRes, wTextReason )
+###		gVal.OBJ_L.Log( "RR", wRes, wTextReason )
+		gVal.OBJ_L.Log( "RR", wRes, wTextReason, inID=inData['id'] )
 		
 		wRes['Result'] = True
 		return wRes
@@ -1801,7 +1882,8 @@ class CLS_TwitterMain():
 					CLS_Traffic.sP( "d_follower" )
 					
 					### ログに記録
-					gVal.OBJ_L.Log( "R", wRes, "追い出し: screen_name=" + wARR_ListUsers[wID]['screen_name'] )
+###					gVal.OBJ_L.Log( "R", wRes, "追い出し: screen_name=" + wARR_ListUsers[wID]['screen_name'] )
+					gVal.OBJ_L.Log( "R", wRes, "追い出し: screen_name=" + wARR_ListUsers[wID]['screen_name'], inID=wID )
 				
 				#############################
 				# 通常アカウントへは警告ツイートを送信
@@ -1893,7 +1975,8 @@ class CLS_TwitterMain():
 				
 				### ログに記録
 				wStr = "リスト登録者へ警告(規定外ユーザ): screen_name=" + wScreenName + " tweetid=" + wTweetID + " list=" + str(inListName)
-				gVal.OBJ_L.Log( "RR", wRes, wStr )
+###				gVal.OBJ_L.Log( "RR", wRes, wStr )
+				gVal.OBJ_L.Log( "RR", wRes, wStr, inID=inUser['id'] )
 			
 			wRes['Responce'] = True	#Twitterへ送信済
 		
@@ -1902,7 +1985,8 @@ class CLS_TwitterMain():
 		else:
 			### ログに記録
 			wStr = "リスト登録者へ警告(規定外ユーザ・Twitter未送信): screen_name=" + wScreenName + " tweetid=" + wTweetID + " list=" + str(inListName)
-			gVal.OBJ_L.Log( "RR", wRes, wStr )
+###			gVal.OBJ_L.Log( "RR", wRes, wStr )
+			gVal.OBJ_L.Log( "RR", wRes, wStr, inID=inUser['id'] )
 		
 		#############################
 		# IDを警告済に追加
@@ -2093,7 +2177,8 @@ class CLS_TwitterMain():
 			if wWord.find( wExeWord )>=0 :
 				if gVal.ARR_ExeWord[wExeWord]['report']==True :
 					### 報告対象の表示と、ログに記録
-					gVal.OBJ_L.Log( "RR", wRes, "●報告対象の文字除外: id=" + inData['screen_name'] + " word=" + inWord )
+###					gVal.OBJ_L.Log( "RR", wRes, "●報告対象の文字除外: id=" + inData['screen_name'] + " word=" + inWord )
+					gVal.OBJ_L.Log( "RR", wRes, "●報告対象の文字除外: id=" + inData['screen_name'] + " word=" + inWord, inID=inData['id'] )
 				else:
 					### ログに記録
 					gVal.OBJ_L.Log( "N", wRes, "文字除外: id=" + inData['screen_name'] + " word=" + inWord )
@@ -2134,7 +2219,8 @@ class CLS_TwitterMain():
 			
 			if gVal.ARR_NotReactionUser[wUserID]['report']==True and inFLG_Log==True :
 				### 報告対象の表示と、ログに記録
-				gVal.OBJ_L.Log( "RR", wRes, "●禁止ユーザ: screen_name=" + inData['screen_name'] + " reason=" + inReason )
+###				gVal.OBJ_L.Log( "RR", wRes, "●禁止ユーザ: screen_name=" + inData['screen_name'] + " reason=" + inReason )
+				gVal.OBJ_L.Log( "RR", wRes, "●禁止ユーザ: screen_name=" + inData['screen_name'] + " reason=" + inReason, inID=wUserID )
 			
 			### 除外
 			wRes['Result'] = True
@@ -2220,7 +2306,8 @@ class CLS_TwitterMain():
 			wUserLevel = "G"
 			
 			wStr = "●被ブロック検知"
-			gVal.OBJ_L.Log( "R", wRes, wStr + ": " + inData['screen_name'] )
+###			gVal.OBJ_L.Log( "R", wRes, wStr + ": " + inData['screen_name'] )
+			gVal.OBJ_L.Log( "R", wRes, wStr + ": " + inData['screen_name'], inID=wID )
 		
 		### 公式垢の場合
 		elif gVal.OBJ_Tw_IF.CheckSubscribeListUser( wID )==True :

@@ -184,6 +184,14 @@ class CLS_TwitterKeyword():
 			return wRes
 		
 		#############################
+		# g: リスト未登録で検索実行（+フォロー）
+		elif inWord=="\\ngf" :
+			self.RunKeywordSearchFavo_noRegist( inFollow=True )
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
 		# s: 検索ワード追加
 		elif inWord=="\\s" :
 			self.__set_KeywordFavo()
@@ -563,7 +571,8 @@ class CLS_TwitterKeyword():
 		return wRes
 
 	#####################################################
-	def RunKeywordSearchFavo_noRegist(self):
+###	def RunKeywordSearchFavo_noRegist(self):
+	def RunKeywordSearchFavo_noRegist( self, inFollow=False ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -591,7 +600,8 @@ class CLS_TwitterKeyword():
 		#############################
 		# 検索実行
 ###		wSubRes = self.__running_KeywordSearchFavo( wWord )
-		wSubRes = self.__running_KeywordSearchFavo( wWord, inCircle=gVal.DEF_STR_TLNUM['KeywordTweetLen_LongCircle'] )
+###		wSubRes = self.__running_KeywordSearchFavo( wWord, inCircle=gVal.DEF_STR_TLNUM['KeywordTweetLen_LongCircle'] )
+		wSubRes = self.__running_KeywordSearchFavo( wWord, inCircle=gVal.DEF_STR_TLNUM['KeywordTweetLen_LongCircle'], inFLG_AutoFollow=inFollow )
 		if wSubRes['Result']!=True :
 			wRes['Reason'] = "__running_KeywordSearchFavo is failed: word=" + str(wWord)
 			gVal.OBJ_L.Log( "B", wRes )

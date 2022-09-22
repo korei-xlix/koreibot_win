@@ -81,7 +81,8 @@ class CLS_Mylog():
 #####################################################
 # ロギング
 #####################################################
-	def Log( self, inLevel, inRes, inText=None, inARR_Data=[], inViewConsole=DEF_VIEW_CONSOLE, inOutFile=DEF_OUT_FILE ):
+###	def Log( self, inLevel, inRes, inText=None, inARR_Data=[], inViewConsole=DEF_VIEW_CONSOLE, inOutFile=DEF_OUT_FILE ):
+	def Log( self, inLevel, inRes, inText=None, inARR_Data=[], inID=None, inViewConsole=DEF_VIEW_CONSOLE, inOutFile=DEF_OUT_FILE ):
 		#############################
 		# ログ文字セット
 		wSTR_Log = {
@@ -179,6 +180,8 @@ class CLS_Mylog():
 		wQy = wQy + "'" + wSTR_Log['LogClass'] + "',"
 		wQy = wQy + "'" + wSTR_Log['LogFunc'] + "',"
 		wQy = wQy + "'" + wSTR_Log['Reason'] + "' "
+		if (wLevel=="R" or wLevel=="RC" or wLevel=="RR" ) and inID!=None :
+			wQy = wQy + ", '" + str(inID) + "' "
 		wQy = wQy + ") ;"
 		
 		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy, False )
@@ -476,6 +479,52 @@ class CLS_Mylog():
 #	reason      TEXT  NOT NULL
 #	regdate     TIMESTAMP
 #############################
+
+
+
+#####################################################
+# 個別ログ取得
+#####################################################
+	def GetLog( self, inID ):
+		wARR_Log = {}
+		
+		#############################
+		# データベースを取得
+		wQy = "select * from tbl_caution_tweet "
+#		wQy = wQy + "where ( level = 'R' or level = 'RC' or level = 'RR' ) and "
+#		wQy = wQy + "id = " + str(inID) + " and "
+		wQy = wQy + "where id = " + str(inID) + " and "
+		wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' "
+		wQy = wQy + "order by regdate DESC ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQy )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
+		# 辞書型に整形
+		wARR_DBData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
+		
+		wKeylist = list( wARR_DBData.keys() )
+		for wIndex in wKeylist :
+			wLevel = wARR_DBData[wIndex]['level']
+			wNumSpace = self.DEF_LEVEL_SIZE - len( wLevel )
+			wLevelTag = wLevel + " " * wNumSpace
+			
+			wCell = {
+				"regdate"	: str(wARR_DBData[wIndex]['regdate']),
+				"level"		: wLevelTag,
+				"log_class"	: wARR_DBData[wIndex]['log_class'],
+				"log_func"	: wARR_DBData[wIndex]['log_func'],
+				"reason"	: wARR_DBData[wIndex]['reason']
+			}
+			wARR_Log.update({ wIndex : wCell })
+		
+		return wARR_Log
 
 
 
