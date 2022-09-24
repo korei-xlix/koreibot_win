@@ -585,11 +585,18 @@ class CLS_TwitterMain():
 							wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_Remove( wFollowerData[wID] )
 							
 							### ユーザレベル変更
-							wUserLevel = "E-"
+###							wUserLevel = "E-"
+							if wFollowerData[wID]['level_tag']=="F+" :
+								### 完全スルーユーザからのリムーブは追い出し扱い
+								wUserLevel = "G-"
+								wStr = "●リムーブされた(追い出し扱い)"
+							else:
+								wUserLevel = "E-"
+								wStr = "●リムーブされた"
 							wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
 							
 							### ユーザ記録
-							wStr = "●リムーブされた"
+###							wStr = "●リムーブされた"
 ###							gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'] )
 							gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'], inID=wID )
 					
@@ -731,11 +738,18 @@ class CLS_TwitterMain():
 				
 				### ユーザレベル変更
 ###				wUserLevel = "E"
-				wUserLevel = "E-"
+###				wUserLevel = "E-"
+				if wARR_RateFavoDate[wID]['level_tag']=="F+" :
+					### 完全スルーユーザからのリムーブは追い出し扱い
+					wUserLevel = "G-"
+					wStr = "●リムーブされた(追い出し扱い)"
+				else:
+					wUserLevel = "E-"
+					wStr = "●リムーブされた"
 				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
 				
 				### 通信記録（フォロー者OFF・フォロワーから、フォロー者・フォロワーOFFへ）
-				wStr = "●リムーブされた"
+###				wStr = "●リムーブされた"
 ###				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wARR_RateFavoDate[wID]['screen_name'] )
 				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wARR_RateFavoDate[wID]['screen_name'], inID=wID )
 				
@@ -949,7 +963,8 @@ class CLS_TwitterMain():
 		#############################
 		# ミュート解除(できるだけ)（●フル自動監視）
 		if wFLG_Short==False :
-			wSubRes = gVal.OBJ_Tw_IF.AllMuteRemove()
+###			wSubRes = gVal.OBJ_Tw_IF.AllMuteRemove()
+			wSubRes = self.AllMuteRemove()
 			if wSubRes['Result']!=True :
 				###失敗
 				wRes['Reason'] = "AllMuteRemove is failed"

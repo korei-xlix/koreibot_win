@@ -278,10 +278,12 @@ class CLS_Twitter_IF() :
 			return wRes
 		
 		### リツイートの場合、ツイ元のIDの重複もみる
-		if wKind=="retweet" :
+###		if wKind=="retweet" :
+		if wKind!="normal" :
 			wKeylist = list( self.ARR_Favo.keys() )
 			for wIndex in wKeylist :
-				if self.ARR_Favo[wIndex]['ret_id']==wID :
+###				if self.ARR_Favo[wIndex]['ret_id']==wID :
+				if self.ARR_Favo[wIndex]['ret_id']==wRetID :
 					wRes['Result'] = True
 					return wRes
 		

@@ -890,14 +890,14 @@ class CLS_TwitterFollower():
 				wFLG_Remove = True
 			
 			if wFLG_Remove==True :
-				#############################
-				# ブロック→リムーブする
-				wBlockRes = gVal.OBJ_Tw_IF.BlockRemove( wUserID )
-				if wBlockRes['Result']!=True :
-					wRes['Reason'] = "Twitter API Error(BlockRemove): " + wBlockRes['Reason'] + " screen_name=" + str(inUser['screen_name'])
-					gVal.OBJ_L.Log( "B", wRes )
-					return wRes
-				
+###				#############################
+###				# ブロック→リムーブする
+###				wBlockRes = gVal.OBJ_Tw_IF.BlockRemove( wUserID )
+###				if wBlockRes['Result']!=True :
+###					wRes['Reason'] = "Twitter API Error(BlockRemove): " + wBlockRes['Reason'] + " screen_name=" + str(inUser['screen_name'])
+###					gVal.OBJ_L.Log( "B", wRes )
+###					return wRes
+###				
 				### ユーザレベル変更
 				wUserLevel = "F+"
 				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
@@ -906,8 +906,9 @@ class CLS_TwitterFollower():
 				CLS_Traffic.sP( "d_follower" )
 				
 				### ユーザ記録
-				wStr = "●完全スルー期間外のため追い出し"
+###				wStr = "●完全スルー期間外のため追い出し"
 ###				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']) )
+				wStr = "●完全スルー期間外のため、以後無視"
 				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']), inID=wUserID )
 				
 				#############################
