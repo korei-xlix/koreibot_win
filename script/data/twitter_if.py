@@ -242,6 +242,13 @@ class CLS_Twitter_IF() :
 ###				gVal.OBJ_L.Log( "B", wRes )
 ###				return wRes
 ###		
+		#############################
+		# データが空の場合
+		if "id" not in inTweet :
+			wRes['Reason'] = "data error: not cell id"
+			gVal.OBJ_L.Log( "D", wRes )
+			return wRes
+		
 		wID = str( inTweet['id'] )
 		wText = str(inTweet['text']).replace( "'", "''" )
 		wUserID = str( inTweet['user']['id'] )
@@ -865,7 +872,8 @@ class CLS_Twitter_IF() :
 		
 		#############################
 		# データ加工
-		wTweets = {}
+###		wTweets = {}
+		wTweets = None
 		if "data" in wTwitterRes['Responce'] :
 			
 			wID     = str( wTwitterRes['Responce']['data']['id'] )
@@ -1476,10 +1484,17 @@ class CLS_Twitter_IF() :
 			return wRes
 		
 		#############################
+		# 情報がなければ処理を抜ける
+		if wTweetInfoRes['Responce']==None :
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
 		# いいね情報を登録する
 		wResSub =self.AddFavoUserID( wTweetInfoRes['Responce'] )
 		if wResSub['Result']!=True :
-			wRes['Reason'] = "sTimeLag failed(1)"
+###			wRes['Reason'] = "sTimeLag failed(1)"
+			wRes['Reason'] = "AddFavoUserID is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		if wResSub['Responce']==False :
@@ -1656,6 +1671,34 @@ class CLS_Twitter_IF() :
 
 
 #####################################################
+# ミュート一覧取得
+#####################################################
+	def GetMuteList(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_Twitter_IF"
+		wRes['Func']  = "GetMuteList"
+		
+		#############################
+		# ミュート一覧 取得
+		wMuteRes = self.OBJ_Twitter.GetMuteIDs()
+		CLS_Traffic.sP( "run_api", wMuteRes['RunAPI'] )
+		if wMuteRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error(GetMuteIDs): " + wMuteRes['Reason']
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 完了
+		wRes['Responce'] = wMuteRes['Responce']
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
 # ミュート
 #####################################################
 	def Mute( self, inID ):
@@ -1682,74 +1725,100 @@ class CLS_Twitter_IF() :
 
 
 #####################################################
-# ミュート解除(できるだけ)
+# ミュート解除
 #####################################################
-	def AllMuteRemove(self):
+	def RemoveMute( self, inID ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
 		wRes = CLS_OSIF.sGet_Resp()
 		wRes['Class'] = "CLS_Twitter_IF"
-		wRes['Func']  = "AllMuteRemove"
+		wRes['Func']  = "RemoveMute"
 		
-		wRes['Responce'] = False
 		#############################
-		# ミュート一覧 取得
-		wMuteRes = self.OBJ_Twitter.GetMuteIDs()
-		CLS_Traffic.sP( "run_api", wMuteRes['RunAPI'] )
-		if wMuteRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error(GetMuteIDs): " + wMuteRes['Reason']
+		# ミュート解除する
+		wTwitterRes = self.OBJ_Twitter.RemoveMute( inID )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error(RemoveMute): " + wTwitterRes['Reason']
 			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# ミュート解除ID一覧の作成
-		wARR_MuteRemoveID = []
-		if len(wMuteRes['Responce'])>=1 :
-			for wID in wMuteRes['Responce']:
-				wID = str( wID )
-				
-				###フォロー者は対象外
-				if self.CheckMyFollow( wID )==True :
-					continue
-				
-				wARR_MuteRemoveID.append( wID )
-		
-		###対象者なし
-		if len( wARR_MuteRemoveID )==0 :
-			wRes['Result'] = True
-			return wRes
-		
-		#############################
-		# 解除実行
-		else:
-			#############################
-			# ミュート解除していく
-			wStr = "ミュート解除対象数: " + str(len( wARR_MuteRemoveID )) + '\n'
-			wStr = wStr + "ミュート解除中......." + '\n'
-			CLS_OSIF.sPrn( wStr )
-			
-			for wID in wARR_MuteRemoveID :
-				###  ミュート解除する
-				wRemoveRes = self.OBJ_Twitter.RemoveMute( wID )
-				if wRemoveRes['Result']!=True :
-					wRes['Reason'] = "Twitter API Error(RemoveMute): " + wRemoveRes['Reason']
-					gVal.OBJ_L.Log( "B", wRes )
-					return wRes
-				### Twitter Wait
-				CLS_OSIF.sSleep( self.DEF_VAL_SLEEP )
-				
-				###  ミュート一覧にないID=ミュート解除してない 場合は待機スキップ
-				if wRemoveRes['Responce']==False :
-					continue
 		
 		#############################
 		# 完了
-		wRes['Responce'] = True
 		wRes['Result'] = True
 		return wRes
 
 
+
+#####################################################
+# ミュート解除(できるだけ)
+#####################################################
+###	def AllMuteRemove(self):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_Twitter_IF"
+###		wRes['Func']  = "AllMuteRemove"
+###		
+###		wRes['Responce'] = False
+###		#############################
+###		# ミュート一覧 取得
+###		wMuteRes = self.OBJ_Twitter.GetMuteIDs()
+###		CLS_Traffic.sP( "run_api", wMuteRes['RunAPI'] )
+###		if wMuteRes['Result']!=True :
+###			wRes['Reason'] = "Twitter API Error(GetMuteIDs): " + wMuteRes['Reason']
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		#############################
+###		# ミュート解除ID一覧の作成
+###		wARR_MuteRemoveID = []
+###		if len(wMuteRes['Responce'])>=1 :
+###			for wID in wMuteRes['Responce']:
+###				wID = str( wID )
+###				
+###				###フォロー者は対象外
+###				if self.CheckMyFollow( wID )==True :
+###					continue
+###				
+###				wARR_MuteRemoveID.append( wID )
+###		
+###		###対象者なし
+###		if len( wARR_MuteRemoveID )==0 :
+###			wRes['Result'] = True
+###			return wRes
+###		
+###		#############################
+###		# 解除実行
+###		else:
+###			#############################
+###			# ミュート解除していく
+###			wStr = "ミュート解除対象数: " + str(len( wARR_MuteRemoveID )) + '\n'
+###			wStr = wStr + "ミュート解除中......." + '\n'
+###			CLS_OSIF.sPrn( wStr )
+###			
+###			for wID in wARR_MuteRemoveID :
+###				###  ミュート解除する
+###				wRemoveRes = self.OBJ_Twitter.RemoveMute( wID )
+###				if wRemoveRes['Result']!=True :
+###					wRes['Reason'] = "Twitter API Error(RemoveMute): " + wRemoveRes['Reason']
+###					gVal.OBJ_L.Log( "B", wRes )
+###					return wRes
+###				### Twitter Wait
+###				CLS_OSIF.sSleep( self.DEF_VAL_SLEEP )
+###				
+###				###  ミュート一覧にないID=ミュート解除してない 場合は待機スキップ
+###				if wRemoveRes['Responce']==False :
+###					continue
+###		
+###		#############################
+###		# 完了
+###		wRes['Responce'] = True
+###		wRes['Result'] = True
+###		return wRes
+###
+###
 
 #####################################################
 # 自ユーザ情報 取得

@@ -233,11 +233,16 @@ class CLS_MyDisp():
 			pRes['Responce'] = "    DB登録日                    : " + wStr
 		
 		###インプリ：操作ログ
-		elif "[@USERADMIN-LOG@]"==inLine and len(inData['log'])!=0 :
-			wKeylist = list(inData['log'].keys() )
-			for wIndex in wKeylist :
-				wLog = inData['log'][wIndex] + '\n'
-				wStr = wStr + wLog
+###		elif "[@USERADMIN-LOG@]"==inLine and len(inData['log'])!=0 :
+		elif "[@USERADMIN-LOG@]"==inLine :
+			wStr = ""
+			if len(inData['log'])==0 :
+				wStr = "操作履歴がありません。" + '\n'
+			else:
+				wKeylist = list(inData['log'].keys() )
+				for wIndex in wKeylist :
+					wLog = inData['log'][wIndex] + '\n'
+					wStr = wStr + wLog
 			pRes['Responce'] = wStr
 		
 		#############################

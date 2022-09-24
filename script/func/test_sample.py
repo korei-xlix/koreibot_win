@@ -118,13 +118,13 @@ class CLS_Test():
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-		#############################
-		# いいね解除（●フル自動監視）
-		wSubRes = self.OBJ_Parent.OBJ_TwitterFavo.RemFavo()
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "RemFavo"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
+#		#############################
+#		# いいね解除（●フル自動監視）
+#		wSubRes = self.OBJ_Parent.OBJ_TwitterFavo.RemFavo()
+#		if wSubRes['Result']!=True :
+#			wRes['Reason'] = "RemFavo"
+#			gVal.OBJ_L.Log( "B", wRes )
+#			return wRes
 		
 #		#############################
 #		# リストいいね（●フル自動監視）
@@ -133,6 +133,14 @@ class CLS_Test():
 #			wRes['Reason'] = "ListFavo"
 #			gVal.OBJ_L.Log( "B", wRes )
 #			return wRes
+		
+		#############################
+		# フォロワーいいね
+		wSubRes = self.OBJ_Parent.OBJ_TwitterFavo.FollowerFavo( inTest=True )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "FollowerFavo"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
 		
 		#############################
 		# 完了

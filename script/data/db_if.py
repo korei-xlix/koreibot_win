@@ -2561,7 +2561,8 @@ class CLS_DB_IF() :
 		return wRes
 
 	#####################################################
-	def GetFavoDataOne( self, inUser, inFLG_New=True ):
+###	def GetFavoDataOne( self, inUser, inFLG_New=True ):
+	def GetFavoDataOne( self, inUser=None, inID=None, inFLG_New=True ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -2575,8 +2576,22 @@ class CLS_DB_IF() :
 		}
 		#############################
 		# ユーザ情報の加工
-		wID = str(inUser['id'])
-		wScreenName = inUser['screen_name']
+###		wID = str(inUser['id'])
+###		wScreenName = inUser['screen_name']
+		if inUser!=None :
+			if "id" in inUser :
+				wID = str(inUser['id'])
+			else:
+				wRes['Reason'] = "inUser type error: " + str(inUser)
+				gVal.OBJ_L.Log( "D", wRes )
+				return wRes
+		else:
+			if inID!=None :
+				wID = str(inID)
+			else:
+				wRes['Reason'] = "inID is none"
+				gVal.OBJ_L.Log( "D", wRes )
+				return wRes
 		
 		#############################
 		# DBのいいね情報取得

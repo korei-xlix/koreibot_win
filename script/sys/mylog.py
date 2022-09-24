@@ -490,15 +490,14 @@ class CLS_Mylog():
 		
 		#############################
 		# データベースを取得
-		wQy = "select * from tbl_caution_tweet "
+		wQy = "select * from tbl_log_data "
 #		wQy = wQy + "where ( level = 'R' or level = 'RC' or level = 'RR' ) and "
 #		wQy = wQy + "id = " + str(inID) + " and "
-		wQy = wQy + "where id = " + str(inID) + " and "
+		wQy = wQy + "where id = '" + str(inID) + "' and "
 		wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' "
 		wQy = wQy + "order by regdate DESC ;"
 		
-		wResDB = self.OBJ_DB.RunQuery( wQy )
-		wResDB = self.OBJ_DB.GetQueryStat()
+		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy )
 		if wResDB['Result']!=True :
 			##失敗
 			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
