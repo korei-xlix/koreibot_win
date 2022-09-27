@@ -1064,7 +1064,7 @@ class CLS_TwitterFollower():
 #####################################################
 # タイムラインフォロー
 #####################################################
-	def TimelineFollow(self):
+	def TimelineFollow( self , inCheck=True ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -1079,7 +1079,8 @@ class CLS_TwitterFollower():
 			wRes['Reason'] = "sTimeLag failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		if wGetLag['Beyond']==False :
+###		if wGetLag['Beyond']==False :
+		if wGetLag['Beyond']==False and inCheck==True :
 			### 規定以内は除外
 			wStr = "●タイムラインフォロー期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
 			CLS_OSIF.sPrn( wStr )

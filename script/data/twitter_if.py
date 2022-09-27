@@ -436,6 +436,16 @@ class CLS_Twitter_IF() :
 	def GetFavoData(self):
 		return self.ARR_Favo
 
+	#####################################################
+	# チェックいいねID重複
+	#####################################################
+	def CheckFavoUserID( self, inID ):
+		wID = str(inID)
+		### 重複があるか
+		if wID not in self.ARR_Favo :
+			return False
+		return True
+
 
 
 #####################################################
@@ -1464,46 +1474,34 @@ class CLS_Twitter_IF() :
 			"Run"	: False,
 			"Data"	: None
 		}
-###		#############################
-###		# いいね済みなら抜ける
-###		wID = str( inID )
-###		if wID in self.ARR_Favo :
-###			### いいね済み
-###			wRes['Result'] = True
-###			return wRes
-###		
-		#############################
-		# ツイートの情報を取得する
-		wTweetInfoRes = self.GetTweetLookup( inID )
-		if wTweetInfoRes['Result']!=True :
-###			wRes['Reason'] = "Twitter API Error(GetTweetLookup): " + wTweetInfoRes['Reason']
-			wStr = "Twitter API Error(GetTweetLookup): " + wTwitterRes['Reason']
-###			wStr = wStr + " kind=" + self.ARR_Favo[inID]['kind']
-			wStr = wStr + " id=" + str(inID)
-###			wStr = wStr + " screen_name=" + self.ARR_Favo[inID]['user']['screen_name']
-			wRes['Reason'] = wStr
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# 情報がなければ処理を抜ける
-		if wTweetInfoRes['Responce']==None :
-			wRes['Result'] = True
-			return wRes
-		
-		#############################
-		# いいね情報を登録する
-		wResSub =self.AddFavoUserID( wTweetInfoRes['Responce'] )
-		if wResSub['Result']!=True :
-###			wRes['Reason'] = "sTimeLag failed(1)"
-			wRes['Reason'] = "AddFavoUserID is failed"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		if wResSub['Responce']==False :
-			### 重複あり= 抜ける
-			wRes['Result'] = True
-			return wRes
-		
+#		#############################
+#		# ツイートの情報を取得する
+#		wTweetInfoRes = self.GetTweetLookup( inID )
+#		if wTweetInfoRes['Result']!=True :
+#			wStr = "Twitter API Error(GetTweetLookup): " + wTwitterRes['Reason']
+#			wStr = wStr + " id=" + str(inID)
+#			wRes['Reason'] = wStr
+#			gVal.OBJ_L.Log( "B", wRes )
+#			return wRes
+#		
+#		#############################
+#		# 情報がなければ処理を抜ける
+#		if wTweetInfoRes['Responce']==None :
+#			wRes['Result'] = True
+#			return wRes
+#		
+#		#############################
+#		# いいね情報を登録する
+#		wResSub =self.AddFavoUserID( wTweetInfoRes['Responce'] )
+#		if wResSub['Result']!=True :
+#			wRes['Reason'] = "AddFavoUserID is failed"
+#			gVal.OBJ_L.Log( "B", wRes )
+#			return wRes
+#		if wResSub['Responce']==False :
+#			### 重複あり= 抜ける
+#			wRes['Result'] = True
+#			return wRes
+#		
 		#############################
 		# いいねする
 		wTwitterRes = self.OBJ_Twitter.CreateFavo( inID )
@@ -1512,31 +1510,20 @@ class CLS_Twitter_IF() :
 		#############################
 		# 結果チェック
 		if wTwitterRes['Result']!=True :
-###			wRes['Reason'] = "Twitter API Error(CreateFavo): " + wTwitterRes['Reason']
 			wStr = "Twitter API Error(CreateFavo): " + wTwitterRes['Reason']
-###			wStr = wStr + " kind=" + self.ARR_Favo[inID]['kind']
 			wStr = wStr + " id=" + str(inID)
 			wStr = wStr + " screen_name=" + wTweetInfoRes['Responce']['user']['screen_name']
 			wRes['Reason'] = wStr
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-###		#############################
-###		# いいね情報を登録する
-###		wResSub =self.AddFavoUserID( wTweetInfoRes['Responce'] )
-###		if wResSub['Result']!=True :
-###			wRes['Reason'] = "sTimeLag failed(1)"
-###			gVal.OBJ_L.Log( "B", wRes )
-###			return wRes
-###		wRes['Responce']['Data'] = self.ARR_Favo[wID]
-###		
 		#############################
 		# トラヒック計測：いいね実施数
 		CLS_Traffic.sP( "p_favo" )
 		
 		#############################
 		# 完了
-		wRes['Responce']['Data'] = self.ARR_Favo[inID]
+#		wRes['Responce']['Data'] = self.ARR_Favo[inID]
 		wRes['Responce']['Run']  = True
 		
 		wRes['Result'] = True

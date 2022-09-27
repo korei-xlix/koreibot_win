@@ -818,6 +818,7 @@ class CLS_TwitterFavo():
 			wSTR_Tweet = {
 				"kind"				: None,
 				"id"				: wTweetID,
+				"retweet_id"		: None,
 				"text"				: wTweet['text'],
 				"sensitive"			: False,
 				"created_at"		: None,
@@ -831,6 +832,7 @@ class CLS_TwitterFavo():
 			if "retweeted_status" in wTweet :
 				wSTR_Tweet['kind'] = "retweet"
 				wSTR_Tweet['created_at'] = str(wTweet['retweeted_status']['created_at'])
+				wSTR_Tweet['retweet_id'] = str(wTweet['retweeted_status']['id'])
 				
 				wSTR_Tweet['user']['id']   = str( wTweet['retweeted_status']['user']['id'] )
 				wSTR_Tweet['user']['name'] = wTweet['retweeted_status']['user']['name'].replace( "'", "''" )
@@ -846,6 +848,7 @@ class CLS_TwitterFavo():
 			elif "quoted_status" in wTweet :
 				wSTR_Tweet['kind'] = "quoted"
 				wSTR_Tweet['created_at'] = str(wTweet['quoted_status']['created_at'])
+				wSTR_Tweet['retweet_id'] = str(wTweet['quoted_status']['id'])
 				
 				wSTR_Tweet['user']['id']   = str( wTweet['quoted_status']['user']['id'] )
 				wSTR_Tweet['user']['name'] = wTweet['quoted_status']['user']['name'].replace( "'", "''" )
@@ -910,6 +913,25 @@ class CLS_TwitterFavo():
 			else:
 				### ユーザをメモする
 				self.ARR_OverFavoUserID.append( wSTR_Tweet['src_user']['id'] )
+			
+			#############################
+			# いいね一覧にあるいいねの重複があるか
+			wFavoRes = gVal.OBJ_Tw_IF.CheckFavoUserID( wSTR_Tweet['id'] )
+			if wFavoRes!=True :
+				### いいね重複あり 除外
+				wSTR_Tweet['reason'] = "いいね済ツイート"
+				wFLG_ZanCountSkip = True
+				continue
+			else:
+				### リツイート、引用リツイートの場合
+				### リツイ元IDもチェックする
+				if wSTR_Tweet['kind']=="retweet" or wSTR_Tweet['kind']=="quoted" :
+					wFavoRes = gVal.OBJ_Tw_IF.CheckFavoUserID( wSTR_Tweet['retweet_id'] )
+					if wFavoRes!=True :
+						### いいね重複あり 除外
+						wSTR_Tweet['reason'] = "いいね済ツイート(リツイ元)"
+						wFLG_ZanCountSkip = True
+						continue
 			
 			#############################
 			# いいね一覧にあるユーザ

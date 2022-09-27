@@ -1122,7 +1122,8 @@ class CLS_TwitterMain():
 # タイムラインフォロー
 #####################################################
 	def TimelineFollow(self):
-		wRes = self.OBJ_TwitterFollower.TimelineFollow()
+###		wRes = self.OBJ_TwitterFollower.TimelineFollow()
+		wRes = self.OBJ_TwitterFollower.TimelineFollow( inCheck=False )
 		wRes['Result'] = True
 		return wRes
 
@@ -1587,6 +1588,16 @@ class CLS_TwitterMain():
 				wRes['Reason'] = "__ReactionUserCheck_ListInd is failed"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
+		
+		#############################
+		# 自動フォローする
+		# ※おそらく新規ユーザ
+		wSubRes = self.OBJ_TwitterFollower.AutoFollow( inUser )
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "AutoFollow is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
 		
 		wRes['Result'] = True
 		return wRes
