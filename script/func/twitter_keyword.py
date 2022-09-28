@@ -818,7 +818,8 @@ class CLS_TwitterKeyword():
 				### ※いいねツイート確定
 				#############################
 				# いいねする
-				wSubRes = gVal.OBJ_Tw_IF.Favo( wID )
+###				wSubRes = gVal.OBJ_Tw_IF.Favo( wID )
+				wSubRes = gVal.OBJ_Tw_IF.Favo( wTweet )
 				if wSubRes['Result']!=True :
 					wRes['Reason'] = "Twitter API Error(Favo): user=" + str(wTweet['user']['screen_name']) + " id=" + str(wID)
 					gVal.OBJ_L.Log( "B", wRes )

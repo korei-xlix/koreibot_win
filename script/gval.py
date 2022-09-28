@@ -183,6 +183,7 @@ class gVal() :
 		"forFollowerFavoHarfMyfollowSec"	: 288000,	#   片フォロー者の いいね期間                      3日+8時間 (60x60x24)x3+(60x60x8)
 		"forFollowerFavoHarfMyfollowCnt"	: 10,		#   片フォロー者 初回無条件実施回数
 		"forFollowerFavoHarfMyfollowRand"	: 20,		#   片フォロー者 ランダム実施値 パーセンテージ (1-100)   30％で実施
+		"forFollowerFavoHarfMyfollowRunSec"	: 86400,	#   片フォロー者の いいね実施期間                  1日  60x60x24
 		
 														# 自動いいね
 		"forAutoFavoTweetSec"				: 86400,	#   対象ツイート期間       1日  60x60x24

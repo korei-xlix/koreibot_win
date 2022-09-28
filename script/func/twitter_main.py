@@ -645,52 +645,55 @@ class CLS_TwitterMain():
 			wMyFollow = None
 			wFollower = None
 			wBlockBy  = False
-			#############################
-			# ブロックチェック
-			wFollowInfoRes = gVal.OBJ_Tw_IF.GetFollowInfo( wID )
-			if wFollowInfoRes['Result']!=True :
-###				wRes['Reason'] = "GetFollowInfo is failed"
-				if str(wFollowInfoRes['Responce'])=="404" :
-					### Twitterに存在しないため削除する
-					wQuery = "delete from tbl_favouser_data " + \
-								"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
-								" and id = '" + str(wID) + "' ;"
-					
-					wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
-					if wResDB['Result']!=True :
-						wRes['Reason'] = "Run Query is failed"
+			if wARR_RateFavoDate[wID]['level_tag']!="G" :
+				### G以外はブロックチェック
+				
+				#############################
+				# ブロックチェック
+				wFollowInfoRes = gVal.OBJ_Tw_IF.GetFollowInfo( wID )
+				if wFollowInfoRes['Result']!=True :
+					if str(wFollowInfoRes['Responce'])=="404" :
+						### Twitterに存在しないため削除する
+						wQuery = "delete from tbl_favouser_data " + \
+									"where twitterid = '" + gVal.STR_UserInfo['Account'] + "'" + \
+									" and id = '" + str(wID) + "' ;"
+						
+						wResDB = gVal.OBJ_DB_IF.RunQuery( wQuery )
+						if wResDB['Result']!=True :
+							wRes['Reason'] = "Run Query is failed"
+							gVal.OBJ_L.Log( "B", wRes )
+						
+						wStr = "●Twitterに存在しないユーザのため削除"
+						continue
+					else:
+						wStr = "GetFollowInfo is failed: screen_name=" + wARR_RateFavoDate[wID]['screen_name']
+						wStr = wStr + " status_code=" + str(wFollowInfoRes['Responce'])
+						wRes['Reason'] = wStr
 						gVal.OBJ_L.Log( "B", wRes )
+						continue
+				if wFollowInfoRes['Responce']['blocked_by']==True :
+					### 被ブロック検知
+					wBlockBy = True
 					
-					wStr = "●Twitterに存在しないユーザのため削除"
-					continue
-				else:
-					wStr = "GetFollowInfo is failed: screen_name=" + wARR_RateFavoDate[wID]['screen_name']
-					wStr = wStr + " status_code=" + str(wFollowInfoRes['Responce'])
-					wRes['Reason'] = wStr
-					gVal.OBJ_L.Log( "B", wRes )
-###					return wRes
-					continue
-			if wFollowInfoRes['Responce']['blocked_by']==True :
-				### 被ブロック検知
-				wBlockBy = True
-				
-				### 通信記録
-				wStr = "●被ブロック検知"
-###				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wARR_RateFavoDate[wID]['screen_name'] )
-				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wARR_RateFavoDate[wID]['screen_name'], inID=wID )
-				
-				### ユーザレベル変更
-				wUserLevel = "G"
-				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
-				
-				### トラヒック記録
-				if wARR_RateFavoDate[wID]['myfollow']==True :
-					wMyFollow = True
-					CLS_Traffic.sP( "d_myfollow" )
-				
-				if wARR_RateFavoDate[wID]['myfollow']==True :
-					wFollower = True
-					CLS_Traffic.sP( "follower" )
+					### 通信記録
+					wStr = "●被ブロック検知"
+					gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wARR_RateFavoDate[wID]['screen_name'], inID=wID )
+					
+					### ユーザレベル変更
+					wUserLevel = "G"
+					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
+					
+					### トラヒック記録
+					if wARR_RateFavoDate[wID]['myfollow']==True :
+						wMyFollow = True
+						CLS_Traffic.sP( "d_myfollow" )
+					
+					if wARR_RateFavoDate[wID]['myfollow']==True :
+						wFollower = True
+						CLS_Traffic.sP( "follower" )
+			else:
+				### Gは被ブロック済み
+				wBlockBy  = True
 			
 			#############################
 			# 〇リムーブ者検出
@@ -720,7 +723,6 @@ class CLS_TwitterMain():
 				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
 				
 				### 通信記録
-###				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wARR_RateFavoDate[wID]['screen_name'] )
 				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wARR_RateFavoDate[wID]['screen_name'], inID=wID )
 				
 				### トラヒック記録
@@ -1472,7 +1474,7 @@ class CLS_TwitterMain():
 			#############################
 			# レベル昇格
 			# 前提: フォロワー
-###			wUserLevel = None
+			wUserLevel = None
 			wCnt = wARR_DBData['rfavo_n_cnt'] + 1
 			if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or wARR_DBData['level_tag']=="F+" :
 				if gVal.OBJ_Tw_IF.CheckMyFollow( wUserID )==True and \
