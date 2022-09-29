@@ -481,6 +481,19 @@ class CLS_TwitterFavo():
 					continue
 			
 			#############################
+			# DBからいいね情報を取得する(1個)
+			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wARR_FollowData[wUserID], inFLG_New=False )
+			if wDBRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "GetFavoDataOne is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				continue
+			### DB未登録ならスキップ
+			if wDBRes['Responce']['Data']==None :
+				continue
+			wARR_DBData = wDBRes['Responce']['Data']
+			
+			#############################
 			# 相互フォローリストかつ相互フォロー
 			if gVal.OBJ_Tw_IF.CheckMutualListUser( wUserID )==True and \
 			   wARR_FollowData[wUserID]['follower']==True and \
@@ -511,18 +524,18 @@ class CLS_TwitterFavo():
 			
 			elif gVal.OBJ_Tw_IF.CheckFollowListUser( wUserID )==True and \
 			     gVal.STR_UserInfo['AutoRemove']==True :
-				### DBからいいね情報を取得する(1個)
-				wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wARR_FollowData[wUserID], inFLG_New=False )
-				if wDBRes['Result']!=True :
-					###失敗
-					wRes['Reason'] = "GetFavoDataOne is failed"
-					gVal.OBJ_L.Log( "B", wRes )
-					continue
-				### DB未登録ならスキップ
-				if wDBRes['Responce']['Data']==None :
-					continue
-				wARR_DBData = wDBRes['Responce']['Data']
-				
+###				### DBからいいね情報を取得する(1個)
+###				wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wARR_FollowData[wUserID], inFLG_New=False )
+###				if wDBRes['Result']!=True :
+###					###失敗
+###					wRes['Reason'] = "GetFavoDataOne is failed"
+###					gVal.OBJ_L.Log( "B", wRes )
+###					continue
+###				### DB未登録ならスキップ
+###				if wDBRes['Responce']['Data']==None :
+###					continue
+###				wARR_DBData = wDBRes['Responce']['Data']
+###				
 				#############################
 				# いいねしたことなければ1回だけフォロワーモードでいいねする
 				if wARR_DBData['pfavo_cnt']==0 :
@@ -669,7 +682,7 @@ class CLS_TwitterFavo():
 			elif wARR_FollowData[wUserID]['myfollow']==True :
 				#############################
 				# 前回いいね実施から期間内なら除外
-				wGetLag = CLS_OSIF.sTimeLag( str( wARR_FollowData[wUserID]['pfavo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['forFollowerFavoHarfMyfollowRunSec'] )
+				wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData['pfavo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['forFollowerFavoHarfMyfollowRunSec'] )
 				if wGetLag['Result']!=True :
 					wRes['Reason'] = "sTimeLag failed"
 					gVal.OBJ_L.Log( "B", wRes )
@@ -1157,6 +1170,9 @@ class CLS_TwitterFavo():
 		# フォロワーモード かつ 候補がない場合
 		# リツイート、引用リツイートから候補を決める（再抽選）
 		if inFLG_Follower==True and wRes['Responce']['agent']==0 :
+			
+			wStr = "  ::候補なしのためリツイートから再選出" + '\n'
+			CLS_OSIF.sPrn( wStr )
 			
 			wKeylist = list( wARR_Tweet.keys() )
 			for wID in wKeylist :
