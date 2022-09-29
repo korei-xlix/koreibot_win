@@ -1172,6 +1172,12 @@ class CLS_TwitterFavo():
 		if inFLG_Follower==True and wRes['Responce']['agent']==0 :
 			
 			wStr = "  ::候補なしのためリツイートから再選出" + '\n'
+			
+			wKeylist2 = list( wARR_Tweet.keys() )
+			for wIndex in wKeylist2 :
+				wStr = wStr + "  id=" + str(wARR_Tweet[wIndex]['id'])
+				wStr = wStr + " reason=" + wARR_Tweet[wIndex]['reason'] + '\n'
+			
 			CLS_OSIF.sPrn( wStr )
 			
 			wKeylist = list( wARR_Tweet.keys() )

@@ -86,9 +86,12 @@ class CLS_Twitter_Use():
 	ARR_MuteList = []	#ミュートIDs(リスト)
 
 	CHR_TimeDate = "1901-01-01 00:00:00"
-	DEF_VAL_SLEEP = 5			#Twitter処理遅延（秒）
-	DEF_VAL_SLEEP_SEMI = 10		#Twitter処理遅延（秒）
-	DEF_VAL_SLEEP_LONG = 20		#Twitter処理遅延（秒）
+###	DEF_VAL_SLEEP = 5			#Twitter処理遅延（秒）
+###	DEF_VAL_SLEEP_SEMI = 10		#Twitter処理遅延（秒）
+###	DEF_VAL_SLEEP_LONG = 20		#Twitter処理遅延（秒）
+	DEF_VAL_SLEEP_SHORT = 5		#Twitter処理遅延（秒）
+	DEF_VAL_SLEEP       = 15	#Twitter処理遅延（秒）
+	DEF_VAL_SLEEP_LONG  = 30	#Twitter処理遅延（秒）
 
 
 
@@ -263,7 +266,8 @@ class CLS_Twitter_Use():
 		
 		#############################
 		# 遅延
-		time.sleep( self.DEF_VAL_SLEEP )
+###		time.sleep( self.DEF_VAL_SLEEP )
+		time.sleep( self.DEF_VAL_SLEEP_SHORT )
 		
 		#############################
 		# 初期化完了
@@ -678,8 +682,8 @@ class CLS_Twitter_Use():
 				
 				#############################
 				# 遅延
-###				time.sleep( self.DEF_VAL_SLEEP )
-				time.sleep( self.DEF_VAL_SLEEP_SEMI )
+				time.sleep( self.DEF_VAL_SLEEP )
+###				time.sleep( self.DEF_VAL_SLEEP_SEMI )
 		
 		except ValueError as err :
 			wRes['Reason'] = "Twitter error: " + str( err )
@@ -1334,8 +1338,8 @@ class CLS_Twitter_Use():
 				
 				#############################
 				# 遅延
-###				time.sleep( self.DEF_VAL_SLEEP )
-				time.sleep( self.DEF_VAL_SLEEP_SEMI )
+				time.sleep( self.DEF_VAL_SLEEP )
+###				time.sleep( self.DEF_VAL_SLEEP_SEMI )
 			
 		except ValueError as err :
 			wRes['Reason'] = "Twitter error: " + str( err )
@@ -1634,8 +1638,8 @@ class CLS_Twitter_Use():
 				
 				#############################
 				# 遅延
-###				time.sleep( self.DEF_VAL_SLEEP )
-				time.sleep( self.DEF_VAL_SLEEP_SEMI )
+				time.sleep( self.DEF_VAL_SLEEP )
+###				time.sleep( self.DEF_VAL_SLEEP_SEMI )
 			
 		except ValueError as err :
 			wRes['Reason'] = "Twitter error: " + str( err )

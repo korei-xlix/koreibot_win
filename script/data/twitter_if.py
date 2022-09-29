@@ -618,9 +618,10 @@ class CLS_Twitter_IF() :
 	def CheckFavoUserID( self, inID ):
 		wID = str(inID)
 		### 重複があるか
-		if wID not in self.ARR_Favo :
-			return False
-		return True
+###		if wID not in self.ARR_Favo :
+		if wID in self.ARR_Favo :
+			return False	#あったらFalse= いいね済み
+		return True			#いいねなし True
 
 
 
