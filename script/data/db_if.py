@@ -3336,7 +3336,13 @@ class CLS_DB_IF() :
 				else:
 					wCHR_DelTimeDate = str( wARR_RateFavoData['pfavo_date'] )
 			
-			wGetLag = CLS_OSIF.sTimeLag( wCHR_DelTimeDate, inThreshold=gVal.DEF_STR_TLNUM['favoDataDelSec'] )
+			if wARR_RateFavoData['level_tag']=="F" :
+				wThreshold = gVal.DEF_STR_TLNUM['forFavoDataDelLevelFSec']
+			else:
+				wThreshold = gVal.DEF_STR_TLNUM['favoDataDelSec']
+			
+###			wGetLag = CLS_OSIF.sTimeLag( wCHR_DelTimeDate, inThreshold=gVal.DEF_STR_TLNUM['favoDataDelSec'] )
+			wGetLag = CLS_OSIF.sTimeLag( wCHR_DelTimeDate, inThreshold=wThreshold )
 			if wGetLag['Result']!=True :
 				wRes['Reason'] = "sTimeLag failed"
 				gVal.OBJ_L.Log( "B", wRes )

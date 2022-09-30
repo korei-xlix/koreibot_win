@@ -159,7 +159,6 @@ class gVal() :
 		"forReactionSec"			: 3600,				#   リアクションまでの期間   1時間  60x60
 		"forReactionTweetSec"		: 172800,			#   リアクションに反応するツイート期間 2日 (60x60x24)x2
 		
-###		"forVipOperationSec"		: 28800,			#   VIPリアクション監視までの期間   8時間  60x60x8
 		"forVipOperationSec"		: 3600,				#   VIPリアクション監視までの期間   1時間  60x60x1
 		"vipReactionTweetLine"		: 20,				#   VIPリアクションチェック時のツイート取得ライン数
 		"forVipReactionTweetSec"	: 86400,			#   リアクションに反応するツイート期間 1日  60x60x24
@@ -175,14 +174,15 @@ class gVal() :
 		"forFollowerFavoFListIntimeSec"		: 86400,	#   片フォロワーリスト・期間内の いいね期間        1日  60x60x24
 		"forFollowerFavoFListOverSec"		: 172800,	#   片フォロワーリスト・期間外の いいね期間        2日 (60x60x24)x2
 		"forFollowerFavoFListpfavoSec"		: 432000,	#   片フォロワーリスト・期間外時 いいね実行からの期間  5日 (60x60x24)x5
-###		"forFollowerFavoFListRemoveCnt"		: 10,		#   片フォロワーリスト・無視時関係リセット回数
 		"forFollowerFavoMutualSec"			: 14400,	#   相互フォローの いいね期間                      4時間  60x60x4
 		"forFollowerFavoFollowerSec"		: 115200,	#   フォロワー期間                                 32時間  60x60x32
 		"forFollowerFavoIntimeSec"			: 86400,	#   フォロワー・期間内の いいね期間                1日  60x60x24
 		"forFollowerFavoOverSec"			: 172800,	#   フォロワー・期間外の いいね期間                2日 (60x60x24)x2
 		"forFollowerFavoHarfMyfollowSec"	: 288000,	#   片フォロー者の いいね期間                      3日+8時間 (60x60x24)x3+(60x60x8)
-		"forFollowerFavoHarfMyfollowCnt"	: 10,		#   片フォロー者 初回無条件実施回数
-		"forFollowerFavoHarfMyfollowRand"	: 20,		#   片フォロー者 ランダム実施値 パーセンテージ (1-100)   30％で実施
+###		"forFollowerFavoHarfMyfollowCnt"	: 10,		#   片フォロー者 初回無条件実施回数
+###		"forFollowerFavoHarfMyfollowRand"	: 20,		#   片フォロー者 ランダム実施値 パーセンテージ (1-100)   30％で実施
+		"forFollowerFavoHarfMyfollowCnt"	: 5,		#   片フォロー者 初回無条件実施回数
+		"forFollowerFavoHarfMyfollowRand"	: 10,		#   片フォロー者 ランダム実施値 パーセンテージ (1-100)   30％で実施
 		"forFollowerFavoHarfMyfollowRunSec"	: 86400,	#   片フォロー者の いいね実施期間                  1日  60x60x24
 		
 														# 自動いいね
@@ -190,32 +190,27 @@ class gVal() :
 		"forAutoFavoReturnFavoSec"			: 3600,		#   お返しいいねへの期間   1時間  60x60x1
 		"forAutoFavoListFavoSec"			: 86400,	#   リストいいねへの期間   1日  (60x60x24)x1
 		"forAutoFavoLevelCCnt"				: 2,		#   レベルC以前の場合、1度でいいねする数
-###		"forAutoFavoTweetSec"			: 28800,		#   対象ツイート期間外   8時間  60x60x8
-		"forAutoFavoLevelRunRand"			: 20,		#   レベルによる中止 ランダム実施値 パーセンテージ (1-100)   20％で実施
-###		
-###														# 外部いいね
-###		"forOverFavoTweetSec"			: 28800,		#   対象ツイート期間外   8時間  60x60x8
-###		"forOverFavoFavoriteSec"		: 28800,		#   いいね実施期間外     8時間  60x60x8
-###		
-###		"forReturnFavoSec"				: 3600,			# お返しいいねへの期間   1時間  60x60x1
+		"forAutoFavoLevelRunRand"			: 10,		#   レベルによる中止 ランダム実施値 パーセンテージ (1-100)   20％で実施
+		
 		"forRemFavoSec"				: 172800,			# いいね解除までの期間 2日 (60x60x24)x2
 		
 		"forListFavoAutoRemoveSec"			: 604800,	#   リストいいね 自動リムーブまでの期間   7日  (60x60x24)x7
-		"forListFavoAutoRemoveSec_Short"	: 115200,	#   リストいいね 自動リムーブまでの期間(短期)   32時間  (60x60x32)
-###		"forCheckAutoRemoveSec"		: 86400,			#   自動リムーブチェック期間 1日 (60x60x24)x1
+###		"forListFavoAutoRemoveSec_Short"	: 115200,	#   リストいいね 自動リムーブまでの期間(短期)   32時間  (60x60x32)
+		"forListFavoAutoRemoveSec_Short"	: 57600,	#   リストいいね 自動リムーブまでの期間(短期)   16時間  (60x60x16)
 		"forCheckAutoRemoveSec"		: 14400,			#   自動リムーブチェック期間 4時間  (60x60x4)
-		"forOverListFavoCount"		: 3,				#   外部いいね数(1ユーザ)
+###		"forOverListFavoCount"		: 3,				#   外部いいね数(1ユーザ)
+		"forOverListFavoCount"		: 2,				#   外部いいね数(1ユーザ)
 		"forCheckAutoDeleteSec"		: 172800,			#   自動削除チェック期間 2日 (60x60x24)x2
-###		"forAutoRemoveIgnoreCompletelySec"	: 1814400,	#   完全スルーのため追い出し期間   21日  (60x60x24)x21
 		"forAutoRemoveIgnoreCompletelySec"	: 1209600,	#   完全スルーのため追い出し期間   14日  (60x60x24)x14
-###		"forAutoRemoveIgnoreCompletelyCnt"	: 10,		#   いいねがない場合の無条件追い出しまでのいいね実施回数
 		"forAutoRemoveIgnoreCompletelyCnt"	: 4,		#   いいねがない場合の無条件追い出しまでのいいね実施回数
 		
-		"forAutoUserRemoveSec"		: 2592000,			# ユーザ削除までの期間  30日 (60x60x24)x30
+		"forAutoUserRemoveSec"			: 2592000,		# ユーザ削除までの期間                 30日 (60x60x24)x30
+		"forFavoDataDelSec"				: 7776000,		# いいね情報削除までの期間             90日 (60x60x24)x90
+		"forFavoDataDelLevelFSec"		: 259200,		# いいね情報削除までの期間(レベルF)     3日 (60x60x24)x3
 		
 														# いいね送信
 		"favoSendsSec"		: 604800,					# いいね送信までの期間      7日 (60x60x24)x7
-		"favoDataDelSec"	: 7776000,					# いいね情報削除までの期間  90日 (60x60x24)x90
+###		"favoDataDelSec"	: 7776000,					# いいね情報削除までの期間  90日 (60x60x24)x90
 		"favoSendsCnt"		: 3,						# いいね送信対象 いいね回数
 		"LEVEL_B_Cnt"		: 5,						# レベルB昇格までのトロフィー獲得回数
 		
@@ -236,14 +231,15 @@ class gVal() :
 		"forDeleteCautionTweetSec"	: 172800,			# 警告メッセージを削除する期間  2日 (60x60x24)x2
 		
 		"forTimelineFollowSec"			: 14400,		# タイムラインフォロー チェック期間 4時間  (60x60x4)
-		"TimelineFollowNum"				: 4,			#   フォローする最大人数
+		"TimelineFollowNum"				: 2,			#   フォローする最大人数
 		"TimelineFollowTweetLine"		: 200,			#   ツイート取得ライン数
 		"TimelineFollowTweetLine_Skip"	: 40,			#   ツイート取得ライン 先頭スキップ数
 		"TimelineFollowFavoCheckNum"	: 32,			#   いいね、リツイート、引用リツイートのチェック回数(Limit)
 		
 		"trafficReportLimit"		: 30,				# トラヒック報告取得数
 		
-		"resetAPISec"		: 900,						# APIリセット周期 15分 60x15
+###		"resetAPISec"		: 900,						# APIリセット周期 15分 60x15
+		"resetAPISec"		: 600,						# APIリセット周期 10分 60x10
 		"forLockLimSec"		: 120,						# 排他保持時間     2分 60x2 
 		"logShortLen"		: 100,						# ログ表示 ショートモード
 		
@@ -283,8 +279,6 @@ class gVal() :
 								#     フォローされてたけど、リムーブされた場合（フォロー者なし・フォローなし）
 		"F"		: "",			# F : 非フォロワーでいいねされたことがあるアカウント
 								#     非フォロワーでいいねされた場合
-###		"F+"	: "",			# F : フォローされてたけど、完全スルー期間が過ぎたため、関係リセットしたアカウント
-###								#     片フォロワー状態で 登録から規定日数、あるいは最終いいねから規定日数過ぎた
 		"F+"	: "",			# F+: フォロワーだけど完全スルー期間が過ぎたため、無視しているアカウント
 								#     片フォロワー状態で 登録から規定日数、あるいは最終いいねから規定日数過ぎた
 		"G"		: "",			# G : ブロックされたアカウント
