@@ -2009,8 +2009,6 @@ class CLS_DB_IF() :
 		
 		#############################
 		# グローバルに保存する
-###		gVal.ARR_CautionTweet = wARR_DBData
-###		
 		gVal.ARR_CautionTweet = {}
 		#############################
 		# 除外文字データを登録する
@@ -2024,7 +2022,6 @@ class CLS_DB_IF() :
 				"id"			: str(wARR_DBData[wKey]['id']),
 				"screen_name"	: str(wARR_DBData[wKey]['screen_name'])
 			}
-###			gVal.ARR_CautionTweet.update({ str(wListNo) : wCell })
 			gVal.ARR_CautionTweet.update({ wListNo : wCell })
 			wListNo += 1
 		
@@ -2089,14 +2086,12 @@ class CLS_DB_IF() :
 		#############################
 		# ログに記録する
 		wStr = "データ追加: caution tweet: screen_name=" + str(wCell['screen_name']) + " tweet_id=" + str(wCell['tweet_id'])
-###		gVal.OBJ_L.Log( "RR", wRes, wStr )
 		gVal.OBJ_L.Log( "RR", wRes, wStr, inID=wUserID )
 		
 		wRes['Result'] = True
 		return wRes
 
 	#####################################################
-###	def DeleteCautionTweet( self, inUser):
 	def DeleteCautionTweet( self, inListNum ):
 		#############################
 		# 応答形式の取得
@@ -2105,13 +2100,9 @@ class CLS_DB_IF() :
 		wRes['Class'] = "CLS_DB_IF"
 		wRes['Func']  = "DeleteCautionTweet"
 		
-###		wUserID = str( inUser['id'] )
-###		
 		#############################
 		# 登録チェック
-###		if wUserID not in gVal.ARR_CautionTweet :
 		if inListNum not in gVal.ARR_CautionTweet :
-###			wRes['Reason'] = "Not regist user: screen_name=" + str( inUser['screen_name'] )
 			wRes['Reason'] = "Not regist user: list num=" + str( inListNum )
 			gVal.OBJ_L.Log( "D", wRes )
 			return wRes
@@ -2134,18 +2125,29 @@ class CLS_DB_IF() :
 		
 		#############################
 		# グローバルを更新する
-###		del gVal.ARR_CautionTweet[wUserID]
 		del gVal.ARR_CautionTweet[inListNum]
 		
 		#############################
 		# ログに記録する
-###		wStr = "データ削除: caution tweet: screen_name=" + str(inUser['screen_name'])
 		wStr = "データ削除: caution tweet: screen_name=" + wSN
-###		gVal.OBJ_L.Log( "RR", wRes, wStr )
 		gVal.OBJ_L.Log( "RR", wRes, wStr, inID=wUserID )
 		
 		wRes['Result'] = True
 		return wRes
+
+	#####################################################
+	def CheckCautionTweet( self, inTweetID ):
+		
+		wID = str(inTweetID)
+		wFlg = False
+		
+		wKeylist = list( gVal.ARR_CautionTweet.keys() )
+		for wCell in wKeylist :
+			if wCell['tweet_id']==wID :
+				wFlg = True
+				break
+		
+		return wFlg
 
 
 
@@ -3339,7 +3341,7 @@ class CLS_DB_IF() :
 			if wARR_RateFavoData['level_tag']=="F" :
 				wThreshold = gVal.DEF_STR_TLNUM['forFavoDataDelLevelFSec']
 			else:
-				wThreshold = gVal.DEF_STR_TLNUM['favoDataDelSec']
+				wThreshold = gVal.DEF_STR_TLNUM['forFavoDataDelSec']
 			
 ###			wGetLag = CLS_OSIF.sTimeLag( wCHR_DelTimeDate, inThreshold=gVal.DEF_STR_TLNUM['favoDataDelSec'] )
 			wGetLag = CLS_OSIF.sTimeLag( wCHR_DelTimeDate, inThreshold=wThreshold )

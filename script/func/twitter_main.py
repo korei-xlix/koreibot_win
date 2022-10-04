@@ -1185,11 +1185,21 @@ class CLS_TwitterMain():
 		
 		wTweet = inTweet
 		
-		wUserID = str( wTweet['user']['id'] )
+		wUserID      = str( wTweet['user']['id'] )
+		wTweet['id'] = str(wTweet['id'])
+		wTweetID     = wTweet['id']
 		#############################
 		# 自分のツイート以外は処理を抜ける
 		if inMyUserID!=wUserID :
 			### 自分のツイートではない＝正常終了
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# 警告ツイートは除外
+		wSubRes = gVal.OBJ_DB_IF.CheckCautionTweet( wTweetID )
+		if wSubRes==True :
+			### 警告ツイートは除外＝正常終了
 			wRes['Result'] = True
 			return wRes
 		
@@ -1199,8 +1209,8 @@ class CLS_TwitterMain():
 		if str(gVal.STR_UserInfo['id'])==wUserID :
 			wFLG_MyUser = True
 		
-		wTweet['id'] = str(wTweet['id'])
-		wTweetID = wTweet['id']
+###		wTweet['id'] = str(wTweet['id'])
+###		wTweetID = wTweet['id']
 		
 		#############################
 		# チェック対象のツイート表示
