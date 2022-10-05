@@ -543,6 +543,7 @@ class CLS_Setup():
 		wQy = wQy + "flist_id    TEXT  NOT NULL,"		# 片フォロワーリスト リストID(数値)
 		wQy = wQy + "flist_name  TEXT  NOT NULL,"		# 片フォロワーリスト リスト名
 		wQy = wQy + "viptag      TEXT  NOT NULL,"		# VIPリツイート タグ
+		wQy = wQy + "auto_seq    INTEGER DEFAULT 0,"	# 自動監視シーケンス
 		wQy = wQy + " PRIMARY KEY ( twitterid ) ) ;"
 		
 		inOBJ_DB.RunQuery( wQy )
@@ -590,6 +591,7 @@ class CLS_Setup():
 		wQy = wQy + "twitterid    TEXT  NOT NULL,"		# 記録したユーザ(Twitter ID)
 		wQy = wQy + "run          TIMESTAMP,"			# コマンド実行
 		wQy = wQy + "autorun      TIMESTAMP,"			# 自動監視
+		wQy = wQy + "autoseq      TIMESTAMP,"			# 自動監視シーケンス
 		wQy = wQy + "reaction     TIMESTAMP,"			# リアクション受信
 		wQy = wQy + "mffavo       TIMESTAMP,"			# 相互フォローリストいいね
 		wQy = wQy + "flfavo       TIMESTAMP,"			# フォロワー支援いいね

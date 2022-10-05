@@ -55,7 +55,9 @@ class gVal() :
 		
 		"Traffic"		: False,		#Twitterにトラヒックを報告するか
 		
-		"VipTag"		: None			#VIPリツイート 対象タグ
+		"VipTag"		: None,			#VIPリツイート 対象タグ
+		
+		"AutoSeq"		: 0				#自動監視シーケンス
 	}
 
 #############################
@@ -64,6 +66,7 @@ class gVal() :
 										# 各実行時間
 		"run"			: None,			# コマンド実行
 		"autorun"		: None,			# 自動監視
+		"autoseq"		: None,			# 自動監視シーケンス
 		"reaction"		: None,			# リアクション受信
 		"mffavo"		: None,			# 相互フォローリストいいね
 		"flfavo"		: None,			# フォロワー支援いいね
@@ -138,7 +141,9 @@ class gVal() :
 # Timeline調整数
 	DEF_STR_TLNUM = {
 		
-		"forAutoAllRunSec"	: 14400,					# 自動監視 全実行期間  4時間  60x60x4
+		"forAutoAllRunSec"		: 14400,				# 自動監視 全実行期間         4時間  60x60x4
+		"forAutoSeqSec"			: 86400,				# 自動監視シーケンスリセット  1日    60x60x24
+		"forAutoSeqSecSleep"	: 10,					# 自動監視シーケンス スリープ時間
 		
 														# いいね管理
 		"favoTweetLine"		: 40,						#   いいね時 対象ユーザツイート取得ライン数

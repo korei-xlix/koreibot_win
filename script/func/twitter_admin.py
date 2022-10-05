@@ -2446,6 +2446,17 @@ class CLS_TwitterAdmin():
 		CLS_OSIF.sPrn( wStr )
 		
 		#############################
+		# 自動監視シーケンス
+		wTimeRes = CLS_OSIF.sTimeAddHour( inTimedate=gVal.STR_Time['autoseq'], inSec=gVal.DEF_STR_TLNUM['forAutoSeqSec'] )
+		if wTimeRes['Result']!=True :
+			wRes['Reason'] = "sTimeAddHour is failed(autoseq)"
+			gVal.OBJ_L.Log( "A", wTimeRes )
+			return wRes
+		
+		wStr = "シーケンス更新  ：" + str(gVal.STR_Time['autorun'])
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
 		# リアクションチェック
 		wTimeRes = CLS_OSIF.sTimeAddHour( inTimedate=gVal.STR_Time['reaction'], inSec=gVal.DEF_STR_TLNUM['forReactionSec'] )
 		if wTimeRes['Result']!=True :

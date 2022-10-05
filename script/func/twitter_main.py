@@ -801,6 +801,28 @@ class CLS_TwitterMain():
 			CLS_OSIF.sPrn( wStr )
 			wFLG_Short = True
 		else:
+			### 自動監視シーケンスリセットなら
+			### リセットする
+			wGetLag = CLS_OSIF.sTimeLag( str( gVal.STR_Time['autoseq'] ), inThreshold=gVal.DEF_STR_TLNUM['forAutoSeqSec'] )
+			if wGetLag['Result']!=True :
+				wRes['Reason'] = "sTimeLag failed(autoseq)"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if wGetLag['Beyond']==True :
+				### 規定外= リセット
+				wSubRes = gVal.OBJ_DB_IF.SetAutoSeq( True )
+				if wSubRes['Result']!=True :
+					wRes['Reason'] = "SetAutoSeq is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				#############################
+				# 自動監視シーケンスリセット時間に 現時間を設定
+				wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "autoseq", gVal.STR_Time['TimeDate'] )
+				if wTimeRes['Result']!=True :
+					wRes['Reason'] = "SetTimeInfo is failed(autoseq)"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+			
 			wStr = "〇フル監視実行" + '\n'
 			CLS_OSIF.sPrn( wStr )
 		
@@ -813,165 +835,222 @@ class CLS_TwitterMain():
 			return wRes
 		
 		#############################
-		# 禁止ユーザ自動削除（●フル自動監視）
-		if wFLG_Short==False :
-			wSubRes = self.OBJ_TwitterAdmin.ExcuteUser_AutoDelete()
-			if wSubRes['Result']!=True :
-				###失敗
-				wRes['Reason'] = "ExcuteUser_AutoDelete is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-		
-		#############################
-		# ユーザ自動削除（●フル自動監視）
-		if wFLG_Short==False :
-			wSubRes = self.OBJ_TwitterAdmin.RunAutoUserRemove()
-			if wSubRes['Result']!=True :
-				###失敗
-				wRes['Reason'] = "RunAutoUserRemove is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-		
-		#############################
-		# いいね解除（●フル自動監視）
-		if wFLG_Short==False :
-			wSubRes = self.OBJ_TwitterFavo.RemFavo()
-			if wSubRes['Result']!=True :
-				wRes['Reason'] = "RemFavo"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-		
-		#############################
-		# リスト通知 リストとユーザの更新
-		wSubRes = self.UpdateListIndUser()
+		# 自動監視シーケンス取得
+		wSubRes = gVal.OBJ_DB_IF.GetAutoSeq()
 		if wSubRes['Result']!=True :
-			wRes['Reason'] = "UpdateListIndUser error"
+			wRes['Reason'] = "GetAutoSeq is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-		#############################
-		# リスト登録ユーザチェック
-		wSubRes = self.CheckListUsers()
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "CheckListUsers error"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# 自動リムーブチェック
-		wSubRes = self.CheckAutoRemove()
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "CheckAutoRemove error"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# タイムラインフォロー
-		wSubRes = self.OBJ_TwitterFollower.TimelineFollow()
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "TimelineFollow error"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# リアクションチェック
-		wSubRes = self.OBJ_TwitterFollower.ReactionCheck( inFLG_Short=wFLG_Short )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "ReactionCheck"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# VIPリアクション監視チェック
-		wSubRes = self.OBJ_TwitterFollower.VIP_ReactionCheck()
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "VIP_ReactionCheck is failed"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# フォロワー支援
-		wSubRes = self.OBJ_TwitterFavo.FollowerFavo()
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "FollowerFavo"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# リストいいね（●フル自動監視）
-		if wFLG_Short==False :
-			wSubRes = self.OBJ_TwitterFavo.ListFavo()
+		while True :
+			#############################
+			# Twitter再接続
+			wTwitterRes = gVal.OBJ_Tw_IF.ReConnect()
+			if wTwitterRes['Result']!=True :
+				wRes['Reason'] = "Twitterの再接続失敗"
+				gVal.OBJ_L.Log( "A", wRes )
+				return wRes
+			
+			#############################
+			# 禁止ユーザ自動削除（●フル自動監視）
+			if gVal.STR_UserInfo['AutoSeq']==0 :
+				if wFLG_Short==False :
+					wSubRes = self.OBJ_TwitterAdmin.ExcuteUser_AutoDelete()
+					if wSubRes['Result']!=True :
+						###失敗
+						wRes['Reason'] = "ExcuteUser_AutoDelete is failed"
+						gVal.OBJ_L.Log( "B", wRes )
+						return wRes
+			
+			#############################
+			# ユーザ自動削除（●フル自動監視）
+			elif gVal.STR_UserInfo['AutoSeq']==1 :
+				if wFLG_Short==False :
+					wSubRes = self.OBJ_TwitterAdmin.RunAutoUserRemove()
+					if wSubRes['Result']!=True :
+						###失敗
+						wRes['Reason'] = "RunAutoUserRemove is failed"
+						gVal.OBJ_L.Log( "B", wRes )
+						return wRes
+			
+			#############################
+			# いいね解除（●フル自動監視）
+			elif gVal.STR_UserInfo['AutoSeq']==2 :
+				if wFLG_Short==False :
+					wSubRes = self.OBJ_TwitterFavo.RemFavo()
+					if wSubRes['Result']!=True :
+						wRes['Reason'] = "RemFavo"
+						gVal.OBJ_L.Log( "B", wRes )
+						return wRes
+			
+			#############################
+			# リスト通知 リストとユーザの更新
+			elif gVal.STR_UserInfo['AutoSeq']==3 :
+				wSubRes = self.UpdateListIndUser()
+				if wSubRes['Result']!=True :
+					wRes['Reason'] = "UpdateListIndUser error"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+			
+			#############################
+			# リスト登録ユーザチェック
+			elif gVal.STR_UserInfo['AutoSeq']==4 :
+				wSubRes = self.CheckListUsers()
+				if wSubRes['Result']!=True :
+					wRes['Reason'] = "CheckListUsers error"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+			
+			#############################
+			# 自動リムーブチェック
+			elif gVal.STR_UserInfo['AutoSeq']==5 :
+				wSubRes = self.CheckAutoRemove()
+				if wSubRes['Result']!=True :
+					wRes['Reason'] = "CheckAutoRemove error"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+			
+			#############################
+			# タイムラインフォロー
+			elif gVal.STR_UserInfo['AutoSeq']==6 :
+				wSubRes = self.OBJ_TwitterFollower.TimelineFollow()
+				if wSubRes['Result']!=True :
+					wRes['Reason'] = "TimelineFollow error"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+			
+			#############################
+			# リアクションチェック
+			elif gVal.STR_UserInfo['AutoSeq']==7 :
+				wSubRes = self.OBJ_TwitterFollower.ReactionCheck( inFLG_Short=wFLG_Short )
+				if wSubRes['Result']!=True :
+					wRes['Reason'] = "ReactionCheck"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+			
+			#############################
+			# VIPリアクション監視チェック
+			elif gVal.STR_UserInfo['AutoSeq']==8 :
+				wSubRes = self.OBJ_TwitterFollower.VIP_ReactionCheck()
+				if wSubRes['Result']!=True :
+					wRes['Reason'] = "VIP_ReactionCheck is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+			
+			#############################
+			# フォロワー支援
+			elif gVal.STR_UserInfo['AutoSeq']==9 :
+				wSubRes = self.OBJ_TwitterFavo.FollowerFavo()
+				if wSubRes['Result']!=True :
+					wRes['Reason'] = "FollowerFavo"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+			
+			#############################
+			# リストいいね（●フル自動監視）
+			elif gVal.STR_UserInfo['AutoSeq']==10 :
+				if wFLG_Short==False :
+					wSubRes = self.OBJ_TwitterFavo.ListFavo()
+					if wSubRes['Result']!=True :
+						wRes['Reason'] = "ListFavo"
+						gVal.OBJ_L.Log( "B", wRes )
+						return wRes
+			
+			#############################
+			# いいね情報送信
+			elif gVal.STR_UserInfo['AutoSeq']==11 :
+				wSubRes = self.OBJ_TwitterFollower.SendFavoDate()
+				if wSubRes['Result']!=True :
+					wRes['Reason'] = "SendFavoDate"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+			
+			#############################
+			# 検索ワード実行（●フル自動監視）
+			elif gVal.STR_UserInfo['AutoSeq']==12 :
+				if wFLG_Short==False :
+					wSubRes = self.OBJ_TwitterKeyword.RunKeywordSearchFavo()
+					if wSubRes['Result']!=True :
+						wRes['Reason'] = "RunKeywordSearchFavo"
+						gVal.OBJ_L.Log( "B", wRes )
+						return wRes
+			
+			#############################
+			# 警告ツイートの削除（●フル自動監視）
+			elif gVal.STR_UserInfo['AutoSeq']==13 :
+				if wFLG_Short==False :
+					wSubRes = self.OBJ_TwitterAdmin.RemoveCautionUser( inFLR_Recheck=True )
+					if wSubRes['Result']!=True :
+						###失敗
+						wRes['Reason'] = "RemoveCautionUser is failed"
+						gVal.OBJ_L.Log( "B", wRes )
+						return wRes
+			
+#			#############################
+#			# トレンドツイート
+###			elif gVal.STR_UserInfo['AutoSeq']==5 :
+#				wSubRes = self.OBJ_TwitterKeyword.TrendTweet()
+#				if wSubRes['Result']!=True :
+#					###失敗
+#					wRes['Reason'] = "TrendTweet is failed"
+#					gVal.OBJ_L.Log( "B", wRes )
+#					return wRes
+#			
+			#############################
+			# 古いいいね情報の削除（●フル自動監視）
+			elif gVal.STR_UserInfo['AutoSeq']==14 :
+				if wFLG_Short==False :
+					wSubRes = gVal.OBJ_DB_IF.DeleteFavoData()
+					if wSubRes['Result']!=True :
+						###失敗
+						wRes['Reason'] = "DeleteFavoData is failed"
+						gVal.OBJ_L.Log( "B", wRes )
+						return wRes
+			
+			#############################
+			# ミュート解除(できるだけ)（●フル自動監視）
+			elif gVal.STR_UserInfo['AutoSeq']==15 :
+				if wFLG_Short==False :
+					wSubRes = self.AllMuteRemove()
+					if wSubRes['Result']!=True :
+						###失敗
+						wRes['Reason'] = "AllMuteRemove is failed"
+						gVal.OBJ_L.Log( "B", wRes )
+						return wRes
+			
+			#############################
+			# 指定外のため、リセット
+			# あるいは 終了
+			else:
+				wSeq = None
+				if gVal.STR_UserInfo['AutoSeq']!=16 :
+					wSeq = gVal.STR_UserInfo['AutoSeq']		###異常検出
+				
+				wSubRes = gVal.OBJ_DB_IF.SetAutoSeq( True )
+				if wSubRes['Result']!=True :
+					wRes['Reason'] = "SetAutoSeq is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				
+				elif wSeq==None :
+					break	###正常終了
+				
+				else :
+					### 指定外 ログ出して終わる
+					wRes['Reason'] = "SetAutoSeq number is error seq=" + str( wSeq )
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+			
+			#############################
+			# 自動監視シーケンス設定
+			wSubRes = gVal.OBJ_DB_IF.SetAutoSeq()
 			if wSubRes['Result']!=True :
-				wRes['Reason'] = "ListFavo"
+				wRes['Reason'] = "SetAutoSeq is failed"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
-		
-###		#############################
-###		# フォロワー支援
-###		wSubRes = self.OBJ_TwitterFavo.FollowerFavo()
-###		if wSubRes['Result']!=True :
-###			wRes['Reason'] = "FollowerFavo"
-###			gVal.OBJ_L.Log( "B", wRes )
-###			return wRes
-###		
-		#############################
-		# いいね情報送信
-		wSubRes = self.OBJ_TwitterFollower.SendFavoDate()
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "SendFavoDate"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# 検索ワード実行（●フル自動監視）
-		if wFLG_Short==False :
-			wSubRes = self.OBJ_TwitterKeyword.RunKeywordSearchFavo()
-			if wSubRes['Result']!=True :
-				wRes['Reason'] = "RunKeywordSearchFavo"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-		
-		#############################
-		# 警告ツイートの削除（●フル自動監視）
-		if wFLG_Short==False :
-###			wSubRes = self.OBJ_TwitterAdmin.RemoveCautionTweet()
-			wSubRes = self.OBJ_TwitterAdmin.RemoveCautionUser( inFLR_Recheck=True )
-			if wSubRes['Result']!=True :
-				###失敗
-###				wRes['Reason'] = "RemoveCautionTweet is failed"
-				wRes['Reason'] = "RemoveCautionUser is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-		
-#		#############################
-#		# トレンドツイート
-#		wSubRes = self.OBJ_TwitterKeyword.TrendTweet()
-#		if wSubRes['Result']!=True :
-#			###失敗
-#			wRes['Reason'] = "TrendTweet is failed"
-#			gVal.OBJ_L.Log( "B", wRes )
-#			return wRes
-#		
-		#############################
-		# 古いいいね情報の削除（●フル自動監視）
-		if wFLG_Short==False :
-			wSubRes = gVal.OBJ_DB_IF.DeleteFavoData()
-			if wSubRes['Result']!=True :
-				###失敗
-				wRes['Reason'] = "DeleteFavoData is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-		
-		#############################
-		# ミュート解除(できるだけ)（●フル自動監視）
-		if wFLG_Short==False :
-###			wSubRes = gVal.OBJ_Tw_IF.AllMuteRemove()
-			wSubRes = self.AllMuteRemove()
-			if wSubRes['Result']!=True :
-				###失敗
-				wRes['Reason'] = "AllMuteRemove is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
+			
+			### スリープ時間
+			CLS_OSIF.sSleep( gVal.DEF_STR_TLNUM['forAutoSeqSecSleep'] )
 		
 		#############################
 		# 自動監視時間に 現時間を設定
@@ -981,7 +1060,14 @@ class CLS_TwitterMain():
 				wRes['Reason'] = "SetTimeInfo is failed"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
-		###		gVal.STR_Time['autorun']
+		
+		#############################
+		# 自動監視シーケンスリセット時間に 現時間を設定
+		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "autoseq", gVal.STR_Time['TimeDate'] )
+		if wTimeRes['Result']!=True :
+			wRes['Reason'] = "SetTimeInfo is failed(autoseq)"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
 		
 		#############################
 		# スケジュール表示

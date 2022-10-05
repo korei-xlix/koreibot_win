@@ -386,8 +386,9 @@ class CLS_DB_IF() :
 			wQy = wQy + "'" + gVal.DEF_NOTEXT + "', "			# 相互フォローリスト リストID(数値)
 			wQy = wQy + "'" + gVal.DEF_NOTEXT + "', "			# 相互フォローリスト リスト名
 			wQy = wQy + "'" + gVal.DEF_NOTEXT + "', "			# 片フォロワーリスト リストID(数値)
-			wQy = wQy + "'" + gVal.DEF_NOTEXT + "' "			# 片フォロワーリスト リスト名
-			wQy = wQy + "'" + gVal.DEF_NOTEXT + "' "			# VIPリツイート タグ
+			wQy = wQy + "'" + gVal.DEF_NOTEXT + "', "			# 片フォロワーリスト リスト名
+			wQy = wQy + "'" + gVal.DEF_NOTEXT + "', "			# VIPリツイート タグ
+			wQy = wQy + "0  " 									# 自動監視シーケンス
 			wQy = wQy + ") ;"
 			
 			wResDB = self.OBJ_DB.RunQuery( wQy )
@@ -2450,6 +2451,102 @@ class CLS_DB_IF() :
 		
 		#############################
 		# 正常
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# 自動監視シーケンス設定
+#####################################################
+	def GetAutoSeq(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "GetAutoSeq"
+		
+		#############################
+		# データ取得
+		wQy = "select auto_seq "
+		wQy = wQy + "from tbl_user_data "
+		wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQy )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
+		# 辞書型に整形
+		wARR_DBData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
+		
+		#############################
+		# 取得チェック
+		if len( wARR_DBData )!= 1 :
+			##失敗
+			wRes['Reason'] = "Get auto_seq name is not one: account=" + str(inAccount) + " num=" + str( len( wARR_DBData ) )
+			gVal.OBJ_L.Log( "D", wRes )
+			return wRes
+		
+		#############################
+		# データをグローバルに反映
+		wAutoSeq = wARR_DBData[0]['auto_seq']
+		wSubRes = CLS_OSIF.sChgInt( wAutoSeq )
+		if wSubRes['Result']!=True :
+			##失敗
+			wRes['Reason'] = "sChgInt is failer"
+			gVal.OBJ_L.Log( "D", wRes )
+			return wRes
+		gVal.STR_UserInfo['AutoSeq'] = wSubRes['Value']
+		
+		#############################
+		# =正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def SetAutoSeq( self, inClear=False ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "SetAutoSeq"
+		
+		#############################
+		# シーケンス値変更
+		wAutoSeq = gVal.STR_UserInfo['AutoSeq']
+		if inClear==True :
+			### クリアの場合
+			wAutoSeq = 0
+		else:
+			wAutoSeq += 1
+		
+		#############################
+		# データ登録
+		wQy = "update tbl_user_data set "
+		wQy = wQy + "auto_seq = " + str( wAutoSeq ) + " "
+		wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQy )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
+		# データをグローバルに反映
+		gVal.STR_UserInfo['AutoSeq'] = wAutoSeq
+		
+		#############################
+		# =正常
 		wRes['Result'] = True
 		return wRes
 
