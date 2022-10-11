@@ -2143,8 +2143,8 @@ class CLS_DB_IF() :
 		wFlg = False
 		
 		wKeylist = list( gVal.ARR_CautionTweet.keys() )
-		for wCell in wKeylist :
-			if wCell['tweet_id']==wID :
+		for wIndex in wKeylist :
+			if str(gVal.ARR_CautionTweet[wIndex]['tweet_id'])==wID :
 				wFlg = True
 				break
 		

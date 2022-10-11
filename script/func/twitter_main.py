@@ -1519,7 +1519,8 @@ class CLS_TwitterMain():
 				### 除外してない場合
 				
 				### いいね情報を更新する
-				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Recive( inUser, inTweet, wARR_DBData, False )
+###				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Recive( inUser, inTweet, wARR_DBData, False )
+				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Recive( inUser, inTweet, wARR_DBData, True )
 				if wSubRes['Result']!=True :
 					###失敗
 					wRes['Reason'] = "UpdateFavoData is failed"
@@ -1540,7 +1541,8 @@ class CLS_TwitterMain():
 				### 除外してない場合
 				
 				### いいね情報を更新する
-				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Recive( inUser, inTweet, wARR_DBData, False )
+###				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Recive( inUser, inTweet, wARR_DBData, False )
+				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Recive( inUser, inTweet, wARR_DBData, True )
 				if wSubRes['Result']!=True :
 					###失敗
 					wRes['Reason'] = "UpdateFavoData is failed"

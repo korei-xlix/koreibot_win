@@ -164,8 +164,9 @@ class CLS_MyDisp():
 		
 		###インプリ：最終いいね受信日
 		elif "[@USERADMIN-R_FAVO_DATE@]"==inLine :
-			if inData['flg_db_set']==False or str(inData['rfavo_date'])==gVal.DEF_TIMEDATE or \
-			   inData['rfavo_cnt']==0 :
+###			if inData['flg_db_set']==False or str(inData['rfavo_date'])==gVal.DEF_TIMEDATE or \
+###			   inData['rfavo_cnt']==0 :
+			if inData['flg_db_set']==False or str(inData['rfavo_date'])==gVal.DEF_TIMEDATE :
 				wStr = "－－－"
 			else:
 ###				wStr = str( inData['favo_date'] )

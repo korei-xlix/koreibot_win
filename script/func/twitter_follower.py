@@ -415,7 +415,6 @@ class CLS_TwitterFollower():
 #####################################################
 # いいね情報送信
 #####################################################
-###	def SendFavoDate(self):
 	def SendFavoDate( self, inFLG_Force=False ):
 		#############################
 		# 応答形式の取得
@@ -496,6 +495,25 @@ class CLS_TwitterFollower():
 		wKeylist = list( wARR_RateFavoDate.keys() )
 		for wID in wKeylist :
 			wID = str( wID )
+			
+			#############################
+			# リアクション 規定回以上は送信
+			
+			#############################
+			# リアクション禁止ユーザは除外する
+			wUserRes = self.OBJ_Parent.CheckExtUser( wARR_RateFavoDate[wID], "リアクション禁止ユーザ", False )
+			if wUserRes['Result']!=True :
+				wRes['Reason'] = "CheckExtUser failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if wUserRes['Responce']==False :
+				### 禁止あり=除外
+				continue
+			
+			#############################
+			# 無反応レベルは除外する
+			if wARR_RateFavoDate[wID]['level_tag']=="D-" or wARR_RateFavoDate[wID]['level_tag']=="G" or wARR_RateFavoDate[wID]['level_tag']=="G-" :
+				continue
 			
 			#############################
 			# リアクション 規定回以上は送信
@@ -630,44 +648,7 @@ class CLS_TwitterFollower():
 			if wARR_RateFavoDate[wID]['follower']==False :
 				### フォロワーでなければ、スキップ
 				continue
-###			if wARR_RateFavoDate[wID]['level_tag']!="B" :
-###				### レベルB以外は、スキップ
-###				continue
-###			
 			wCnt = wARR_RateFavoDate[wID]['send_cnt']
-###			#############################
-###			# 昇格トロフィー回数=0の場合
-###			#   自動フォローしてレベルC昇格へ
-###			if wCnt==0 and \
-###			   wARR_RateFavoDate[wID]['level_tag']=="E" :
-###				
-###				### フォロー＆ミュートする
-###				wTweetRes = gVal.OBJ_Tw_IF.Follow( wID, inMute=True )
-###				if wTweetRes['Result']!=True :
-###					wRes['Reason'] = "Twitter API Error: Follow" + wTweetRes['Reason']
-###					gVal.OBJ_L.Log( "B", wRes )
-###					continue
-###				
-###				### 相互フォローリストに追加
-###				wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( wARR_RateFavoDate[wID] )
-###				
-###				### ユーザレベル変更
-###				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, "C" )
-###				
-###				### トラヒック記録（フォロー者増加）
-###				CLS_Traffic.sP( "p_myfollow" )
-###				
-###				### ログに記録
-###				gVal.OBJ_L.Log( "R", wRes, "自動フォロー（昇格）: " + wARR_RateFavoDate[wID]['screen_name'] )
-###				
-###				### DBに反映
-###				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Follower( wID, inFLG_MyFollow=True )
-###				if wSubRes['Result']!=True :
-###					###失敗
-###					wRes['Reason'] = "UpdateFavoData_Follower is failed"
-###					gVal.OBJ_L.Log( "B", wRes )
-###				continue
-###			
 			#############################
 			# レベルB or C以外か、B+じゃなければここで終わり
 			if ( wARR_RateFavoDate[wID]['level_tag']!="B" and \
@@ -859,33 +840,34 @@ class CLS_TwitterFollower():
 		   gVal.OBJ_Tw_IF.CheckFollower( wUserID )==True :
 			
 			if wARR_DBData!=None :
-				#############################
-				# 期間比較値
-				# いいねありの場合、
-				#   =いいね日時
-				# いいねなしの場合、
-				#   =登録日時
-				if str(wARR_DBData['rfavo_date'])!=gVal.DEF_TIMEDATE :
-					### いいねあり= いいね日時
-					wCompTimeDate = str(wARR_DBData['rfavo_date'])
-				else:
-					### いいねなし= 登録日時
-					wCompTimeDate = str(wARR_DBData['regdate'])
+				if wARR_DBData['level_tag']!="F+" :
+					#############################
+					# 期間比較値
+					# いいねありの場合、
+					#   =いいね日時
+					# いいねなしの場合、
+					#   =登録日時
+					if str(wARR_DBData['rfavo_date'])!=gVal.DEF_TIMEDATE :
+						### いいねあり= いいね日時
+						wCompTimeDate = str(wARR_DBData['rfavo_date'])
+					else:
+						### いいねなし= 登録日時
+						wCompTimeDate = str(wARR_DBData['regdate'])
+						
+						### 送信回数が規定回数超えてれば、追い出し対象にする
+						if gVal.DEF_STR_TLNUM['forAutoRemoveIgnoreCompletelyCnt']<=wARR_DBData['pfavo_cnt'] :
+							wFLG_Remove = True
 					
-					### 送信回数が規定回数超えてれば、追い出し対象にする
-					if gVal.DEF_STR_TLNUM['forAutoRemoveIgnoreCompletelyCnt']<=wARR_DBData['pfavo_cnt'] :
+					#############################
+					# 自動リムーブ期間か
+					wGetLag = CLS_OSIF.sTimeLag( wCompTimeDate, inThreshold=gVal.DEF_STR_TLNUM['forAutoRemoveIgnoreCompletelySec'] )
+					if wGetLag['Result']!=True :
+						wRes['Reason'] = "sTimeLag failed(1)"
+						gVal.OBJ_L.Log( "B", wRes )
+						return wRes
+					if wGetLag['Beyond']==True :
+						###期間外= 自動リムーブ対象
 						wFLG_Remove = True
-				
-				#############################
-				# 自動リムーブ期間か
-				wGetLag = CLS_OSIF.sTimeLag( wCompTimeDate, inThreshold=gVal.DEF_STR_TLNUM['forAutoRemoveIgnoreCompletelySec'] )
-				if wGetLag['Result']!=True :
-					wRes['Reason'] = "sTimeLag failed(1)"
-					gVal.OBJ_L.Log( "B", wRes )
-					return wRes
-				if wGetLag['Beyond']==True :
-					###期間外= 自動リムーブ対象
-					wFLG_Remove = True
 			else:
 				wFLG_Remove = True
 			
