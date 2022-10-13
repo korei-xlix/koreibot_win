@@ -1474,7 +1474,8 @@ class CLS_TwitterMain():
 			wRes['Reason'] = "GetFavoDataOne is no data"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-		if wSubRes['Responce']['FLG_New']==None :
+###		if wSubRes['Responce']['FLG_New']==None :
+		if wSubRes['Responce']['FLG_New']==True :
 			wNewUser = True	#新規登録
 			#############################
 			# 新規情報の設定
