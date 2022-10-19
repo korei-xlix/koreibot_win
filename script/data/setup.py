@@ -55,9 +55,6 @@ class CLS_Setup():
 		wSubRes = gVal.OBJ_DB_IF.CheckUserData()
 		if wSubRes['Result']!=True :
 			gVal.OBJ_DB_IF.Close()
-			
-			wSubRes['Reason'] = "ユーザチェックに失敗しました: " + wSubRes['Reason'] + '\n'
-			CLS_OSIF.sErr( wSubRes )
 			return False
 		
 		wTwitterAccount = wSubRes['Responce']['Account']
@@ -88,9 +85,6 @@ class CLS_Setup():
 		wSubRes = gVal.OBJ_Tw_IF.SetTwitter( wTwitterAccount )
 		if wSubRes['Result']!=True :
 			gVal.OBJ_DB_IF.Close()
-			
-			wSubRes['Reason'] = "Twitterキーの入力と接続テストに失敗しました :" + wSubRes['Reason'] + '\n'
-			CLS_OSIF.sErr( wSubRes )
 			return False
 		
 		#############################
@@ -98,9 +92,6 @@ class CLS_Setup():
 		wSubRes = gVal.OBJ_DB_IF.SetUserData( wSubRes['Responce'] )
 		if wSubRes['Result']!=True :
 			gVal.OBJ_DB_IF.Close()
-			
-			wSubRes['Reason'] = wSubRes['Reason'] + ": ユーザ登録に失敗しました。" + '\n'
-			CLS_OSIF.sErr( wSubRes )
 			return False
 		
 		#############################
@@ -110,9 +101,6 @@ class CLS_Setup():
 			wSubRes = self.Add( inData, inDBconn=False )
 			if wSubRes!=True :
 				gVal.OBJ_DB_IF.Close()
-				
-				wSubRes['Reason'] = "データ追加に失敗しました: " + wSubRes['Reason'] + '\n'
-				CLS_OSIF.sErr( wSubRes )
 				return False
 		
 		#############################
@@ -479,34 +467,6 @@ class CLS_Setup():
 		gVal.OBJ_DB_IF.Close()
 		CLS_OSIF.sPrn( "clear complete !!!" )
 		
-		return True
-
-
-
-#####################################################
-# Pingテスト
-#####################################################
-	def Ping( self, inHost=None ):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_Setup"
-		wRes['Func']  = "Ping"
-		
-		#############################
-		# Pingテスト
-		gVal.OBJ_Tw_IF = CLS_Twitter_IF()
-		wSubRes = gVal.OBJ_Tw_IF.Ping( inHost=inHost )
-		if wSubRes['Result']!=True :
-			wSubRes['Reason'] = "Twitterキーの入力と接続テストに失敗しました :" + wSubRes['Reason'] + '\n'
-			CLS_OSIF.sErr( wSubRes )
-			return False
-		
-		CLS_OSIF.sPrn( "-- Ping正常 --" )
-		
-		#############################
-		# 終わり
 		return True
 
 

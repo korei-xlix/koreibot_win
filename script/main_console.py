@@ -441,12 +441,6 @@ class CLS_Main_Console() :
 			return False	###問題あり
 		
 		#############################
-		# PINGテストで実行
-		elif gVal.STR_SystemInfo['RunMode']=="ping" :
-			wCLS_Setup.Ping( wResTest['Responce']['hostname'] )
-			return False	###問題あり
-		
-		#############################
 		# =正常
 		return True
 

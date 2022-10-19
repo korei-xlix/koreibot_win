@@ -14,10 +14,7 @@
 import time
 import math
 import json
-###import subprocess as sp
-import subprocess
-###import pings
-###import base64
+import subprocess as sp
 from requests_oauthlib import OAuth1Session
 
 #####################################################
@@ -305,10 +302,8 @@ class CLS_Twitter_Use():
 
 		#############################
 		# 通信テスト
-###		if self.__TwitterPing()!=True :
-		wRes = self.__TwitterPing()
-		if wRes['Result']!=True :
-			self.TwStatus['Reason'] = "CLS_Twitter_Use: __twConnect: Twitter host no responce: " + wRes['Reason']
+		if self.__TwitterPing()!=True :
+			self.TwStatus['Reason'] = "CLS_Twitter_Use: __twConnect: Twitter host no responce"
 			return False
 		
 		#############################
@@ -349,75 +344,16 @@ class CLS_Twitter_Use():
 #####################################################
 # twitterサーバのPing確認
 #####################################################
-###	def __TwitterPing(self):
+	def __TwitterPing(self):
 ##		wStatus, wResult = sp.getstatusoutput( "ping -c " + str(inCount) + " " + str( self.DEF_TWITTER_HOSTNAME ) )
 ##		wPingComm = "ping -c " + self.DEF_TWITTER_PING_COUNT + " -w " + self.DEF_TWITTER_PING_TIMEOUT + " " + self.DEF_TWITTER_HOSTNAME
 ##		wPingComm = "ping -c " + self.DEF_TWITTER_PING_COUNT + " " + self.DEF_TWITTER_HOSTNAME
-###		wPingComm = "ping -n " + self.DEF_TWITTER_PING_COUNT + " " + self.DEF_TWITTER_HOSTNAME
-###		
-###		wPingComm = open( wPingComm, encoding='CP932' )
-###		
-##		wPingComm = "ping -c " + self.DEF_TWITTER_PING_COUNT + " " + self.DEF_TWITTER_HOSTNAME
-##		wStatus, wResult = sp.getstatusoutput( wPingComm )
-##		if wStatus==0 :
-##		wRes = subprocess.run([ "ping", str(self.DEF_TWITTER_HOSTNAME), "-c", str(self.DEF_TWITTER_PING_COUNT), "-W" , "300" ], stdout=subprocess.PIPE )
-###	    print(res.stdout.decode("cp932"))
-
-	def __TwitterPing( self, inHost=None ):
+		wPingComm = "ping -n " + self.DEF_TWITTER_PING_COUNT + " " + self.DEF_TWITTER_HOSTNAME
+		wStatus, wResult = sp.getstatusoutput( wPingComm )
+		if wStatus==0 :
+			return True	# Link UP
 		
-		wResult = {
-			"Result"	: False,
-			"Reason"	: None
-		}
-		
-		#############################
-		# ホスト名の設定
-		if inHost==None or inHost=="none" :
-			wHost = str( self.DEF_TWITTER_HOSTNAME )
-		else:
-			wHost = str( inHost )
-		
-###		b64_auth = base64.b64encode(wHost.encode()).decode("utf-8")
-###		
-###		wOBJ_Ping = pings.Ping()	# Pingオブジェクト作成
-###		wRes = wOBJ_Ping.ping( b64_auth, times=self.DEF_TWITTER_PING_COUNT )
-###		if wRes.is_reached() :
-###		wRes = subprocess.run([ "ping", wHost, "-c", str(self.DEF_TWITTER_PING_COUNT), "-W" , "5000" ], stdout=subprocess.PIPE )
-		
-		#############################
-		# Pingテスト
-#		wRes = subprocess.run([ "ping", "-w", "1000", "-c", str(self.DEF_TWITTER_PING_COUNT), wHost], stdin=subprocess.PIPE, stdout=subprocess.PIPE )
-
-		wRes = subprocess.run([ "ping", wHost], stdin=subprocess.PIPE, stdout=subprocess.PIPE )
-
-###		print( str(wRes) )
-###		print(wRes.stdout.decode("cp932"))
-###
-###		if wRes.returncode == 0 :
-###			return True	# Link UP
-###		
-###		return False	# Link Down
-		#############################
-		# 結果
-		if wRes.returncode == 0 :
-			wResult['Result'] = wRes.stdout.decode("cp932")
-		
-		#############################
-		# 正常
-		wResult['Result'] = True
-		return wResult
-
-
-
-#####################################################
-	def Ping( self, inHost=None ):
-		wRes = self.__TwitterPing( inHost=inHost )
-###		if wRes==False :
-###			
-###			return False	# NG
-###		
-###		return True			# OK
-		return wRes
+		return False	# Link Down
 
 
 

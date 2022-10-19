@@ -173,13 +173,7 @@ class CLS_PostgreSQL_Use():
 		#############################
 		# DB接続
 		try:
-			#############################
-			# 接続
 			self.PostgreSQL_use = psycopg2.connect( host=self.STR_DBdata['hostname'], database=self.STR_DBdata['database'], user=self.STR_DBdata['username'], password=self.STR_DBdata['password'] )
-			
-			#############################
-			# エンコードの強制設定
-			self.PostgreSQL_use.set_client_encoding('utf-8')
 		except psycopg2.OperationalError as e:
 			self.DbStatus['Reason'] = "CLS_PostgreSQL_Use: __dbConnect: psycopg2 error: " + str(e)
 			return False
