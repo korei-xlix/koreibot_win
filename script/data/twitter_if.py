@@ -863,6 +863,35 @@ class CLS_Twitter_IF() :
 
 
 #####################################################
+# Pingテスト
+#####################################################
+	def Ping( self , inHost=None ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_Twitter_IF"
+		wRes['Func']  = "Ping"
+		
+		self.OBJ_Twitter = CLS_Twitter_Use()
+		#############################
+		# Pingテスト
+		wTwitterRes = self.OBJ_Twitter.Ping( inHost=inHost )
+		
+		#############################
+		# Twitter状態の取得
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "pingテスト失敗: " + wTwitterRes['Reason']
+			return wRes
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
 # タイムライン読み込み処理
 #####################################################
 	def GetTL( self, inTLmode="home", inFLG_Rep=True, inFLG_Rts=False, inCount=CLS_Twitter_Use.VAL_TwitNum, inID=None, inListID=None ):

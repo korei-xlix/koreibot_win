@@ -41,17 +41,23 @@ class CLS_BotCtrl():
 		# 引数取得
 		wArg = CLS_OSIF.sGetArg()
 		
-		if len(wArg)<6 :	#引数が足りない
+###		if len(wArg)<6 :	#引数が足りない
+		if wArg[1]!="ping" and len(wArg)<6 :	#引数が足りない
 			wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません(1)= " + str( wArg )
 			CLS_OSIF.sErr( wRes )
 			return wRes
 		
 		#############################
 		# モード、DB情報の取得
-		wRes['Responce']['hostname'] = wArg[2]
-		wRes['Responce']['database'] = wArg[3]
-		wRes['Responce']['username'] = wArg[4]
-		wRes['Responce']['password'] = wArg[5]
+###		wRes['Responce']['hostname'] = wArg[2]
+###		wRes['Responce']['database'] = wArg[3]
+###		wRes['Responce']['username'] = wArg[4]
+###		wRes['Responce']['password'] = wArg[5]
+		if wArg[1]!="ping" :
+			wRes['Responce']['hostname'] = wArg[2]
+			wRes['Responce']['database'] = wArg[3]
+			wRes['Responce']['username'] = wArg[4]
+			wRes['Responce']['password'] = wArg[5]
 		
 		#############################
 		# add  : データ追加モード
@@ -115,10 +121,24 @@ class CLS_BotCtrl():
 			return wRes
 		
 		#############################
+		# ping  : Ping
+		elif wArg[1]=="ping" :
+			if len(wArg)!=3 and len(wArg)!=4 :
+				wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません(6)= " + str( wArg )
+				CLS_OSIF.sErr( wRes )
+				return wRes
+			
+			gVal.STR_SystemInfo['RunMode'] = wArg[1]
+			wRes['Responce']['hostname']   = wArg[2]
+			
+			wRes['Result'] = True	#正常
+			return wRes
+		
+		#############################
 		# test : テストモード
 		elif wArg[1]==gVal.DEF_TEST_MODE :
 			if len(wArg)!=7 :
-				wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません(6)= " + str( wArg )
+				wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません(7)= " + str( wArg )
 				CLS_OSIF.sErr( wRes )
 				return wRes
 			
@@ -128,7 +148,7 @@ class CLS_BotCtrl():
 		# run : 通常モード
 		elif wArg[1]=="run" :
 			if len(wArg)!=7 :
-				wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません(7)= " + str( wArg )
+				wRes['Reason'] = "CLS_BotCtrl: sBotTest: 引数が足りません(8)= " + str( wArg )
 				CLS_OSIF.sErr( wRes )
 				return wRes
 			

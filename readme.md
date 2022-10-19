@@ -1,9 +1,9 @@
-# これーbot win
+# これーbot
 **～取扱説明書 兼 設計仕様書～**  
 
 
 # システム概要 <a name="aSystemSummary"></a>
-python3で作成したWindows環境下で動くことを前提にしたTwitter支援用botです。  
+python3で作成したTwitter支援用botです。  
 * 現在のトレンドをツイートします。
 * 一定期間がを過ぎたいいねを解除します。いいねリストをクリーンにします。
 
@@ -29,7 +29,7 @@ python3で作成したWindows環境下で動くことを前提にしたTwitter�
 * Twitterの審査に受かること (！大前提！)
 * python3（v3.8.5で確認）
 * postgreSQL（Windows版）
-* Windows 10
+* Linux（開発はcugwin環境）
 * twitterアカウント
 * githubアカウント
 * デフォルトエンコード：utf-8
@@ -67,60 +67,151 @@ pythonのデフォルトエンコードを確認したり、utf-8に設定する
 
 # セットアップ手順 <a name="aSetup"></a>
 
-1. pythonと必要なライブラリをインストールします。  
-	インストーラを以下から取得します。基本的に * web-based installer を使います。  
-	入手したインストーラで好きな場所にセットアップします。  
-	    [python HP](https://www.python.org/)  
-	  
-	Add Python x.x to Path はチェックしたほうがいいです。  
-	その他はデフォルトか、環境にあわせてオプションを選択しましょう。  
-	インストールが終わったらテストしてみます。  
-	```
-	# python -V
-	Python 3.8.5
-	  ※Windowsの場合、python3ではなく、pythonらしいです
-	
-	# pip3 install requests requests_oauthlib psycopg2
-	～中略～
-	
-	# pip3 list
-	～以下省略～
-	```
+## python3ライブラリのインストール <a name="aSetup_python3lib"></a>
+python3の処理で必要なライブラリをインストールします。  
+python3の本体はCygwinと一緒にインストールされてるはずです。  
+  
+なお、Galaxy Fleetで使うライブラリは以下の通りです。  
+* requests 
+* requests_oauthlib 
+* python-dateutil 
+* psycopg2
+* flask （要らないかも？）
+* apt-cyg（apt-getのcygwin版）
+* procps（apt-cygでインストール）
 
-2. postgreSQLをインストールします。  
-	1. インストーラを以下から取得します。  
-		    [postgresql HP](https://www.postgresql.org/download/)  
-		Windows 32bit or 64bit 形式を選択します。  
+以下手順です。  
+* 1.以下のコマンドでpythonの動作テストしてみます。  
+```
+$ python -V
+Python 3.8.2
+  ※Windowsの場合、python3ではなく、pythonらしいです  
+```
 
-	2. インストーラに従ってインストールします。  
-		postgreSQLのスーパーユーザは postgres になります。  
-		**パスワードは忘れずに覚えておきましょう**  
-		スタックビルダは必要に応じてセットアップしてください。（特に不要です）  
+* 2.pip3でライブラリをインストールします。  
+```
+$ pip3 install flask requests requests_oauthlib python-dateutil psycopg2
+～中略～
 
-	3. 環境変数を設定します。  
-		「スタート」→「システムの詳細設定 で検索」→「詳細設定」→「環境変数」  
-		ここのPathにpostgreSQLのbinフォルダを追加します。  
-		```
-		例：
-		C:\Program Files\PostgreSQL\13\bin
-		```
+$ pip3 list
+～以下省略～
+```
 
-	4. 追加したらOKを押します。  
+* 3.apt-cygと、apt-cygを使ってprocpsライブラリをインストールします。  
+```
+wgetでapt-cygを取得する
+$ cd 
+$ wget https://raw.githubusercontent.com/transcode-open/apt-cyg/master/apt-cyg
+$ chmod 755 apt-cyg
+$ mv apt-cyg /usr/local/bin
 
-	5. 動作テストします。  
-		```
-		# psql --version
-		psql (PostgreSQL) 13.0
-		
-		psql -U postgres
-		
-		=>
-		
-		=> \q
-		　※エラーがでなければOKです
-		```
+システム系コマンドのために
+$ apt-cyg install procps
+```
 
-3. botで使うデータベースを作成します。  
+
+
+## エンコードの確認と設定 <a name="aSetup_endode"></a>
+念のためデフォルトエンコードを確認しておきます。  
+  
+Galaxy FleetはOSのエンコードが uft-8 でないと動作しません。  
+Cygwinはデフォルトでutf-8なので問題ないはずです。  
+
+* 1.コマンドを入力します。  
+```
+$ python3
+>>> import sys
+>>> sys.getdefaultencoding()
+'utf-8'
+
+ここでuft-8がでればOKです。
+
+以下はpython3コンソールの終了コマンドです。
+>>> exit
+[ctrl+D] ※キー入力で終了
+```
+  utf-8であれば、ここでスキップできます。  
+
+* 2.もしutf-8でなかったらプロファイルにエンコードを追加します。  
+```
+viエディタを起動します。
+$ vi /home/[Cygwinユーザ]/.bash_profile
+
+ファイルの最後に以下を追加します。
+export LANG=ja_JP.UTF-8
+
+viエディタを終了します。
+:wq
+```
+
+* 3.追加したら以下を実行して、プロファイルを読み込ませます。  
+```
+$ source ~/.bash_profile
+```
+
+* 4. 再度1項を実行して、utf-8に変更されたか確認します。  
+
+
+
+## postgreSQLのインストール <a name="aSetup_postgresql"></a>
+postgreSQLをインストールします。  
+ここではpostgreSQL v15 で説明します。メジャーバージョンが異なると手順が変わる可能性がありますのでご留意ください。  
+  
+なお実行にはcygserverを使います。  
+  
+**既にpostgreSQLの環境ができている場合は、スキップできます。**  
+**特に問題なければ既存のpostgreSQLを使っても問題ないと思います**  
+
+
+
+## postgreSQLのセットアップ
+postgreSQLをインストールします。  
+
+* 1.ソースコードのURLを以下で確認します。  
+  [postgresql HP](https://www.postgresql.org/download/)  
+  .qz形式を選択します。  
+```
+$ cd 
+$ cd work
+$ wget [ソースコードのURL]
+```
+
+* 2.ソースコードをコンパイル、インストールします。  
+```
+$ tar -xvzf [アーカイブファイル名]
+$ cd [解凍されたフォルダ]
+$ mkdir make_dir
+$ cd make_dir
+$ ../configure --enable-nls --enable-thread-safety
+$ make
+$ make install
+$ cd src/interfaces/libpq
+$ make
+$ make install
+```
+
+* 3. .bash_profileに環境変数を追加します。  
+```
+$ vi /home/[Cygwinユーザ]/.bash_profile
+
+export PATH=/usr/local/pgsql/bin:/usr/local/pgsql/lib:$PATH
+export PGHOST=localhost
+export PGLIB=/usr/local/pgsql/lib
+export PGDATA=/var/postgresql/data
+
+:wq
+```
+
+* 4.追加したら以下を実行して、読み込ませます。  
+```
+source ~/.bashrc
+source ~/.bash_profile
+```
+
+
+
+## botで使うデータベース作成
+botで使うデータベースを作成します。  
 	```
 	# createuser -U postgres koreibot
 	# createdb -U postgres -O koreibot koreibot
@@ -144,6 +235,8 @@ pythonのデフォルトエンコードを確認したり、utf-8に設定する
 	　※エラーがでなければOKです
 	```
 
+
+
 4. botソースの管理アプリとしてWindows版のgithubデスクトップを使います。  
 	1. githubデスクトップをインストールします。  
 		　　[githubデスクトップ](https://desktop.github.com)  
@@ -160,15 +253,23 @@ pythonのデフォルトエンコードを確認したり、utf-8に設定する
 	4. 自分のブランチを作ります。  
 		githubデスクトップのCurrent branch→New branchで任意の名前を入力します。  
 
-5. DOSのコマンドラインを起動します。  
 
-6. 以下を入力します。  
+
+## 初期起動
+bashのコマンドラインを起動します。  
+koreibotのカレントにショートカット koreibot.ch があるので、お使いください。  
+
+```
+$ bash koreibot.sh init
+```
+
+1. 以下を入力します。  
 	```
 	# cd [Koreibotのインストールフォルダ]
 	# python run.py init
 	```
 
-7. データベースの全初期化と、ユーザ登録を実施します。画面に従って入力します。  
+2. データベースの全初期化と、ユーザ登録を実施します。画面に従って入力します。  
 	以下の情報が必要となります。
 	
 	* koreibotのデータベースパスワード
@@ -180,11 +281,12 @@ pythonのデフォルトエンコードを確認したり、utf-8に設定する
 
 **セットアップはここで完了です**  
 
-8. botを起動します。  
-	```
-	# cd [botのインストールフォルダ]
-	# python run.py [twitterアカウント名] [botのデータベースパスワード]
-	```
+3. botを起動します。  
+```
+$ bash koreibot.sh start
+```
+
+
   
 **起動すると、コンソール画面が起動します。**  
 
@@ -192,16 +294,11 @@ pythonのデフォルトエンコードを確認したり、utf-8に設定する
 
 
 # 起動方法 <a name="aStart"></a>
+koreibotのカレントにショートカット koreibot.ch があるので、お使いください。  
 
-起動はDOSのコマンドラインからおこないます。  
-
-1. DOSのコマンドラインを起動します。  
-
-2. 以下を入力します。  
-	```
-	# cd [botのインストールフォルダ]
-	# python run.py run  [データベースhostname] [データベースname] [データベースusername] [データベースパスワード] [twitterアカウント名]
-	```
+```
+$ bash koreibot.sh start
+```
 
 **起動すると、コンソール画面が起動します。**  
   
