@@ -701,7 +701,8 @@ class CLS_TwitterFavo():
 				### 7割りは切り捨て
 				if wMyfollowCnt>=gVal.DEF_STR_TLNUM['forFollowerFavoHarfMyfollowCnt'] :
 					wRand = CLS_OSIF.sGetRand(100)
-					if wRand>gVal.DEF_STR_TLNUM['forFollowerFavoHarfMyfollowRand'] :
+###					if wRand>gVal.DEF_STR_TLNUM['forFollowerFavoHarfMyfollowRand'] :
+					if wRand>=gVal.DEF_STR_TLNUM['forFollowerFavoHarfMyfollowRand'] :
 						continue
 				
 				wMyfollowCnt += 1

@@ -1726,9 +1726,23 @@ class CLS_TwitterMain():
 					wRes['Result'] = True
 					return wRes
 			
+			wFLG_Iine = False
+			#############################
+			# 相互フォローリスト かつ 相互フォローの場合
+			# もしくは片フォロワーリスト かつ フォロワーの場合
+			#   ランダム抽選で受かれば、おかえしいいね
+			if (gVal.OBJ_Tw_IF.CheckMutualListUser( inUser['id'] )==True and inData['myfollow']==True and inData['follower']==True ) or \
+			   (gVal.OBJ_Tw_IF.CheckFollowListUser( inUser['id'] )==True and inData['myfollow']==False and inData['follower']==True ) :
+				wRand = CLS_OSIF.sGetRand(100)
+				if wRand<gVal.DEF_STR_TLNUM['forReactionListUserRand'] :
+					wFLG_Iine = True
+			else:
+				wFLG_Iine = True
+			
 			#############################
 			# 自動おかえしいいねする
-			if gVal.DEF_STR_TLNUM['autoRepFavo']==True :
+###			if gVal.DEF_STR_TLNUM['autoRepFavo']==True :
+			if gVal.DEF_STR_TLNUM['autoRepFavo']==True and wFLG_Iine==True :
 				wSubRes = self.OBJ_TwitterFavo.AutoFavo( inUser, gVal.DEF_STR_TLNUM['forAutoFavoReturnFavoSec'] )
 				if wSubRes['Result']!=True :
 					###失敗

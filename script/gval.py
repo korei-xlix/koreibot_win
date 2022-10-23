@@ -163,6 +163,7 @@ class gVal() :
 		"reactionTweetLine_Short"	: 8,				#   リアクションチェック時の自ツイート取得ライン数(ショート時)
 		"forReactionSec"			: 3600,				#   リアクションまでの期間   1時間  60x60
 		"forReactionTweetSec"		: 172800,			#   リアクションに反応するツイート期間 2日 (60x60x24)x2
+		"forReactionListUserRand"	: 20,				#   相互フォローリスト・片フォローリスト ランダム実施値 パーセンテージ (1-100)   20％で実施
 		
 		"forVipOperationSec"		: 3600,				#   VIPリアクション監視までの期間   1時間  60x60x1
 		"vipReactionTweetLine"		: 20,				#   VIPリアクションチェック時のツイート取得ライン数
@@ -198,7 +199,7 @@ class gVal() :
 		"forAutoFavoReturnFavoSec"			: 3600,		#   お返しいいねへの期間   1時間  60x60x1
 		"forAutoFavoListFavoSec"			: 86400,	#   リストいいねへの期間   1日  (60x60x24)x1
 		"forAutoFavoLevelCCnt"				: 2,		#   レベルC以前の場合、1度でいいねする数
-		"forAutoFavoLevelRunRand"			: 10,		#   レベルによる中止 ランダム実施値 パーセンテージ (1-100)   20％で実施
+		"forAutoFavoLevelRunRand"			: 10,		#   レベルによる中止 ランダム実施値 パーセンテージ (1-100)   10％で実施
 		
 		"forRemFavoSec"				: 172800,			# いいね解除までの期間 2日 (60x60x24)x2
 		
