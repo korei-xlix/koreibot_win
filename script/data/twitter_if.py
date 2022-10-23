@@ -1285,19 +1285,20 @@ class CLS_Twitter_IF() :
 		# データ加工
 		#   いいねがない場合はセットなし
 		wUsers = {}
-		if wTwitterRes['Responce']['meta']['result_count']>0 and \
-		   "data" in wTwitterRes['Responce'] :
-			for wUser in wTwitterRes['Responce']['data'] :
-				wID = str(wUser['id'])
-				wName = wUser['name'].replace( "'", "''" )
-				
-				wSTR_Cell = {
-					"id"			: wID,
-					"name"			: wName,
-					"screen_name"	: wUser['username'],
-					"description"	: wUser['description']
-				}
-				wUsers.update({ wID : wSTR_Cell })
+		if "meta" in wTwitterRes['Responce'] :
+			if wTwitterRes['Responce']['meta']['result_count']>0 and \
+			   "data" in wTwitterRes['Responce'] :
+				for wUser in wTwitterRes['Responce']['data'] :
+					wID = str(wUser['id'])
+					wName = wUser['name'].replace( "'", "''" )
+					
+					wSTR_Cell = {
+						"id"			: wID,
+						"name"			: wName,
+						"screen_name"	: wUser['username'],
+						"description"	: wUser['description']
+					}
+					wUsers.update({ wID : wSTR_Cell })
 		
 		#############################
 		# 完了
@@ -1681,34 +1682,6 @@ class CLS_Twitter_IF() :
 			"Run"	: False,
 			"Data"	: None
 		}
-###		#############################
-###		# ツイートの情報を取得する
-###		wTweetInfoRes = self.GetTweetLookup( inID )
-###		if wTweetInfoRes['Result']!=True :
-###			wStr = "Twitter API Error(GetTweetLookup): " + wTwitterRes['Reason']
-###			wStr = wStr + " id=" + str(inID)
-###			wRes['Reason'] = wStr
-###			gVal.OBJ_L.Log( "B", wRes )
-###			return wRes
-###		
-###		#############################
-###		# 情報がなければ処理を抜ける
-###		if wTweetInfoRes['Responce']==None :
-###			wRes['Result'] = True
-###			return wRes
-###		
-###		#############################
-###		# いいね情報を登録する
-###		wResSub =self.AddFavoUserID( wTweetInfoRes['Responce'] )
-###		if wResSub['Result']!=True :
-###			wRes['Reason'] = "AddFavoUserID is failed"
-###			gVal.OBJ_L.Log( "B", wRes )
-###			return wRes
-###		if wResSub['Responce']==False :
-###			### 重複あり= 抜ける
-###			wRes['Result'] = True
-###			return wRes
-###		
 		#############################
 		# いいね情報を登録する
 		wResSub =self.AddFavoData( inTweet )
@@ -1731,8 +1704,8 @@ class CLS_Twitter_IF() :
 		# 結果チェック
 		if wTwitterRes['Result']!=True :
 			wStr = "Twitter API Error(CreateFavo): " + wTwitterRes['Reason']
-			wStr = wStr + " id=" + str(inID)
-			wStr = wStr + " screen_name=" + wTweetInfoRes['Responce']['user']['screen_name']
+			wStr = wStr + " id=" + str(inTweet['id'])
+			wStr = wStr + " screen_name=" + wResSub['Responce']['user']['screen_name']
 			wRes['Reason'] = wStr
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes

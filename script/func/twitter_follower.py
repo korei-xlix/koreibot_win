@@ -685,7 +685,8 @@ class CLS_TwitterFollower():
 #####################################################
 # 自動リムーブ
 #####################################################
-	def AutoRemove( self, inUser ):
+###	def AutoRemove( self, inUser ):
+	def AutoRemove( self, inUser, inFLG_Force=False ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -725,7 +726,8 @@ class CLS_TwitterFollower():
 		# フォロー者の場合
 		#   Twitterからリムーブする
 		if gVal.OBJ_Tw_IF.CheckMyFollow( wUserID )==True :
-			if wARR_DBData!=None :
+###			if wARR_DBData!=None :
+			if wARR_DBData!=None and inFLG_Force==False:
 				#############################
 				# 期間比較値
 				# いいねありの場合、
@@ -749,17 +751,8 @@ class CLS_TwitterFollower():
 					else:
 						wThreshold = gVal.DEF_STR_TLNUM['forListFavoAutoRemoveSec']
 				
-###				### 期間切替
-####			if wARR_DBData['level_tag']=="D+" and wARR_DBData['rfavo_date']!=gVal.DEF_TIMEDATE and \
-###				if wARR_DBData['level_tag']=="D+" and gVal.OBJ_Tw_IF.CheckFollower( wUserID )==False :
-###					### 片フォロー者で、botからフォローしたフォロー者は期間が短い
-###					wThreshold = gVal.DEF_STR_TLNUM['forListFavoAutoRemoveSec_Short']
-###				else:
-###					wThreshold = gVal.DEF_STR_TLNUM['forListFavoAutoRemoveSec']
-###				
 				#############################
 				# 自動リムーブ期間か
-###				wGetLag = CLS_OSIF.sTimeLag( wCompTimeDate, inThreshold=gVal.DEF_STR_TLNUM['forListFavoAutoRemoveSec'] )
 				wGetLag = CLS_OSIF.sTimeLag( wCompTimeDate, inThreshold=wThreshold )
 				if wGetLag['Result']!=True :
 					wRes['Reason'] = "sTimeLag failed(1)"
@@ -795,8 +788,11 @@ class CLS_TwitterFollower():
 				
 				#############################
 				# ログに記録
-###				gVal.OBJ_L.Log( "R", wRes, "●自動リムーブ: " + inUser['screen_name'] )
-				gVal.OBJ_L.Log( "R", wRes, "●自動リムーブ: " + inUser['screen_name'], inID=wUserID )
+###				gVal.OBJ_L.Log( "R", wRes, "●自動リムーブ: " + inUser['screen_name'], inID=wUserID )
+				if inFLG_Force==True :
+					gVal.OBJ_L.Log( "R", wRes, "●自動リムーブ(強制): " + inUser['screen_name'], inID=wUserID )
+				else:
+					gVal.OBJ_L.Log( "R", wRes, "●自動リムーブ: " + inUser['screen_name'], inID=wUserID )
 				
 				#############################
 				# DBに反映

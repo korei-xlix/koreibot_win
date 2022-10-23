@@ -173,19 +173,22 @@ class gVal() :
 		
 														# フォロワー支援いいね
 		"forFollowerFavoSec"				: 14400,	#   フォロワー支援いいねまでの期間   4時間  60x60x4
-		"forFollowerFavoMListMutualSec"		: 14400,	#   相互フォローリスト 相互フォローの いいね期間   4時間  60x60x4
-		"forFollowerFavoMListMyFollowSec"	: 86400,	#   相互フォローリスト 片フォロー者の いいね期間   1日  60x60x24
-		"forFollowerFavoFListSec"			: 115200,	#   片フォロワーリスト期間                         32時間  60x60x32
+###		"forFollowerFavoMListMutualSec"		: 14400,	#   相互フォローリスト 相互フォローの いいね期間   4時間  60x60x4
+		"forFollowerFavoMListMutualSec"		: 43200,	#   相互フォローリスト 相互フォローの いいね期間  12時間  60x60x12
+###		"forFollowerFavoMListMyFollowSec"	: 86400,	#   相互フォローリスト 片フォロー者の いいね期間   1日  60x60x24
+		"forFollowerFavoMListMyFollowSec"	: 28800,	#   相互フォローリスト 片フォロー者の いいね期間   8時間  60x60x8
+		
+		"forFollowerFavoFListSec"			: 115200,	#   片フォロワーリスト処理期間                     32時間  60x60x32
 		"forFollowerFavoFListIntimeSec"		: 86400,	#   片フォロワーリスト・期間内の いいね期間        1日  60x60x24
 		"forFollowerFavoFListOverSec"		: 172800,	#   片フォロワーリスト・期間外の いいね期間        2日 (60x60x24)x2
 		"forFollowerFavoFListpfavoSec"		: 432000,	#   片フォロワーリスト・期間外時 いいね実行からの期間  5日 (60x60x24)x5
+		
 		"forFollowerFavoMutualSec"			: 14400,	#   相互フォローの いいね期間                      4時間  60x60x4
 		"forFollowerFavoFollowerSec"		: 115200,	#   フォロワー期間                                 32時間  60x60x32
 		"forFollowerFavoIntimeSec"			: 86400,	#   フォロワー・期間内の いいね期間                1日  60x60x24
 		"forFollowerFavoOverSec"			: 172800,	#   フォロワー・期間外の いいね期間                2日 (60x60x24)x2
 		"forFollowerFavoHarfMyfollowSec"	: 288000,	#   片フォロー者の いいね期間                      3日+8時間 (60x60x24)x3+(60x60x8)
-###		"forFollowerFavoHarfMyfollowCnt"	: 10,		#   片フォロー者 初回無条件実施回数
-###		"forFollowerFavoHarfMyfollowRand"	: 20,		#   片フォロー者 ランダム実施値 パーセンテージ (1-100)   30％で実施
+		
 		"forFollowerFavoHarfMyfollowCnt"	: 5,		#   片フォロー者 初回無条件実施回数
 		"forFollowerFavoHarfMyfollowRand"	: 10,		#   片フォロー者 ランダム実施値 パーセンテージ (1-100)   30％で実施
 		"forFollowerFavoHarfMyfollowRunSec"	: 86400,	#   片フォロー者の いいね実施期間                  1日  60x60x24
