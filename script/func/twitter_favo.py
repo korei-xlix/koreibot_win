@@ -1090,7 +1090,8 @@ class CLS_TwitterFavo():
 				if wARR_DBData['level_tag']=="B-" :
 					
 					wRand = CLS_OSIF.sGetRand(100)
-					if wRand>gVal.DEF_STR_TLNUM['forAutoFavoLevelRunRand'] :
+###					if wRand>gVal.DEF_STR_TLNUM['forAutoFavoLevelRunRand'] :
+					if wRand>=gVal.DEF_STR_TLNUM['forAutoFavoLevelRunRand'] :
 						wStr = "レベルタグ乱数判定による除外: level=" + wARR_DBData['level_tag'] + " user=" + wFavoUser['screen_name']
 						wSTR_Tweet['reason'] = wStr
 						wFLG_ZanCountSkip = True

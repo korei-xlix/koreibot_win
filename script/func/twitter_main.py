@@ -1731,8 +1731,9 @@ class CLS_TwitterMain():
 			# 相互フォローリスト かつ 相互フォローの場合
 			# もしくは片フォロワーリスト かつ フォロワーの場合
 			#   ランダム抽選で受かれば、おかえしいいね
-			if (gVal.OBJ_Tw_IF.CheckMutualListUser( inUser['id'] )==True and inData['myfollow']==True and inData['follower']==True ) or \
-			   (gVal.OBJ_Tw_IF.CheckFollowListUser( inUser['id'] )==True and inData['myfollow']==False and inData['follower']==True ) :
+			if ((gVal.OBJ_Tw_IF.CheckMutualListUser( inUser['id'] )==True and inData['myfollow']==True and inData['follower']==True ) or \
+			    (gVal.OBJ_Tw_IF.CheckFollowListUser( inUser['id'] )==True and inData['myfollow']==False and inData['follower']==True )) and \
+			   inData['level_tag']!="B-" :
 				wRand = CLS_OSIF.sGetRand(100)
 				if wRand<gVal.DEF_STR_TLNUM['forReactionListUserRand'] :
 					wFLG_Iine = True
