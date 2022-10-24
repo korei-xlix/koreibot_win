@@ -1705,7 +1705,7 @@ class CLS_Twitter_IF() :
 		if wTwitterRes['Result']!=True :
 			wStr = "Twitter API Error(CreateFavo): " + wTwitterRes['Reason']
 			wStr = wStr + " id=" + str(inTweet['id'])
-			wStr = wStr + " screen_name=" + wResSub['Responce']['user']['screen_name']
+###			wStr = wStr + " screen_name=" + wResSub['Responce']['user']['screen_name']
 			wRes['Reason'] = wStr
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
