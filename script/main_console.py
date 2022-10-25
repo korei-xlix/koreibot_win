@@ -312,6 +312,11 @@ class CLS_Main_Console() :
 		
 	#####################################################
 		#############################
+		# 相互いいね停止
+		elif inCommand=="\\fs" :
+			cls.OBJ_TwitterMain.SetMfvStop()
+		
+		#############################
 		# トレンドタグ設定
 		elif inCommand=="\\tc" :
 			cls.OBJ_TwitterMain.SetTrendTag()

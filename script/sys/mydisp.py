@@ -447,6 +447,15 @@ class CLS_MyDisp():
 				wStr = wStr + "有効(list=" + inData['Sys_fListName'] + ")"
 			pRes['Responce'] = wStr
 		
+		###インプリ：相互いいね停止
+		elif "[@SYS-MFVSTOP@]"==inLine :
+			wStr = "    相互いいね停止    : "
+			if inData['Sys_MFvStop']==False :
+				wStr = wStr + "未設定"
+			else:
+				wStr = wStr + "設定中(設定日時=" + str(inData['Sys_MFvStop_Date']) + ")"
+			pRes['Responce'] = wStr
+		
 		#############################
 		# 正常
 		pRes['Result'] = True

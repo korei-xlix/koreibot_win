@@ -123,6 +123,14 @@ class CLS_TwitterMain():
 			return wRes
 		
 		#############################
+		# 相互いいね停止設定 取得
+		wSubRes = gVal.OBJ_DB_IF.GetMfvStop()
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "GetMfvStop is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
 		# 完了
 		wRes['Result'] = True
 		return wRes
@@ -1149,6 +1157,15 @@ class CLS_TwitterMain():
 #####################################################
 	def AdminCautionUser(self):
 		wRes = self.OBJ_TwitterAdmin.AdminCautionUser()
+		return wRes
+
+
+
+#####################################################
+# 相互いいね停止
+#####################################################
+	def SetMfvStop(self):
+		wRes = self.OBJ_TwitterAdmin.SetMfvStop()
 		return wRes
 
 

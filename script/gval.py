@@ -57,7 +57,10 @@ class gVal() :
 		
 		"VipTag"		: None,			#VIPリツイート 対象タグ
 		
-		"AutoSeq"		: 0				#自動監視シーケンス
+		"AutoSeq"		: 0,			#自動監視シーケンス
+		
+		"mfvstop"		: False,		#相互いいね停止 true=有効
+		"mfvstop_date"	: None			#相互いいね停止 開始日
 	}
 
 #############################
@@ -245,7 +248,9 @@ class gVal() :
 		"TimelineFollowTweetLine_Skip"	: 40,			#   ツイート取得ライン 先頭スキップ数
 		"TimelineFollowFavoCheckNum"	: 32,			#   いいね、リツイート、引用リツイートのチェック回数(Limit)
 		
-		"trafficReportLimit"		: 30,				# トラヒック報告取得数
+		"forTimelineFollowSec"			: 14400,		# タイムラインフォロー チェック期間 4時間  (60x60x4)
+		
+		"forMultiFavoStopReleaseSec"	: 172800,		# 相互いいね停止期間(自動解除)  2日 (60x60x24)x2
 		
 ###		"resetAPISec"		: 900,						# APIリセット周期 15分 60x15
 		"resetAPISec"		: 600,						# APIリセット周期 10分 60x10

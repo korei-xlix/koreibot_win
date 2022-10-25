@@ -2553,6 +2553,107 @@ class CLS_DB_IF() :
 
 
 #####################################################
+# 相互いいね停止設定
+#####################################################
+	def GetMfvStop(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "GetMfvStop"
+		
+		#############################
+		# データ取得
+		wQy = "select mfvstop, mfvstop_date "
+		wQy = wQy + "from tbl_user_data "
+		wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQy )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
+		# 辞書型に整形
+		wARR_DBData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
+		
+		#############################
+		# 取得チェック
+		if len( wARR_DBData )!= 1 :
+			##失敗
+			wRes['Reason'] = "Get mfvstop name is not one: account=" + str(inAccount) + " num=" + str( len( wARR_DBData ) )
+			gVal.OBJ_L.Log( "D", wRes )
+			return wRes
+		
+		#############################
+		# データをグローバルに反映
+		gVal.STR_UserInfo['mfvstop']      = wARR_DBData[0]['mfvstop']
+		gVal.STR_UserInfo['mfvstop_date'] = str(wARR_DBData[0]['mfvstop_date'])
+		
+		#############################
+		# =正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def SetMfvStop( self, inSet=False ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "SetMfvStop"
+		
+		#############################
+		# 値変更
+		if inSet==True :
+			### セットの場合
+			wMFvStop      = True
+			wMFvStop_Date = str(gVal.STR_Time['TimeDate'])
+		else:
+			wMFvStop      = False
+			wMFvStop_Date = gVal.DEF_TIMEDATE
+		
+		#############################
+		# データ登録
+		wQy = "update tbl_user_data set "
+		wQy = wQy + "mfvstop = " + str( wMFvStop ) + ", "
+		wQy = wQy + "mfvstop_date = '" + str( wMFvStop_Date ) + "' "
+		wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQy )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
+		# データをグローバルに反映
+		gVal.STR_UserInfo['mfvstop']      = wMFvStop
+		gVal.STR_UserInfo['mfvstop_date'] = wMFvStop_Date
+		
+		#############################
+		# ログに記録する
+		if wMFvStop==True :
+			wStr = "● 相互いいね停止 設定"
+		else:
+			wStr = "〇 相互いいね停止 解除"
+		gVal.OBJ_L.Log( "SC", wRes, wStr )
+		
+		#############################
+		# =正常
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
 # いいね情報
 #####################################################
 	def InsertFavoData( self, inUser ):
