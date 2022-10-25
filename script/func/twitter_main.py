@@ -1162,6 +1162,23 @@ class CLS_TwitterMain():
 
 
 #####################################################
+# 非絡みユーザ一覧
+#####################################################
+	def UserBList(self):
+		
+		#############################
+		# Twitter情報取得
+		wFavoRes = self.GetTwitterInfo()
+		if wFavoRes['Result']!=True :
+			gVal.OBJ_L.Log( "B", wFavoRes )
+			return wFavoRes
+		
+		wRes = self.OBJ_TwitterAdmin.UserBList()
+		return wRes
+
+
+
+#####################################################
 # 相互いいね停止
 #####################################################
 	def SetMfvStop(self):
@@ -1754,6 +1771,12 @@ class CLS_TwitterMain():
 				wRand = CLS_OSIF.sGetRand(100)
 				if wRand<gVal.DEF_STR_TLNUM['forReactionListUserRand'] :
 					wFLG_Iine = True
+			
+			#############################
+			# 非絡みは無反応
+			elif inData['level_tag']=="B-" :
+				wFLG_Iine = False
+			
 			else:
 				wFLG_Iine = True
 			

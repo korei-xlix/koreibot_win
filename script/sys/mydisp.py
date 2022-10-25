@@ -47,6 +47,9 @@ class CLS_MyDisp():
 		###警告ユーザ管理
 		elif inDisp=="CautionConsole" :
 			cls.__dispInp_CautionUser( inLine, wRes, inData )
+		###非絡みユーザ一覧
+		elif inDisp=="UserBConsole" :
+			cls.__dispInp_UserB( inLine, wRes, inData )
 		
 		###トラヒック報告
 		elif inDisp=="TrafficReport" :
@@ -328,6 +331,23 @@ class CLS_MyDisp():
 		
 		###インプリ：警告ユーザ 一覧
 		if "[@CAUTION-LIST@]"==inLine :
+			pRes['Responce'] = inData
+		
+		#############################
+		# 正常
+		pRes['Result'] = True
+		return
+
+	#####################################################
+	# 非絡みユーザ一覧
+	@classmethod
+	def __dispInp_UserB( cls, inLine, outRes, inData=None ):
+		pRes = outRes
+		#############################
+		# インプリメント処理
+		
+		###インプリ：警告ユーザ 一覧
+		if "[@USERB_LIST@]"==inLine :
 			pRes['Responce'] = inData
 		
 		#############################

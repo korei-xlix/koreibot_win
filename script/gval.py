@@ -203,6 +203,7 @@ class gVal() :
 		"forAutoFavoListFavoSec"			: 86400,	#   リストいいねへの期間   1日  (60x60x24)x1
 		"forAutoFavoLevelCCnt"				: 2,		#   レベルC以前の場合、1度でいいねする数
 		"forAutoFavoLevelRunRand"			: 10,		#   レベルによる中止 ランダム実施値 パーセンテージ (1-100)   10％で実施
+		"forAutoFavoTweet_B_Sec"			: 14400,	#   非からみツイートのいいね期間   4時間  60x60x4
 		
 		"forRemFavoSec"				: 172800,			# いいね解除までの期間 2日 (60x60x24)x2
 		
@@ -336,6 +337,7 @@ class gVal() :
 		"ListFavoConsole"		: DEF_DISPPATH + "listfavo_console.disp",
 		"ExcUserConsole"		: DEF_DISPPATH + "excuser_console.disp",
 		"CautionConsole"		: DEF_DISPPATH + "caution_console.disp",
+		"UserBConsole"			: DEF_DISPPATH + "userb_console.disp",
 		
 		"TrafficReport"			: DEF_DISPPATH + "traffic_report.disp",
 		

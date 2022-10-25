@@ -1140,6 +1140,19 @@ class CLS_TwitterFavo():
 						wSTR_Tweet['reason'] = wStr
 						wFLG_ZanCountSkip = True
 						continue
+					
+					#############################
+					# 期間を過ぎたツイートは除外
+					wGetLag = CLS_OSIF.sTimeLag( str( wSTR_Tweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forAutoFavoTweet_B_Sec'] )
+					if wGetLag['Result']!=True :
+						wRes['Reason'] = "sTimeLag failed"
+						gVal.OBJ_L.Log( "B", wRes )
+						return wRes
+					if wGetLag['Beyond']==True :
+						### 規定外 =古いツイートなので除外
+						wSTR_Tweet['reason'] = "レベルタグの古いツイート"
+						wFLG_ZanCountSkip = True
+						continue
 				
 				#############################
 				# 前回からのいいね期間内は除外

@@ -20,6 +20,8 @@ class CLS_TwitterAdmin():
 	
 	STR_UserAdminInfo = None
 	
+	STR_UserBList = {}
+	
 ###	ARR_CautionList = {}
 	DEF_VAL_SLEEP = 10			#Twitter処理遅延（秒）
 
@@ -2443,6 +2445,282 @@ class CLS_TwitterAdmin():
 			wRes['Result'] = True
 			return wRes
 		
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# 非絡みユーザ一覧
+#####################################################
+	def UserBList(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterFavo"
+		wRes['Func']  = "UserBList"
+		
+		#############################
+		# コンソールを表示
+		while True :
+			
+			#############################
+			# データ表示
+			self.__view_UserBList()
+			
+			#############################
+			# 実行の確認
+			wListNumber = CLS_OSIF.sInp( "コマンド？(\\q=中止)=> " )
+			if wListNumber=="\\q" :
+				###  終わる
+				wRes['Result'] = True
+				return wRes
+			
+			#############################
+			# コマンド処理
+			wCommRes = self.__run_UserBList( wListNumber )
+			if wCommRes['Result']!=True :
+				wRes['Reason'] = "__run_UserBList is failed: " + wCommRes['Reason']
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+		
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	# 画面表示
+	#####################################################
+	def __view_UserBList(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterFavo"
+		wRes['Func']  = "__view_UserBList"
+		
+		#############################
+		# 非絡みユーザ一覧の取得
+		wUserB_Res = gVal.OBJ_DB_IF.UpdateFavoData_UserBList()
+		if wUserB_Res['Result']!=True :
+			wRes['Reason'] = "UpdateFavoData_UserBList is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		wUserBList = wUserB_Res['Responce']
+		
+		self.STR_UserBList = {}
+		wKeylist = list( wUserBList.keys() )
+		wStr = ""
+		wList_Number = 1
+		if len(wKeylist)==0 :
+			wStr = "(非絡みユーザなし)" + '\n'
+		
+		else:
+			for wIndex in wKeylist :
+				
+				wCell = {
+					"list_number"	: wList_Number,
+					"id"			: wUserBList[wIndex]['id'],
+					"screen_name"	: wUserBList[wIndex]['screen_name'],
+					"level_tag"		: wUserBList[wIndex]['level_tag'],
+					"myfollow"		: wUserBList[wIndex]['myfollow'],
+					"follower"		: wUserBList[wIndex]['follower'],
+					"multi_list"	: gVal.OBJ_Tw_IF.CheckMutualListUser( wUserBList[wIndex]['id'] ),
+					"follow_list"	: gVal.OBJ_Tw_IF.CheckFollowListUser( wUserBList[wIndex]['id'] ),
+					"send_cnt"		: wUserBList[wIndex]['send_cnt']
+				}
+				self.STR_UserBList.update({ wList_Number : wCell })
+				
+				wStr = wStr + "   : "
+				
+				### リスト番号
+				wListData = str(wList_Number)
+				wListNumSpace = 4 - len( str(wList_Number) )
+				if wListNumSpace>0 :
+					wListData = wListData + " " * wListNumSpace
+				wStr = wStr + wListData + "  "
+				
+				### フォロー者
+				if wCell['myfollow']==True :
+					wStr = wStr + "〇" + "    "
+				else:
+					wStr = wStr + "－" + "    "
+				
+				### フォロワー
+				if wCell['follower']==True :
+					wStr = wStr + "〇" + "    "
+				else:
+					wStr = wStr + "－" + "    "
+				
+				### 相互フォローリスト
+				if wCell['multi_list']==True :
+					wStr = wStr + "〇" + "    "
+				else:
+					wStr = wStr + "－" + "    "
+				
+				### 片フォロワーリスト
+				if wCell['follow_list']==True :
+					wStr = wStr + "〇" + "      "
+				else:
+					wStr = wStr + "－" + "      "
+				
+				### ユーザ名（screen_name）
+				wListData = wCell['screen_name']
+				wStr = wStr + wListData + '\n'
+				
+				wList_Number += 1
+		
+		wResDisp = CLS_MyDisp.sViewDisp( inDisp="UserBConsole", inIndex=-1, inData=wStr )
+		if wResDisp['Result']==False :
+			gVal.OBJ_L.Log( "D", wResDisp )
+		
+		return
+
+	#####################################################
+	# コマンド処理
+	#####################################################
+	def __run_UserBList( self, inWord ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterFavo"
+		wRes['Func']  = "__run_UserBList"
+		
+		#############################
+		# チェック
+		
+		wARR_Comm = str(inWord).split("-")
+		wCom = None
+		if len(wARR_Comm)==1 :
+			wNum = wARR_Comm[0]
+			wCom = None
+		elif len(wARR_Comm)==2 :
+			wNum = wARR_Comm[0]
+			wCom = wARR_Comm[1]
+		else:
+			CLS_OSIF.sPrn( "コマンドの書式が違います" + '\n' )
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		### 整数か
+		try:
+			wNum = int(wNum)
+		except ValueError:
+			CLS_OSIF.sPrn( "LIST番号が整数ではありません" + '\n' )
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		### リストのインデックス
+		wKeylist = list( self.STR_UserBList.keys() )
+		wGetIndex = None
+		for wIndex in wKeylist :
+			if self.STR_UserBList[wIndex]['list_number']==wNum :
+				wGetIndex = str(wIndex)
+				break
+		
+		if wGetIndex==None :
+			CLS_OSIF.sPrn( "LIST番号が範囲外です" + '\n' )
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		wGetIndex = wNum
+		
+		if wGetIndex not in self.STR_UserBList :
+			CLS_OSIF.sPrn( "LIST番号のデータがありません" + '\n' )
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# コマンドの分岐
+		
+		#############################
+		# コマンドなし: 指定の番号のリストの設定変更をする
+		if wCom==None :
+			#############################
+			# 実行の確認
+			wStr = "ユーザ " +  self.STR_UserBList[wGetIndex]['screen_name'] + " を非絡みから解除します"
+			CLS_OSIF.sPrn( wStr )
+			wListNumber = CLS_OSIF.sInp( "コマンド？(\\y=実行)=> " )
+			if wListNumber!="\\y" :
+				###  終わる
+				wRes['Result'] = True
+				return wRes
+			
+			#############################
+			# 実行
+			wSubRes = self.__run_UserBList_Release( inData=self.STR_UserBList[wGetIndex] )
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "__run_UserBList_Release is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+		
+		#############################
+		# 範囲外のコマンド
+		else:
+			CLS_OSIF.sPrn( "コマンドが違います" + '\n' )
+			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def __run_UserBList_Release( self ,inData ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterAdmin"
+		wRes['Func']  = "__run_UserBList_Release"
+		
+		#############################
+		# 変更できるユーザレベルか
+		if inData['level_tag']!="B-" :
+			CLS_OSIF.sPrn( "そのユーザは変更できないレベルです" + '\n' )
+			return wRes
+		
+		#############################
+		# 相互フォロー中か
+		if inData['myfollow']!=True or \
+		   inData['follower']!=True :
+			CLS_OSIF.sPrn( "そのユーザは相互フォローではありません" + '\n' )
+			return wRes
+		
+		#############################
+		# 相互フォローリストか
+		if inData['multi_list']!=True :
+			CLS_OSIF.sPrn( "そのユーザは相互フォローリストユーザではありません" + '\n' )
+			return wRes
+		
+		#############################
+		# ユーザレベルの変更設定
+		
+		wUserLevel = None
+		if inData['send_cnt']>=gVal.DEF_STR_TLNUM['LEVEL_B_Cnt'] :
+			wUserLevel = "B+"
+		elif inData['send_cnt']>=1 :
+			wUserLevel = "B"
+		else:
+			wUserLevel = "C"
+		
+		#############################
+		# ユーザレベルの変更の実行
+		wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( inData['id'], wUserLevel )
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "UpdateFavoData_UserLevel is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 正常終了
 		wRes['Result'] = True
 		return wRes
 
