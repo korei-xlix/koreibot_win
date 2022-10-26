@@ -1421,6 +1421,74 @@ class CLS_TwitterAdmin():
 
 
 #####################################################
+# 質問タグ設定
+#####################################################
+	def SetQuestionTag(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "SetQuestionTag"
+		
+		#############################
+		# 入力画面表示
+		wStr = "質問タグの設定をおこないます。" + '\n'
+		wStr = wStr + "タグに設定する名前を入力してください。" + '\n'
+		wStr = wStr + '\n'
+		wStr = wStr + "  \\q=キャンセル  /  \\n=設定解除  /  other=設定値" + '\n'
+		wStr = wStr + "---------------------------------------" + '\n'
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# 入力
+		while True :
+			#############################
+			# 現在の設定の表示
+			wStr = "[現在の設定] "
+			wStr = wStr + "質問タグ名="
+			if gVal.STR_UserInfo['QuestionTag']!=gVal.DEF_NOTEXT :
+				wStr = wStr + gVal.STR_UserInfo['QuestionTag']
+			else:
+				wStr = wStr + "(設定解除)"
+			wStr = wStr + '\n'
+			CLS_OSIF.sPrn( wStr )
+			
+			wInputName = CLS_OSIF.sInp( "Tag Name ？=> " )
+			
+			if wInputName=="" :
+				CLS_OSIF.sPrn( "タグ名かコマンドが未入力です" + '\n' )
+				continue
+			
+			elif wInputName=="\\q" :
+				# 完了
+				wRes['Result'] = True
+				return wRes
+			
+			###ここまでで入力は完了した
+			break
+		
+		#############################
+		# 設定解除の場合
+		if wInputName=="\\n" :
+			wInputName = gVal.DEF_NOTEXT
+		
+		#############################
+		# DBに設定
+		wSubRes = gVal.OBJ_DB_IF.SetQuestionTag( inQuestionName=wInputName )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "SetQuestionTag is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
 # VIPタグ設定
 #####################################################
 	def SetVipTag(self):

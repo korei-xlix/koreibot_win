@@ -586,6 +586,7 @@ class CLS_Setup():
 		wQy = wQy + "auto_seq    INTEGER DEFAULT 0,"	# 自動監視シーケンス
 		wQy = wQy + "mfvstop      BOOL  DEFAULT false,"	# 相互いいね停止 true=有効
 		wQy = wQy + "mfvstop_date TIMESTAMP,"			# 相互いいね停止 開始日
+		wQy = wQy + "questiontag  TEXT  NOT NULL,"		# 質問タグ
 		wQy = wQy + " PRIMARY KEY ( twitterid ) ) ;"
 		
 		inOBJ_DB.RunQuery( wQy )

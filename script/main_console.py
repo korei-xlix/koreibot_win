@@ -327,6 +327,11 @@ class CLS_Main_Console() :
 			cls.OBJ_TwitterMain.SetTrendTag()
 		
 		#############################
+		# 質問タグ設定
+		elif inCommand=="\\wc" :
+			cls.OBJ_TwitterMain.SetQuestionTag()
+		
+		#############################
 		# VIPタグ設定
 		elif inCommand=="\\vc" :
 			cls.OBJ_TwitterMain.SetVipTag()

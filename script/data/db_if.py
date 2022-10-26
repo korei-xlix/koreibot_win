@@ -388,7 +388,10 @@ class CLS_DB_IF() :
 			wQy = wQy + "'" + gVal.DEF_NOTEXT + "', "			# 片フォロワーリスト リストID(数値)
 			wQy = wQy + "'" + gVal.DEF_NOTEXT + "', "			# 片フォロワーリスト リスト名
 			wQy = wQy + "'" + gVal.DEF_NOTEXT + "', "			# VIPリツイート タグ
-			wQy = wQy + "0  " 									# 自動監視シーケンス
+			wQy = wQy + "0,  " 									# 自動監視シーケンス
+			wQy = wQy + "False,"								# 相互いいね停止 true=有効
+			wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"	# 相互いいね停止 開始日
+			wQy = wQy + "'" + gVal.DEF_NOTEXT + "' "			# 質問タグ
 			wQy = wQy + ") ;"
 			
 			wResDB = self.OBJ_DB.RunQuery( wQy )
@@ -2168,7 +2171,8 @@ class CLS_DB_IF() :
 		wQy = "select "
 		wQy = wQy + "trendtag, list_id, list_name, "
 ###		wQy = wQy + "autoremove, mlist_id, mlist_name, flist_id, flist_name "
-		wQy = wQy + "autoremove, mlist_id, mlist_name, flist_id, flist_name, viptag "
+###		wQy = wQy + "autoremove, mlist_id, mlist_name, flist_id, flist_name, viptag "
+		wQy = wQy + "autoremove, mlist_id, mlist_name, flist_id, flist_name, viptag, questiontag "
 		wQy = wQy + "from tbl_user_data "
 		wQy = wQy + "where twitterid = '" + str(inAccount) + "' ;"
 		
@@ -2203,6 +2207,7 @@ class CLS_DB_IF() :
 		gVal.STR_UserInfo['fListID']    = wARR_DBData[0]['flist_id']
 		gVal.STR_UserInfo['fListName']  = wARR_DBData[0]['flist_name']
 		gVal.STR_UserInfo['VipTag']     = wARR_DBData[0]['viptag']
+		gVal.STR_UserInfo['QuestionTag'] = wARR_DBData[0]['questiontag']
 		
 		#############################
 		# =正常
@@ -2295,6 +2300,51 @@ class CLS_DB_IF() :
 			wStr = "トレンドタグ設定: name=" + str(wTrendTag) + " screen_name=" + str(gVal.STR_UserInfo['Account'])
 		else:
 			wStr = "トレンドタグ解除: screen_name=" + str(gVal.STR_UserInfo['Account'])
+		gVal.OBJ_L.Log( "SC", wRes, wStr )
+		
+		#############################
+		# 正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def SetQuestionTag( self, inQuestionName ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "SetQuestionTag"
+		
+		#############################
+		# 入力切替
+		wQuestionTag = gVal.DEF_NOTEXT
+		if inQuestionName!=gVal.DEF_NOTEXT :
+			wQuestionTag = inQuestionName
+		
+		wQy = "update tbl_user_data set "
+		wQy = wQy + "questiontag = '" + str(wQuestionTag) + "' "
+		wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "' ;"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQy )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "C", wRes )
+			return wRes
+		
+		#############################
+		# データをグローバルに反映
+		if inQuestionName!=None :
+			gVal.STR_UserInfo['QuestionTagd'] = wQuestionTag
+		
+		#############################
+		# ログに記録する
+		if inTrendName!=gVal.DEF_NOTEXT :
+			wStr = "質問タグ設定: name=" + str(wTrendTag) + " screen_name=" + str(gVal.STR_UserInfo['Account'])
+		else:
+			wStr = "質問タグ解除: screen_name=" + str(gVal.STR_UserInfo['Account'])
 		gVal.OBJ_L.Log( "SC", wRes, wStr )
 		
 		#############################
