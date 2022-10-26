@@ -1770,22 +1770,27 @@ class CLS_TwitterMain():
 					return wRes
 			
 			wFLG_Iine = False
+###			#############################
+###			# 相互フォローリスト かつ 相互フォローの場合
+###			# もしくは片フォロワーリスト かつ フォロワーの場合
+###			if ((gVal.OBJ_Tw_IF.CheckMutualListUser( inUser['id'] )==True and inData['myfollow']==True and inData['follower']==True ) or \
+###			    (gVal.OBJ_Tw_IF.CheckFollowListUser( inUser['id'] )==True and inData['myfollow']==False and inData['follower']==True )) and \
+###			   inData['level_tag']!="B-" :
 			#############################
-			# 相互フォローリスト かつ 相互フォローの場合
-			# もしくは片フォロワーリスト かつ フォロワーの場合
+			# 相互フォローリスト もしくは 片フォロワーリスト の場合
 			#   ランダム抽選で受かれば、おかえしいいね
-			if ((gVal.OBJ_Tw_IF.CheckMutualListUser( inUser['id'] )==True and inData['myfollow']==True and inData['follower']==True ) or \
-			    (gVal.OBJ_Tw_IF.CheckFollowListUser( inUser['id'] )==True and inData['myfollow']==False and inData['follower']==True )) and \
-			   inData['level_tag']!="B-" :
+			if gVal.OBJ_Tw_IF.CheckSubscribeListUser( inUser['id'] )==False and \
+			   ( gVal.OBJ_Tw_IF.CheckMutualListUser( inUser['id'] )==True or gVal.OBJ_Tw_IF.CheckFollowListUser( inUser['id'] )==True ) :
+				
 				wRand = CLS_OSIF.sGetRand(100)
 				if wRand<gVal.DEF_STR_TLNUM['forReactionListUserRand'] :
 					wFLG_Iine = True
 			
-			#############################
-			# 非絡みは無反応
-			elif inData['level_tag']=="B-" :
-				wFLG_Iine = False
-			
+###			#############################
+###			# 非絡みは無反応
+###			elif inData['level_tag']=="B-" :
+###				wFLG_Iine = False
+###			
 			else:
 				wFLG_Iine = True
 			

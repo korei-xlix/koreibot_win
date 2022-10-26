@@ -461,6 +461,7 @@ class CLS_TwitterFavo():
 			"run"		: 0,		# 実施数
 			"agent"		: 0,		# 候補数
 			"cnt"		: 0,		# 抽出数
+			"no_cnt"	: 0,		# 除外数
 			
 			"myfollow"	: 0,	#相互フォロー、フォロー者 処理数
 			"follower"	: 0,	#片フォロワー 処理数
@@ -516,16 +517,23 @@ class CLS_TwitterFavo():
 			wARR_DBData = wDBRes['Responce']['Data']
 			
 			#############################
+			# ユーザレベル除外
+			if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="D-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or \
+			   wARR_DBData['level_tag']=="F+" or wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G+" or \
+			   wARR_DBData['level_tag']=="H" or wARR_DBData['level_tag']=="H+" or \
+			   wARR_DBData['level_tag']=="H-" or wARR_DBData['level_tag']=="L" or wARR_DBData['level_tag']=="Z" or wARR_DBData['level_tag']=="Z-" :
+				
+				wStr = "▲レベルタグ除外: level=" + wARR_DBData['level_tag'] + " user=" + wFavoUser['screen_name']
+				CLS_OSIF.sPrn( wStr )
+				###
+				wResult['no_cnt'] += 1
+				continue
+			
+			#############################
 			# 相互フォローリストかつ相互フォロー
 			if gVal.OBJ_Tw_IF.CheckMutualListUser( wUserID )==True and \
 			   wARR_FollowData[wUserID]['follower']==True and \
 			   gVal.STR_UserInfo['AutoRemove']==True :
-###				wSTR_Param['Threshold'] = gVal.DEF_STR_TLNUM['forFollowerFavoMListMutualSec']
-###				wSTR_Param['Follower']  = True	### フォロワーモード
-###				wSTR_Param['Sensitive'] = True
-###				###
-###				wStr = "〇相互フォローリスト: 〇相互フォロー: user=" + str( wARR_FollowData[wUserID]['screen_name'] )
-###				CLS_OSIF.sPrn( wStr )
 				if wARR_DBData['pfavo_cnt']==0 :
 					wSTR_Param['Threshold'] = 0
 					wSTR_Param['Follower']  = True	### フォロワーモード
@@ -551,13 +559,6 @@ class CLS_TwitterFavo():
 			elif gVal.OBJ_Tw_IF.CheckMutualListUser( wUserID )==True and \
 			     wARR_FollowData[wUserID]['follower']==False and \
 			     gVal.STR_UserInfo['AutoRemove']==True :
-###				wThreshold = gVal.DEF_STR_TLNUM['forFollowerFavoMListMyFollowSec']
-###				wSTR_Param['Threshold'] = gVal.DEF_STR_TLNUM['forFollowerFavoMListMyFollowSec']
-###				wSTR_Param['Follower']  = True	### フォロワーモード
-###				wSTR_Param['Sensitive'] = True
-###				###
-###				wStr = "〇相互フォローリスト: ●片フォロー者: user=" + str( wARR_FollowData[wUserID]['screen_name'] )
-###				CLS_OSIF.sPrn( wStr )
 				if wARR_DBData['pfavo_cnt']==0 :
 					wSTR_Param['Threshold'] = 0
 					wSTR_Param['Follower']  = True	### フォロワーモード
@@ -583,7 +584,6 @@ class CLS_TwitterFavo():
 				#############################
 				# いいねしたことなければ1回だけフォロワーモードでいいねする
 				if wARR_DBData['pfavo_cnt']==0 :
-###					wSTR_Param['Threshold'] = gVal.DEF_STR_TLNUM['forFollowerFavoOverSec']
 					wSTR_Param['Threshold'] = 0
 					wSTR_Param['Follower']  = True	### フォロワーモード
 					wSTR_Param['Sensitive'] = False
@@ -743,7 +743,6 @@ class CLS_TwitterFavo():
 				### 7割りは切り捨て
 				if wMyfollowCnt>=gVal.DEF_STR_TLNUM['forFollowerFavoHarfMyfollowCnt'] :
 					wRand = CLS_OSIF.sGetRand(100)
-###					if wRand>gVal.DEF_STR_TLNUM['forFollowerFavoHarfMyfollowRand'] :
 					if wRand>=gVal.DEF_STR_TLNUM['forFollowerFavoHarfMyfollowRand'] :
 						continue
 				
@@ -786,6 +785,7 @@ class CLS_TwitterFavo():
 		wStr = wStr + "相互・片フォロー者 : " + str( wResult['myfollow'] )+ '\n'
 		wStr = wStr + "片フォロワー       : " + str( wResult['follower'] )+ '\n'
 		wStr = wStr + "外部いいね         : " + str( wResult['overuser'] )+ '\n'
+		wStr = wStr + "除外数             : " + str( wResult['no_cnt'] )+ '\n'
 		CLS_OSIF.sPrn( wStr )
 		
 		#############################
@@ -1121,39 +1121,41 @@ class CLS_TwitterFavo():
 				wARR_DBData = wSubRes['Responce']['Data']
 				#############################
 				# レベルタグによる除外
+###				if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="D-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or \
+###				   wARR_DBData['level_tag']=="F+" or wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G-" :
 				if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="D-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or \
-				   wARR_DBData['level_tag']=="F+" or wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G-" :
+				   wARR_DBData['level_tag']=="H-" or wARR_DBData['level_tag']=="L" or wARR_DBData['level_tag']=="Z" or wARR_DBData['level_tag']=="Z-" :
 					
 					wStr = "レベルタグ除外: level=" + wARR_DBData['level_tag'] + " user=" + wFavoUser['screen_name']
 					wSTR_Tweet['reason'] = wStr
 					wFLG_ZanCountSkip = True
 					continue
 				
-				#############################
-				# レベルタグによるランダム実行
-				if wARR_DBData['level_tag']=="B-" :
-					
-					wRand = CLS_OSIF.sGetRand(100)
+###				#############################
+###				# レベルタグによるランダム実行
+###				if wARR_DBData['level_tag']=="B-" :
+###					
+###					wRand = CLS_OSIF.sGetRand(100)
 ###					if wRand>gVal.DEF_STR_TLNUM['forAutoFavoLevelRunRand'] :
-					if wRand>=gVal.DEF_STR_TLNUM['forAutoFavoLevelRunRand'] :
-						wStr = "レベルタグ乱数判定による除外: level=" + wARR_DBData['level_tag'] + " user=" + wFavoUser['screen_name']
-						wSTR_Tweet['reason'] = wStr
-						wFLG_ZanCountSkip = True
-						continue
-					
-					#############################
-					# 期間を過ぎたツイートは除外
-					wGetLag = CLS_OSIF.sTimeLag( str( wSTR_Tweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forAutoFavoTweet_B_Sec'] )
-					if wGetLag['Result']!=True :
-						wRes['Reason'] = "sTimeLag failed"
-						gVal.OBJ_L.Log( "B", wRes )
-						return wRes
-					if wGetLag['Beyond']==True :
-						### 規定外 =古いツイートなので除外
-						wSTR_Tweet['reason'] = "レベルタグの古いツイート"
-						wFLG_ZanCountSkip = True
-						continue
-				
+###					if wRand>=gVal.DEF_STR_TLNUM['forAutoFavoLevelRunRand'] :
+###						wStr = "レベルタグ乱数判定による除外: level=" + wARR_DBData['level_tag'] + " user=" + wFavoUser['screen_name']
+###						wSTR_Tweet['reason'] = wStr
+###						wFLG_ZanCountSkip = True
+###						continue
+###					
+###					#############################
+###					# 期間を過ぎたツイートは除外
+###					wGetLag = CLS_OSIF.sTimeLag( str( wSTR_Tweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forAutoFavoTweet_B_Sec'] )
+###					if wGetLag['Result']!=True :
+###						wRes['Reason'] = "sTimeLag failed"
+###						gVal.OBJ_L.Log( "B", wRes )
+###						return wRes
+###					if wGetLag['Beyond']==True :
+###						### 規定外 =古いツイートなので除外
+###						wSTR_Tweet['reason'] = "レベルタグの古いツイート"
+###						wFLG_ZanCountSkip = True
+###						continue
+###				
 				#############################
 				# 前回からのいいね期間内は除外
 ###				if wARR_DBData['pfavo_date']==gVal.DEF_NOTEXT :
