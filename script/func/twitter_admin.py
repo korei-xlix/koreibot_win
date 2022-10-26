@@ -301,44 +301,104 @@ class CLS_TwitterAdmin():
 		wRes['Class'] = "CLS_TwitterAdmin"
 		wRes['Func']  = "__run_ChangeLevel"
 		
+###		#############################
+###		# 相互フォロー中か
+###		if self.STR_UserAdminInfo['myfollow']!=True or \
+###		   self.STR_UserAdminInfo['follower']!=True :
+###			CLS_OSIF.sPrn( "そのユーザは相互フォローではありません" + '\n' )
+###			return wRes
+###		
+###		#############################
+###		# 変更できるユーザレベルか
+###		if self.STR_UserAdminInfo['level_tag']!="C" and \
+###		   self.STR_UserAdminInfo['level_tag']!="B-" and \
+###		   self.STR_UserAdminInfo['level_tag']!="B+" and \
+###		   self.STR_UserAdminInfo['level_tag']!="B" and \
+###		   self.STR_UserAdminInfo['level_tag']!="C+" :
+###			CLS_OSIF.sPrn( "そのユーザは変更できないレベルです" + '\n' )
+###			return wRes
+###		
+###		#############################
+###		# ユーザレベルの変更設定
+###		
+###		wUserLevel = None
+###		#############################
+###		# 非絡みON
+###		if self.STR_UserAdminInfo['level_tag']=="C" or \
+###		   self.STR_UserAdminInfo['level_tag']=="B+" or \
+###		   self.STR_UserAdminInfo['level_tag']=="B" or \
+###		   self.STR_UserAdminInfo['level_tag']=="C+" :
+###		
+###			wUserLevel = "B-"
+###		
+###		else:
+###			
+###			if self.STR_UserAdminInfo['send_cnt']>=gVal.DEF_STR_TLNUM['LEVEL_B_Cnt'] :
+###				wUserLevel = "B+"
+###			elif self.STR_UserAdminInfo['send_cnt']>=1 :
+###				wUserLevel = "B"
+###			else:
+###				wUserLevel = "C"
+###		
+		
+		wID = str(self.STR_UserAdminInfo['id'])
 		#############################
 		# 相互フォロー中か
-		if self.STR_UserAdminInfo['myfollow']!=True or \
-		   self.STR_UserAdminInfo['follower']!=True :
-			CLS_OSIF.sPrn( "そのユーザは相互フォローではありません" + '\n' )
+		if gVal.OBJ_Tw_IF.CheckSubscribeListUser( wID )!=False :
+			CLS_OSIF.sPrn( "そのユーザは変更できません" + '\n' )
 			return wRes
 		
 		#############################
-		# 変更できるユーザレベルか
-		if self.STR_UserAdminInfo['level_tag']!="C" and \
-		   self.STR_UserAdminInfo['level_tag']!="B-" and \
-		   self.STR_UserAdminInfo['level_tag']!="B+" and \
-		   self.STR_UserAdminInfo['level_tag']!="B" and \
-		   self.STR_UserAdminInfo['level_tag']!="C+" :
-			CLS_OSIF.sPrn( "そのユーザは変更できないレベルです" + '\n' )
-			return wRes
+		# 相互フォロー中か
+		if self.STR_UserAdminInfo['myfollow']==True and \
+		   self.STR_UserAdminInfo['follower']==True and \
+		   gVal.OBJ_Tw_IF.CheckMutualListUser( wID )==True and \
+		   gVal.OBJ_Tw_IF.CheckFollowListUser( wID )==False and \
+		   ( self.STR_UserAdminInfo['level_tag']=="B" or self.STR_UserAdminInfo['level_tag']=="B+" or \
+		     self.STR_UserAdminInfo['level_tag']=="C" or self.STR_UserAdminInfo['level_tag']=="C+" ) :
+			
+			wUserLevel = "G"
 		
 		#############################
-		# ユーザレベルの変更設定
+		# 片フォロワーか
+		elif self.STR_UserAdminInfo['myfollow']==False and \
+		     self.STR_UserAdminInfo['follower']==True and \
+		     gVal.OBJ_Tw_IF.CheckMutualListUser( wID )==False and \
+		     gVal.OBJ_Tw_IF.CheckFollowListUser( wID )==True and \
+		     self.STR_UserAdminInfo['level_tag']=="E" :
+			
+			wUserLevel = "H"
 		
-		wUserLevel = None
 		#############################
-		# 非絡みON
-		if self.STR_UserAdminInfo['level_tag']=="C" or \
-		   self.STR_UserAdminInfo['level_tag']=="B+" or \
-		   self.STR_UserAdminInfo['level_tag']=="B" or \
-		   self.STR_UserAdminInfo['level_tag']=="C+" :
-		
-			wUserLevel = "B-"
-		
-		else:
+		# 相互フォロー中 解除か
+		elif self.STR_UserAdminInfo['myfollow']==True and \
+		     self.STR_UserAdminInfo['follower']==True and \
+		     gVal.OBJ_Tw_IF.CheckMutualListUser( wID )==True and \
+		     gVal.OBJ_Tw_IF.CheckFollowListUser( wID )==False and \
+		     ( self.STR_UserAdminInfo['level_tag']=="G" or self.STR_UserAdminInfo['level_tag']=="G+" ) :
 			
 			if self.STR_UserAdminInfo['send_cnt']>=gVal.DEF_STR_TLNUM['LEVEL_B_Cnt'] :
 				wUserLevel = "B+"
 			elif self.STR_UserAdminInfo['send_cnt']>=1 :
 				wUserLevel = "B"
 			else:
-				wUserLevel = "C"
+				wUserLevel = "C+"
+		
+		#############################
+		# 片フォロワー 解除か
+		elif self.STR_UserAdminInfo['myfollow']==False and \
+		     self.STR_UserAdminInfo['follower']==True and \
+		     gVal.OBJ_Tw_IF.CheckMutualListUser( wID )==False and \
+		     gVal.OBJ_Tw_IF.CheckFollowListUser( wID )==True and \
+		     self.STR_UserAdminInfo['level_tag']=="H" :
+			
+			wUserLevel = "E"
+		
+		#############################
+		# 制御不能
+		else:
+			CLS_OSIF.sPrn( "そのユーザは変更できません" + '\n' )
+			return wRes
 		
 		#############################
 		# ユーザレベルの変更の実行
@@ -2593,6 +2653,7 @@ class CLS_TwitterAdmin():
 					"level_tag"		: wUserBList[wIndex]['level_tag'],
 					"myfollow"		: wUserBList[wIndex]['myfollow'],
 					"follower"		: wUserBList[wIndex]['follower'],
+					"subs_list"		: gVal.OBJ_Tw_IF.CheckSubscribeListUser( wUserBList[wIndex]['id'] ),
 					"multi_list"	: gVal.OBJ_Tw_IF.CheckMutualListUser( wUserBList[wIndex]['id'] ),
 					"follow_list"	: gVal.OBJ_Tw_IF.CheckFollowListUser( wUserBList[wIndex]['id'] ),
 					"send_cnt"		: wUserBList[wIndex]['send_cnt']
@@ -2748,35 +2809,72 @@ class CLS_TwitterAdmin():
 		wRes['Class'] = "CLS_TwitterAdmin"
 		wRes['Func']  = "__run_UserBList_Release"
 		
+###		#############################
+###		# 変更できるユーザレベルか
+###		if inData['level_tag']!="B-" :
+###			CLS_OSIF.sPrn( "そのユーザは変更できないレベルです" + '\n' )
+###			return wRes
+###		
+###		#############################
+###		# 相互フォロー中か
+###		if inData['myfollow']!=True or \
+###		   inData['follower']!=True :
+###			CLS_OSIF.sPrn( "そのユーザは相互フォローではありません" + '\n' )
+###			return wRes
+###		
+###		#############################
+###		# 相互フォローリストか
+###		if inData['multi_list']!=True :
+###			CLS_OSIF.sPrn( "そのユーザは相互フォローリストユーザではありません" + '\n' )
+###			return wRes
+###		
+###		#############################
+###		# ユーザレベルの変更設定
+###		
+###		wUserLevel = None
+###		if inData['send_cnt']>=gVal.DEF_STR_TLNUM['LEVEL_B_Cnt'] :
+###			wUserLevel = "B+"
+###		elif inData['send_cnt']>=1 :
+###			wUserLevel = "B"
+###		else:
+###			wUserLevel = "C"
+		
 		#############################
-		# 変更できるユーザレベルか
-		if inData['level_tag']!="B-" :
-			CLS_OSIF.sPrn( "そのユーザは変更できないレベルです" + '\n' )
+		# 登録リストユーザか
+		if inData['subs_list']!=False :
+			CLS_OSIF.sPrn( "そのユーザは変更できません" + '\n' )
 			return wRes
 		
 		#############################
-		# 相互フォロー中か
-		if inData['myfollow']!=True or \
-		   inData['follower']!=True :
-			CLS_OSIF.sPrn( "そのユーザは相互フォローではありません" + '\n' )
-			return wRes
+		# 相互フォロー中 解除か
+		if inData['myfollow']==True and \
+		   inData['follower']==True and \
+		   inData['multi_list']==True and \
+		   inData['follow_list']==False and \
+		   ( inData['level_tag']=="G" or inData['level_tag']=="G+" ) :
+			
+			if inData['send_cnt']>=gVal.DEF_STR_TLNUM['LEVEL_B_Cnt'] :
+				wUserLevel = "B+"
+			elif inData['send_cnt']>=1 :
+				wUserLevel = "B"
+			else:
+				wUserLevel = "C+"
 		
 		#############################
-		# 相互フォローリストか
-		if inData['multi_list']!=True :
-			CLS_OSIF.sPrn( "そのユーザは相互フォローリストユーザではありません" + '\n' )
-			return wRes
+		# 片フォロワー 解除か
+		elif inData['myfollow']==False and \
+		     inData['follower']==True and \
+		     inData['multi_list']==False and \
+		     inData['follow_list']==True and \
+		     inData['level_tag']=="H" :
+			
+			wUserLevel = "E"
 		
 		#############################
-		# ユーザレベルの変更設定
-		
-		wUserLevel = None
-		if inData['send_cnt']>=gVal.DEF_STR_TLNUM['LEVEL_B_Cnt'] :
-			wUserLevel = "B+"
-		elif inData['send_cnt']>=1 :
-			wUserLevel = "B"
+		# 制御不能
 		else:
-			wUserLevel = "C"
+			CLS_OSIF.sPrn( "そのユーザは変更できません" + '\n' )
+			return wRes
 		
 		#############################
 		# ユーザレベルの変更の実行

@@ -3446,8 +3446,14 @@ class CLS_DB_IF() :
 		# ユーザレベルを取得する
 		wQy = "select id, screen_name, level_tag, myfollow, follower, send_cnt from tbl_favouser_data where "
 		wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "'"
-		wQy = wQy + " and level_tag = 'B-' "
-		wQy = wQy + ";"
+###		wQy = wQy + " and level_tag = 'B-' "
+###		wQy = wQy + ";"
+		wQy = wQy + " and ("
+		wQy = wQy + " level_tag = 'G' or "
+		wQy = wQy + " level_tag = 'G+' or "
+		wQy = wQy + " level_tag = 'H' or "
+		wQy = wQy + " level_tag = 'H+' "
+		wQy = wQy + ") ;"
 		
 		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy )
 		if wResDB['Result']!=True :
