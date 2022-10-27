@@ -1128,6 +1128,10 @@ class CLS_TwitterMain():
 			return wRes
 		
 		#############################
+		# メンション結果
+		self.OBJ_TwitterFollower.ReactionResult()
+		
+		#############################
 		# スケジュール表示
 		wSubRes = self.OBJ_TwitterAdmin.View_Schedule()
 		if wSubRes['Result']!=True :
@@ -1362,6 +1366,8 @@ class CLS_TwitterMain():
 		wRes['Class'] = "CLS_TwitterMain"
 		wRes['Func']  = "ReactionTweetCheck"
 		
+		wRes['Responce'] = False
+		
 		wTweet = inTweet
 		
 		wUserID      = str( wTweet['user']['id'] )
@@ -1417,6 +1423,9 @@ class CLS_TwitterMain():
 				wStr = "〇いいね検出: " + wSubRes['Responce'][wID]['screen_name'] + '\n'
 				CLS_OSIF.sPrn( wStr )
 				
+				### リアクション済み
+				wRes['Responce'] = wReactionRes['Responce']
+				
 				### トラヒック記録
 				if wFLG_MyUser==True :
 					CLS_Traffic.sP( "r_reaction" )
@@ -1467,6 +1476,9 @@ class CLS_TwitterMain():
 				wStr = "〇リツイート検出: " + wSubRes['Responce'][wID]['screen_name']
 				CLS_OSIF.sPrn( wStr )
 				
+				### リアクション済み
+				wRes['Responce'] = wReactionRes['Responce']
+				
 				### トラヒック記録
 				if wFLG_MyUser==True :
 					CLS_Traffic.sP( "r_reaction" )
@@ -1512,6 +1524,9 @@ class CLS_TwitterMain():
 			if wReactionRes['Responce']==True :
 				wStr = "〇引用リツイート検出: " + wSubRes['Responce'][wID]['screen_name'] ;
 				CLS_OSIF.sPrn( wStr )
+				
+				### リアクション済み
+				wRes['Responce'] = wReactionRes['Responce']
 				
 				### トラヒック記録
 				if wFLG_MyUser==True :
@@ -1766,7 +1781,8 @@ class CLS_TwitterMain():
 			
 			#############################
 			# リアクションへのリアクション
-			wSubRes = self.__ReactionUserCheck_PutReaction( inUser, wARR_DBData, inTweet, inFLG_MyUser, wNewUser )
+###			wSubRes = self.__ReactionUserCheck_PutReaction( inUser, wARR_DBData, inTweet, inFLG_MyUser, wNewUser )
+			wSubRes = self.__ReactionUserCheck_PutReaction( inUser, wARR_DBData, inTweet, inFLG_MyUser, wNewUser, inMention )
 			if wSubRes['Result']!=True :
 				###失敗
 				wRes['Reason'] = "__ReactionUserCheck_ListInd is failed"
@@ -1782,7 +1798,8 @@ class CLS_TwitterMain():
 	#####################################################
 	# リアクションユーザへのリアクション
 	#####################################################
-	def __ReactionUserCheck_PutReaction( self, inUser, inData, inTweet, inFLG_MyUser=True, inNewUser=False ):
+###	def __ReactionUserCheck_PutReaction( self, inUser, inData, inTweet, inFLG_MyUser=True, inNewUser=False ):
+	def __ReactionUserCheck_PutReaction( self, inUser, inData, inTweet, inFLG_MyUser=True, inNewUser=False, inMention=False ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -1875,12 +1892,19 @@ class CLS_TwitterMain():
 		#############################
 		# 自動フォローする
 		# ※おそらく新規ユーザ
-		wSubRes = self.OBJ_TwitterFollower.AutoFollow( inUser )
-		if wSubRes['Result']!=True :
-			###失敗
-			wRes['Reason'] = "AutoFollow is failed"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
+###		wSubRes = self.OBJ_TwitterFollower.AutoFollow( inUser )
+###		if wSubRes['Result']!=True :
+###			###失敗
+###			wRes['Reason'] = "AutoFollow is failed"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+		if inMention==False :
+			wSubRes = self.OBJ_TwitterFollower.AutoFollow( inUser )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "AutoFollow is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
 		
 		wRes['Result'] = True
 		return wRes

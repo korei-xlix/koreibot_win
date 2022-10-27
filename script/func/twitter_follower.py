@@ -17,7 +17,9 @@ class CLS_TwitterFollower():
 #####################################################
 	OBJ_Parent = ""				#親クラス実体
 	
-	ARR_AgentUsers = {}
+	ARR_AgentUsers  = {}
+	VAL_ReactionCnt = 0
+	ARR_Mentions    = {}
 	
 #####################################################
 # Init
@@ -66,6 +68,8 @@ class CLS_TwitterFollower():
 			wRes['Result'] = True
 			return wRes
 		
+		self.VAL_ReactionCnt = 0
+		self.ARR_Mentions    = {}
 		#############################
 		# 取得開始の表示
 		if inFLG_Short==False :
@@ -122,12 +126,23 @@ class CLS_TwitterFollower():
 				continue
 			
 			#############################
+			# 質問ツイートか
+			wMention = False
+			if gVal.STR_UserInfo['QuestionTag']!=gVal.DEF_NOTEXT :
+				if wTweet['text'].find( gVal.STR_UserInfo['QuestionTag'] )>=0 :
+					wMention = True
+			
+			#############################
 			# ツイートチェック
-			wSubRes = self.OBJ_Parent.ReactionTweetCheck( str(gVal.STR_UserInfo['id']), wTweet )
+###			wSubRes = self.OBJ_Parent.ReactionTweetCheck( str(gVal.STR_UserInfo['id']), wTweet )
+			wSubRes = self.OBJ_Parent.ReactionTweetCheck( str(gVal.STR_UserInfo['id']), wTweet, inMention=wMention )
 			if wSubRes['Result']!=True :
 				wRes['Reason'] = "ReactionTweetCheck"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
+			if wSubRes['Responce']==True :
+				### リアクション回数+
+				self.VAL_ReactionCnt += 1
 		
 		#############################
 		# チェック
@@ -136,13 +151,15 @@ class CLS_TwitterFollower():
 		
 		wSubRes = gVal.OBJ_Tw_IF.GetMyMentionLookup()
 		if wSubRes['Result']!=True :
-			wRes['Reason'] = "Twitter Error(GetRefRetweetLookup): Tweet ID: " + wTweetID
+###			wRes['Reason'] = "Twitter Error(GetRefRetweetLookup): Tweet ID: " + wTweetID
+			wRes['Reason'] = "Twitter Error(GetMyMentionLookup)"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
 		###ウェイト初期化
 		self.OBJ_Parent.Wait_Init( inZanNum=len( wSubRes['Responce'] ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
 		
+		wARR_MentionUsers = {}
 		wFLG_ZanCountSkip = False
 		wKeylist = list( wSubRes['Responce'].keys() )
 		for wReplyID in wKeylist :
@@ -190,12 +207,19 @@ class CLS_TwitterFollower():
 ###			wReactionRes = self.OBJ_Parent.ReactionUserCheck( wUserInfoRes['Responce'], wSubRes['Responce'][wReplyID] )
 			wReactionRes = self.OBJ_Parent.ReactionUserCheck( wUserInfoRes['Responce'], wSubRes['Responce'][wReplyID], inMention=True )
 			if wReactionRes['Result']!=True :
-				wRes['Reason'] = "Twitter Error(ReactionUserCheck 4): Tweet ID: " + str(wSubRes['Responce'][wReplyID]['id'])
+###				wRes['Reason'] = "Twitter Error(ReactionUserCheck 4): Tweet ID: " + str(wSubRes['Responce'][wReplyID]['id'])
+				wRes['Reason'] = "Twitter Error(ReactionUserCheck 4): Tweet ID: " + wID
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			if wReactionRes['Responce']==True :
 				wStr = "〇リプライ検出: " + wUserInfoRes['Responce']['screen_name']
 				CLS_OSIF.sPrn( wStr )
+				
+				### リアクション回数+
+				self.VAL_ReactionCnt += 1
+				
+				### メンションユーザ情報
+				wARR_MentionUsers.update({ wID : wUserInfoRes['Responce'] })
 				
 				### トラヒック記録
 				CLS_Traffic.sP( "r_reaction" )
@@ -204,6 +228,15 @@ class CLS_TwitterFollower():
 					CLS_Traffic.sP( "r_in" )
 				else:
 					CLS_Traffic.sP( "r_out" )
+		
+		#############################
+		# メンション情報の格納
+		wCell = {
+			"id"	: wSubRes['Responce'][wReplyID]['reply_id'],
+			"text"	: wSubRes['Responce'][wReplyID]['reply_text'],
+			"users"	: wARR_MentionUsers
+		}
+		self.ARR_Mentions.update({ wReplyID : wCell })
 		
 		#############################
 		# 現時間を設定
@@ -218,6 +251,32 @@ class CLS_TwitterFollower():
 		# 正常終了
 		wRes['Result'] = True
 		return wRes
+
+	#####################################################
+	def ReactionResult(self):
+		wStr = "------------------------------" + '\n'
+		wStr = wStr + "リアクション結果" + '\n'
+		wStr = wStr + "------------------------------" + '\n'
+		wStr = wStr + "  新規受信数: " + str( self.VAL_ReactionCnt ) + " .件" + '\n'
+		CLS_OSIF.sPrn( wStr )
+		
+		if len(self.ARR_Mentions)==0 :
+			return False
+		
+		wStr = ""
+		wKeylist = list( self.ARR_Mentions.keys() )
+		for wID in wKeylist :
+			wStr = wStr + self.ARR_Mentions[wID]['text'] + '\n'
+			wStr = wStr + "  users: "
+			
+			wKeylist2 = list( self.ARR_Mentions[wID]['users'].keys() )
+			for wUserID in wKeylist2 :
+				wStr = wStr + self.ARR_Mentions[wID]['users'][wUserID]['screen_name'] + " "
+			
+			wStr = wStr + '\n' + "    --------------------------" + '\n'
+		
+		CLS_OSIF.sPrn( wStr )
+		return True
 
 
 
