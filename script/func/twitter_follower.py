@@ -282,6 +282,7 @@ class CLS_TwitterFollower():
 						"id"			: wUserID,
 						"screen_name"	: wScreenName,
 						"cnt"			: 1 
+					}
 					wARR_MentionUsers.update({ wUserID : wCell })
 				else:
 					wARR_MentionUsers[wUserID]['cnt'] += 1
@@ -650,7 +651,9 @@ class CLS_TwitterFollower():
 			
 			#############################
 			# 無反応レベルは除外する
-			if wARR_RateFavoDate[wID]['level_tag']=="D-" or wARR_RateFavoDate[wID]['level_tag']=="G" or wARR_RateFavoDate[wID]['level_tag']=="G-" :
+###			if wARR_RateFavoDate[wID]['level_tag']=="D-" or wARR_RateFavoDate[wID]['level_tag']=="G" or wARR_RateFavoDate[wID]['level_tag']=="G-" :
+			if wARR_RateFavoDate[wID]['level_tag']=="D-" or wARR_RateFavoDate[wID]['level_tag']=="G" or wARR_RateFavoDate[wID]['level_tag']=="G+" or \
+			   wARR_RateFavoDate[wID]['level_tag']=="H"  or wARR_RateFavoDate[wID]['level_tag']=="H+" :
 				continue
 			
 			#############################

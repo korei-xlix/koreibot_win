@@ -2000,7 +2000,8 @@ class CLS_TwitterAdmin():
 				continue
 			
 			### ユーザレベル変更
-			wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, "G-" )
+###			wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, "G-" )
+			wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, "Z-" )
 			
 			### トラヒック記録（フォロワー減少）
 			CLS_Traffic.sP( "d_follower" )
