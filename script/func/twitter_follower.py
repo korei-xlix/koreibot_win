@@ -118,8 +118,6 @@ class CLS_TwitterFollower():
 				return wRes
 			if wGetLag['Beyond']==True :
 				###期間外= 古いツイートなので処理しない
-###				wStr = "●古いリプライのためスキップします"
-###				CLS_OSIF.sPrn( wStr )
 				wFLG_ZanCountSkip = True
 				continue
 			
@@ -168,8 +166,6 @@ class CLS_TwitterFollower():
 				return wRes
 			if wGetLag['Beyond']==True :
 				###期間外= 古いツイートなので処理しない
-###				wStr = "●古いリプライのためスキップします"
-###				CLS_OSIF.sPrn( wStr )
 				wFLG_ZanCountSkip = True
 				continue
 			
@@ -191,7 +187,8 @@ class CLS_TwitterFollower():
 				return wRes
 			
 			###ユーザ単位のリアクションチェック
-			wReactionRes = self.OBJ_Parent.ReactionUserCheck( wUserInfoRes['Responce'], wSubRes['Responce'][wReplyID] )
+###			wReactionRes = self.OBJ_Parent.ReactionUserCheck( wUserInfoRes['Responce'], wSubRes['Responce'][wReplyID] )
+			wReactionRes = self.OBJ_Parent.ReactionUserCheck( wUserInfoRes['Responce'], wSubRes['Responce'][wReplyID], inMention=True )
 			if wReactionRes['Result']!=True :
 				wRes['Reason'] = "Twitter Error(ReactionUserCheck 4): Tweet ID: " + str(wSubRes['Responce'][wReplyID]['id'])
 				gVal.OBJ_L.Log( "B", wRes )
@@ -318,7 +315,8 @@ class CLS_TwitterFollower():
 				#############################
 				# ツイートチェック
 ###				wSubRes = self.OBJ_Parent.ReactionTweetCheck( wUserID, wTweet )
-				wSubRes = self.OBJ_Parent.ReactionTweetCheck( wUserID, wTweet, True )
+###				wSubRes = self.OBJ_Parent.ReactionTweetCheck( wUserID, wTweet, True )
+				wSubRes = self.OBJ_Parent.ReactionTweetCheck( wUserID, wTweet, inMention=False, inVIPon=True )
 				if wSubRes['Result']!=True :
 					wRes['Reason'] = "ReactionTweetCheck is failed"
 					gVal.OBJ_L.Log( "B", wRes )
@@ -384,7 +382,8 @@ class CLS_TwitterFollower():
 					return wRes
 				
 				###ユーザ単位のリアクションチェック
-				wReactionRes = self.OBJ_Parent.ReactionUserCheck( wUserInfoRes['Responce'], wSubRes['Responce'][wReplyID] )
+###				wReactionRes = self.OBJ_Parent.ReactionUserCheck( wUserInfoRes['Responce'], wSubRes['Responce'][wReplyID] )
+				wReactionRes = self.OBJ_Parent.ReactionUserCheck( wUserInfoRes['Responce'], wSubRes['Responce'][wReplyID], inMention=True, inVIPon=True )
 				if wReactionRes['Result']!=True :
 					wRes['Reason'] = "Twitter Error(ReactionUserCheck 4): Tweet ID: " + str(wSubRes['Responce'][wReplyID]['id'])
 					gVal.OBJ_L.Log( "B", wRes )

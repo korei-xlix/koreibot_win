@@ -1353,7 +1353,8 @@ class CLS_TwitterMain():
 #####################################################
 # リアクションツイートチェック
 #####################################################
-	def ReactionTweetCheck( self, inMyUserID, inTweet, inVIPon=False ):
+###	def ReactionTweetCheck( self, inMyUserID, inTweet, inVIPon=False ):
+	def ReactionTweetCheck( self, inMyUserID, inTweet, inMention=False, inVIPon=False ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -1406,7 +1407,8 @@ class CLS_TwitterMain():
 		for wID in wKeylist :
 			wID = str(wID)
 			###ユーザ単位のリアクションチェック
-			wReactionRes = self.ReactionUserCheck( wSubRes['Responce'][wID], wTweet, wFLG_MyUser )
+###			wReactionRes = self.ReactionUserCheck( wSubRes['Responce'][wID], wTweet, wFLG_MyUser )
+			wReactionRes = self.ReactionUserCheck( wSubRes['Responce'][wID], wTweet, wFLG_MyUser, inMention=inMention )
 			if wReactionRes['Result']!=True :
 				wRes['Reason'] = "Twitter Error(ReactionUserCheck): Tweet ID: " + wTweetID
 				gVal.OBJ_L.Log( "B", wRes )
@@ -1455,7 +1457,8 @@ class CLS_TwitterMain():
 					wFLG_VIPretweet = False	#フラグ落とす
 			
 			###ユーザ単位のリアクションチェック
-			wReactionRes = self.ReactionUserCheck( wSubRes['Responce'][wID], wTweet, wFLG_MyUser )
+###			wReactionRes = self.ReactionUserCheck( wSubRes['Responce'][wID], wTweet, wFLG_MyUser )
+			wReactionRes = self.ReactionUserCheck( wSubRes['Responce'][wID], wTweet, wFLG_MyUser, inMention=inMention )
 			if wReactionRes['Result']!=True :
 				wRes['Reason'] = "Twitter Error(ReactionUserCheck 2): Tweet ID: " + wTweetID
 				gVal.OBJ_L.Log( "B", wRes )
@@ -1500,7 +1503,8 @@ class CLS_TwitterMain():
 		for wID in wKeylist :
 			wID = str(wID)
 			###ユーザ単位のリアクションチェック
-			wReactionRes = self.ReactionUserCheck( wSubRes['Responce'][wID], wTweet, wFLG_MyUser )
+###			wReactionRes = self.ReactionUserCheck( wSubRes['Responce'][wID], wTweet, wFLG_MyUser )
+			wReactionRes = self.ReactionUserCheck( wSubRes['Responce'][wID], wTweet, wFLG_MyUser, inMention=inMention )
 			if wReactionRes['Result']!=True :
 				wRes['Reason'] = "Twitter Error(ReactionUserCheck 3): Tweet ID: " + wTweetID
 				gVal.OBJ_L.Log( "B", wRes )
@@ -1530,7 +1534,8 @@ class CLS_TwitterMain():
 #####################################################
 # リアクションユーザチェック
 #####################################################
-	def ReactionUserCheck( self, inUser, inTweet, inFLG_MyUser=True ):
+###	def ReactionUserCheck( self, inUser, inTweet, inFLG_MyUser=True ):
+	def ReactionUserCheck( self, inUser, inTweet, inFLG_MyUser=True, inMention=False ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -1619,9 +1624,13 @@ class CLS_TwitterMain():
 		
 		#############################
 		# 無反応のレベルタグ
-		if wARR_DBData['level_tag']=="D-" or wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G-" :
+###		if wARR_DBData['level_tag']=="D-" or wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G-" :
+		if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="D-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or \
+		   wARR_DBData['level_tag']=="H-" or wARR_DBData['level_tag']=="L" or wARR_DBData['level_tag']=="Z" or wARR_DBData['level_tag']=="Z-" :
+			
 			### 報告対象の表示と、ログに記録
-			gVal.OBJ_L.Log( "RR", wRes, "●反応外のレベルタグ ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wARR_DBData['level_tag'], inID=wUserID )
+###			gVal.OBJ_L.Log( "RR", wRes, "●反応外のレベルタグ ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wARR_DBData['level_tag'], inID=wUserID )
+			gVal.OBJ_L.Log( "RR", wRes, "●リアクション拒否(レベルタグ) ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wARR_DBData['level_tag'], inID=wUserID )
 			
 			if wFLG_Action==True :
 				### 除外してない場合
@@ -1636,6 +1645,51 @@ class CLS_TwitterMain():
 			
 			wRes['Result'] = True
 			return wRes
+		
+		#############################
+		# レベルタグによるランダム実行
+		elif wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G+" or wARR_DBData['level_tag']=="H" or wARR_DBData['level_tag']=="H+" :
+			wRand = CLS_OSIF.sGetRand(100)
+			if wRand>=gVal.DEF_STR_TLNUM['forAutoFavoLevelRunRand'] :
+				### 乱数による拒否
+				
+				### いいね情報を更新する
+				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Recive( inUser, inTweet, wARR_DBData, True )
+				if wSubRes['Result']!=True :
+					###失敗
+					wRes['Reason'] = "UpdateFavoData is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				
+				### 報告対象の表示と、ログに記録
+				gVal.OBJ_L.Log( "RR", wRes, "●リアクション拒否(ランダム) ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wARR_DBData['level_tag'], inID=wUserID )
+				
+				wRes['Result'] = True
+				return wRes
+			
+			#############################
+			# 期間を過ぎたツイートは除外
+			wGetLag = CLS_OSIF.sTimeLag( str( wSTR_Tweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forAutoFavoTweet_B_Sec'] )
+			if wGetLag['Result']!=True :
+				wRes['Reason'] = "sTimeLag failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if wGetLag['Beyond']==True :
+				### 規定外 =古いツイートなので除外
+				
+				### いいね情報を更新する
+				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Recive( inUser, inTweet, wARR_DBData, True )
+				if wSubRes['Result']!=True :
+					###失敗
+					wRes['Reason'] = "UpdateFavoData is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				
+				### 報告対象の表示と、ログに記録
+				gVal.OBJ_L.Log( "RR", wRes, "●リアクション拒否(古いツイート) ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wARR_DBData['level_tag'], inID=wUserID )
+				
+				wRes['Result'] = True
+				return wRes
 		
 		#############################
 		# アクションが有効なら、リアクション済みにする
@@ -1670,6 +1724,9 @@ class CLS_TwitterMain():
 				if wUserLevel!=None :
 					### ユーザレベル変更
 					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
+					
+					### 報告対象の表示と、ログに記録
+					gVal.OBJ_L.Log( "RR", wRes, "〇リアクションにより昇格 ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wUserLevel, inID=wUserID )
 			
 			#############################
 			# 相互レベルCへ昇格
