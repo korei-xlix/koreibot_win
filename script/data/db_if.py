@@ -2337,12 +2337,12 @@ class CLS_DB_IF() :
 		#############################
 		# データをグローバルに反映
 		if inQuestionName!=None :
-			gVal.STR_UserInfo['QuestionTagd'] = wQuestionTag
+			gVal.STR_UserInfo['QuestionTag'] = wQuestionTag
 		
 		#############################
 		# ログに記録する
-		if inTrendName!=gVal.DEF_NOTEXT :
-			wStr = "質問タグ設定: name=" + str(wTrendTag) + " screen_name=" + str(gVal.STR_UserInfo['Account'])
+		if inQuestionName!=gVal.DEF_NOTEXT :
+			wStr = "質問タグ設定: name=" + str(inQuestionName) + " screen_name=" + str(gVal.STR_UserInfo['Account'])
 		else:
 			wStr = "質問タグ解除: screen_name=" + str(gVal.STR_UserInfo['Account'])
 		gVal.OBJ_L.Log( "SC", wRes, wStr )
@@ -2751,7 +2751,8 @@ class CLS_DB_IF() :
 		wQy = wQy + "False, "										# フォロワー(被フォロー) true=フォロワー
 		wQy = wQy + "'" + gVal.DEF_TIMEDATE + "', "					# 被フォロー日時
 		
-		wQy = wQy + "'' "											# memo
+		wQy = wQy + "'', "											# memo
+		wQy = wQy + "0  "											# 連ファボカウント
 		wQy = wQy + ") ;"
 		
 		#############################
@@ -3392,6 +3393,37 @@ class CLS_DB_IF() :
 		return wRes
 
 	#####################################################
+	# 連ファボカウント更新
+	#####################################################
+	def UpdateFavoData_RenFavo( self, inID, inCnt ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "UpdateFavoData_RenFavo"
+		
+		#############################
+		# 更新
+		wQy = "update tbl_favouser_data set "
+		wQy = wQy + "renfavo_cnt = '" + str(inCnt) + "', "
+		
+		wQy = wQy + "upddate = '" + str( gVal.STR_Time['TimeDate'] ) + "' "
+		wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "'"
+		wQy = wQy + " and id = '" + str(inID) + "' ;"
+		
+		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy )
+		if wResDB['Result']!=True :
+			wRes['Reason'] = "Run Query is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
 	# いいね情報：いいね送信
 	#####################################################
 	def GetFavoData_SendFavo(self):
@@ -3434,7 +3466,8 @@ class CLS_DB_IF() :
 	#####################################################
 	# いいね情報：非絡みユーザ一覧
 	#####################################################
-	def UpdateFavoData_UserBList( self ):
+###	def UpdateFavoData_UserBList( self ):
+	def UpdateFavoData_UserBList( self, inAutoOnly=False ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -3449,10 +3482,13 @@ class CLS_DB_IF() :
 ###		wQy = wQy + " and level_tag = 'B-' "
 ###		wQy = wQy + ";"
 		wQy = wQy + " and ("
-		wQy = wQy + " level_tag = 'G' or "
-		wQy = wQy + " level_tag = 'G+' or "
-		wQy = wQy + " level_tag = 'H' or "
-		wQy = wQy + " level_tag = 'H+' "
+###		wQy = wQy + " level_tag = 'G' or "
+###		wQy = wQy + " level_tag = 'G+' or "
+###		wQy = wQy + " level_tag = 'H' or "
+###		wQy = wQy + " level_tag = 'H+' "
+		wQy = wQy + " level_tag = 'G' or level_tag = 'H' "
+		if inAutoOnly==False :
+			wQy = wQy + " or level_tag = 'G+' or level_tag = 'H+' "
 		wQy = wQy + ") ;"
 		
 		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy )

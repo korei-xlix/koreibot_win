@@ -228,6 +228,10 @@ class gVal() :
 		"favoSendsCnt"		: 3,						# いいね送信対象 いいね回数
 		"LEVEL_B_Cnt"		: 5,						# レベルB昇格までのトロフィー獲得回数
 		
+														# 連ファボ制御
+		"renFavoOnCnt"		: 3,						#   連ファボ判別回数(通常)
+		"renFavoForceCnt"	: 5,						#   連ファボ判別回数(強制)  renFavoOnCntより高く設定すること
+		
 														# ユーザ管理
 		"forGetUserSec"			: 600,					#   ユーザ取得間隔  10分  60x10
 		"forFollowerConfirmSec"	: 86400,				#   フォロワー状態の更新 期間   1日  (60x60x24)x1

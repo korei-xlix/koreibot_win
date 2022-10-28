@@ -3119,6 +3119,7 @@ class CLS_TwitterAdmin():
 			"DB_LogNum"			: 0,
 			
 			"Sys_TrendTag"		: gVal.STR_UserInfo['TrendTag'],
+			"Sys_QuestionTag"	: gVal.STR_UserInfo['QuestionTag'],
 			"Sys_ListName"		: gVal.STR_UserInfo['ListName'],
 			"Sys_AutoRemove"	: gVal.STR_UserInfo['AutoRemove'],
 			"Sys_mListName"		: gVal.STR_UserInfo['mListName'],

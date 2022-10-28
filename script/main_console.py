@@ -328,7 +328,7 @@ class CLS_Main_Console() :
 		
 		#############################
 		# 質問タグ設定
-		elif inCommand=="\\wc" :
+		elif inCommand=="\\qc" :
 			cls.OBJ_TwitterMain.SetQuestionTag()
 		
 		#############################

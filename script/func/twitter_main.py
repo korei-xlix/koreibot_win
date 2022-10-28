@@ -1444,7 +1444,11 @@ class CLS_TwitterMain():
 		wRes['Class'] = "CLS_TwitterMain"
 		wRes['Func']  = "ReactionTweetCheck"
 		
-		wRes['Responce'] = False
+###		wRes['Responce'] = False
+		wRes['Responce'] = {
+			"Reaction"	: False,
+			"users"		: {}
+		}
 		
 		wTweet = inTweet
 		
@@ -1502,7 +1506,17 @@ class CLS_TwitterMain():
 				CLS_OSIF.sPrn( wStr )
 				
 				### リアクション済み
-				wRes['Responce'] = wReactionRes['Responce']
+###				wRes['Responce'] = wReactionRes['Responce']
+				wRes['Responce']['Reaction'] = wReactionRes['Responce']
+				
+				if wID in wRes['Responce']['users'] :
+					wCell = {
+						"user"	: wSubRes['Responce'][wID],
+						"cnt"	: 1
+					}
+					wRes['Responce']['users'].update({ wID : wCell })
+				else :
+					wRes['Responce']['users'][wID]['cnt'] += 1
 				
 				### トラヒック記録
 				if wFLG_MyUser==True :
@@ -1555,7 +1569,17 @@ class CLS_TwitterMain():
 				CLS_OSIF.sPrn( wStr )
 				
 				### リアクション済み
-				wRes['Responce'] = wReactionRes['Responce']
+###				wRes['Responce'] = wReactionRes['Responce']
+				wRes['Responce']['Reaction'] = wReactionRes['Responce']
+				
+				if wID in wRes['Responce']['users'] :
+					wCell = {
+						"user"	: wSubRes['Responce'][wID],
+						"cnt"	: 1
+					}
+					wRes['Responce']['users'].update({ wID : wCell })
+				else :
+					wRes['Responce']['users'][wID]['cnt'] += 1
 				
 				### トラヒック記録
 				if wFLG_MyUser==True :
@@ -1604,7 +1628,17 @@ class CLS_TwitterMain():
 				CLS_OSIF.sPrn( wStr )
 				
 				### リアクション済み
-				wRes['Responce'] = wReactionRes['Responce']
+###				wRes['Responce'] = wReactionRes['Responce']
+				wRes['Responce']['Reaction'] = wReactionRes['Responce']
+				
+				if wID in wRes['Responce']['users'] :
+					wCell = {
+						"user"	: wSubRes['Responce'][wID],
+						"cnt"	: 1
+					}
+					wRes['Responce']['users'].update({ wID : wCell })
+				else :
+					wRes['Responce']['users'][wID]['cnt'] += 1
 				
 				### トラヒック記録
 				if wFLG_MyUser==True :

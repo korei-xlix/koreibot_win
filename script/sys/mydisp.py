@@ -422,6 +422,15 @@ class CLS_MyDisp():
 				wStr = wStr + inData['Sys_TrendTag']
 			pRes['Responce'] = wStr
 		
+		###インプリ：質問タグ
+		elif "[@SYS-QUESTIONTAG@]"==inLine :
+			wStr = "    質問タグ          : "
+			if inData['Sys_QuestionTag']==None or inData['Sys_QuestionTag']=="" :
+				wStr = wStr + "(なし)"
+			else:
+				wStr = wStr + inData['Sys_QuestionTag']
+			pRes['Responce'] = wStr
+		
 		###インプリ：VIPタグ
 		elif "[@SYS-VIPTAG@]"==inLine :
 			wStr = "    VIPタグ           : "
