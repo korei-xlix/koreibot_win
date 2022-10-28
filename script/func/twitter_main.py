@@ -1539,7 +1539,7 @@ class CLS_TwitterMain():
 ###				wRes['Responce'] = wReactionRes['Responce']
 				wRes['Responce']['Reaction'] = wReactionRes['Responce']
 				
-				if wID in wRes['Responce']['users'] :
+				if wID not in wRes['Responce']['users'] :
 					wCell = {
 						"user"	: wSubRes['Responce'][wID],
 						"cnt"	: 1
@@ -1602,7 +1602,7 @@ class CLS_TwitterMain():
 ###				wRes['Responce'] = wReactionRes['Responce']
 				wRes['Responce']['Reaction'] = wReactionRes['Responce']
 				
-				if wID in wRes['Responce']['users'] :
+				if wID not in wRes['Responce']['users'] :
 					wCell = {
 						"user"	: wSubRes['Responce'][wID],
 						"cnt"	: 1
@@ -1661,7 +1661,7 @@ class CLS_TwitterMain():
 ###				wRes['Responce'] = wReactionRes['Responce']
 				wRes['Responce']['Reaction'] = wReactionRes['Responce']
 				
-				if wID in wRes['Responce']['users'] :
+				if wID not in wRes['Responce']['users'] :
 					wCell = {
 						"user"	: wSubRes['Responce'][wID],
 						"cnt"	: 1
@@ -1826,7 +1826,7 @@ class CLS_TwitterMain():
 			
 			#############################
 			# 期間を過ぎたツイートは除外
-			wGetLag = CLS_OSIF.sTimeLag( str( wSTR_Tweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forAutoFavoTweet_B_Sec'] )
+			wGetLag = CLS_OSIF.sTimeLag( str( inTweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forAutoFavoTweet_B_Sec'] )
 			if wGetLag['Result']!=True :
 				wRes['Reason'] = "sTimeLag failed"
 				gVal.OBJ_L.Log( "B", wRes )

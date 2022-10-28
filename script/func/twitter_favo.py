@@ -523,7 +523,7 @@ class CLS_TwitterFavo():
 			   wARR_DBData['level_tag']=="H" or wARR_DBData['level_tag']=="H+" or \
 			   wARR_DBData['level_tag']=="H-" or wARR_DBData['level_tag']=="L" or wARR_DBData['level_tag']=="Z" or wARR_DBData['level_tag']=="Z-" :
 				
-				wStr = "▲レベルタグ除外: level=" + wARR_DBData['level_tag'] + " user=" + wFavoUser['screen_name']
+				wStr = "▲レベルタグ除外: level=" + wARR_DBData['level_tag'] + " user=" + wARR_FollowData[wUserID]['screen_name']
 				CLS_OSIF.sPrn( wStr )
 				###
 				wResult['no_cnt'] += 1

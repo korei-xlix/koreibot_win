@@ -149,13 +149,20 @@ class CLS_TwitterFollower():
 				
 				wKeyuser = list( wSubRes['Responce']['users'].keys() )
 				for wUserID in wKeyuser :
-					if wUserID in self.ARR_Reaction :
+					if wUserID not in self.ARR_Reaction :
 						wCell = {
 							"user"	: wSubRes['Responce']['users'][wUserID]['user'],
 							"cnt"	: wSubRes['Responce']['users'][wUserID]['cnt']
 						}
 						self.ARR_Reaction.update({ wUserID : wCell })
+						
+						
+						print("xxx1")
+						
 					else :
+
+						print("xxx2")
+
 						self.ARR_Reaction[wUserID]['cnt'] += wSubRes['Responce']['users'][wUserID]['cnt']
 		
 		#############################
@@ -471,32 +478,32 @@ class CLS_TwitterFollower():
 			if wCnt>=gVal.DEF_STR_TLNUM['renFavoOnCnt'] :
 				#############################
 				# 相互フォロー中か
-				if ( self.STR_UserAdminInfo['level_tag']=="B" or self.STR_UserAdminInfo['level_tag']=="B+" or \
-				     self.STR_UserAdminInfo['level_tag']=="C" or self.STR_UserAdminInfo['level_tag']=="C+" ) and \
-				   ( self.STR_UserAdminInfo['level_tag']!="G" or self.STR_UserAdminInfo['level_tag']!="H" ) :
+				if ( wARR_DBData['level_tag']=="B" or wARR_DBData['level_tag']=="B+" or \
+				     wARR_DBData['level_tag']=="C" or wARR_DBData['level_tag']=="C+" ) and \
+				   ( wARR_DBData['level_tag']!="G" or wARR_DBData['level_tag']!="H" ) :
 					wUserLevel = "G"
 				
 				#############################
 				# 片フォロワーか
-				elif self.STR_UserAdminInfo['level_tag']=="E" and \
-				     ( self.STR_UserAdminInfo['level_tag']!="G" or self.STR_UserAdminInfo['level_tag']!="H" ) :
+				elif wARR_DBData['level_tag']=="E" and \
+				     ( wARR_DBData['level_tag']!="G" or wARR_DBData['level_tag']!="H" ) :
 					
 					wUserLevel = "H"
 			
 			elif wCnt==0 :
 				#############################
 				# 相互フォロー中 解除か
-				if self.STR_UserAdminInfo['level_tag']=="G" :
-					if self.STR_UserAdminInfo['send_cnt']>=gVal.DEF_STR_TLNUM['LEVEL_B_Cnt'] :
+				if wARR_DBData['level_tag']=="G" :
+					if wARR_DBData['send_cnt']>=gVal.DEF_STR_TLNUM['LEVEL_B_Cnt'] :
 						wUserLevel = "B+"
-					elif self.STR_UserAdminInfo['send_cnt']>=1 :
+					elif wARR_DBData['send_cnt']>=1 :
 						wUserLevel = "B"
 					else:
 						wUserLevel = "C+"
 				
 				#############################
 				# 片フォロワー 解除か
-				elif self.STR_UserAdminInfo['level_tag']=="H" :
+				elif wARR_DBData['level_tag']=="H" :
 					
 					wUserLevel = "E"
 			
@@ -1199,15 +1206,15 @@ class CLS_TwitterFollower():
 				wStr = "●完全スルー期間外のため、以後無視"
 				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']), inID=wUserID )
 				
-				#############################
-				# DBに反映
-				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Follower( wUserID, inFLG_Follower=False )
-				if wSubRes['Result']!=True :
-					###失敗
-					wRes['Reason'] = "UpdateFavoData_Follower is failed"
-					gVal.OBJ_L.Log( "B", wRes )
-					return wRes
-		
+###				#############################
+###				# DBに反映
+###				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Follower( wUserID, inFLG_Follower=False )
+###				if wSubRes['Result']!=True :
+###					###失敗
+###					wRes['Reason'] = "UpdateFavoData_Follower is failed"
+###					gVal.OBJ_L.Log( "B", wRes )
+###					return wRes
+###		
 		#############################
 		# 正常終了
 		wRes['Result'] = True
