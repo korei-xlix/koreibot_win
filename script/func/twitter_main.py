@@ -656,7 +656,8 @@ class CLS_TwitterMain():
 								
 								if wUserLevel2!=None :
 									### ユーザレベル変更
-									wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
+###									wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
+									wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel2 )
 						
 						### トラヒック記録（フォロワー獲得）
 						CLS_Traffic.sP( "p_follower" )
@@ -685,12 +686,15 @@ class CLS_TwitterMain():
 								### ユーザレベル変更
 ###								wUserLevel = "C-"
 								if wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G+" or wUserLevel=="G" or wUserLevel=="G+" :
-									wUserLevel = "H"
+###									wUserLevel = "H"
+									wUserLevel2 = "H"
 								
 								else:
-									wUserLevel = "C-"
+###									wUserLevel = "C-"
+									wUserLevel2 = "C-"
 								
-								wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
+###								wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
+								wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel2 )
 								
 								### ユーザ記録
 								wStr = "●リムーブされた"
@@ -704,21 +708,27 @@ class CLS_TwitterMain():
 							if wFollowerData[wID]['level_tag']=="F+" :
 								### 完全スルーユーザからのリムーブは追い出し扱い
 ###								wUserLevel = "G-"
-								wUserLevel = "Z-"
+###								wUserLevel = "Z-"
+								wUserLevel2 = "Z-"
 								wStr = "●リムーブされた(追い出し扱い)"
 							else:
 ###								wUserLevel = "E-"
-								wUserLevel = None
+###								wUserLevel = None
+								wUserLevel2 = None
 								wStr = "●リムーブされた"
 								if wARR_DBData['level_tag']=="H" or wARR_DBData['level_tag']=="H+" or wUserLevel=="H" or wUserLevel=="H+" or \
 								   wARR_DBData['level_tag']=="F+" or wARR_DBData['level_tag']=="Z-" or wUserLevel=="F+" or wUserLevel=="Z-" :
-									wUserLevel = "H-"
+###									wUserLevel = "H-"
+									wUserLevel2 = "H-"
 								
 								else:
-									wUserLevel = "E-"
+###									wUserLevel = "E-"
+									wUserLevel2 = "E-"
 							
-							if wUserLevel!=None :
-								wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
+###							if wUserLevel!=None :
+###								wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
+							if wUserLevel2!=None :
+								wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel2 )
 								
 								### ユーザ記録
 								gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'], inID=wID )
