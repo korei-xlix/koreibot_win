@@ -1037,27 +1037,28 @@ class CLS_TwitterMain():
 					gVal.OBJ_L.Log( "B", wRes )
 					return wRes
 			
-			#############################
-			# 自動リムーブチェック
-			elif gVal.STR_UserInfo['AutoSeq']==5 :
-				wSubRes = self.CheckAutoRemove()
-				if wSubRes['Result']!=True :
-					wRes['Reason'] = "CheckAutoRemove error"
-					gVal.OBJ_L.Log( "B", wRes )
-					return wRes
-			
-			#############################
-			# タイムラインフォロー
-			elif gVal.STR_UserInfo['AutoSeq']==6 :
-				wSubRes = self.OBJ_TwitterFollower.TimelineFollow()
-				if wSubRes['Result']!=True :
-					wRes['Reason'] = "TimelineFollow error"
-					gVal.OBJ_L.Log( "B", wRes )
-					return wRes
-			
+###			#############################
+###			# 自動リムーブチェック
+###			elif gVal.STR_UserInfo['AutoSeq']==5 :
+###				wSubRes = self.CheckAutoRemove()
+###				if wSubRes['Result']!=True :
+###					wRes['Reason'] = "CheckAutoRemove error"
+###					gVal.OBJ_L.Log( "B", wRes )
+###					return wRes
+###			
+###			#############################
+###			# タイムラインフォロー
+###			elif gVal.STR_UserInfo['AutoSeq']==6 :
+###				wSubRes = self.OBJ_TwitterFollower.TimelineFollow()
+###				if wSubRes['Result']!=True :
+###					wRes['Reason'] = "TimelineFollow error"
+###					gVal.OBJ_L.Log( "B", wRes )
+###					return wRes
+###			
 			#############################
 			# リアクションチェック
-			elif gVal.STR_UserInfo['AutoSeq']==7 :
+###			elif gVal.STR_UserInfo['AutoSeq']==7 :
+			elif gVal.STR_UserInfo['AutoSeq']==5 :
 				wSubRes = self.OBJ_TwitterFollower.ReactionCheck( inFLG_Short=wFLG_Short )
 				if wSubRes['Result']!=True :
 					wRes['Reason'] = "ReactionCheck"
@@ -1066,10 +1067,29 @@ class CLS_TwitterMain():
 			
 			#############################
 			# VIPリアクション監視チェック
-			elif gVal.STR_UserInfo['AutoSeq']==8 :
+###			elif gVal.STR_UserInfo['AutoSeq']==8 :
+			elif gVal.STR_UserInfo['AutoSeq']==6 :
 				wSubRes = self.OBJ_TwitterFollower.VIP_ReactionCheck()
 				if wSubRes['Result']!=True :
 					wRes['Reason'] = "VIP_ReactionCheck is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+			
+			#############################
+			# 自動リムーブチェック
+			elif gVal.STR_UserInfo['AutoSeq']==7 :
+				wSubRes = self.CheckAutoRemove()
+				if wSubRes['Result']!=True :
+					wRes['Reason'] = "CheckAutoRemove error"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+			
+			#############################
+			# タイムラインフォロー
+			elif gVal.STR_UserInfo['AutoSeq']==8 :
+				wSubRes = self.OBJ_TwitterFollower.TimelineFollow()
+				if wSubRes['Result']!=True :
+					wRes['Reason'] = "TimelineFollow error"
 					gVal.OBJ_L.Log( "B", wRes )
 					return wRes
 			
