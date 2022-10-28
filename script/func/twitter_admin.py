@@ -2670,6 +2670,13 @@ class CLS_TwitterAdmin():
 					wListData = wListData + " " * wListNumSpace
 				wStr = wStr + wListData + "  "
 				
+				### ユーザレベル
+				wListData = str(wCell['level_tag'])
+				wListNumSpace = 2 - len( str(wCell['level_tag']) )
+				if wListNumSpace>0 :
+					wListData = wListData + " " * wListNumSpace
+				wStr = wStr + wListData + "  "
+				
 				### フォロー者
 				if wCell['myfollow']==True :
 					wStr = wStr + "〇" + "    "
@@ -2846,6 +2853,7 @@ class CLS_TwitterAdmin():
 			CLS_OSIF.sPrn( "そのユーザは変更できません" + '\n' )
 			return wRes
 		
+		wFLG_Rel = False
 		#############################
 		# 相互フォロー中 解除か
 		if inData['myfollow']==True and \
@@ -2860,6 +2868,7 @@ class CLS_TwitterAdmin():
 				wUserLevel = "B"
 			else:
 				wUserLevel = "C+"
+			wFLG_Rel = True
 		
 		#############################
 		# 片フォロワー 解除か
@@ -2870,12 +2879,23 @@ class CLS_TwitterAdmin():
 		     inData['level_tag']=="H" :
 			
 			wUserLevel = "E"
+			wFLG_Rel = True
 		
 		#############################
 		# 制御不能
 		else:
 			CLS_OSIF.sPrn( "そのユーザは変更できません" + '\n' )
 			return wRes
+		
+		#############################
+		# 連ファボカウント クリア
+		if wFLG_Rel==True :
+			wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_RenFavo( inData['id'], 0 )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "UpdateFavoData_RenFavo is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
 		
 		#############################
 		# ユーザレベルの変更の実行
