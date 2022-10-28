@@ -1983,7 +1983,8 @@ class CLS_TwitterMain():
 			#############################
 			# 自動おかえしいいねする
 ###			if gVal.DEF_STR_TLNUM['autoRepFavo']==True :
-			if gVal.DEF_STR_TLNUM['autoRepFavo']==True and wFLG_Iine==True :
+###			if gVal.DEF_STR_TLNUM['autoRepFavo']==True and wFLG_Iine==True :
+			if gVal.DEF_STR_TLNUM['autoRepFavo']==True and wFLG_Iine==True and inMention==False :
 				wSubRes = self.OBJ_TwitterFavo.AutoFavo( inUser, gVal.DEF_STR_TLNUM['forAutoFavoReturnFavoSec'] )
 				if wSubRes['Result']!=True :
 					###失敗
