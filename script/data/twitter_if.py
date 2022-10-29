@@ -37,6 +37,8 @@ class CLS_Twitter_IF() :
 	ARR_MutualListUserID = []		#相互フォローリスト登録しているユーザID
 	ARR_FollowerListUserID = []		#片フォロワーリスト登録しているユーザID
 
+	ARR_SubsList = {}		# 被登録リスト
+
 
 
 #####################################################
@@ -2865,7 +2867,11 @@ class CLS_Twitter_IF() :
 		wRes['Class'] = "CLS_Twitter_IF"
 		wRes['Func']  = "GetLists"
 		
-		wRes['Responce'] = {}
+###		wRes['Responce'] = {}
+		wRes['Responce'] = {
+			"FollowList"	: {},
+			"SubsList"		: {}
+		}
 		#############################
 		# リスト登録ユーザ取得
 		CLS_MyDisp.sViewHeaderDisp( "リスト登録ユーザ取得" )
@@ -2942,6 +2948,38 @@ class CLS_Twitter_IF() :
 			CLS_OSIF.sPrn( wStr )
 		
 		#############################
+		# リスト登録のIDを抽出
+		# ・自分のリスト
+		wTwitterRes = self.OBJ_Twitter.GetSubsLists( inScreenName=inScreenName )
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error(GetSubsLists): " + wTwitterRes['Reason']
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		wARR_SubsList = wTwitterRes['Responce']
+		
+		wARR_SubsList = {}
+		wKeylist = list( wTwitterRes['Responce'].keys() )
+		for wKey in wKeylist :
+			if wTwitterRes['Responce'][wKey]['me']==True :
+				### 自分のリストは除外
+				continue
+			
+			wListID = str(wTwitterRes['Responce'][wKey]['id'])
+			wListName = str(wTwitterRes['Responce'][wKey]['name'])
+			wCell = {
+				"id"		: wListID,
+				"name"		: wListName,
+				"user"		: wTwitterRes['Responce'][wKey]['user']
+			}
+			wARR_SubsList.update({ wListID : wCell })
+			
+			wStr = "被登録リスト：list=" + wListName
+			CLS_OSIF.sPrn( wStr )
+		
+		wRes['Responce']['FollowList'] = wARR_FollowList
+		wRes['Responce']['SubsList']   = wARR_SubsList
+		self.ARR_SubsList              = wARR_SubsList
+		#############################
 		# 総計表示
 		wStr = '\n' + "リスト登録一覧数    =" + str(len( wARR_FollowList ))
 		CLS_OSIF.sPrn( wStr )
@@ -2949,7 +2987,7 @@ class CLS_Twitter_IF() :
 		wStr = "リスト登録ユーザID数=" + str(len( self.ARR_SubscribeListUserID ))
 		CLS_OSIF.sPrn( wStr )
 		
-		wRes['Responce'] = wARR_FollowList
+###		wRes['Responce'] = wARR_FollowList
 		#############################
 		# 正常
 		wRes['Result'] = True
@@ -2960,6 +2998,10 @@ class CLS_Twitter_IF() :
 		if inID not in self.ARR_SubscribeListUserID :
 			return False
 		return True
+
+	#####################################################
+	def GetSubsList(self):
+		return self.ARR_SubsList
 
 
 

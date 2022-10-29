@@ -1249,6 +1249,15 @@ class CLS_TwitterMain():
 			return wRes
 		
 		#############################
+		# 被登録リストの表示
+		wSubRes = self.View_SubsList()
+		if wSubRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "View_SubsList is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
 		# 完了
 		wRes['Result'] = True
 		return wRes
@@ -2957,6 +2966,54 @@ class CLS_TwitterMain():
 		#############################
 		# 完了
 		wRes['Responce'] = True
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# 被登録リストの表示
+#####################################################
+	def View_SubsList(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "View_SubsList"
+		
+		#############################
+		# 取得開始の表示
+		CLS_MyDisp.sViewHeaderDisp( "被登録リスト一覧の表示", False )
+		
+		#############################
+		# 被登録一覧を取得する
+		wARR_SubsList = gVal.OBJ_Tw_IF.GetSubsList()
+		if len(wARR_SubsList)==0 :
+			wStr = "(リストなし)"
+			CLS_OSIF.sPrn( wStr )
+		
+		wStr = ""
+		wKeylist = list( wARR_SubsList.keys() )
+		for wID in wKeylist :
+			wID = str(wID)
+			
+			wStr = wStr + "  "
+			### ユーザ名（screen_name）
+			wListData = wARR_SubsList[wID]['user']['screen_name']
+			wListNumSpace = gVal.DEF_SCREEN_NAME_SIZE - len(wListData)
+			if wListNumSpace>0 :
+				wListData = wListData + " " * wListNumSpace
+			wStr = wStr + wListData + ": "
+			
+			### リスト名
+			wListData = wARR_SubsList[wID]['name']
+			wStr = wStr + wListData + '\n'
+		
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# 完了
 		wRes['Result'] = True
 		return wRes
 
