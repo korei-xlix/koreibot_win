@@ -110,13 +110,13 @@ class CLS_Test():
 		wRes['Class'] = "CLS_TwitterMain"
 		wRes['Func']  = "TestRun"
 		
-		#############################
-		# Twitter情報取得
-		wFavoRes = self.OBJ_Parent.GetTwitterInfo()
-		if wFavoRes['Result']!=True :
-			wRes['Reason'] = "GetTwitterInfo is failed"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
+#		#############################
+#		# Twitter情報取得
+#		wFavoRes = self.OBJ_Parent.GetTwitterInfo()
+#		if wFavoRes['Result']!=True :
+#			wRes['Reason'] = "GetTwitterInfo is failed"
+#			gVal.OBJ_L.Log( "B", wRes )
+#			return wRes
 		
 #		#############################
 #		# いいね解除（●フル自動監視）
@@ -134,14 +134,23 @@ class CLS_Test():
 #			gVal.OBJ_L.Log( "B", wRes )
 #			return wRes
 		
-		#############################
-		# フォロワーいいね
-		wSubRes = self.OBJ_Parent.OBJ_TwitterFavo.FollowerFavo( inTest=True )
-		if wSubRes['Result']!=True :
-			wRes['Reason'] = "FollowerFavo"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
+#		#############################
+#		# フォロワーいいね
+#		wSubRes = self.OBJ_Parent.OBJ_TwitterFavo.FollowerFavo( inTest=True )
+#		if wSubRes['Result']!=True :
+#			wRes['Reason'] = "FollowerFavo"
+#			gVal.OBJ_L.Log( "B", wRes )
+#			return wRes
 		
+
+		wTweetRes = gVal.OBJ_Tw_IF.GetMyMentionLookup()
+##		print(str( wTweetRes['Responce'] ))
+		wKeylist = list( wTweetRes['Responce'].keys() )
+		for wID in wKeylist :
+			print( str( wTweetRes['Responce'][wID] ) + '\n' )
+			print( "----------" + '\n' )
+
+
 		#############################
 		# 完了
 		wRes['Result'] = True

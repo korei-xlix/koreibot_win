@@ -1101,7 +1101,8 @@ class CLS_TwitterKeyword():
 					
 					#############################
 					# ツイートチェック
-					wSubRes = self.OBJ_Parent.ReactionTweetCheck( gVal.STR_UserInfo['id'], wTweet )
+###					wSubRes = self.OBJ_Parent.ReactionTweetCheck( gVal.STR_UserInfo['id'], wTweet )
+					wSubRes = self.OBJ_Parent.OBJ_TwitterReaction.ReactionTweetCheck( gVal.STR_UserInfo['id'], wTweet )
 					if wSubRes['Result']!=True :
 						wRes['Reason'] = "ReactionTweetCheck"
 						gVal.OBJ_L.Log( "B", wRes )

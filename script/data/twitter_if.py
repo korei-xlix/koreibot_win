@@ -1105,6 +1105,7 @@ class CLS_Twitter_IF() :
 				if str(wUsers['id'])==wUserID :
 					wScreenName  = wUsers['username']
 					wDescription = wUsers['description']
+					break
 			
 			###日時の変換
 			wTimeDate = wTwitterRes['Responce']['data']['created_at']
@@ -1182,18 +1183,41 @@ class CLS_Twitter_IF() :
 				wReplyID     = str( wTweet['id'] )
 				wReplyUserID = str( wTweet['author_id'] )
 				wReplyText   = str( wTweet['text'] )
-				wTimeDate   = str( wTweet['created_at'] )
+###				wTimeDate   = str( wTweet['created_at'] )
 				
+				###日時の変換
+				wTimeDate = wTweet['created_at']
+				wTimeRes = CLS_TIME.sTTchg( wRes, "(3)", wTimeDate )
+				if wTimeRes['Result']!=True :
+					return wRes
+				wTimeDate = str( wTimeRes['TimeDate'] )
+		 		
 				if "referenced_tweets" not in wTweet :
 					continue
 				wTweetID = str( wTweet['referenced_tweets'][0]['id'] )
 				
-				wSTR_Cell = {
+				### screen_nameの取り出し
+				wScreenName = ""
+				for wUsers in wTwitterRes['Responce']['includes']['users'] :
+					if str(wUsers['id'])==wReplyUserID :
+						wScreenName  = wUsers['username']
+						wDescription = wUsers['description']
+						break
+				
+				wSTR_CellUser = {
 					"id" 			: wReplyUserID,
-					"created_at"    : wTimeDate,
-					"reply_id"		: wReplyID,
-					"reply_text"	: wReplyText,
-					"tweet_id"		: wTweetID,
+					"screen_name"	: wScreenName,
+					"description"	: wDescription
+				}
+				wSTR_Cell = {
+###					"id" 			: wReplyUserID,		# リプライユーザID（お相手のユーザID）
+					"id"			: wReplyID,			# リプライツイートID（お相手のツイートID）
+					"created_at"    : wTimeDate,		# リプライの時刻（お相手のツイート日時 Twitter時間）
+###					"reply_id"		: wReplyID,			# リプライツイートID（お相手のツイートID）
+###					"reply_text"	: wReplyText,		# リプライの内容・テキスト
+					"text"			: wReplyText,		# リプライの内容・テキスト
+					"tweet_id"		: wTweetID,			# リプライ先のツイートID（自分・ワシのツイートIDじゃけえ）
+					"user"			: wSTR_CellUser		# ユーザ情報
 				}
 				wMentions.update({ wReplyID : wSTR_Cell })
 		
