@@ -518,16 +518,49 @@ class CLS_TwitterFavo():
 			
 			#############################
 			# ユーザレベル除外
+###			if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="D-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or \
+###			   wARR_DBData['level_tag']=="F+" or wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G+" or \
+###			   wARR_DBData['level_tag']=="H" or wARR_DBData['level_tag']=="H+" or \
+###			   wARR_DBData['level_tag']=="H-" or wARR_DBData['level_tag']=="L" or wARR_DBData['level_tag']=="Z" or wARR_DBData['level_tag']=="Z-" :
 			if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="D-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or \
-			   wARR_DBData['level_tag']=="F+" or wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G+" or \
-			   wARR_DBData['level_tag']=="H" or wARR_DBData['level_tag']=="H+" or \
-			   wARR_DBData['level_tag']=="H-" or wARR_DBData['level_tag']=="L" or wARR_DBData['level_tag']=="Z" or wARR_DBData['level_tag']=="Z-" :
+			   wARR_DBData['level_tag']=="F+" or wARR_DBData['level_tag']=="H-" or \
+			   wARR_DBData['level_tag']=="L" or wARR_DBData['level_tag']=="Z" or wARR_DBData['level_tag']=="Z-" :
 				
 				wStr = "▲レベルタグ除外: level=" + wARR_DBData['level_tag'] + " user=" + wARR_FollowData[wUserID]['screen_name']
 				CLS_OSIF.sPrn( wStr )
 				###
 				wResult['no_cnt'] += 1
 				continue
+			
+			#############################
+			# 非絡みユーザ除外
+			if wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G+" or wARR_DBData['level_tag']=="H" or wARR_DBData['level_tag']=="H+" :
+				### いいね実行からの期間チェック
+				wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData['pfavo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['forFollowerFavoNonFollowerSec'] )
+				if wGetLag['Result']!=True :
+					wRes['Reason'] = "sTimeLag failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					continue
+				#############################
+				# いいね実行から期間内
+				if wGetLag['Beyond']==False :
+					wStr = "▲非絡みユーザ除外(期間内): level=" + wARR_DBData['level_tag'] + " user=" + wARR_FollowData[wUserID]['screen_name']
+					CLS_OSIF.sPrn( wStr )
+					###
+					wResult['no_cnt'] += 1
+					continue
+				
+				else:
+				#############################
+				# ランダム除外
+					wRand = CLS_OSIF.sGetRand(100)
+					if wRand>=gVal.DEF_STR_TLNUM['forFollowerFavoNonFollowerCnt'] :
+						### 乱数による拒否
+						wStr = "▲非絡みユーザ除外(ランダム): level=" + wARR_DBData['level_tag'] + " user=" + wARR_FollowData[wUserID]['screen_name']
+						CLS_OSIF.sPrn( wStr )
+						###
+						wResult['no_cnt'] += 1
+						continue
 			
 			#############################
 			# 相互フォローリストかつ相互フォロー
