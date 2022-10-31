@@ -550,17 +550,16 @@ class CLS_TwitterFavo():
 					wResult['no_cnt'] += 1
 					continue
 				
-				else:
 				#############################
 				# ランダム除外
-					wRand = CLS_OSIF.sGetRand(100)
-					if wRand>=gVal.DEF_STR_TLNUM['forFollowerFavoNonFollowerCnt'] :
-						### 乱数による拒否
-						wStr = "▲非絡みユーザ除外(ランダム): level=" + wARR_DBData['level_tag'] + " user=" + wARR_FollowData[wUserID]['screen_name']
-						CLS_OSIF.sPrn( wStr )
-						###
-						wResult['no_cnt'] += 1
-						continue
+				wRand = CLS_OSIF.sGetRand(100)
+				if wRand>=gVal.DEF_STR_TLNUM['forFollowerFavoNonFollowerCnt'] :
+					### 乱数による拒否
+					wStr = "▲非絡みユーザ除外(ランダム): level=" + wARR_DBData['level_tag'] + " user=" + wARR_FollowData[wUserID]['screen_name']
+					CLS_OSIF.sPrn( wStr )
+					###
+					wResult['no_cnt'] += 1
+					continue
 			
 			#############################
 			# 相互フォローリストかつ相互フォロー
