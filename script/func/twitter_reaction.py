@@ -1183,7 +1183,19 @@ class CLS_TwitterReaction():
 				###   非絡み設定中の場合は -1 カウント
 				###   その他は 0 カウント
 				if wARR_DBData['renfavo_cnt']>=1 :
-					wCnt = wARR_DBData['renfavo_cnt'] - 1
+###					wCnt = wARR_DBData['renfavo_cnt'] - 1
+###					
+					wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData['rfavo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['forRenFavoSec'] )
+					if wGetLag['Result']!=True :
+						wRes['Reason'] = "sTimeLag failed(1)"
+						gVal.OBJ_L.Log( "B", wRes )
+						return wRes
+					if wGetLag['Beyond']==True :
+						### 規定外はリセット
+						wCnt = 0
+					else:
+						wCnt = wARR_DBData['renfavo_cnt'] - 1
+				
 				else:
 					wCnt = 0
 			
