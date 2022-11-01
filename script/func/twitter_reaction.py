@@ -657,6 +657,7 @@ class CLS_TwitterReaction():
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			if wSubRes['Future']==False :
+				### 古いアクションなので除外
 				wFLG_Action = False	#除外
 		
 		#############################
@@ -716,6 +717,11 @@ class CLS_TwitterReaction():
 		#############################
 		# レベルタグによるランダム実行
 		elif wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G+" or wARR_DBData['level_tag']=="H" or wARR_DBData['level_tag']=="H+" :
+			if wFLG_Action==False :
+				### 除外してる場合、終わり
+				wRes['Result'] = True
+				return wRes
+			
 			wRand = CLS_OSIF.sGetRand(100)
 			if wRand>=gVal.DEF_STR_TLNUM['forAutoFavoLevelRunRand'] :
 				### 乱数による拒否
@@ -1103,7 +1109,8 @@ class CLS_TwitterReaction():
 			if wID not in self.ARR_ReactionUser :
 				wCell = {
 					"id"			: wID,
-					"screen_name"	: inUser['screen_name'],
+###					"screen_name"	: inUser['screen_name'],
+					"screen_name"	: wARR_RateUserB[wID]['screen_name'],
 					"cnt"			: 0
 				}
 				self.ARR_ReactionUser.update({ wID : wCell })

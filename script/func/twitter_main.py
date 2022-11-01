@@ -1341,6 +1341,14 @@ class CLS_TwitterMain():
 # ユーザ管理
 #####################################################
 	def UserAdmin(self):
+		
+		#############################
+		# Twitter情報取得
+		wFavoRes = self.GetTwitterInfo()
+		if wFavoRes['Result']!=True :
+			gVal.OBJ_L.Log( "B", wFavoRes )
+			return wFavoRes
+		
 		wRes = self.OBJ_TwitterAdmin.UserAdmin()
 		return wRes
 
