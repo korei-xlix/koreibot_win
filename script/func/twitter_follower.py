@@ -554,7 +554,8 @@ class CLS_TwitterFollower():
 #####################################################
 # 自動フォロー
 #####################################################
-	def AutoFollow( self, inUser ):
+###	def AutoFollow( self, inUser ):
+	def AutoFollow( self, inUser, inForce=False ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -593,16 +594,30 @@ class CLS_TwitterFollower():
 		# ・フォロー者＜フォロワー数
 		# ・いいね数=0
 		# ・ツイート数=100未満
+###		if wUser['protected']==True or \
+###		   wUser['verified']==True or \
+###		   wUser['friends_count']==0 or \
+###		   wUser['friends_count']>=1000 or \
+###		   wUser['followers_count']<100 or \
+###		   wUser['friends_count']<wUser['followers_count'] or \
+###		   wUser['favourites_count']==0 or \
+###		   wUser['statuses_count']<100 :
 		if wUser['protected']==True or \
 		   wUser['verified']==True or \
 		   wUser['friends_count']==0 or \
-		   wUser['friends_count']>=1000 or \
-		   wUser['followers_count']<100 or \
-		   wUser['friends_count']<wUser['followers_count'] or \
 		   wUser['favourites_count']==0 or \
 		   wUser['statuses_count']<100 :
+			
 			wRes['Result'] = True
 			return wRes
+		
+		if inForce==False :
+			if wUser['friends_count']>=1000 or \
+			   wUser['followers_count']<100 or \
+			   wUser['friends_count']<wUser['followers_count'] :
+				
+				wRes['Result'] = True
+				return wRes
 		
 		#############################
 		# DBからいいね情報を取得する(1個)
@@ -636,13 +651,20 @@ class CLS_TwitterFollower():
 		# ・フォロー者ON
 		# ・フォロワーON
 		# ・過去にフォローしたこと、されたことがある
-		if wARR_DBData['level_tag']!="F" or \
-		   wARR_DBData['myfollow']==True or \
-		   str(wARR_DBData['myfollow_date'])!=gVal.DEF_TIMEDATE or \
-		   wARR_DBData['follower']==True or \
-		   str(wARR_DBData['follower_date'])!=gVal.DEF_TIMEDATE :
-			wRes['Result'] = True
-			return wRes
+###		if wARR_DBData['level_tag']!="F" or \
+###		   wARR_DBData['myfollow']==True or \
+###		   str(wARR_DBData['myfollow_date'])!=gVal.DEF_TIMEDATE or \
+###		   wARR_DBData['follower']==True or \
+###		   str(wARR_DBData['follower_date'])!=gVal.DEF_TIMEDATE :
+		if inForce==False :
+			if wARR_DBData['level_tag']!="F" or \
+			   wARR_DBData['myfollow']==True or \
+			   str(wARR_DBData['myfollow_date'])!=gVal.DEF_TIMEDATE or \
+			   wARR_DBData['follower']==True or \
+			   str(wARR_DBData['follower_date'])!=gVal.DEF_TIMEDATE :
+				
+				wRes['Result'] = True
+				return wRes
 		
 		#############################
 		# フォローする
