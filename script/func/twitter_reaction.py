@@ -67,7 +67,7 @@ class CLS_TwitterReaction():
 			}
 			self.ARR_ReactionTweet.update({ wTweetID : wCell })
 		
-		self.ARR_ReactionTweet['users'].append( wID )
+		self.ARR_ReactionTweet[wTweetID]['users'].append( wID )
 		
 		#############################
 		# リアクションユーザ情報の枠がなければ
@@ -239,20 +239,21 @@ class CLS_TwitterReaction():
 				wRes['Reason'] = "ReactionTweetCheck"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
-			if wSubRes['Responce']['Reaction']==True :
+###			if wSubRes['Responce']['Reaction']==True :
 ###				### リアクション回数+
 ###				self.VAL_ReactionCnt += 1
 ###				
-				wKeyuser = list( wSubRes['Responce']['users'].keys() )
-				for wUserID in wKeyuser :
-					if wUserID not in self.ARR_Reaction :
-						wCell = {
-							"user"	: wSubRes['Responce']['users'][wUserID]['user'],
-							"cnt"	: wSubRes['Responce']['users'][wUserID]['cnt']
-						}
-						self.ARR_Reaction.update({ wUserID : wCell })
-					else :
-						self.ARR_Reaction[wUserID]['cnt'] += wSubRes['Responce']['users'][wUserID]['cnt']
+###				wKeyuser = list( wSubRes['Responce']['users'].keys() )
+###				for wUserID in wKeyuser :
+###					if wUserID not in self.ARR_Reaction :
+###						wCell = {
+###							"user"	: wSubRes['Responce']['users'][wUserID]['user'],
+###							"cnt"	: wSubRes['Responce']['users'][wUserID]['cnt']
+###						}
+###						self.ARR_Reaction.update({ wUserID : wCell })
+###					else :
+###						self.ARR_Reaction[wUserID]['cnt'] += wSubRes['Responce']['users'][wUserID]['cnt']
+###		
 		
 		#############################
 		# チェック
@@ -630,7 +631,8 @@ class CLS_TwitterReaction():
 			wNewUser = True	#新規登録
 			#############################
 			# 新規情報の設定
-			wSubRes = self.SetNewFavoData( inUser, wSubRes['Responce']['Data'] )
+###			wSubRes = self.SetNewFavoData( inUser, wSubRes['Responce']['Data'] )
+			wSubRes = self.OBJ_Parent.SetNewFavoData( inUser, wSubRes['Responce']['Data'] )
 			if wSubRes['Result']!=True :
 				###失敗
 				wRes['Reason'] = "SetNewFavoData is failed"
@@ -659,7 +661,8 @@ class CLS_TwitterReaction():
 		
 		#############################
 		# リアクション禁止ユーザか
-		wUserRes = self.CheckExtUser( wARR_DBData, "リアクション検出" )
+###		wUserRes = self.CheckExtUser( wARR_DBData, "リアクション検出" )
+		wUserRes = self.OBJ_Parent.CheckExtUser( wARR_DBData, "リアクション検出" )
 		if wUserRes['Result']!=True :
 			wRes['Reason'] = "CheckExtUser failed"
 			gVal.OBJ_L.Log( "B", wRes )

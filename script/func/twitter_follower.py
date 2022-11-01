@@ -410,10 +410,21 @@ class CLS_TwitterFollower():
 				
 				if wARR_DBData['follower']==True :
 					### フォロー者OFF・フォロワーON
-					wUserLevel = "D-"
+###					wUserLevel = "D-"
+					if wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G+" :
+						wUserLevel = "H"
+					
+					else:
+						wUserLevel = "D-"
+				
 				else:
 					### フォロー者OFF・フォロワーOFF
-					wUserLevel = "E-"
+###					wUserLevel = "E-"
+					if wARR_DBData['level_tag']=="H" or wARR_DBData['level_tag']=="H+" :
+						wUserLevel = "H-"
+					
+					else:
+						wUserLevel = "E-"
 				
 				### ユーザレベル変更
 				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
