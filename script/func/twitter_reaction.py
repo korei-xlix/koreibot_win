@@ -1133,7 +1133,8 @@ class CLS_TwitterReaction():
 		for wID in wKeylist :
 			#############################
 			# DBからいいね情報を取得する(1個)
-			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( self.ARR_Reaction[wID]['user'], inFLG_New=False )
+###			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( self.ARR_Reaction[wID]['user'], inFLG_New=False )
+			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( self.ARR_ReactionUser[wID], inFLG_New=False )
 			if wDBRes['Result']!=True :
 				###失敗
 				wRes['Reason'] = "GetFavoDataOne is failed"
