@@ -646,7 +646,26 @@ class CLS_TwitterMain():
 								
 								else:
 									### フォロワー
-									if wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or wARR_DBData['level_tag']=="F" :
+									###   新規の場合、自動フォロー
+									if wARR_DBData['level_tag']=="F" :
+										wSubRes = self.OBJ_TwitterFollower.AutoFollow( wFollowerData[wID] )
+										if wSubRes['Result']!=True :
+											wRes['Reason'] = "AutoFollow is failed"
+											gVal.OBJ_L.Log( "B", wRes )
+											continue
+										
+										if wSubRes['Responce']==True :
+											### 自動フォロー成功 フォロー者ON・フォローON
+											### リストは相互フォローリストのまま
+											wUserLevel2 = "C+"
+										else:
+											### 自動フォロー失敗 フォロー者OFF・フォローON
+											wUserLevel2 = "E"
+											### 片フォロワーリストに追加
+											wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_AddUser( wFollowerData[wID] )
+									
+###									if wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or wARR_DBData['level_tag']=="F" :
+									elif wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" :
 										wUserLevel2 = "E"
 										### 片フォロワーリストに追加
 										wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_AddUser( wFollowerData[wID] )
