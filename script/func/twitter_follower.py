@@ -411,8 +411,12 @@ class CLS_TwitterFollower():
 				if wARR_DBData['follower']==True :
 					### フォロー者OFF・フォロワーON
 ###					wUserLevel = "D-"
-					if wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G+" :
+###					if wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G+" :
+					if wARR_DBData['level_tag']=="G" :
 						wUserLevel = "H"
+					
+					elif wARR_DBData['level_tag']=="G+" :
+						wUserLevel = "H+"
 					
 					else:
 						wUserLevel = "D-"

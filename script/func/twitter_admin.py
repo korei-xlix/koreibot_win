@@ -357,7 +357,8 @@ class CLS_TwitterAdmin():
 		   ( self.STR_UserAdminInfo['level_tag']=="B" or self.STR_UserAdminInfo['level_tag']=="B+" or \
 		     self.STR_UserAdminInfo['level_tag']=="C" or self.STR_UserAdminInfo['level_tag']=="C+" ) :
 			
-			wUserLevel = "G"
+###			wUserLevel = "G"
+			wUserLevel = "G+"
 		
 		#############################
 		# 片フォロワーか
@@ -367,7 +368,8 @@ class CLS_TwitterAdmin():
 		     gVal.OBJ_Tw_IF.CheckFollowListUser( wID )==True and \
 		     self.STR_UserAdminInfo['level_tag']=="E" :
 			
-			wUserLevel = "H"
+###			wUserLevel = "H"
+			wUserLevel = "H+"
 		
 		#############################
 		# 相互フォロー中 解除か
@@ -386,11 +388,16 @@ class CLS_TwitterAdmin():
 		
 		#############################
 		# 片フォロワー 解除か
+###		elif self.STR_UserAdminInfo['myfollow']==False and \
+###		     self.STR_UserAdminInfo['follower']==True and \
+###		     gVal.OBJ_Tw_IF.CheckMutualListUser( wID )==False and \
+###		     gVal.OBJ_Tw_IF.CheckFollowListUser( wID )==True and \
+###		     self.STR_UserAdminInfo['level_tag']=="H" :
 		elif self.STR_UserAdminInfo['myfollow']==False and \
 		     self.STR_UserAdminInfo['follower']==True and \
 		     gVal.OBJ_Tw_IF.CheckMutualListUser( wID )==False and \
 		     gVal.OBJ_Tw_IF.CheckFollowListUser( wID )==True and \
-		     self.STR_UserAdminInfo['level_tag']=="H" :
+		     ( self.STR_UserAdminInfo['level_tag']=="H" or self.STR_UserAdminInfo['level_tag']=="H+" ) :
 			
 			wUserLevel = "E"
 		

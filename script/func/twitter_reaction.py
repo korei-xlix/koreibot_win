@@ -299,7 +299,8 @@ class CLS_TwitterReaction():
 			# チェック対象のツイート表示
 			wStr = '\n' + "--------------------" + '\n' ;
 			wStr = wStr + "チェック中: " + '\n' ;
-			wStr = wStr + wSubRes['Responce'][wReplyID]['reply_text'] ;
+###			wStr = wStr + wSubRes['Responce'][wReplyID]['reply_text'] ;
+			wStr = wStr + wSubRes['Responce'][wReplyID]['text'] ;
 			CLS_OSIF.sPrn( wStr )
 			
 			wID = str(wSubRes['Responce'][wReplyID]['user']['id'])
@@ -322,7 +323,8 @@ class CLS_TwitterReaction():
 				return wRes
 ###			if wReactionRes['Responce']==True :
 			if wReactionRes['Responce']['Accept']==True :
-				wStr = "〇リプライ検出: " + wUserInfoRes['Responce']['screen_name']
+###				wStr = "〇リプライ検出: " + wUserInfoRes['Responce']['screen_name']
+				wStr = "〇リプライ検出: " + wSubRes['Responce'][wReplyID]['user']['screen_name']
 				CLS_OSIF.sPrn( wStr )
 				
 ###				### リアクション回数+
