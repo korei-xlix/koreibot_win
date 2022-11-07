@@ -254,7 +254,7 @@ class gVal() :
 		"forDeleteCautionTweetSec"	: 172800,			# 警告メッセージを削除する期間  2日 (60x60x24)x2
 		
 		"forTimelineFollowSec"			: 14400,		# タイムラインフォロー チェック期間 4時間  (60x60x4)
-		"TimelineFollowNum"				: 4,			#   フォローする最大人数
+		"TimelineFollowNum"				: 2,			#   フォローする最大人数
 		"TimelineFollowTweetLine"		: 200,			#   ツイート取得ライン数
 		"TimelineFollowTweetLine_Skip"	: 40,			#   ツイート取得ライン 先頭スキップ数
 		"TimelineFollowFavoCheckNum"	: 32,			#   いいね、リツイート、引用リツイートのチェック回数(Limit)

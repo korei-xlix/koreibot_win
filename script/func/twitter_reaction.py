@@ -50,7 +50,8 @@ class CLS_TwitterReaction():
 #####################################################
 # リアクション設定
 #####################################################
-	def __setReactionTweet( self, inUser, inTweet, inFLG_Cnt=True, inFLG_Mention=False ):
+###	def __setReactionTweet( self, inUser, inTweet, inFLG_Cnt=True, inFLG_Mention=False ):
+	def __setReactionTweet( self, inUser, inTweet, inRateTweetID, inFLG_Mention=False ):
 		
 		wID      = str(inUser['id'])
 		wTweetID = str(inTweet['id'])
@@ -76,19 +77,44 @@ class CLS_TwitterReaction():
 			wCell = {
 				"id"			: wID,
 				"screen_name"	: inUser['screen_name'],
-				"cnt"			: 0
+###				"cnt"			: 0
+				"cnt"			: 0,
+				"rtweet_id"		: str( inRateTweetID ),
+				"flg_stop"		: False
 			}
 			self.ARR_ReactionUser.update({ wID : wCell })
 		
 		#############################
-		# メンションではない かつ
-		# Cnt = ON の場合、カウントする
+		# 既にカウント停止中の場合
+		#  =おわり
+		# 枠作成済みで、同処理で過去ツイートへのリアクションだった場合、
+		# 同処理ではカウント停止する
+		#  =過去ツイなのでリアクション扱いにしない
+		else:
+###			if self.ARR_ReactionUser[wID]['rtweet_id']==str( inRateTweetID ) :
+			if self.ARR_ReactionUser[wID]['flg_stop']==True :
+				### 既に停止中
+				return False
+			elif self.ARR_ReactionUser[wID]['rtweet_id']==str( inRateTweetID ) :
+				self.ARR_ReactionUser[wID]['flg_stop'] = True	#カウント停止
+				return False
+		
+###		#############################
+###		# メンションではない かつ
+###		# Cnt = ON の場合、カウントする
+###		if self.ARR_ReactionTweet[wTweetID]['mention']==False and \
+###		   inFLG_Cnt==True :
+###			self.ARR_ReactionUser[wID]['cnt'] += 1
+###			self.VAL_ReactionCnt += 1
+###		else:
+###			return False
+###		
+		#############################
+		# メンションではない かつ カウント停止ではない
 		if self.ARR_ReactionTweet[wTweetID]['mention']==False and \
-		   inFLG_Cnt==True :
+		   self.ARR_ReactionUser[wID]['flg_stop']==False :
 			self.ARR_ReactionUser[wID]['cnt'] += 1
 			self.VAL_ReactionCnt += 1
-		else:
-			return False
 		
 		return True
 
@@ -684,8 +710,10 @@ class CLS_TwitterReaction():
 					gVal.OBJ_L.Log( "B", wRes )
 					return wRes
 				
-				### リアクション情報設定・カウントなし
-				self.__setReactionTweet( inUser, inTweet, inFLG_Cnt=False, inFLG_Mention=inMention )
+###				### リアクション情報設定・カウントなし
+###				self.__setReactionTweet( inUser, inTweet, inFLG_Cnt=False, inFLG_Mention=inMention )
+				### リアクション情報設定
+				self.__setReactionTweet( inUser, inTweet, wARR_DBData['rfavo_id'], inFLG_Mention=inMention )
 			
 			wRes['Result'] = True
 			return wRes
@@ -709,8 +737,10 @@ class CLS_TwitterReaction():
 					gVal.OBJ_L.Log( "B", wRes )
 					return wRes
 				
-				### リアクション情報設定・カウントなし
-				self.__setReactionTweet( inUser, inTweet, inFLG_Cnt=False, inFLG_Mention=inMention )
+###				### リアクション情報設定・カウントなし
+###				self.__setReactionTweet( inUser, inTweet, inFLG_Cnt=False, inFLG_Mention=inMention )
+				### リアクション情報設定
+				self.__setReactionTweet( inUser, inTweet, wARR_DBData['rfavo_id'], inFLG_Mention=inMention )
 			
 ###			wRes['Responce']['Judged'] = True	#判定済み
 			wRes['Result'] = True
@@ -736,8 +766,10 @@ class CLS_TwitterReaction():
 					gVal.OBJ_L.Log( "B", wRes )
 					return wRes
 				
-				### リアクション情報設定・カウントなし
-				self.__setReactionTweet( inUser, inTweet, inFLG_Cnt=False, inFLG_Mention=inMention )
+###				### リアクション情報設定・カウントなし
+###				self.__setReactionTweet( inUser, inTweet, inFLG_Cnt=False, inFLG_Mention=inMention )
+				### リアクション情報設定
+				self.__setReactionTweet( inUser, inTweet, wARR_DBData['rfavo_id'], inFLG_Mention=inMention )
 				
 				### 報告対象の表示と、ログに記録
 				gVal.OBJ_L.Log( "RR", wRes, "●リアクション拒否(ランダム) ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wARR_DBData['level_tag'], inID=wUserID )
@@ -764,8 +796,10 @@ class CLS_TwitterReaction():
 					gVal.OBJ_L.Log( "B", wRes )
 					return wRes
 				
-				### リアクション情報設定・カウントなし
-				self.__setReactionTweet( inUser, inTweet, inFLG_Cnt=False, inFLG_Mention=inMention )
+###				### リアクション情報設定・カウントなし
+###				self.__setReactionTweet( inUser, inTweet, inFLG_Cnt=False, inFLG_Mention=inMention )
+				### リアクション情報設定
+				self.__setReactionTweet( inUser, inTweet, wARR_DBData['rfavo_id'], inFLG_Mention=inMention )
 				
 				### 報告対象の表示と、ログに記録
 				gVal.OBJ_L.Log( "RR", wRes, "●リアクション拒否(古いツイート) ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wARR_DBData['level_tag'], inID=wUserID )
@@ -786,8 +820,10 @@ class CLS_TwitterReaction():
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			
-			### リアクション情報設定・カウントあり
-			self.__setReactionTweet( inUser, inTweet, inFLG_Cnt=True, inFLG_Mention=inMention )
+###			### リアクション情報設定・カウントあり
+###			self.__setReactionTweet( inUser, inTweet, inFLG_Cnt=True, inFLG_Mention=inMention )
+			### リアクション情報設定
+			self.__setReactionTweet( inUser, inTweet, wARR_DBData['rfavo_id'], inFLG_Mention=inMention )
 			
 			#############################
 			# リアクション済みID
@@ -864,6 +900,18 @@ class CLS_TwitterReaction():
 ###			wRes['Responce']['Reaction'] = True	#リアクション済み
 ###			wRes['Responce']['Judged']   = True	#判定済み
 			wRes['Responce']['reReaction'] = True	#お返しリアクション済み
+		
+		#############################
+		# アクションが無効なら、カウントだけ取る（=連ファボとみなす）
+		else :
+###			### リアクション情報設定・カウントあり
+###			self.__setReactionTweet( inUser, inTweet, inFLG_Cnt=True, inFLG_Mention=inMention )
+			### リアクション情報設定
+			wSubRes = self.__setReactionTweet( inUser, inTweet, wARR_DBData['rfavo_id'], inFLG_Mention=inMention )
+			if wSubRes==False :
+				### 過去ツイのためカウント停止
+				wStr = "  同周回リアクション停止中（過去ツイ処理済）: " + wARR_DBData['screen_name']
+				CLS_OSIF.sPrn( wStr )
 		
 		wRes['Result'] = True
 		return wRes
@@ -1043,23 +1091,6 @@ class CLS_TwitterReaction():
 		wStr = wStr + "------------------------------" + '\n'
 		CLS_OSIF.sPrn( wStr )
 		
-###		wStr = ""
-###		if len(self.ARR_Mentions)==0 :
-###			### 情報なしの場合
-###			wStr = "(情報なし)" + '\n'
-###		
-###		else:
-###			### 情報ありの場合
-###			
-###			#############################
-###			# メンション情報の表示
-###			wKeylist = list( self.ARR_Mentions.keys() )
-###			for wID in wKeylist :
-###				wStr = wStr + self.ARR_Mentions[wID]['text'] + '\n'
-###				wStr = wStr + "  users: "
-###				wKeylist2 = list( self.ARR_Mentions[wID]['users'].keys() )
-###				for wUserID in wKeylist2 :
-###					wStr = wStr + self.ARR_Mentions[wID]['users'][wUserID]['screen_name'] + " "
 		wStr = ""
 		wKeylist = list( self.ARR_ReactionTweet.keys() )
 		wFLG_Mention = False
@@ -1102,16 +1133,9 @@ class CLS_TwitterReaction():
 			
 			### リアクションがなければ
 			###  0 を設定しておく
-###			if wID not in self.ARR_Reaction :
-###				wCell = {
-###					"user"	: wARR_RateUserB[wID],
-###					"cnt"	: 0
-###				}
-###				self.ARR_Reaction.update({ wID : wCell })
 			if wID not in self.ARR_ReactionUser :
 				wCell = {
 					"id"			: wID,
-###					"screen_name"	: inUser['screen_name'],
 					"screen_name"	: wARR_RateUserB[wID]['screen_name'],
 					"cnt"			: 0
 				}
@@ -1125,7 +1149,6 @@ class CLS_TwitterReaction():
 		wStr = wStr + "  新規受信数: " + str( self.VAL_ReactionCnt ) + " .件" + '\n'
 		CLS_OSIF.sPrn( wStr )
 		
-###		wStr = ""
 		if len(self.ARR_ReactionUser)==0 :
 			### リアクションがなければ、ここで終わり
 			wStr = "(情報なし)" + '\n'
@@ -1134,15 +1157,12 @@ class CLS_TwitterReaction():
 			wRes['Result'] = True
 			return wRes
 		
-		wStr = ""
 		#############################
 		# 非絡みユーザのユーザレベル変更
-###		wKeylist = list( self.ARR_Reaction.keys() )
 		wKeylist = list( self.ARR_ReactionUser.keys() )
 		for wID in wKeylist :
 			#############################
 			# DBからいいね情報を取得する(1個)
-###			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( self.ARR_Reaction[wID]['user'], inFLG_New=False )
 			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( self.ARR_ReactionUser[wID], inFLG_New=False )
 			if wDBRes['Result']!=True :
 				###失敗
@@ -1159,24 +1179,7 @@ class CLS_TwitterReaction():
 			if gVal.OBJ_Tw_IF.CheckSubscribeListUser( wID )!=False :
 				continue
 			
-###			#############################
-###			# 連ふぁぼのカウント処理
-###			if self.ARR_Reaction[wID]['cnt']>=1 :
-###				### リアクションありの場合
-###				###   強制回数以上は、リアクションcnt分カウント
-###				###   その他は +1 カウント
-###				if self.ARR_Reaction[wID]['cnt']>=gVal.DEF_STR_TLNUM['renFavoForceCnt'] :
-###					wCnt = self.ARR_Reaction[wID]['cnt'] + 1
-###				else:
-###					wCnt = wARR_DBData['renfavo_cnt'] + 1
-###			else:
-###				### リアクションなしの場合
-###				###   非絡み設定中の場合は -1 カウント
-###				###   その他は 0 カウント
-###				if wARR_DBData['renfavo_cnt']>=1 :
-###					wCnt = wARR_DBData['renfavo_cnt'] - 1
-###				else:
-###					wCnt = 0
+			wStr = ""
 			#############################
 			# 連ふぁぼのカウント処理
 			if self.ARR_ReactionUser[wID]['cnt']>=1 :
@@ -1185,15 +1188,18 @@ class CLS_TwitterReaction():
 				###   その他は +1 カウント
 				if self.ARR_ReactionUser[wID]['cnt']>=gVal.DEF_STR_TLNUM['renFavoForceCnt'] :
 					wCnt = self.ARR_ReactionUser[wID]['cnt'] + 1
+					wStr = "  ◇◆UP " + self.ARR_ReactionUser[wID]['screen_name'] + " cnt=" + str(wCnt)
 				else:
 					wCnt = wARR_DBData['renfavo_cnt'] + 1
+					wStr = "  ◇UP   " + self.ARR_ReactionUser[wID]['screen_name'] + " cnt=" + str(wCnt)
+###				
+###				wStr = "  ◇UP   " + self.ARR_ReactionUser[wID]['screen_name'] + " cnt=" + str(wCnt)
+			
 			else:
 				### リアクションなしの場合
 				###   非絡み設定中の場合は -1 カウント
 				###   その他は 0 カウント
 				if wARR_DBData['renfavo_cnt']>=1 :
-###					wCnt = wARR_DBData['renfavo_cnt'] - 1
-###					
 					wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData['rfavo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['forRenFavoSec'] )
 					if wGetLag['Result']!=True :
 						wRes['Reason'] = "sTimeLag failed(1)"
@@ -1207,6 +1213,16 @@ class CLS_TwitterReaction():
 				
 				else:
 					wCnt = 0
+				
+				if wCnt==0 :
+					wStr = "  ○REL  " + self.ARR_ReactionUser[wID]['screen_name'] + " cnt=" + str(wCnt)
+				else:
+					wStr = "  ◆DOWN " + self.ARR_ReactionUser[wID]['screen_name'] + " cnt=" + str(wCnt)
+			
+			#############################
+			# ユーザの表示
+			if wStr!="" :
+				CLS_OSIF.sPrn( wStr )
 			
 			wUserLevel = None
 			if wCnt>=gVal.DEF_STR_TLNUM['renFavoOnCnt'] :

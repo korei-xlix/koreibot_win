@@ -439,8 +439,6 @@ class CLS_TwitterMain():
 			#############################
 			# レベル未設定の場合、やり直す
 			elif wARR_DBData['level_tag']==gVal.DEF_NOTEXT :
-#				wARR_DBData['myfollow'] = False
-#				wARR_DBData['follower'] = False
 				wMyFollow  = False
 				wFollower  = False
 				wFLG_Force = True
@@ -472,9 +470,34 @@ class CLS_TwitterMain():
 				
 				wARR_DBData = wSubRes['Responce']['Data']
 				
-				wStr = "◆フォロー状態の再設定"
+				wStr = "◆フォロー状態の再設定(1)"
 				### ユーザ記録
 				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'], inID=wID )
+			
+			#############################
+			# リスト追加しそこねチェック
+			#   相互フォローリスト
+			if ( wARR_DBData['level_tag']=="B+" or wARR_DBData['level_tag']=="B" or \
+			     wARR_DBData['level_tag']=="C+" or wARR_DBData['level_tag']=="C" or \
+			     wARR_DBData['level_tag']=="D+" or wARR_DBData['level_tag']=="D" ) and \
+			   gVal.OBJ_Tw_IF.CheckSubscribeListUser( wID )==False and \
+			   gVal.OBJ_Tw_IF.CheckMutualListUser( wID )==False and \
+			   wFollowerData[wID]['myfollow']==True :
+				
+				### 相互フォローリストに追加
+				wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( wFollowerData[wID] )
+			
+			#############################
+			# リスト追加しそこねチェック
+			#   片フォロワーリスト
+			elif wARR_DBData['level_tag']=="E" and \
+			     gVal.OBJ_Tw_IF.CheckSubscribeListUser( wID )==False and \
+			     gVal.OBJ_Tw_IF.CheckFollowListUser( wID )==False and \
+			     wFollowerData[wID]['myfollow']==False and \
+			     wFollowerData[wID]['follower']==True :
+				
+				### 片フォロワーリストに追加
+				wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_AddUser( wFollowerData[wID] )
 			
 			#############################
 			# フォロー者チェック

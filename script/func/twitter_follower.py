@@ -912,11 +912,13 @@ class CLS_TwitterFollower():
 				if wSubRes['Result']!=True :
 					wRes['Reason'] = "AutoFollow is failed"
 					gVal.OBJ_L.Log( "B", wRes )
-					return wRes
+###					return wRes
+					break	#失敗したら、ループ終わって処理を終わる
 				
 				if wSubRes['Responce']==False :
 					### 未フォロー
-					continue
+###					continue
+					break
 				
 				wFollowNum += 1	#フォローしたのでカウント
 		
