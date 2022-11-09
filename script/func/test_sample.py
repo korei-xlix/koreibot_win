@@ -110,13 +110,13 @@ class CLS_Test():
 		wRes['Class'] = "CLS_TwitterMain"
 		wRes['Func']  = "TestRun"
 		
-#		#############################
-#		# Twitter情報取得
-#		wFavoRes = self.OBJ_Parent.GetTwitterInfo()
-#		if wFavoRes['Result']!=True :
-#			wRes['Reason'] = "GetTwitterInfo is failed"
-#			gVal.OBJ_L.Log( "B", wRes )
-#			return wRes
+		#############################
+		# Twitter情報取得
+		wFavoRes = self.OBJ_Parent.GetTwitterInfo()
+		if wFavoRes['Result']!=True :
+			wRes['Reason'] = "GetTwitterInfo is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
 		
 #		#############################
 #		# いいね解除（●フル自動監視）
@@ -145,13 +145,30 @@ class CLS_Test():
 
 ###		wTweetRes = gVal.OBJ_Tw_IF.GetMyMentionLookup()
 
-		wTweetRes = gVal.OBJ_Tw_IF.GetUserFavolist( "1449704371881603075", 1 )
+#		wTweetRes = gVal.OBJ_Tw_IF.GetUserFavolist( "1449704371881603075", 1 )
 ##		print(str( wTweetRes['Responce'] ))
 ##		wKeylist = list( wTweetRes['Responce'].keys() )
 ##		for wID in wTweetRes['Responce'] :
-		for wROW in wTweetRes['Responce'] :
-			print( str( wROW ) + '\n' )
-			print( "----------" + '\n' )
+#		for wROW in wTweetRes['Responce'] :
+#			print( str( wROW ) + '\n' )
+#			print( "----------" + '\n' )
+
+
+#		wStr = "@korei_xlix へろーーー"
+#
+#		wIndex = wStr.find(" ")
+#
+#		print(wStr[1:wIndex] + ":::" )
+#		### korei_xlix:::
+
+
+		wSubRes = self.OBJ_Parent.OBJ_TwitterReaction.ReactionCheck()
+
+
+		wSubRes = self.OBJ_Parent.OBJ_TwitterReaction.VIP_ReactionCheck()
+
+
+		wSubRes = self.OBJ_Parent.OBJ_TwitterReaction.ReactionResult()
 
 
 

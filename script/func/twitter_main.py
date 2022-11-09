@@ -2231,6 +2231,13 @@ class CLS_TwitterMain():
 		
 		return wARR_List
 
+	#####################################################
+	def GetVIPUserInfo(self, inUserID ):
+		wUserID = str(inUserID)
+		if wUserID not in gVal.ARR_NotReactionUser :
+			return None
+		return gVal.ARR_NotReactionUser[wUserID]
+
 
 
 #####################################################

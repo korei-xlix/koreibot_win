@@ -211,20 +211,20 @@ class CLS_TwitterFollower():
 				wID = str(wTweet['id'])
 				
 				if wTweet['text'].find( wTrendHeader_Pattern )==0 :
-					###日時の変換
-					wTime = CLS_TIME.sTTchg( wRes, "(3)", wTweet['created_at'] )
-					if wTime['Result']!=True :
-						continue
-					wTweet['created_at'] = wTime['TimeDate']
-					
-					###ユーザ単位のリアクションチェック
-###					wReactionRes = self.OBJ_Parent.ReactionUserCheck( wTweet['user'], wTweet )
-					wReactionRes = self.OBJ_Parent.OBJ_TwitterReaction.ReactionUserCheck( wTweet['user'], wTweet )
-					if wReactionRes['Result']!=True :
-						wRes['Reason'] = "Twitter Error(ReactionUserCheck 4): Tweet ID: " + str(wTweet['id'])
-						gVal.OBJ_L.Log( "B", wRes )
-						continue
-					
+###					###日時の変換
+###					wTime = CLS_TIME.sTTchg( wRes, "(3)", wTweet['created_at'] )
+###					if wTime['Result']!=True :
+###						continue
+###					wTweet['created_at'] = wTime['TimeDate']
+###					
+###					###ユーザ単位のリアクションチェック
+####				wReactionRes = self.OBJ_Parent.ReactionUserCheck( wTweet['user'], wTweet )
+###					wReactionRes = self.OBJ_Parent.OBJ_TwitterReaction.ReactionUserCheck( wTweet['user'], wTweet )
+###					if wReactionRes['Result']!=True :
+###						wRes['Reason'] = "Twitter Error(ReactionUserCheck 4): Tweet ID: " + str(wTweet['id'])
+###						gVal.OBJ_L.Log( "B", wRes )
+###						continue
+###					
 					wTweetRes = gVal.OBJ_Tw_IF.DelTweet( wID )
 					if wTweetRes['Result']!=True :
 						wRes['Reason'] = "Twitter API Error(2): " + wTweetRes['Reason'] + " id=" + str(wID)
