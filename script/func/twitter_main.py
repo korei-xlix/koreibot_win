@@ -2174,6 +2174,9 @@ class CLS_TwitterMain():
 		if wUserID in gVal.ARR_NotReactionUser :
 			if gVal.ARR_NotReactionUser[wUserID]['vip']==True :
 				### VIPは除外する
+				wStr = "VIPのため除外: screen_name=" + str(inData['screen_name'])
+				CLS_OSIF.sPrn( wStr )
+				
 				wRes['Result'] = True
 				return wRes
 			

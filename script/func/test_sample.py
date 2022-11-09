@@ -162,7 +162,7 @@ class CLS_Test():
 #		### korei_xlix:::
 
 
-		wSubRes = self.OBJ_Parent.OBJ_TwitterReaction.ReactionCheck()
+#		wSubRes = self.OBJ_Parent.OBJ_TwitterReaction.ReactionCheck()
 
 
 		wSubRes = self.OBJ_Parent.OBJ_TwitterReaction.VIP_ReactionCheck()
