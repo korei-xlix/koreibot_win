@@ -2883,7 +2883,7 @@ class CLS_TwitterAdmin():
 		     inData['follower']==True and \
 		     inData['multi_list']==False and \
 		     inData['follow_list']==True and \
-		     inData['level_tag']=="H" :
+		     ( inData['level_tag']=="H" or inData['level_tag']=="H+" ) :
 			
 			wUserLevel = "E"
 			wFLG_Rel = True
@@ -2892,6 +2892,7 @@ class CLS_TwitterAdmin():
 		# 制御不能
 		else:
 			CLS_OSIF.sPrn( "そのユーザは変更できません" + '\n' )
+			wRes['Result'] = True
 			return wRes
 		
 		#############################
