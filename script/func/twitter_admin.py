@@ -2048,97 +2048,6 @@ class CLS_TwitterAdmin():
 
 
 #####################################################
-# 警告ツイート削除
-#####################################################
-###	def RemoveCautionTweet(self):
-###		#############################
-###		# 応答形式の取得
-###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-###		wRes = CLS_OSIF.sGet_Resp()
-###		wRes['Class'] = "CLS_TwitterMain"
-###		wRes['Func']  = "RemoveCautionTweet"
-###		
-###		#############################
-###		# 期間が過ぎた警告ツイートを削除していく
-###		wKeylist = list( gVal.ARR_CautionTweet.keys() )
-###		for wID in wKeylist :
-###			wID = str(wID)
-###			
-###			#############################
-###			# 規定の期間を過ぎたか
-###			wGetLag = CLS_OSIF.sTimeLag( str( gVal.ARR_CautionTweet[wID]['regdate'] ), inThreshold=gVal.DEF_STR_TLNUM['forDeleteCautionTweetSec'] )
-###			if wGetLag['Result']!=True :
-###				wRes['Reason'] = "sTimeLag failed"
-###				gVal.OBJ_L.Log( "B", wRes )
-###				continue
-###			if wGetLag['Beyond']==False :
-###				### 規定内 =許容内の日数なのでスキップ
-###				continue
-###			
-###			#############################
-###			# 警告ユーザが非フォロワーの場合、
-###			# かつ 当方リストを保持している場合
-###			#   追い出す
-###			if gVal.OBJ_Tw_IF.CheckFollower( wID )==False :
-###				#############################
-###				# リストの取得
-###				wGetListsRes = gVal.OBJ_Tw_IF.GetLists( gVal.ARR_CautionTweet[wID]['screen_name'] )
-###				if wGetListsRes['Result']!=True :
-###					wRes['Reason'] = "Twitter API Error(31): " + wGetListsRes['Reason']
-###					gVal.OBJ_L.Log( "B", wRes )
-###					return wRes
-###				wARR_Lists = wGetListsRes['Responce']
-###				
-###				#############################
-###				# 自分のリストを登録しているか
-###				wFLG_Me = False
-###				wKeylist = list( wARR_Lists.keys() )
-###				for wKey in wKeylist :
-###					### 自分のリスト以外はスキップ
-###					if wARR_Lists[wKey]['me']==True :
-###						wFLG_Me = True
-###						break
-###				if wFLG_Me==True :
-###					#############################
-###					# 自分のリストを保有したままなので、追い出す
-###					wBlockRes = gVal.OBJ_Tw_IF.BlockRemove( wID )
-###					if wBlockRes['Result']!=True :
-###						wRes['Reason'] = "Twitter API Error(BlockRemove): " + wBlockRes['Reason'] + " screen_name=" + gVal.ARR_CautionTweet[wID]['screen_name']
-###						gVal.OBJ_L.Log( "B", wRes )
-###						continue
-###					
-###					### ログに記録
-###					gVal.OBJ_L.Log( "U", wRes, "▼非フォロワーのリスト登録者 追い出し: screen_name=" + gVal.ARR_CautionTweet[wID]['screen_name'] )
-###			
-###			#############################
-###			# Twitterにツイートしていたら、ツイートを削除
-###			if gVal.ARR_CautionTweet[wID]['tweet_id']!="(none)" :
-###				wTweetRes = gVal.OBJ_Tw_IF.DelTweet( gVal.ARR_CautionTweet[wID]['tweet_id'] )
-###				if wTweetRes['Result']!=True :
-###					wRes['Reason'] = "Twitter API Error: DelTweet" + wTweetRes['Reason'] + " screen_name=" + gVal.ARR_CautionTweet[wID]['screen_name'] + " tweetid=" + gVal.ARR_CautionTweet[wID]['tweet_id']
-###					gVal.OBJ_L.Log( "B", wRes )
-###			
-###			#############################
-###			# ログに記録
-###			gVal.OBJ_L.Log( "T", wRes, "●警告ツイート削除: id=" + gVal.ARR_CautionTweet[wID]['tweet_id'] + " screen_name=" + gVal.ARR_CautionTweet[wID]['screen_name'] )
-###			
-###			#############################
-###			# DBに反映
-###			wSubRes = gVal.OBJ_DB_IF.DeleteCautionTweet( gVal.ARR_CautionTweet[wID] )
-###			if wSubRes['Result']!=True :
-###				###失敗
-###				wRes['Reason'] = "DeleteCautionTweet is failed"
-###				gVal.OBJ_L.Log( "B", wRes )
-###				continue
-###		
-###		#############################
-###		# 完了
-###		wRes['Result'] = True
-###		return wRes
-###
-###
-
-#####################################################
 # 警告ユーザ追い出し
 #####################################################
 	def RemoveCautionUser( self, inListNum=-1, inFLR_Recheck=False ):
@@ -2194,29 +2103,27 @@ class CLS_TwitterAdmin():
 					wUserID = gVal.ARR_CautionTweet[wListNum]['id']
 					#############################
 					# リストの取得
-###					wGetListsRes = gVal.OBJ_Tw_IF.GetLists( gVal.ARR_CautionTweet[wUserID]['screen_name'] )
 					wGetListsRes = gVal.OBJ_Tw_IF.GetLists( gVal.ARR_CautionTweet[wListNum]['screen_name'] )
 					if wGetListsRes['Result']!=True :
-###						wRes['Reason'] = "Twitter API Error(31): " + wGetListsRes['Reason'] + " screen_name=" + gVal.ARR_CautionTweet[wUserID]['screen_name']
-						wRes['Reason'] = "Twitter API Error(31): " + wGetListsRes['Reason'] + " screen_name=" + gVal.ARR_CautionTweet[wListNum]['screen_name']
-						gVal.OBJ_L.Log( "D", wRes )
-						
-###						wStr = "●Twitterエラーのためスキップ: screen_name=" + gVal.ARR_CautionTweet[wUserID]['screen_name']
-						wStr = "●Twitterエラーのためスキップ: screen_name=" + gVal.ARR_CautionTweet[wListNum]['screen_name']
-						CLS_OSIF.sPrn( wStr )
-						continue
+###						wRes['Reason'] = "Twitter API Error(31): " + wGetListsRes['Reason'] + " screen_name=" + gVal.ARR_CautionTweet[wListNum]['screen_name']
+###						gVal.OBJ_L.Log( "D", wRes )
+###						
+###						wStr = "●Twitterエラーのためスキップ: screen_name=" + gVal.ARR_CautionTweet[wListNum]['screen_name']
+###						CLS_OSIF.sPrn( wStr )
+###						continue
+						### エラーでリスト取得できなかったら正常処理できないので
+						### 警告は保持するため、処理を抜ける
+						wRes['Reason'] = "Twitter API Error(31): Critical Error: " + wGetListsRes['Reason'] + " screen_name=" + gVal.ARR_CautionTweet[wListNum]['screen_name']
+						gVal.OBJ_L.Log( "A", wRes )
+						return wRes
 					wARR_Lists = wGetListsRes['Responce']
 					
 					#############################
 					# 自分のリストを登録しているか
-###					wFLG_Me = False
 					wFLG_Caution = False
 					wKeylist = list( wARR_Lists.keys() )
 					for wKey in wKeylist :
 						### 自分のリスト以外はスキップ
-###						if wARR_Lists[wKey]['me']==True :
-###							wFLG_Me = True
-###							break
 						if wARR_Lists[wKey]['me']!=True :
 							continue
 						if wARR_IndListID==wARR_Lists[wKey]['id'] :
@@ -2225,20 +2132,13 @@ class CLS_TwitterAdmin():
 						if gVal.OBJ_Tw_IF.CheckFollower( wUserID )==False :
 							wFLG_Caution = True		# 非フォロワーのリスト登録中
 							break
-###					
-###					if wFLG_Me==True :
-###						### まだ警告状態ならスキップする
-###						wStr = "●まだ警告状態のためスキップ: screen_name=" + gVal.ARR_CautionTweet[wUserID]['screen_name']
-###						CLS_OSIF.sPrn( wStr )
-###						continue
-###
+				
 				#############################
 				# 警告状態でない場合
 				#  =追い出しモードOFFで削除
 				if wFLG_Caution==False :
 					wSubRes = self.__removeCautionUser( inListNum=wListNum, inFLG_Remove=False )
 					if wSubRes['Result']!=True :
-###						wRes['Reason'] = "__removeCautionUser is failed" + wSubRes['Reason'] + " screen_name=" + gVal.ARR_CautionTweet[wUserID]['screen_name']
 						wRes['Reason'] = "__removeCautionUser is failed" + wSubRes['Reason'] + " screen_name=" + gVal.ARR_CautionTweet[wListNum]['screen_name']
 						gVal.OBJ_L.Log( "B", wRes )
 				
@@ -2247,7 +2147,6 @@ class CLS_TwitterAdmin():
 				else :
 					#############################
 					# 規定の期間を過ぎたか
-###					wGetLag = CLS_OSIF.sTimeLag( str( gVal.ARR_CautionTweet[wUserID]['regdate'] ), inThreshold=gVal.DEF_STR_TLNUM['forDeleteCautionTweetSec'] )
 					wGetLag = CLS_OSIF.sTimeLag( str( gVal.ARR_CautionTweet[wListNum]['regdate'] ), inThreshold=gVal.DEF_STR_TLNUM['forDeleteCautionTweetSec'] )
 					if wGetLag['Result']!=True :
 						wRes['Reason'] = "sTimeLag failed"
@@ -2257,7 +2156,6 @@ class CLS_TwitterAdmin():
 						### 規定内 =許容内の日数なのでスキップ
 						
 						### まだ警告状態ならスキップする
-###						wStr = "●警告状態中(期間内): screen_name=" + gVal.ARR_CautionTweet[wUserID]['screen_name']
 						wStr = "●警告状態中(期間内): screen_name=" + gVal.ARR_CautionTweet[wListNum]['screen_name']
 						CLS_OSIF.sPrn( wStr )
 						continue
@@ -2265,7 +2163,6 @@ class CLS_TwitterAdmin():
 						### 規定外
 						if gVal.OBJ_Tw_IF.CheckMyFollow( wUserID )==True :
 							### フォロー者は自動で追い出さない
-###							wStr = "●警告状態中(期間外フォロー者): screen_name=" + gVal.ARR_CautionTweet[wUserID]['screen_name']
 							wStr = "●警告状態中(期間外フォロー者): screen_name=" + gVal.ARR_CautionTweet[wListNum]['screen_name']
 							CLS_OSIF.sPrn( wStr )
 							continue
@@ -2274,18 +2171,9 @@ class CLS_TwitterAdmin():
 							# 追い出し
 							wSubRes = self.__removeCautionUser( inListNum=wListNum )
 							if wSubRes['Result']!=True :
-###								wRes['Reason'] = "__removeCautionUser is failed" + wSubRes['Reason'] + " screen_name=" + gVal.ARR_CautionTweet[wUserID]['screen_name']
 								wRes['Reason'] = "__removeCautionUser is failed" + wSubRes['Reason'] + " screen_name=" + gVal.ARR_CautionTweet[wListNum]['screen_name']
 								gVal.OBJ_L.Log( "B", wRes )
 				
-###				#############################
-###				# 追い出し
-###				wSubRes = self.__removeCautionUser( inListNum=wListNum )
-###				if wSubRes['Result']!=True :
-###					wRes['Reason'] = "__removeCautionUser is failed" + wSubRes['Reason'] + " screen_name=" + gVal.ARR_CautionTweet[wUserID]['screen_name']
-###					gVal.OBJ_L.Log( "B", wRes )
-###					return wRes
-###				
 				wListCnt += 1
 				### まだ処理するデータがあるなら
 				###   約10秒遅延待
@@ -2298,7 +2186,6 @@ class CLS_TwitterAdmin():
 		return wRes
 
 	#####################################################
-###	def __removeCautionUser( self, inListNum=-1 ):
 	def __removeCautionUser( self, inListNum=-1, inFLG_Remove=True ):
 		#############################
 		# 応答形式の取得
@@ -2307,7 +2194,6 @@ class CLS_TwitterAdmin():
 		wRes['Class'] = "CLS_TwitterMain"
 		wRes['Func']  = "__removeCautionUser"
 		
-###		wUserID = self.ARR_CautionList[inListNum]['id']
 		wUserID = gVal.ARR_CautionTweet[inListNum]['id']
 		
 		#############################
@@ -2315,7 +2201,6 @@ class CLS_TwitterAdmin():
 		if inFLG_Remove==True :
 			#############################
 			# 追い出し中表示
-###			wStr = "追い出し処理中... : screen_name=" + gVal.ARR_CautionTweet[wUserID]['screen_name']
 			wStr = "追い出し処理中... : screen_name=" + gVal.ARR_CautionTweet[inListNum]['screen_name']
 			CLS_OSIF.sPrn( wStr )
 			
@@ -2323,13 +2208,10 @@ class CLS_TwitterAdmin():
 			# 追い出す
 			wBlockRes = gVal.OBJ_Tw_IF.BlockRemove( wUserID )
 			if wBlockRes['Result']!=True :
-###				wRes['Reason'] = "Twitter API Error(BlockRemove): " + wBlockRes['Reason'] + " screen_name=" + gVal.ARR_CautionTweet[wUserID]['screen_name']
 				wRes['Reason'] = "Twitter API Error(BlockRemove): " + wBlockRes['Reason'] + " screen_name=" + gVal.ARR_CautionTweet[inListNum]['screen_name']
 				return wRes
 			
 			### ログに記録
-###			gVal.OBJ_L.Log( "U", wRes, "▼リスト登録者 追い出し(手動): screen_name=" + gVal.ARR_CautionTweet[wUserID]['screen_name'] )
-###			gVal.OBJ_L.Log( "U", wRes, "▼リスト登録者 追い出し(手動): screen_name=" + gVal.ARR_CautionTweet[inListNum]['screen_name'] )
 			gVal.OBJ_L.Log( "RC", wRes, "▼リスト登録者 追い出し(手動): screen_name=" + gVal.ARR_CautionTweet[inListNum]['screen_name'], inID=wUserID )
 			
 			### トラヒック記録（フォロワー減少）
@@ -2341,30 +2223,18 @@ class CLS_TwitterAdmin():
 		
 		#############################
 		# Twitterにツイートしていたら、ツイートを削除
-###		if gVal.ARR_CautionTweet[wUserID]['tweet_id']!="(none)" :
-###			wTweetRes = gVal.OBJ_Tw_IF.DelTweet( gVal.ARR_CautionTweet[wUserID]['tweet_id'] )
 		if gVal.ARR_CautionTweet[inListNum]['tweet_id']!="(none)" :
 			wTweetRes = gVal.OBJ_Tw_IF.DelTweet( gVal.ARR_CautionTweet[inListNum]['tweet_id'] )
 			if wTweetRes['Result']!=True :
-###				wRes['Reason'] = "Twitter API Error: DelTweet" + wTweetRes['Reason'] + " screen_name=" + gVal.ARR_CautionTweet[wUserID]['screen_name'] + " tweetid=" + gVal.ARR_CautionTweet[wUserID]['tweet_id']
 				wRes['Reason'] = "Twitter API Error: DelTweet" + wTweetRes['Reason'] + " screen_name=" + gVal.ARR_CautionTweet[inListNum]['screen_name'] + " tweetid=" + gVal.ARR_CautionTweet[inListNum]['tweet_id']
-###				return wRes
 		
 		#############################
 		# ログに記録
-###		gVal.OBJ_L.Log( "T", wRes, "●警告ツイート削除: id=" + gVal.ARR_CautionTweet[wUserID]['tweet_id'] + " screen_name=" + gVal.ARR_CautionTweet[wUserID]['screen_name'] )
-		gVal.OBJ_L.Log( "T", wRes, "●警告ツイート削除: id=" + gVal.ARR_CautionTweet[inListNum]['tweet_id'] + " screen_name=" + gVal.ARR_CautionTweet[inListNum]['screen_name'] )
+###		gVal.OBJ_L.Log( "T", wRes, "●警告ツイート削除: id=" + gVal.ARR_CautionTweet[inListNum]['tweet_id'] + " screen_name=" + gVal.ARR_CautionTweet[inListNum]['screen_name'] )
+		gVal.OBJ_L.Log( "RC", wRes, "〇警告解除: screen_name=" + gVal.ARR_CautionTweet[inListNum]['screen_name'], inID=wUserID )
 		
-###		### トラヒック記録（フォロワー減少）
-###		CLS_Traffic.sP( "d_follower" )
-###		
-###		### ユーザレベル変更
-###		wUserLevel = "L"
-###		wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
-###		
 		#############################
 		# DBに反映
-###		wSubRes = gVal.OBJ_DB_IF.DeleteCautionTweet( gVal.ARR_CautionTweet[wUserID] )
 		wSubRes = gVal.OBJ_DB_IF.DeleteCautionTweet( inListNum )
 		if wSubRes['Result']!=True :
 			###失敗

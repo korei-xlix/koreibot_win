@@ -274,7 +274,7 @@ class gVal() :
 #############################
 # 連ファボ スコア
 	DEF_STR_REN_SCORE = {
-		"NoFollowScore"		: 8,			# 非絡みになるスコア
+		"NoFollowScore"		: 12,			# 非絡みになるスコア
 		
 		"Score_Normal"		: 1,			# 通常ツイート ←いいね
 		"Score_Retweet"		: 5,			# リツイート
