@@ -1164,7 +1164,8 @@ class CLS_TwitterMain():
 ###			elif gVal.STR_UserInfo['AutoSeq']==7 :
 			elif gVal.STR_UserInfo['AutoSeq']==5 :
 ###				wSubRes = self.OBJ_TwitterFollower.ReactionCheck( inFLG_Short=wFLG_Short )
-				wSubRes = self.OBJ_TwitterReaction.ReactionCheck( inFLG_Short=wFLG_Short )
+###				wSubRes = self.OBJ_TwitterReaction.ReactionCheck( inFLG_Short=wFLG_Short )
+				wSubRes = self.OBJ_TwitterReaction.ReactionCheck( inFLG_Short=False )
 				if wSubRes['Result']!=True :
 					wRes['Reason'] = "ReactionCheck"
 					gVal.OBJ_L.Log( "B", wRes )
