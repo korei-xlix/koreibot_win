@@ -163,13 +163,11 @@ class CLS_Test():
 
 
 #		wSubRes = self.OBJ_Parent.OBJ_TwitterReaction.ReactionCheck()
+#		wSubRes = self.OBJ_Parent.OBJ_TwitterReaction.VIP_ReactionCheck()
+#		wSubRes = self.OBJ_Parent.OBJ_TwitterReaction.ReactionResult()
 
 
-		wSubRes = self.OBJ_Parent.OBJ_TwitterReaction.VIP_ReactionCheck()
-
-
-		wSubRes = self.OBJ_Parent.OBJ_TwitterReaction.ReactionResult()
-
+		wSubRes = self.OBJ_Parent.OBJ_TwitterAdmin.RemoveCautionUser( inFLR_Recheck=True )
 
 
 		#############################

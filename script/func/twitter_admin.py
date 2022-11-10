@@ -2126,7 +2126,8 @@ class CLS_TwitterAdmin():
 						### 自分のリスト以外はスキップ
 						if wARR_Lists[wKey]['me']!=True :
 							continue
-						if wARR_IndListID==wARR_Lists[wKey]['id'] :
+###						if wARR_IndListID==wARR_Lists[wKey]['id'] :
+						if str(wARR_Lists[wKey]['id']) in wARR_IndListID :
 							wFLG_Caution = True		# 警告リストまだ登録中
 							break
 						if gVal.OBJ_Tw_IF.CheckFollower( wUserID )==False :
