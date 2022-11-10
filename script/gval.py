@@ -201,7 +201,6 @@ class gVal() :
 ###		"forFollowerFavoNonFollowerSec"		: 259200,	#   非絡みユーザの いいね実施間隔                  3日  (60x60x24)x3
 		"forFollowerFavoNonFollowerSec"		: 432000,	#   非絡みユーザの いいね実施間隔                  5日  (60x60x24)x5
 		"forFollowerFavoNonFollowerCnt"		: 5,		#   非絡みユーザのいいね ランダム実施値 パーセンテージ (1-100)   5％で実施
-		"NonFollowerScore"					: 5,		#   非絡みユーザ  スコア
 		
 														# 自動いいね
 		"forAutoFavoTweetSec"				: 86400,	#   対象ツイート期間       1日  60x60x24
@@ -270,6 +269,18 @@ class gVal() :
 		"logShortLen"		: 100,						# ログ表示 ショートモード
 		
 		"(dummy)"			: ""
+	}
+
+#############################
+# 連ファボ スコア
+	DEF_STR_REN_SCORE = {
+		"NoFollowScore"		: 8,			# 非絡みになるスコア
+		
+		"Score_Normal"		: 1,			# 通常ツイート ←いいね
+		"Score_Retweet"		: 5,			# リツイート
+		"Score_Quoted"		: 5,			# 引用リツイート
+		"Score_Reply"		: 8,			# リプライ（他者）
+		"Score_Question"	: 8				# 質問 ←いいね
 	}
 
 #############################

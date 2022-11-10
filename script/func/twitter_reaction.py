@@ -163,24 +163,29 @@ class CLS_TwitterReaction():
 		### 通常ツイート ←いいね　+1
 		if self.ARR_ReactionTweet[wTweetID]['type']=="normal" and \
 		   inActionType=="favo" :
-			self.ARR_ReactionUser[wID]['score'] += 1
+###			self.ARR_ReactionUser[wID]['score'] += 1
+			self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Normal']
 		
 		### リツイート　+5
 		elif self.ARR_ReactionTweet[wTweetID]['type']=="retweet" :
-			self.ARR_ReactionUser[wID]['score'] += 5
+###			self.ARR_ReactionUser[wID]['score'] += 5
+			self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Retweet']
 		
 		### 引用リツイート　+5
 		elif self.ARR_ReactionTweet[wTweetID]['type']=="quoted" :
-			self.ARR_ReactionUser[wID]['score'] += 5
+###			self.ARR_ReactionUser[wID]['score'] += 5
+			self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Quoted']
 		
 		### リプライ（他者）　+5
 		elif self.ARR_ReactionTweet[wTweetID]['type']=="other_reply" :
-			self.ARR_ReactionUser[wID]['score'] += 5
+###			self.ARR_ReactionUser[wID]['score'] += 5
+			self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Reply']
 		
 		### 質問 ←いいね　+5
 		elif self.ARR_ReactionTweet[wTweetID]['type']=="question" and \
 		   inActionType=="favo" :
-			self.ARR_ReactionUser[wID]['score'] += 5
+###			self.ARR_ReactionUser[wID]['score'] += 5
+			self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Question']
 		
 		#############################
 		# 正常
@@ -1430,7 +1435,8 @@ class CLS_TwitterReaction():
 					wCnt = 0
 			
 ###			elif self.ARR_ReactionUser[wID]['score']>=20 :
-			elif self.ARR_ReactionUser[wID]['score']>=gVal.DEF_STR_TLNUM['NonFollowerScore'] :
+###			elif self.ARR_ReactionUser[wID]['score']>=gVal.DEF_STR_TLNUM['NonFollowerScore'] :
+			elif self.ARR_ReactionUser[wID]['score']>=gVal.DEF_STR_REN_SCORE['NoFollowScore'] :
 ###				### 20点以上
 				### 規定以上
 				if wFLG_RateRec==False :
