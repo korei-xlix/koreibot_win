@@ -201,6 +201,7 @@ class gVal() :
 ###		"forFollowerFavoNonFollowerSec"		: 259200,	#   非絡みユーザの いいね実施間隔                  3日  (60x60x24)x3
 		"forFollowerFavoNonFollowerSec"		: 432000,	#   非絡みユーザの いいね実施間隔                  5日  (60x60x24)x5
 		"forFollowerFavoNonFollowerCnt"		: 5,		#   非絡みユーザのいいね ランダム実施値 パーセンテージ (1-100)   5％で実施
+		"NonFollowerScore"					: 5,		#   非絡みユーザ  スコア
 		
 														# 自動いいね
 		"forAutoFavoTweetSec"				: 86400,	#   対象ツイート期間       1日  60x60x24

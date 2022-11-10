@@ -177,6 +177,11 @@ class CLS_TwitterReaction():
 		elif self.ARR_ReactionTweet[wTweetID]['type']=="other_reply" :
 			self.ARR_ReactionUser[wID]['score'] += 5
 		
+		### 質問 ←いいね　+5
+		elif self.ARR_ReactionTweet[wTweetID]['type']=="question" and \
+		   inActionType=="favo" :
+			self.ARR_ReactionUser[wID]['score'] += 5
+		
 		#############################
 		# 正常
 		wRes['Result'] = True
@@ -1424,8 +1429,10 @@ class CLS_TwitterReaction():
 					### 最後のいいねから古かったら解除
 					wCnt = 0
 			
-			elif self.ARR_ReactionUser[wID]['score']>=20 :
-				### 20点以上
+###			elif self.ARR_ReactionUser[wID]['score']>=20 :
+			elif self.ARR_ReactionUser[wID]['score']>=gVal.DEF_STR_TLNUM['NonFollowerScore'] :
+###				### 20点以上
+				### 規定以上
 				if wFLG_RateRec==False :
 					if wARR_DBData['renfavo_cnt']==0 :
 						### 初回なら強制ON
@@ -1438,7 +1445,8 @@ class CLS_TwitterReaction():
 					wCnt = 0
 			
 			else:
-				### 1点以上、19点以下
+###				### 1点以上、19点以下
+				### 1点以上、規定未満
 				if wFLG_RateRec==False :
 					### カウンタ増やす
 					wCnt = wARR_DBData['renfavo_cnt'] + 1
