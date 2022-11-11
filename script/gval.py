@@ -166,7 +166,8 @@ class gVal() :
 		"reactionTweetLine"			: 40,				#   リアクションチェック時の自ツイート取得ライン数
 		"reactionTweetLine_Short"	: 8,				#   リアクションチェック時の自ツイート取得ライン数(ショート時)
 		"forReactionSec"			: 3600,				#   リアクションまでの期間   1時間  60x60
-		"forReactionTweetSec"		: 172800,			#   リアクションに反応するツイート期間 2日 (60x60x24)x2
+###		"forReactionTweetSec"		: 172800,			#   リアクションに反応するツイート期間 2日 (60x60x24)x2
+		"forReactionTweetSec"		: 259200,			#   リアクションに反応するツイート期間 3日  (60x60x24)x3
 		"forReactionListUserRand"	: 20,				#   相互フォローリスト・片フォローリスト ランダム実施値 パーセンテージ (1-100)   20％で実施
 		
 		"forVipOperationSec"		: 3600,				#   VIPリアクション監視までの期間   1時間  60x60x1
@@ -274,13 +275,13 @@ class gVal() :
 #############################
 # 連ファボ スコア
 	DEF_STR_REN_SCORE = {
-		"NoFollowScore"		: 12,			# 非絡みになるスコア
+		"NoFollowScore"		: 20,			# 非絡みになるスコア
 		
 		"Score_Normal"		: 1,			# 通常ツイート ←いいね
 		"Score_Retweet"		: 5,			# リツイート
-		"Score_Quoted"		: 5,			# 引用リツイート
-		"Score_Reply"		: 8,			# リプライ（他者）
-		"Score_Question"	: 8				# 質問 ←いいね
+		"Score_Quoted"		: 8,			# 引用リツイート
+		"Score_Reply"		: 10,			# リプライ（他者）
+		"Score_Question"	: 12			# 質問 ←いいね
 	}
 
 #############################

@@ -335,18 +335,18 @@ class CLS_TwitterReaction():
 				continue
 			wTweet['created_at'] = wTime['TimeDate']
 			
-###			#############################
-###			# 期間内のTweetか
-###			wGetLag = CLS_OSIF.sTimeLag( str( wTweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forReactionTweetSec'] )
-###			if wGetLag['Result']!=True :
-###				wRes['Reason'] = "sTimeLag failed(1)"
-###				gVal.OBJ_L.Log( "B", wRes )
-###				return wRes
-###			if wGetLag['Beyond']==True :
-###				###期間外= 古いツイートなので処理しない
-###				wFLG_ZanCountSkip = True
-###				continue
-###			
+			#############################
+			# 期間内のTweetか
+			wGetLag = CLS_OSIF.sTimeLag( str( wTweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forReactionTweetSec'] )
+			if wGetLag['Result']!=True :
+				wRes['Reason'] = "sTimeLag failed(1)"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if wGetLag['Beyond']==True :
+				###期間外= 古いツイートなので処理しない
+				wFLG_ZanCountSkip = True
+				continue
+			
 ###			#############################
 ###			# 質問ツイートか
 ###			wMention = False
