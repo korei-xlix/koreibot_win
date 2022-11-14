@@ -3598,7 +3598,10 @@ class CLS_DB_IF() :
 		#############################
 		# DBのいいね情報取得(IDのみ)
 		wQy = "select id from tbl_favouser_data where "
-		wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' "
+###		wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' "
+		wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' and "
+		wQy = wQy + "myfollow = False and "
+		wQy = wQy + "follower = False "
 		wQy = wQy + ";"
 		
 		wResDB = self.OBJ_DB.RunQuery( wQy )

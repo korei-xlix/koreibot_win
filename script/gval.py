@@ -166,7 +166,6 @@ class gVal() :
 		"reactionTweetLine"			: 40,				#   リアクションチェック時の自ツイート取得ライン数
 		"reactionTweetLine_Short"	: 8,				#   リアクションチェック時の自ツイート取得ライン数(ショート時)
 		"forReactionSec"			: 3600,				#   リアクションまでの期間   1時間  60x60
-###		"forReactionTweetSec"		: 172800,			#   リアクションに反応するツイート期間 2日 (60x60x24)x2
 		"forReactionTweetSec"		: 259200,			#   リアクションに反応するツイート期間 3日  (60x60x24)x3
 		"forReactionListUserRand"	: 20,				#   相互フォローリスト・片フォローリスト ランダム実施値 パーセンテージ (1-100)   20％で実施
 		
@@ -179,9 +178,7 @@ class gVal() :
 		
 														# フォロワー支援いいね
 		"forFollowerFavoSec"				: 14400,	#   フォロワー支援いいねまでの期間   4時間  60x60x4
-###		"forFollowerFavoMListMutualSec"		: 14400,	#   相互フォローリスト 相互フォローの いいね期間   4時間  60x60x4
 		"forFollowerFavoMListMutualSec"		: 43200,	#   相互フォローリスト 相互フォローの いいね期間  12時間  60x60x12
-###		"forFollowerFavoMListMyFollowSec"	: 86400,	#   相互フォローリスト 片フォロー者の いいね期間   1日  60x60x24
 		"forFollowerFavoMListMyFollowSec"	: 28800,	#   相互フォローリスト 片フォロー者の いいね期間   8時間  60x60x8
 		
 		"forFollowerFavoFListSec"			: 115200,	#   片フォロワーリスト処理期間                     32時間  60x60x32
@@ -201,7 +198,8 @@ class gVal() :
 		
 ###		"forFollowerFavoNonFollowerSec"		: 259200,	#   非絡みユーザの いいね実施間隔                  3日  (60x60x24)x3
 		"forFollowerFavoNonFollowerSec"		: 432000,	#   非絡みユーザの いいね実施間隔                  5日  (60x60x24)x5
-		"forFollowerFavoNonFollowerCnt"		: 5,		#   非絡みユーザのいいね ランダム実施値 パーセンテージ (1-100)   5％で実施
+###		"forFollowerFavoNonFollowerCnt"		: 5,		#   非絡みユーザのいいね ランダム実施値 パーセンテージ (1-100)   5％で実施
+		"forFollowerFavoNonFollowerCnt"		: 10,		#   非絡みユーザのいいね ランダム実施値 パーセンテージ (1-100)   5％で実施
 		
 														# 自動いいね
 		"forAutoFavoTweetSec"				: 86400,	#   対象ツイート期間       1日  60x60x24
@@ -214,14 +212,15 @@ class gVal() :
 		"forRemFavoSec"				: 172800,			# いいね解除までの期間 2日 (60x60x24)x2
 		
 		"forListFavoAutoRemoveSec"			: 604800,	#   リストいいね 自動リムーブまでの期間   7日  (60x60x24)x7
-###		"forListFavoAutoRemoveSec_Short"	: 115200,	#   リストいいね 自動リムーブまでの期間(短期)   32時間  (60x60x32)
 		"forListFavoAutoRemoveSec_Short"	: 57600,	#   リストいいね 自動リムーブまでの期間(短期)   16時間  (60x60x16)
 		"forCheckAutoRemoveSec"		: 14400,			#   自動リムーブチェック期間 4時間  (60x60x4)
 ###		"forOverListFavoCount"		: 3,				#   外部いいね数(1ユーザ)
-		"forOverListFavoCount"		: 2,				#   外部いいね数(1ユーザ)
+###		"forOverListFavoCount"		: 2,				#   外部いいね数(1ユーザ)
+		"forOverListFavoCount"		: 1,				#   外部いいね数(1ユーザ)
 		"forCheckAutoDeleteSec"		: 172800,			#   自動削除チェック期間 2日 (60x60x24)x2
 		"forAutoRemoveIgnoreCompletelySec"	: 1209600,	#   完全スルーのため追い出し期間   14日  (60x60x24)x14
 		"forAutoRemoveIgnoreCompletelyCnt"	: 4,		#   いいねがない場合の無条件追い出しまでのいいね実施回数
+		"forAutoRemoveReliefCnt"			: 3,		#   自動リムーブから救済される 今週いいね回数
 		
 		"forAutoUserRemoveSec"			: 2592000,		# ユーザ削除までの期間                 30日 (60x60x24)x30
 		"forFavoDataDelSec"				: 7776000,		# いいね情報削除までの期間             90日 (60x60x24)x90
@@ -229,7 +228,6 @@ class gVal() :
 		
 														# いいね送信
 		"favoSendsSec"		: 604800,					# いいね送信までの期間      7日 (60x60x24)x7
-###		"favoDataDelSec"	: 7776000,					# いいね情報削除までの期間  90日 (60x60x24)x90
 		"favoSendsCnt"		: 3,						# いいね送信対象 いいね回数
 		"LEVEL_B_Cnt"		: 5,						# レベルB昇格までのトロフィー獲得回数
 		
@@ -275,13 +273,13 @@ class gVal() :
 #############################
 # 連ファボ スコア
 	DEF_STR_REN_SCORE = {
-		"NoFollowScore"		: 20,			# 非絡みになるスコア
+		"NoFollowScore"		: 10,			# 非絡みになるスコア
 		
 		"Score_Normal"		: 1,			# 通常ツイート ←いいね
 		"Score_Retweet"		: 5,			# リツイート
 		"Score_Quoted"		: 8,			# 引用リツイート
 		"Score_Reply"		: 10,			# リプライ（他者）
-		"Score_Question"	: 12			# 質問 ←いいね
+		"Score_Question"	: 10			# 質問 ←いいね
 	}
 
 #############################
@@ -296,8 +294,6 @@ class gVal() :
 								#          
 		"B"		: "",			# * *  B : 相互フォロー トロフィー獲得者
 								#          相互フォロー中にトロフィーを獲得した場合
-###		"B-"	: "",			# B-: 相互フォロー あまり絡みなくない人
-###								#     手動で設定する
 		"C"		: "",			# * *  C : 相互フォロー(トロフィーを獲得して相互フォローに自動昇格したアカウント)
 								#          片フォロワー時にトロフィーを獲得して、相互になった場合
 		"C+"	: "",			# * *  C+: 相互フォロー 元フォロー者 もしくは 手動でリフォローしたアカウント
@@ -320,10 +316,6 @@ class gVal() :
 								#          非フォロワーでいいねされた場合
 		"F+"	: "",			#      F+: フォロワーだけど完全スルー期間が過ぎたため、無視しているアカウント
 								#          片フォロワー状態で 登録から規定日数、あるいは最終いいねから規定日数過ぎた
-###		"G"		: "",			# G : ブロックされたアカウント
-###								#     被ブロックを検知した場合
-###		"G-"	: "",			# G-: 追い出したことがあるフォロワー  F+からリムーブされたフォロワー
-###								#     追い出しした場合  F+状態でリムーブされた場合
 		"G"		: "",			#   R  G : 相互フォロー あまり絡みなくない人
 								#          botが自動設定した
 		"G+"	: "",			#   R  G+: 相互フォロー あまり絡みなくない人

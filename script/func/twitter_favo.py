@@ -518,10 +518,6 @@ class CLS_TwitterFavo():
 			
 			#############################
 			# ユーザレベル除外
-###			if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="D-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or \
-###			   wARR_DBData['level_tag']=="F+" or wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G+" or \
-###			   wARR_DBData['level_tag']=="H" or wARR_DBData['level_tag']=="H+" or \
-###			   wARR_DBData['level_tag']=="H-" or wARR_DBData['level_tag']=="L" or wARR_DBData['level_tag']=="Z" or wARR_DBData['level_tag']=="Z-" :
 			if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="D-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or \
 			   wARR_DBData['level_tag']=="F+" or wARR_DBData['level_tag']=="H-" or \
 			   wARR_DBData['level_tag']=="L" or wARR_DBData['level_tag']=="Z" or wARR_DBData['level_tag']=="Z-" :
