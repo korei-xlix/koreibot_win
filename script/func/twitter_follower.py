@@ -558,7 +558,6 @@ class CLS_TwitterFollower():
 #####################################################
 # 自動フォロー
 #####################################################
-###	def AutoFollow( self, inUser ):
 	def AutoFollow( self, inUser, inForce=False ):
 		#############################
 		# 応答形式の取得
@@ -598,14 +597,6 @@ class CLS_TwitterFollower():
 		# ・フォロー者＜フォロワー数
 		# ・いいね数=0
 		# ・ツイート数=100未満
-###		if wUser['protected']==True or \
-###		   wUser['verified']==True or \
-###		   wUser['friends_count']==0 or \
-###		   wUser['friends_count']>=1000 or \
-###		   wUser['followers_count']<100 or \
-###		   wUser['friends_count']<wUser['followers_count'] or \
-###		   wUser['favourites_count']==0 or \
-###		   wUser['statuses_count']<100 :
 		if wUser['protected']==True or \
 		   wUser['verified']==True or \
 		   wUser['friends_count']==0 or \
@@ -655,11 +646,6 @@ class CLS_TwitterFollower():
 		# ・フォロー者ON
 		# ・フォロワーON
 		# ・過去にフォローしたこと、されたことがある
-###		if wARR_DBData['level_tag']!="F" or \
-###		   wARR_DBData['myfollow']==True or \
-###		   str(wARR_DBData['myfollow_date'])!=gVal.DEF_TIMEDATE or \
-###		   wARR_DBData['follower']==True or \
-###		   str(wARR_DBData['follower_date'])!=gVal.DEF_TIMEDATE :
 		if inForce==False :
 			if wARR_DBData['level_tag']!="F" or \
 			   wARR_DBData['myfollow']==True or \
@@ -692,7 +678,6 @@ class CLS_TwitterFollower():
 		
 		### ユーザ記録
 		wStr = "〇自動フォロー"
-###		gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']) )
 		gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']), inID=wUserID )
 		
 		#############################
@@ -729,7 +714,6 @@ class CLS_TwitterFollower():
 			wRes['Reason'] = "sTimeLag failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
-###		if wGetLag['Beyond']==False :
 		if wGetLag['Beyond']==False and inCheck==True :
 			### 規定以内は除外
 			wStr = "●タイムラインフォロー期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
@@ -750,21 +734,12 @@ class CLS_TwitterFollower():
 			"screen_name"		: None,
 			"description"		: None
 		}
-#		wSTR_SrcUser = {
-#			"id"				: None,
-#			"name"				: None,
-#			"screen_name"		: None,
-#			"description"		: None
-#		}
 		wSTR_Tweet = {
 			"kind"				: None,
 			"id"				: None,
 			"text"				: None,
-#			"sensitive"			: False,
 			"created_at"		: None,
 			"user"				: wSTR_User,
-#			"src_user"			: wSTR_SrcUser,
-#			"FLG_agent"			: False,			# いいね候補
 			"reason"			: None				# NG理由
 		}
 		
@@ -895,32 +870,42 @@ class CLS_TwitterFollower():
 			
 			self.__add_TimelineFollow_AgentUser( wSubRes['Responce'] )
 			
-			wFavoCnt += 1
-			
 			#############################
-			# 自動フォローしていく
-			wKeylist = list( self.ARR_AgentUsers.keys() )
-			for wID in wKeylist :
-				wID = str(wID)
-				
-				### フォロー人数の限界
-				if gVal.DEF_STR_TLNUM['TimelineFollowNum']<=wFollowNum :
-					break
-				
-				### 自動フォロー
-				wSubRes = self.OBJ_Parent.OBJ_TwitterFollower.AutoFollow( self.ARR_AgentUsers[wID] )
-				if wSubRes['Result']!=True :
-					wRes['Reason'] = "AutoFollow is failed"
-					gVal.OBJ_L.Log( "B", wRes )
-###					return wRes
-					break	#失敗したら、ループ終わって処理を終わる
-				
-				if wSubRes['Responce']==False :
-					### 未フォロー
-###					continue
-					break
-				
-				wFollowNum += 1	#フォローしたのでカウント
+			# リプライの場合
+			if wSTR_Tweet['kind']=="reply" and \
+			   str(wSTR_Tweet['user']['id']) is not self.ARR_AgentUsers :
+				wSTR_User = {
+					"id"				: str(wSTR_Tweet['user']['id']),
+					"name"				: str(wSTR_Tweet['user']['name']),
+					"screen_name"		: str(wSTR_Tweet['user']['screen_name']),
+					"description"		: str(wSTR_Tweet['user']['description'])
+				}
+				self.ARR_AgentUsers.update({ str(wSTR_Tweet['user']['id']) : wSTR_User })
+			
+			wFavoCnt += 1
+		
+		#############################
+		# 自動フォローしていく
+		wKeylist = list( self.ARR_AgentUsers.keys() )
+		for wID in wKeylist :
+			wID = str(wID)
+			
+			### フォロー人数の限界
+			if gVal.DEF_STR_TLNUM['TimelineFollowNum']<=wFollowNum :
+				break
+			
+			### 自動フォロー
+			wSubRes = self.OBJ_Parent.OBJ_TwitterFollower.AutoFollow( self.ARR_AgentUsers[wID] )
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "AutoFollow is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				break	#失敗したら、ループ終わって処理を終わる
+			
+			if wSubRes['Responce']==False :
+				### 未フォロー
+				break
+			
+			wFollowNum += 1	#フォローしたのでカウント
 		
 		#############################
 		# 現時間を設定
@@ -951,8 +936,6 @@ class CLS_TwitterFollower():
 				"name"				: str(inARR_Users[wID]['name']),
 				"screen_name"		: str(inARR_Users[wID]['screen_name']),
 				"description"		: str(inARR_Users[wID]['description'])
-###				
-###				"FLG_Checked"		: False
 			}
 			self.ARR_AgentUsers.update({ wID : wSTR_User })
 		

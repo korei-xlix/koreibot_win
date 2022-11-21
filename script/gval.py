@@ -232,9 +232,11 @@ class gVal() :
 		"LEVEL_B_Cnt"		: 5,						# レベルB昇格までのトロフィー獲得回数
 		
 														# 連ファボ制御
-		"renFavoOnCnt"		: 3,						#   連ファボ判別回数(通常)
-		"renFavoForceCnt"	: 5,						#   連ファボ判別回数(強制)  renFavoOnCntより高く設定すること
-		"forRenFavoSec"		: 115200,					#   非絡み自動解除日数                    32時間  (60x60x32)
+		"renFavoOnCnt"			: 3,					#   連ファボ判別回数(通常)
+		"renFavoForceCnt"		: 5,					#   連ファボ判別回数(強制)  renFavoOnCntより高く設定すること
+		"forRenFavoSec"			: 115200,				#   非絡み自動解除日数                    32時間  (60x60x32)
+		"renFavoBotCnt"			: 3,					#   bot判定固定回数
+		"renFavoForceBotCnt"	: 20,					#   強制bot判定固定回数
 		
 														# ユーザ管理
 		"forGetUserSec"			: 600,					#   ユーザ取得間隔  10分  60x10

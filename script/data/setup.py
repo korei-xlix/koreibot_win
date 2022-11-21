@@ -717,7 +717,8 @@ class CLS_Setup():
 		wQy = wQy + "follower      BOOL  DEFAULT false,"# フォロワー(被フォロー) true=フォロワー
 		wQy = wQy + "follower_date TIMESTAMP, "			# 被フォロー日時
 		wQy = wQy + "memo          TEXT, "				# 自由記載(メモ)
-		wQy = wQy + "renfavo_cnt   INTEGER DEFAULT 0 "	# 連ファボカウント
+		wQy = wQy + "renfavo_cnt   INTEGER DEFAULT 0, "	# 連ファボカウント
+		wQy = wQy + "renbot_cnt    INTEGER DEFAULT 0 "	# 非絡み回数
 		wQy = wQy + " ) ;"
 		
 		inOBJ_DB.RunQuery( wQy )

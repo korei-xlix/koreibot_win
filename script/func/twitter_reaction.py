@@ -1193,6 +1193,12 @@ class CLS_TwitterReaction():
 			return wRes
 		
 		#############################
+		# ヘッダ
+		wStr =        "SCORE CNT   BOT   LV   USER" + '\n'
+		wStr = wStr + "-------------------------------" + '\n'
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
 		# 非絡みユーザのユーザレベル変更
 		wKeylist = list( self.ARR_ReactionUser.keys() )
 		for wID in wKeylist :
@@ -1259,51 +1265,50 @@ class CLS_TwitterReaction():
 					### 最後のいいねから古かったら解除
 					wCnt = 0
 			
-###			#############################
-###			# ユーザの表示
-###				### スコア
-###			wListData = str(self.ARR_ReactionUser[wID]['score'])
-###			wSpace = self.DEF_REACTION_SCORE_LEN - len( str(self.ARR_ReactionUser[wID]['score']) )
-###			wStr = wListData + " " * wSpace + ":  "
-###			
-###				### 連ファボカウント
-###			wListData = str(wCnt)
-###			wSpace = self.DEF_REACTION_SCORE_LEN - len( str(wCnt) )
-###			wStr = wStr + wListData + " " * wSpace + ":  "
-###			
-###				### 今のレベル
-###			wListData = str(wARR_DBData['level_tag'])
-###			wSpace = self.DEF_REACTION_SCORE_LEN - len( str(wARR_DBData['level_tag']) )
-###			wStr = wStr + wListData + " " * wSpace + ":  "
-###			
-###				### ユーザ名
-###			wStr = wStr + self.ARR_ReactionUser[wID]['screen_name']
-###			CLS_OSIF.sPrn( wStr )
-###			
 			#############################
 			# 登録ユーザはスルー
 			if gVal.OBJ_Tw_IF.CheckSubscribeListUser( wID )!=False :
 				continue
 			
 			wUserLevel = None
+			wBotCnt = None
 			if wCnt>=gVal.DEF_STR_TLNUM['renFavoOnCnt'] :
 				#############################
 				# 相互フォロー中か
-###				if ( wARR_DBData['level_tag']=="B" or wARR_DBData['level_tag']=="B+" or \
-###				     wARR_DBData['level_tag']=="C" or wARR_DBData['level_tag']=="C+" ) and \
-###				   ( wARR_DBData['level_tag']!="G" or wARR_DBData['level_tag']!="H" ) :
 				if wARR_DBData['level_tag']=="B" or wARR_DBData['level_tag']=="B+" or \
 				   wARR_DBData['level_tag']=="C" or wARR_DBData['level_tag']=="C+" :
 					
-					wUserLevel = "G"
+					wBotCnt = wARR_DBData['renbot_cnt'] + 1
+					if wBotCnt<gVal.DEF_STR_TLNUM['renFavoBotCnt'] :
+						wUserLevel = "G"
+					else:
+						wUserLevel = "G+"
+						### 報告対象の表示と、ログに記録
+						gVal.OBJ_L.Log( "RR", wRes, "●bot判定固定 ユーザ: screen_name=" + wARR_DBData['screen_name'] + " level=" + wUserLevel, inID=wID )
 				
 				#############################
 				# 片フォロワーか
-###				elif wARR_DBData['level_tag']=="E" and \
-###				     ( wARR_DBData['level_tag']!="G" or wARR_DBData['level_tag']!="H" ) :
 				elif wARR_DBData['level_tag']=="E" :
 					
-					wUserLevel = "H"
+					wBotCnt = wARR_DBData['renbot_cnt'] + 1
+					if wBotCnt<gVal.DEF_STR_TLNUM['renFavoBotCnt'] :
+						wUserLevel = "H"
+					else:
+						wUserLevel = "H+"
+						### 報告対象の表示と、ログに記録
+						gVal.OBJ_L.Log( "RR", wRes, "●bot判定固定 ユーザ: screen_name=" + wARR_DBData['screen_name'] + " level=" + wUserLevel, inID=wID )
+				
+				#############################
+				# 固定化
+				elif wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="H" :
+					if wCnt>=gVal.DEF_STR_TLNUM['renFavoForceBotCnt'] :
+						if wARR_DBData['level_tag']=="G" :
+							wUserLevel = "G+"
+						else:
+							wUserLevel = "H+"
+						
+						### 報告対象の表示と、ログに記録
+						gVal.OBJ_L.Log( "RR", wRes, "●bot判定固定 ユーザ: screen_name=" + wARR_DBData['screen_name'] + " level=" + wUserLevel, inID=wID )
 			
 			elif wCnt==0 :
 				#############################
@@ -1327,11 +1332,19 @@ class CLS_TwitterReaction():
 				### スコア
 			wListData = str(self.ARR_ReactionUser[wID]['score'])
 			wSpace = self.DEF_REACTION_SCORE_LEN - len( str(self.ARR_ReactionUser[wID]['score']) )
-			wStr = wListData + " " * wSpace + ":  "
+			wStr = wListData + " " * wSpace + "  :  "
 			
 				### 連ファボカウント
 			wListData = str(wCnt)
 			wSpace = self.DEF_REACTION_SCORE_LEN - len( str(wCnt) )
+			wStr = wStr + wListData + " " * wSpace + ":  "
+			
+				### bot判定カウント
+			if wBotCnt==None :
+				wListData = "0"
+			else:
+				wListData = str(wBotCnt)
+			wSpace = self.DEF_REACTION_SCORE_LEN - len( str(wListData) )
 			wStr = wStr + wListData + " " * wSpace + ":  "
 			
 				### 今のレベル
@@ -1354,7 +1367,7 @@ class CLS_TwitterReaction():
 			#############################
 			# 連ファボカウント更新
 			if wARR_DBData['renfavo_cnt']!=wCnt :
-				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_RenFavo( wID, wCnt )
+				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_RenFavo( wID, wCnt, wBotCnt )
 				if wSubRes['Result']!=True :
 					###失敗
 					wRes['Reason'] = "UpdateFavoData_RenFavo is failed"

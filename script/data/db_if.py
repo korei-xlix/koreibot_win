@@ -2752,7 +2752,8 @@ class CLS_DB_IF() :
 		wQy = wQy + "'" + gVal.DEF_TIMEDATE + "', "					# 被フォロー日時
 		
 		wQy = wQy + "'', "											# memo
-		wQy = wQy + "0  "											# 連ファボカウント
+		wQy = wQy + "0,  "											# 連ファボカウント
+		wQy = wQy + "0  "											# 非絡み回数
 		wQy = wQy + ") ;"
 		
 		#############################
@@ -3395,7 +3396,8 @@ class CLS_DB_IF() :
 	#####################################################
 	# 連ファボカウント更新
 	#####################################################
-	def UpdateFavoData_RenFavo( self, inID, inCnt ):
+###	def UpdateFavoData_RenFavo( self, inID, inCnt ):
+	def UpdateFavoData_RenFavo( self, inID, inCnt, inBotCnt=None ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -3406,7 +3408,10 @@ class CLS_DB_IF() :
 		#############################
 		# 更新
 		wQy = "update tbl_favouser_data set "
-		wQy = wQy + "renfavo_cnt = '" + str(inCnt) + "', "
+###		wQy = wQy + "renfavo_cnt = '" + str(inCnt) + "', "
+		wQy = wQy + "renfavo_cnt = " + str(inCnt) + ", "
+		if inBotCnt!=None :
+			wQy = wQy + "renbot_cnt = " + str(inBotCnt) + ", "
 		
 		wQy = wQy + "upddate = '" + str( gVal.STR_Time['TimeDate'] ) + "' "
 		wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "'"
@@ -3477,7 +3482,8 @@ class CLS_DB_IF() :
 		
 		#############################
 		# ユーザレベルを取得する
-		wQy = "select id, screen_name, level_tag, myfollow, follower, send_cnt from tbl_favouser_data where "
+###		wQy = "select id, screen_name, level_tag, myfollow, follower, send_cnt from tbl_favouser_data where "
+		wQy = "select id, screen_name, level_tag, myfollow, follower, send_cnt, renfavo_cnt, renbot_cnt from tbl_favouser_data where "
 		wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "'"
 ###		wQy = wQy + " and level_tag = 'B-' "
 ###		wQy = wQy + ";"

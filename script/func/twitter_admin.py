@@ -25,6 +25,10 @@ class CLS_TwitterAdmin():
 ###	ARR_CautionList = {}
 	DEF_VAL_SLEEP = 10			#Twitter処理遅延（秒）
 
+	DEF_ADMIN_SCORE_LEN = 3
+
+
+
 #####################################################
 # Init
 #####################################################
@@ -2535,7 +2539,10 @@ class CLS_TwitterAdmin():
 					"subs_list"		: gVal.OBJ_Tw_IF.CheckSubscribeListUser( wUserBList[wIndex]['id'] ),
 					"multi_list"	: gVal.OBJ_Tw_IF.CheckMutualListUser( wUserBList[wIndex]['id'] ),
 					"follow_list"	: gVal.OBJ_Tw_IF.CheckFollowListUser( wUserBList[wIndex]['id'] ),
-					"send_cnt"		: wUserBList[wIndex]['send_cnt']
+###					"send_cnt"		: wUserBList[wIndex]['send_cnt']
+					"send_cnt"		: wUserBList[wIndex]['send_cnt'],
+					"renfavo_cnt"	: wUserBList[wIndex]['renfavo_cnt'],
+					"renbot_cnt"	: wUserBList[wIndex]['renbot_cnt']
 				}
 				self.STR_UserBList.update({ wList_Number : wCell })
 				
@@ -2554,6 +2561,16 @@ class CLS_TwitterAdmin():
 				if wListNumSpace>0 :
 					wListData = wListData + " " * wListNumSpace
 				wStr = wStr + wListData + "  "
+				
+				### 連ファボカウント
+				wListData = str(wCell['renfavo_cnt'])
+				wSpace = self.DEF_ADMIN_SCORE_LEN - len( str(wCell['renfavo_cnt']) )
+				wStr = wStr + wListData + " " * wSpace + "  "
+				
+				### bot判定カウント
+				wListData = str(wCell['renbot_cnt'])
+				wSpace = self.DEF_ADMIN_SCORE_LEN - len( str(wCell['renbot_cnt']) )
+				wStr = wStr + wListData + " " * wSpace + "  "
 				
 				### フォロー者
 				if wCell['myfollow']==True :
@@ -2695,36 +2712,6 @@ class CLS_TwitterAdmin():
 		wRes['Class'] = "CLS_TwitterAdmin"
 		wRes['Func']  = "__run_UserBList_Release"
 		
-###		#############################
-###		# 変更できるユーザレベルか
-###		if inData['level_tag']!="B-" :
-###			CLS_OSIF.sPrn( "そのユーザは変更できないレベルです" + '\n' )
-###			return wRes
-###		
-###		#############################
-###		# 相互フォロー中か
-###		if inData['myfollow']!=True or \
-###		   inData['follower']!=True :
-###			CLS_OSIF.sPrn( "そのユーザは相互フォローではありません" + '\n' )
-###			return wRes
-###		
-###		#############################
-###		# 相互フォローリストか
-###		if inData['multi_list']!=True :
-###			CLS_OSIF.sPrn( "そのユーザは相互フォローリストユーザではありません" + '\n' )
-###			return wRes
-###		
-###		#############################
-###		# ユーザレベルの変更設定
-###		
-###		wUserLevel = None
-###		if inData['send_cnt']>=gVal.DEF_STR_TLNUM['LEVEL_B_Cnt'] :
-###			wUserLevel = "B+"
-###		elif inData['send_cnt']>=1 :
-###			wUserLevel = "B"
-###		else:
-###			wUserLevel = "C"
-		
 		#############################
 		# 登録リストユーザか
 		if inData['subs_list']!=False :
@@ -2769,7 +2756,7 @@ class CLS_TwitterAdmin():
 		#############################
 		# 連ファボカウント クリア
 		if wFLG_Rel==True :
-			wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_RenFavo( inData['id'], 0 )
+			wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_RenFavo( inData['id'], 0, 0 )
 			if wSubRes['Result']!=True :
 				###失敗
 				wRes['Reason'] = "UpdateFavoData_RenFavo is failed"
