@@ -3604,7 +3604,6 @@ class CLS_DB_IF() :
 		#############################
 		# DBのいいね情報取得(IDのみ)
 		wQy = "select id from tbl_favouser_data where "
-###		wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' "
 		wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "' and "
 		wQy = wQy + "myfollow = False and "
 		wQy = wQy + "follower = False "
@@ -3663,6 +3662,12 @@ class CLS_DB_IF() :
 				continue
 			
 			#############################
+			# ユーザレベル除外
+			if wARR_RateFavoData['level_tag']!="D-" and wARR_RateFavoData['level_tag']!="E-" and wARR_RateFavoData['level_tag']!="H-" and wARR_RateFavoData['level_tag']!="L" and \
+			   wARR_RateFavoData['level_tag']!="Z" and wARR_RateFavoData['level_tag']!="Z-" :
+				continue
+			
+			#############################
 			# 削除対象か
 			#   いいね受信日といいね送信日が初期値の場合
 			#     登録日が期間を過ぎてたら削除
@@ -3682,7 +3687,6 @@ class CLS_DB_IF() :
 			else:
 				wThreshold = gVal.DEF_STR_TLNUM['forFavoDataDelSec']
 			
-###			wGetLag = CLS_OSIF.sTimeLag( wCHR_DelTimeDate, inThreshold=gVal.DEF_STR_TLNUM['favoDataDelSec'] )
 			wGetLag = CLS_OSIF.sTimeLag( wCHR_DelTimeDate, inThreshold=wThreshold )
 			if wGetLag['Result']!=True :
 				wRes['Reason'] = "sTimeLag failed"

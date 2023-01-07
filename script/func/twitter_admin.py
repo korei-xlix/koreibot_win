@@ -2419,7 +2419,8 @@ class CLS_TwitterAdmin():
 		wGetIndex = None
 		for wIndex in wKeylist :
 			if gVal.ARR_CautionTweet[wIndex]['list_number']==wNum :
-				wGetIndex = str(wIndex)
+###				wGetIndex = str(wIndex)
+				wGetIndex = wIndex
 				break
 		
 		if wGetIndex==None :

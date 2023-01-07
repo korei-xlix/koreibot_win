@@ -211,8 +211,10 @@ class gVal() :
 		
 		"forRemFavoSec"				: 172800,			# いいね解除までの期間 2日 (60x60x24)x2
 		
-		"forListFavoAutoRemoveSec"			: 604800,	#   リストいいね 自動リムーブまでの期間   7日  (60x60x24)x7
-		"forListFavoAutoRemoveSec_Short"	: 57600,	#   リストいいね 自動リムーブまでの期間(短期)   16時間  (60x60x16)
+###		"forListFavoAutoRemoveSec"			: 604800,	#   リストいいね 自動リムーブまでの期間   7日  (60x60x24)x7
+###		"forListFavoAutoRemoveSec_Short"	: 57600,	#   リストいいね 自動リムーブまでの期間(短期)   16時間  (60x60x16)
+		"forListFavoAutoRemoveSec"			: 345600,	#   リストいいね 自動リムーブまでの期間   4日  (60x60x24)x4
+		"forListFavoAutoRemoveSec_Short"	: 43200,	#   リストいいね 自動リムーブまでの期間(短期)   12時間  (60x60x12)
 		"forCheckAutoRemoveSec"		: 14400,			#   自動リムーブチェック期間 4時間  (60x60x4)
 ###		"forOverListFavoCount"		: 3,				#   外部いいね数(1ユーザ)
 ###		"forOverListFavoCount"		: 2,				#   外部いいね数(1ユーザ)
@@ -232,11 +234,11 @@ class gVal() :
 		"LEVEL_B_Cnt"		: 5,						# レベルB昇格までのトロフィー獲得回数
 		
 														# 連ファボ制御
-		"renFavoOnCnt"			: 3,					#   連ファボ判別回数(通常)
-		"renFavoForceCnt"		: 5,					#   連ファボ判別回数(強制)  renFavoOnCntより高く設定すること
+		"renFavoOnCnt"			: 5,					#   連ファボ判別回数(通常)
+		"renFavoForceCnt"		: 8,					#   連ファボ判別回数(強制)  renFavoOnCntより高く設定すること
 		"forRenFavoSec"			: 115200,				#   非絡み自動解除日数                    32時間  (60x60x32)
-		"renFavoBotCnt"			: 3,					#   bot判定固定回数
-		"renFavoForceBotCnt"	: 20,					#   強制bot判定固定回数
+		"renFavoBotCnt"			: 10,					#   bot判定固定回数
+		"renFavoForceBotCnt"	: 30,					#   強制bot判定固定回数
 		
 														# ユーザ管理
 		"forGetUserSec"			: 600,					#   ユーザ取得間隔  10分  60x10
@@ -255,12 +257,11 @@ class gVal() :
 		"forDeleteCautionTweetSec"	: 172800,			# 警告メッセージを削除する期間  2日 (60x60x24)x2
 		
 		"forTimelineFollowSec"			: 14400,		# タイムラインフォロー チェック期間 4時間  (60x60x4)
-		"TimelineFollowNum"				: 2,			#   フォローする最大人数
+###		"TimelineFollowNum"				: 2,			#   フォローする最大人数
+		"TimelineFollowNum"				: 5,			#   フォローする最大人数
 		"TimelineFollowTweetLine"		: 200,			#   ツイート取得ライン数
 		"TimelineFollowTweetLine_Skip"	: 40,			#   ツイート取得ライン 先頭スキップ数
 		"TimelineFollowFavoCheckNum"	: 32,			#   いいね、リツイート、引用リツイートのチェック回数(Limit)
-		
-		"forTimelineFollowSec"			: 14400,		# タイムラインフォロー チェック期間 4時間  (60x60x4)
 		
 		"forMultiFavoStopReleaseSec"	: 172800,		# 相互いいね停止期間(自動解除)  2日 (60x60x24)x2
 		
@@ -275,13 +276,13 @@ class gVal() :
 #############################
 # 連ファボ スコア
 	DEF_STR_REN_SCORE = {
-		"NoFollowScore"		: 10,			# 非絡みになるスコア
+		"NoFollowScore"		: 15,			# 非絡みになるスコア
 		
 		"Score_Normal"		: 1,			# 通常ツイート ←いいね
-		"Score_Retweet"		: 5,			# リツイート
-		"Score_Quoted"		: 8,			# 引用リツイート
-		"Score_Reply"		: 10,			# リプライ（他者）
-		"Score_Question"	: 10			# 質問 ←いいね
+		"Score_Retweet"		: 3,			# リツイート
+		"Score_Quoted"		: 5,			# 引用リツイート
+		"Score_Reply"		: 5,			# リプライ（他者）
+		"Score_Question"	: 7			# 質問 ←いいね
 	}
 
 #############################
@@ -385,7 +386,8 @@ class gVal() :
 	DEF_TEST_MODE     = "bottest"							#テストモード(引数文字)
 	DEF_DATA_BOUNDARY = "|,|"
 	
-	DEF_SCREEN_NAME_SIZE = 16
+###	DEF_SCREEN_NAME_SIZE = 16
+	DEF_SCREEN_NAME_SIZE = 24
 
 	DEF_VAL_DAY  = 86400									# 時間経過: 1日  60x60x24
 	DEF_VAL_WEEK = 604800									# 時間経過: 7日  (60x60x24)x7
