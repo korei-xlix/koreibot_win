@@ -1962,7 +1962,6 @@ class CLS_TwitterMain():
 #####################################################
 # 自動リムーブチェック
 #####################################################
-###	def CheckAutoRemove(self):
 	def CheckAutoRemove( self, inFLG_Force=False ):
 		#############################
 		# 応答形式の取得
@@ -2014,25 +2013,14 @@ class CLS_TwitterMain():
 			
 			#############################
 			# Twitterからリストの登録ユーザ一覧を取得
-###			wListRes = gVal.OBJ_Tw_IF.GetListSubscribers(
 			wListRes = gVal.OBJ_Tw_IF.GetListMember(
 			   inListName=wListName,
 			   inScreenName=gVal.STR_UserInfo['Account'] )
 			
 			if wListRes['Result']!=True :
-###				wRes['Reason'] = "Twitter API Error(GetListSubscribers:List): " + wListRes['Reason']
 				wRes['Reason'] = "Twitter API Error(GetListMember:List): " + wListRes['Reason']
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
-###			if len(wListRes['Responce'])>=1 :
-###				### 登録者あり
-###				wKeylistUser = list( wListRes['Responce'].keys() )
-###				for wID in wKeylistUser :
-###					wID = str(wID)
-###					
-###				###自分は除外する
-###				if str(gVal.STR_UserInfo['id'])==wID :
-###					continue
 			if len(wListRes['Responce'])==0 :
 				### 登録者なしはスキップ
 				continue

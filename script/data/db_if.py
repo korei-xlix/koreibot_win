@@ -3663,8 +3663,9 @@ class CLS_DB_IF() :
 			
 			#############################
 			# ユーザレベル除外
-			if wARR_RateFavoData['level_tag']!="D-" and wARR_RateFavoData['level_tag']!="E-" and wARR_RateFavoData['level_tag']!="H-" and wARR_RateFavoData['level_tag']!="L" and \
-			   wARR_RateFavoData['level_tag']!="Z" and wARR_RateFavoData['level_tag']!="Z-" :
+###			if wARR_RateFavoData['level_tag']!="D-" and wARR_RateFavoData['level_tag']!="E-" and wARR_RateFavoData['level_tag']!="H-" and wARR_RateFavoData['level_tag']!="L" and \
+###			   wARR_RateFavoData['level_tag']!="Z" and wARR_RateFavoData['level_tag']!="Z-" :
+			if wARR_RateFavoData['level_tag']!="D-" and wARR_RateFavoData['level_tag']!="E-" and wARR_RateFavoData['level_tag']!="H-" :
 				continue
 			
 			#############################
@@ -3684,6 +3685,10 @@ class CLS_DB_IF() :
 			
 			if wARR_RateFavoData['level_tag']=="F" :
 				wThreshold = gVal.DEF_STR_TLNUM['forFavoDataDelLevelFSec']
+			
+			elif wARR_RateFavoData['level_tag']=="L" or wARR_RateFavoData['level_tag']=="Z" or wARR_RateFavoData['level_tag']=="Z-" :
+				wThreshold = gVal.DEF_STR_TLNUM['forFavoDataDelHardSec']
+			
 			else:
 				wThreshold = gVal.DEF_STR_TLNUM['forFavoDataDelSec']
 			

@@ -221,11 +221,13 @@ class gVal() :
 		"forOverListFavoCount"		: 1,				#   外部いいね数(1ユーザ)
 		"forCheckAutoDeleteSec"		: 172800,			#   自動削除チェック期間 2日 (60x60x24)x2
 		"forAutoRemoveIgnoreCompletelySec"	: 1209600,	#   完全スルーのため追い出し期間   14日  (60x60x24)x14
+		"forAutoRemoveByeByeSec"			: 5356800,	#   完全追い出し期間               62日  (60x60x24)x62
 		"forAutoRemoveIgnoreCompletelyCnt"	: 4,		#   いいねがない場合の無条件追い出しまでのいいね実施回数
 		"forAutoRemoveReliefCnt"			: 3,		#   自動リムーブから救済される 今週いいね回数
 		
 		"forAutoUserRemoveSec"			: 2592000,		# ユーザ削除までの期間                 30日 (60x60x24)x30
 		"forFavoDataDelSec"				: 7776000,		# いいね情報削除までの期間             90日 (60x60x24)x90
+		"forFavoDataDelHardSec"			: 34214400,		# いいね情報削除までの期間(残しデータ) 396日 (60x60x24)x396
 		"forFavoDataDelLevelFSec"		: 259200,		# いいね情報削除までの期間(レベルF)     3日 (60x60x24)x3
 		
 														# いいね送信

@@ -1176,54 +1176,51 @@ class CLS_Twitter_IF() :
 		# データ加工
 		#   メンション情報がない場合はセットなし
 		wMentions = {}
-		if wTwitterRes['Responce']['meta']['result_count']>0 and \
-		   "data" in wTwitterRes['Responce'] :
+		if "meta" in wTwitterRes['Responce'] :
+			if wTwitterRes['Responce']['meta']['result_count']>0 and \
+			   "data" in wTwitterRes['Responce'] :
+				
+				for wTweet in wTwitterRes['Responce']['data'] :
+					wReplyID     = str( wTweet['id'] )
+					wReplyUserID = str( wTweet['author_id'] )
+					wReplyText   = str( wTweet['text'] )
+					
+					###日時の変換
+					wTimeDate = wTweet['created_at']
+					wTimeRes = CLS_TIME.sTTchg( wRes, "(3)", wTimeDate )
+					if wTimeRes['Result']!=True :
+						return wRes
+					wTimeDate = str( wTimeRes['TimeDate'] )
+			 		
+					if "referenced_tweets" not in wTweet :
+						continue
+					wTweetID = str( wTweet['referenced_tweets'][0]['id'] )
+					
+					### screen_nameの取り出し
+					wScreenName = ""
+					for wUsers in wTwitterRes['Responce']['includes']['users'] :
+						if str(wUsers['id'])==wReplyUserID :
+							wScreenName  = wUsers['username']
+							wDescription = wUsers['description']
+							break
+					
+					wSTR_CellUser = {
+						"id" 			: wReplyUserID,
+						"screen_name"	: wScreenName,
+						"description"	: wDescription
+					}
+					wSTR_Cell = {
+						"id"			: wReplyID,			# リプライツイートID（お相手のツイートID）
+						"created_at"    : wTimeDate,		# リプライの時刻（お相手のツイート日時 Twitter時間）
+						"text"			: wReplyText,		# リプライの内容・テキスト
+						"tweet_id"		: wTweetID,			# リプライ先のツイートID（自分・ワシのツイートIDじゃけえ）
+						"user"			: wSTR_CellUser		# ユーザ情報
+					}
+					wMentions.update({ wReplyID : wSTR_Cell })
 			
-			for wTweet in wTwitterRes['Responce']['data'] :
-				wReplyID     = str( wTweet['id'] )
-				wReplyUserID = str( wTweet['author_id'] )
-				wReplyText   = str( wTweet['text'] )
-###				wTimeDate   = str( wTweet['created_at'] )
-				
-				###日時の変換
-				wTimeDate = wTweet['created_at']
-				wTimeRes = CLS_TIME.sTTchg( wRes, "(3)", wTimeDate )
-				if wTimeRes['Result']!=True :
-					return wRes
-				wTimeDate = str( wTimeRes['TimeDate'] )
-		 		
-				if "referenced_tweets" not in wTweet :
-					continue
-				wTweetID = str( wTweet['referenced_tweets'][0]['id'] )
-				
-				### screen_nameの取り出し
-				wScreenName = ""
-				for wUsers in wTwitterRes['Responce']['includes']['users'] :
-					if str(wUsers['id'])==wReplyUserID :
-						wScreenName  = wUsers['username']
-						wDescription = wUsers['description']
-						break
-				
-				wSTR_CellUser = {
-					"id" 			: wReplyUserID,
-					"screen_name"	: wScreenName,
-					"description"	: wDescription
-				}
-				wSTR_Cell = {
-###					"id" 			: wReplyUserID,		# リプライユーザID（お相手のユーザID）
-					"id"			: wReplyID,			# リプライツイートID（お相手のツイートID）
-					"created_at"    : wTimeDate,		# リプライの時刻（お相手のツイート日時 Twitter時間）
-###					"reply_id"		: wReplyID,			# リプライツイートID（お相手のツイートID）
-###					"reply_text"	: wReplyText,		# リプライの内容・テキスト
-					"text"			: wReplyText,		# リプライの内容・テキスト
-					"tweet_id"		: wTweetID,			# リプライ先のツイートID（自分・ワシのツイートIDじゃけえ）
-					"user"			: wSTR_CellUser		# ユーザ情報
-				}
-				wMentions.update({ wReplyID : wSTR_Cell })
-		
-		#############################
-		# トラヒック計測：取得タイムライン数
-		CLS_Traffic.sP( "timeline", len( wMentions ) )
+			#############################
+			# トラヒック計測：取得タイムライン数
+			CLS_Traffic.sP( "timeline", len( wMentions ) )
 		
 		#############################
 		# 完了
@@ -1261,19 +1258,20 @@ class CLS_Twitter_IF() :
 		# データ加工
 		#   いいねがない場合はセットなし
 		wUsers = {}
-		if wTwitterRes['Responce']['meta']['result_count']>0 and \
-		   "data" in wTwitterRes['Responce'] :
-			for wUser in wTwitterRes['Responce']['data'] :
-				wID = str(wUser['id'])
-				wName = wUser['name'].replace( "'", "''" )
-				
-				wSTR_Cell = {
-					"id"			: wID,
-					"name"			: wName,
-					"screen_name"	: wUser['username'],
-					"description"	: wUser['description']
-				}
-				wUsers.update({ wID : wSTR_Cell })
+		if "meta" in wTwitterRes['Responce'] :
+			if wTwitterRes['Responce']['meta']['result_count']>0 and \
+			   "data" in wTwitterRes['Responce'] :
+				for wUser in wTwitterRes['Responce']['data'] :
+					wID = str(wUser['id'])
+					wName = wUser['name'].replace( "'", "''" )
+					
+					wSTR_Cell = {
+						"id"			: wID,
+						"name"			: wName,
+						"screen_name"	: wUser['username'],
+						"description"	: wUser['description']
+					}
+					wUsers.update({ wID : wSTR_Cell })
 		
 		#############################
 		# 完了
@@ -1364,44 +1362,45 @@ class CLS_Twitter_IF() :
 		# データ加工
 		#   いいねがない場合はセットなし
 		wUsers = {}
-		if wTwitterRes['Responce']['meta']['result_count']>0 and \
-		   "includes" in wTwitterRes['Responce'] and \
-		   "data" in wTwitterRes['Responce'] :
-			
-			### Tweetデータから対象引用リツイートを抽出
-			for wTweet in wTwitterRes['Responce']['data'] :
-				if "referenced_tweets" not in wTweet :
-					continue
-				for wTweetCont in wTweet['referenced_tweets'] :
-					wSTR_Cell = {}
-					if "id" not in wTweetCont :
+		if "meta" in wTwitterRes['Responce'] :
+			if wTwitterRes['Responce']['meta']['result_count']>0 and \
+			   "includes" in wTwitterRes['Responce'] and \
+			   "data" in wTwitterRes['Responce'] :
+				
+				### Tweetデータから対象引用リツイートを抽出
+				for wTweet in wTwitterRes['Responce']['data'] :
+					if "referenced_tweets" not in wTweet :
 						continue
-					wID = str(wTweetCont['id'])
-					if wID!=inID :
+					for wTweetCont in wTweet['referenced_tweets'] :
+						wSTR_Cell = {}
+						if "id" not in wTweetCont :
+							continue
+						wID = str(wTweetCont['id'])
+						if wID!=inID :
+							continue
+						
+						wUserID = str( wTweet['author_id'] )
+						wSTR_Cell = {
+							"id"			: wUserID,
+							"name"			: None,
+							"screen_name"	: None,
+							"description"	: None,
+							"tweet_id"		: str(wTweet['id']),
+							"text"			: wTweet['text'],
+							"set_data"		: True
+						}
+						break
+					if "set_data" in wSTR_Cell :
+						wUsers.update({ wUserID : wSTR_Cell })
+				
+				### Tweetデータから関連ユーザ情報を抜き出す
+				for wUser in wTwitterRes['Responce']['includes']['users'] :
+					wUserID = str( wUser['id'] )
+					if wUserID not in wUsers :
 						continue
-					
-					wUserID = str( wTweet['author_id'] )
-					wSTR_Cell = {
-						"id"			: wUserID,
-						"name"			: None,
-						"screen_name"	: None,
-						"description"	: None,
-						"tweet_id"		: str(wTweet['id']),
-						"text"			: wTweet['text'],
-						"set_data"		: True
-					}
-					break
-				if "set_data" in wSTR_Cell :
-					wUsers.update({ wUserID : wSTR_Cell })
-			
-			### Tweetデータから関連ユーザ情報を抜き出す
-			for wUser in wTwitterRes['Responce']['includes']['users'] :
-				wUserID = str( wUser['id'] )
-				if wUserID not in wUsers :
-					continue
-				wUsers[wUserID]['name'] = wUser['name'].replace( "'", "''" )
-				wUsers[wUserID]['screen_name'] = wUser['username']
-				wUsers[wUserID]['description'] = wUser['description']
+					wUsers[wUserID]['name'] = wUser['name'].replace( "'", "''" )
+					wUsers[wUserID]['screen_name'] = wUser['username']
+					wUsers[wUserID]['description'] = wUser['description']
 		
 		#############################
 		# 完了

@@ -320,7 +320,6 @@ class CLS_TwitterFollower():
 #####################################################
 # 自動リムーブ
 #####################################################
-###	def AutoRemove( self, inUser ):
 	def AutoRemove( self, inUser, inFLG_Force=False ):
 		#############################
 		# 応答形式の取得
@@ -361,7 +360,6 @@ class CLS_TwitterFollower():
 		# フォロー者の場合
 		#   Twitterからリムーブする
 		if gVal.OBJ_Tw_IF.CheckMyFollow( wUserID )==True :
-###			if wARR_DBData!=None :
 			if wARR_DBData!=None and inFLG_Force==False:
 				#############################
 				# 期間比較値
@@ -410,8 +408,6 @@ class CLS_TwitterFollower():
 				
 				if wARR_DBData['follower']==True :
 					### フォロー者OFF・フォロワーON
-###					wUserLevel = "D-"
-###					if wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G+" :
 					if wARR_DBData['level_tag']=="G" :
 						wUserLevel = "H"
 					
@@ -423,7 +419,6 @@ class CLS_TwitterFollower():
 				
 				else:
 					### フォロー者OFF・フォロワーOFF
-###					wUserLevel = "E-"
 					if wARR_DBData['level_tag']=="H" or wARR_DBData['level_tag']=="H+" :
 						wUserLevel = "H-"
 					
@@ -438,7 +433,6 @@ class CLS_TwitterFollower():
 				
 				#############################
 				# ログに記録
-###				gVal.OBJ_L.Log( "R", wRes, "●自動リムーブ: " + inUser['screen_name'], inID=wUserID )
 				if inFLG_Force==True :
 					gVal.OBJ_L.Log( "R", wRes, "●自動リムーブ(強制): " + inUser['screen_name'], inID=wUserID )
 				else:
@@ -486,68 +480,139 @@ class CLS_TwitterFollower():
 		   gVal.OBJ_Tw_IF.CheckFollower( wUserID )==True :
 			
 			if wARR_DBData!=None :
-				if wARR_DBData['level_tag']!="F+" :
-					#############################
-					# 期間比較値
-					# いいねありの場合、
-					#   =いいね日時
-					# いいねなしの場合、
-					#   =登録日時
-					if str(wARR_DBData['rfavo_date'])!=gVal.DEF_TIMEDATE :
-						### いいねあり= いいね日時
-						wCompTimeDate = str(wARR_DBData['rfavo_date'])
-					else:
-						### いいねなし= 登録日時
-						wCompTimeDate = str(wARR_DBData['regdate'])
-						
-						### 送信回数が規定回数超えてれば、追い出し対象にする
-						if gVal.DEF_STR_TLNUM['forAutoRemoveIgnoreCompletelyCnt']<=wARR_DBData['pfavo_cnt'] :
-							wFLG_Remove = True
+				#############################
+				# 期間比較値
+				# いいねありの場合、
+				#   =いいね日時
+				# いいねなしの場合、
+				#   =登録日時
+				if str(wARR_DBData['rfavo_date'])!=gVal.DEF_TIMEDATE :
+					### いいねあり= いいね日時
+					wCompTimeDate = str(wARR_DBData['rfavo_date'])
+				else:
+					### いいねなし= 登録日時
+					wCompTimeDate = str(wARR_DBData['regdate'])
+				
+				#############################
+				# 比較値の設定
+				if wARR_DBData['level_tag']=="F+" or wARR_DBData['level_tag']=="Z-" :
+					### 既に追い出し済
+					wThreshold = gVal.DEF_STR_TLNUM['forAutoRemoveByeByeSec']
+				
+				else :
+					### その他は、追い出し初回
+					wThreshold = gVal.DEF_STR_TLNUM['forAutoRemoveIgnoreCompletelySec']
+				
+###				if wARR_DBData['level_tag']!="F+" :
+###					#############################
+###					# 期間比較値
+###					# いいねありの場合、
+###					#   =いいね日時
+###					# いいねなしの場合、
+###					#   =登録日時
+###					if str(wARR_DBData['rfavo_date'])!=gVal.DEF_TIMEDATE :
+###						### いいねあり= いいね日時
+###						wCompTimeDate = str(wARR_DBData['rfavo_date'])
+###					else:
+###						### いいねなし= 登録日時
+###						wCompTimeDate = str(wARR_DBData['regdate'])
+###						
+###						### 送信回数が規定回数超えてれば、追い出し対象にする
+###						if gVal.DEF_STR_TLNUM['forAutoRemoveIgnoreCompletelyCnt']<=wARR_DBData['pfavo_cnt'] :
+###							wFLG_Remove = True
+###					
+###					#############################
+###					# 自動リムーブ期間か
+###					wGetLag = CLS_OSIF.sTimeLag( wCompTimeDate, inThreshold=gVal.DEF_STR_TLNUM['forAutoRemoveIgnoreCompletelySec'] )
+###					if wGetLag['Result']!=True :
+###						wRes['Reason'] = "sTimeLag failed(1)"
+###						gVal.OBJ_L.Log( "B", wRes )
+###						return wRes
+###					if wGetLag['Beyond']==True :
+###						###期間外= 自動リムーブ対象
+###						wFLG_Remove = True
+				#############################
+				# 自動リムーブ期間か
+				wGetLag = CLS_OSIF.sTimeLag( wCompTimeDate, inThreshold=wThreshold )
+				if wGetLag['Result']!=True :
+					wRes['Reason'] = "sTimeLag failed(1)"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				if wGetLag['Beyond']==True :
+					###期間外= 自動リムーブ対象
+					wFLG_Remove = True
+			
+			else:
+###				wFLG_Remove = True
+				#############################
+				# DBがなくてリスト＆フォローが残っていれば
+				# ブロック→ブロック解除で追い出す
+				wBlockRes = gVal.OBJ_Tw_IF.BlockRemove( wUserID )
+				if wBlockRes['Result']!=True :
+					wRes['Reason'] = "Twitter API Error(BlockRemove): " + wBlockRes['Reason'] + " screen_name=" +inUser['screen_name']
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+			
+###			#############################
+###			# 追い出し判定された場合、
+###			# 追い出し扱い(F+)に設定する
+			#############################
+			# 追い出し判定された場合、
+			# 追い出し設定する
+			if wFLG_Remove==True :
+###				### ユーザレベル変更
+###				wUserLevel = "F+"
+###				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
+###				
+###				### トラヒック記録（フォロワー減少）
+###				CLS_Traffic.sP( "d_follower" )
+###				
+###				### ユーザ記録
+###				wStr = "●完全スルー期間外のため、以後無視"
+###				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']), inID=wUserID )
+				#############################
+				# F+（Z-）の場合
+				# Z-設定して、リスト解除する
+				if wARR_DBData['level_tag']=="F+" or wARR_DBData['level_tag']=="Z-" :
+					if wARR_DBData['level_tag']=="F+" :
+						### ユーザレベル変更
+						wUserLevel = "Z-"
+						wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
 					
-					#############################
-					# 自動リムーブ期間か
-					wGetLag = CLS_OSIF.sTimeLag( wCompTimeDate, inThreshold=gVal.DEF_STR_TLNUM['forAutoRemoveIgnoreCompletelySec'] )
-					if wGetLag['Result']!=True :
-						wRes['Reason'] = "sTimeLag failed(1)"
+#					### リスト解除
+#					wTweetRes = gVal.OBJ_Tw_IF.FollowerList_Remove( inUser )
+#					if wTweetRes['Result']!=True :
+#						wRes['Reason'] = "FollowerList_Remove is failed"
+#						gVal.OBJ_L.Log( "B", wRes )
+#						return wRes
+#					### ユーザ記録
+#					wStr = "●無視期間経過のためリスト解除"
+#					gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']), inID=wUserID )
+#					
+					### ブロック→ブロック解除で追い出す
+					wBlockRes = gVal.OBJ_Tw_IF.BlockRemove( wUserID )
+					if wBlockRes['Result']!=True :
+						wRes['Reason'] = "Twitter API Error(BlockRemove): " + wBlockRes['Reason'] + " screen_name=" +inUser['screen_name']
 						gVal.OBJ_L.Log( "B", wRes )
 						return wRes
-					if wGetLag['Beyond']==True :
-						###期間外= 自動リムーブ対象
-						wFLG_Remove = True
-			else:
-				wFLG_Remove = True
-			
-			if wFLG_Remove==True :
-###				#############################
-###				# ブロック→リムーブする
-###				wBlockRes = gVal.OBJ_Tw_IF.BlockRemove( wUserID )
-###				if wBlockRes['Result']!=True :
-###					wRes['Reason'] = "Twitter API Error(BlockRemove): " + wBlockRes['Reason'] + " screen_name=" + str(inUser['screen_name'])
-###					gVal.OBJ_L.Log( "B", wRes )
-###					return wRes
-###				
-				### ユーザレベル変更
-				wUserLevel = "F+"
-				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
+					### ユーザ記録
+					wStr = "●無視期間経過のため追い出し"
+					gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']), inID=wUserID )
 				
-				### トラヒック記録（フォロワー減少）
-				CLS_Traffic.sP( "d_follower" )
-				
-				### ユーザ記録
-###				wStr = "●完全スルー期間外のため追い出し"
-###				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']) )
-				wStr = "●完全スルー期間外のため、以後無視"
-				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']), inID=wUserID )
-				
-###				#############################
-###				# DBに反映
-###				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Follower( wUserID, inFLG_Follower=False )
-###				if wSubRes['Result']!=True :
-###					###失敗
-###					wRes['Reason'] = "UpdateFavoData_Follower is failed"
-###					gVal.OBJ_L.Log( "B", wRes )
-###					return wRes
-###		
+				#############################
+				# その他の場合、
+				#   送信回数が規定回数超えてれば、
+				#   追い出し扱い(F+)に設定する
+				else :
+					if gVal.DEF_STR_TLNUM['forAutoRemoveIgnoreCompletelyCnt']<=wARR_DBData['pfavo_cnt'] :
+						### ユーザレベル変更
+						wUserLevel = "F+"
+						wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
+						
+						### ユーザ記録
+						wStr = "●完全スルー期間外のため、以後無視"
+						gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']), inID=wUserID )
+		
 		#############################
 		# 正常終了
 		wRes['Result'] = True
