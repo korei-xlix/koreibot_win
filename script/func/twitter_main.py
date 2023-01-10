@@ -522,7 +522,8 @@ class CLS_TwitterMain():
 			if wARR_DBData['myfollow']!=wFollowerData[wID]['myfollow'] :
 				#############################
 				# 〇フォロー者検出
-				if wFollowerData[wID]['myfollow']==True :
+###				if wFollowerData[wID]['myfollow']==True :
+				if wARR_DBData['myfollow']==False and wFollowerData[wID]['myfollow']==True :
 					if str(wARR_DBData['myfollow_date'])==gVal.DEF_TIMEDATE :
 						wStr = "〇新規フォロー者"
 					else:
@@ -561,7 +562,8 @@ class CLS_TwitterMain():
 					### ユーザ記録
 					gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'], inID=wID )
 				
-				else:
+###				else:
+				elif wARR_DBData['myfollow']==True and wFollowerData[wID]['myfollow']==False :
 				#############################
 				# 〇リムーブ者検出
 					wStr = "●リムーブ者"
@@ -607,7 +609,8 @@ class CLS_TwitterMain():
 			if wARR_DBData['follower']!=wFollowerData[wID]['follower'] :
 				#############################
 				# 〇フォロワー検出
-				if wFollowerData[wID]['follower']==True :
+###				if wFollowerData[wID]['follower']==True :
+				if wARR_DBData['follower']==False and wFollowerData[wID]['follower']==True :
 					#############################
 					# ユーザ情報の確認
 					# 次のユーザはブロック→リムーブする
@@ -750,7 +753,8 @@ class CLS_TwitterMain():
 						### ユーザ記録
 						gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'], inID=wID )
 				
-				else:
+###				else:
+				elif wARR_DBData['follower']==True and wFollowerData[wID]['follower']==False :
 				#############################
 				# 〇被リムーブ検出
 					wFollower = False
