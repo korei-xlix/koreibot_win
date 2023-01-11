@@ -668,7 +668,7 @@ class CLS_TwitterReaction():
 					gVal.OBJ_L.Log( "B", wRes )
 					return wRes
 				
-				wRes['Responce'] = True		#自動フォロー実行
+###				wRes['Responce'] = True		#自動フォロー実行
 				
 				### 相互フォローリストに追加
 				wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( wARR_DBData )
