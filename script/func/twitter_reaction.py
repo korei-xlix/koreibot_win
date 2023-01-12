@@ -1350,7 +1350,7 @@ class CLS_TwitterReaction():
 							else:
 								wUserLevel = "C+"
 						
-						else wARR_DBData['level_tag']=="H+" :
+						elif wARR_DBData['level_tag']=="H+" :
 							
 							wUserLevel = "E"
 			
