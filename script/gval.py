@@ -241,6 +241,7 @@ class gVal() :
 		"forRenFavoSec"			: 115200,				#   非絡み自動解除日数                    32時間  (60x60x32)
 		"renFavoBotCnt"			: 10,					#   bot判定固定回数
 		"renFavoForceBotCnt"	: 30,					#   強制bot判定固定回数
+		"forRenFavoForceSec"	: 2073600,				#   非絡み設定強制解除日数                24日 (60x60x24)x24
 		
 														# ユーザ管理
 		"forGetUserSec"			: 600,					#   ユーザ取得間隔  10分  60x10

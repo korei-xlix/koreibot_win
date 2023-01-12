@@ -1150,8 +1150,10 @@ class CLS_TwitterReaction():
 		CLS_OSIF.sPrn( wStr )
 		
 		#############################
-		# 非絡みユーザ一覧の取得（自動設定のみ）
-		wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserBList( inAutoOnly=True )
+###		# 非絡みユーザ一覧の取得（自動設定のみ）
+###		wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserBList( inAutoOnly=True )
+		# 非絡みユーザ一覧の取得
+		wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserBList()
 		if wSubRes['Result']!=True :
 			###失敗
 			wRes['Reason'] = "UpdateFavoData_UserLevel is failed"
@@ -1326,6 +1328,31 @@ class CLS_TwitterReaction():
 				elif wARR_DBData['level_tag']=="H" :
 					
 					wUserLevel = "E"
+				
+				#############################
+				# 強制解除か
+				elif wARR_DBData['level_tag']=="G+" or wARR_DBData['level_tag']=="H+" :
+					#############################
+					# 最後のいいねからの期間
+					wFLG_RateRec = False
+					wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData['rfavo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['forRenFavoForceSec'] )
+					if wGetLag['Result']!=True :
+						wRes['Reason'] = "sTimeLag failed(2)"
+						gVal.OBJ_L.Log( "B", wRes )
+						return wRes
+					if wGetLag['Beyond']==True :
+						### 規定外 =古くなった
+						if wARR_DBData['level_tag']=="G+" :
+							if wARR_DBData['send_cnt']>=gVal.DEF_STR_TLNUM['LEVEL_B_Cnt'] :
+								wUserLevel = "B+"
+							elif wARR_DBData['send_cnt']>=1 :
+								wUserLevel = "B"
+							else:
+								wUserLevel = "C+"
+						
+						else wARR_DBData['level_tag']=="H+" :
+							
+							wUserLevel = "E"
 			
 			#############################
 			# ユーザの表示
