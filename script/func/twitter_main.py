@@ -381,8 +381,10 @@ class CLS_TwitterMain():
 							### リスト解除（元フォロー者or相互フォロー）
 							wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, "Z-" )
 					
-					if gVal.OBJ_Tw_IF.CheckMutualListUser( wID )==False and \
-					   gVal.OBJ_Tw_IF.CheckFollowListUser( wID )==True and \
+###					if gVal.OBJ_Tw_IF.CheckMutualListUser( wID )==False and \
+###					   gVal.OBJ_Tw_IF.CheckFollowListUser( wID )==True and \
+###					   wFollowerData[wID]['follower']==False :
+					if gVal.OBJ_Tw_IF.CheckFollowListUser( wID )==True and \
 					   wFollowerData[wID]['follower']==False :
 						### 片フォローリストなのにフォロワーではない
 						###   リストリムーブか、
@@ -1663,8 +1665,15 @@ class CLS_TwitterMain():
 					wID = str(wID)
 					
 					### 警告済はスキップ
-					if wID in gVal.ARR_CautionTweet :
+###					if wID in gVal.ARR_CautionTweet :
+###						continue
+					wFLG_Caution = False
+					for wCautionIndex in gVal.ARR_CautionTweet :
+						if gVal.ARR_CautionTweet[wCautionIndex]['id']==wID :
+							wFLG_Caution = True
+					if wFLG_Caution==True :
 						continue
+					
 					### 自分には警告しない
 					if str(gVal.STR_UserInfo['id'])==wID  :
 						continue
@@ -1713,8 +1722,15 @@ class CLS_TwitterMain():
 				wID = str(wID)
 				
 				### 警告済はスキップ
-				if wID in gVal.ARR_CautionTweet :
+###				if wID in gVal.ARR_CautionTweet :
+###					continue
+				wFLG_Caution = False
+				for wCautionIndex in gVal.ARR_CautionTweet :
+					if gVal.ARR_CautionTweet[wCautionIndex]['id']==wID :
+						wFLG_Caution = True
+				if wFLG_Caution==True :
 					continue
+				
 				### 自分には警告しない
 				if str(gVal.STR_UserInfo['id'])==wID  :
 					continue
