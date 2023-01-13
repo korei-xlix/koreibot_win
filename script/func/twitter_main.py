@@ -94,6 +94,14 @@ class CLS_TwitterMain():
 			return wRes
 		
 		#############################
+		# 除外プロフ文字読み込み
+		wResSub = gVal.OBJ_DB_IF.GetExeProf()
+		if wResSub['Result']!=True :
+			wRes['Reason'] = "GetExcProf failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
 		# 禁止ユーザ読み込み
 		wResSub = gVal.OBJ_DB_IF.GetExeUser()
 		if wResSub['Result']!=True :
@@ -2161,7 +2169,43 @@ class CLS_TwitterMain():
 			if wWord.find( wExeWord )>=0 :
 				if gVal.ARR_ExeWord[wExeWord]['report']==True :
 					### 報告対象の表示と、ログに記録
-###					gVal.OBJ_L.Log( "RR", wRes, "●報告対象の文字除外: id=" + inData['screen_name'] + " word=" + inWord )
+					gVal.OBJ_L.Log( "RR", wRes, "●報告対象の文字除外: id=" + inData['screen_name'] + " word=" + inWord, inID=inData['id'] )
+				else:
+					### ログに記録
+					gVal.OBJ_L.Log( "N", wRes, "文字除外: id=" + inData['screen_name'] + " word=" + inWord )
+				
+				### 除外
+				wRes['Result'] = True
+				return wRes
+		
+		#############################
+		# 正常終了
+		wRes['Responce'] = True
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# 除外プロフ文字チェック
+#####################################################
+	def CheckExtProf( self, inData, inWord ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "CheckExtProf"
+		
+		wWord = inWord.replace( '\n', '' )
+		
+		wRes['Responce'] = False
+		#############################
+		# 除外プロフ文字があるかチェック
+		for wExeWord in gVal.ARR_ExeProfKeys :
+			if wWord.find( wExeWord )>=0 :
+				if gVal.ARR_ExeProf[wExeWord]['report']==True :
+					### 報告対象の表示と、ログに記録
 					gVal.OBJ_L.Log( "RR", wRes, "●報告対象の文字除外: id=" + inData['screen_name'] + " word=" + inWord, inID=inData['id'] )
 				else:
 					### ログに記録

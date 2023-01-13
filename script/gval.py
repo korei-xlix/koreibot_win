@@ -358,6 +358,8 @@ class gVal() :
 		"Melt_ExcWord"			: "/DEF_ExcWordArc/DEF_ExcWord.txt",
 									# 禁止ユーザファイルパス(フォルダ付き)
 		"Melt_ExcUser"			: "/DEF_ExcWordArc/DEF_ExcUser.txt",
+									# 禁止ユーザプロフィールファイルパス(フォルダ付き)
+		"Melt_ExcProf"			: "/DEF_ExcWordArc/DEF_ExcProf.txt",
 									# リストいいね指定ファイル
 		"Melt_ListFavo"			: "/DEF_ExcWordArc/DEF_ListFavo.txt",
 		
@@ -412,6 +414,8 @@ class gVal() :
 	
 	ARR_ExeWord = {}										# 除外文字データ
 	ARR_ExeWordKeys = []
+	ARR_ExeProf = {}										# 除外文字データ
+	ARR_ExeProfKeys = []
 	ARR_ListFavo = {}										# リストいいね指定
 	ARR_NotReactionUser = {}								# リアクション禁止ユーザ
 	ARR_SearchData = {}										# 検索データ

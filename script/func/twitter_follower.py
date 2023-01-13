@@ -726,6 +726,17 @@ class CLS_TwitterFollower():
 				return wRes
 		
 		#############################
+		# 禁止プロフ文字チェック
+		wWordRes = self.OBJ_Parent.CheckExtProf( inUser, wUser['description'] )
+		if wWordRes['Result']!=True :
+			wRes['Reason'] = "CheckExtProf failed(description)"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		if wWordRes['Responce']==False :
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
 		# フォローする
 		wTweetRes = gVal.OBJ_Tw_IF.Follow( wUserID, inMute=True )
 		if wTweetRes['Result']!=True :

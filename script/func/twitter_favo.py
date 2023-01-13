@@ -1111,9 +1111,11 @@ class CLS_TwitterFavo():
 			### 外部いいねモードの場合
 			### プロフ文字
 			if inFLG_Follower==False :
-				wWordRes = self.OBJ_Parent.CheckExtWord( wFavoUser, wFavoUser['description'] )
+###				wWordRes = self.OBJ_Parent.CheckExtWord( wFavoUser, wFavoUser['description'] )
+				wWordRes = self.OBJ_Parent.CheckExtProf( wFavoUser, wFavoUser['description'] )
 				if wWordRes['Result']!=True :
-					wRes['Reason'] = "CheckExtWord failed(description)"
+###					wRes['Reason'] = "CheckExtWord failed(description)"
+					wRes['Reason'] = "CheckExtProf failed(description)"
 					gVal.OBJ_L.Log( "B", wRes )
 					return wRes
 				if wWordRes['Responce']==False :

@@ -794,9 +794,11 @@ class CLS_TwitterKeyword():
 					continue
 				
 				### discriptionチェック
-				wWordRes = self.OBJ_Parent.CheckExtWord( wTweet['user'], wTweet['user']['description'] )
+###				wWordRes = self.OBJ_Parent.CheckExtWord( wTweet['user'], wTweet['user']['description'] )
+				wWordRes = self.OBJ_Parent.CheckExtProf( wTweet['user'], wTweet['user']['description'] )
 				if wWordRes['Result']!=True :
-					wRes['Reason'] = "CheckExtWord failed(description)"
+###					wRes['Reason'] = "CheckExtWord failed(description)"
+					wRes['Reason'] = "CheckExtProf failed(description)"
 					gVal.OBJ_L.Log( "B", wRes )
 					return wRes
 				if wWordRes['Responce']==False :

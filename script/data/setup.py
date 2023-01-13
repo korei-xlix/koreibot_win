@@ -224,6 +224,14 @@ class CLS_Setup():
 			CLS_OSIF.sErr( wRes )
 			return False
 		
+		#    除外データ 文字列ファイル
+		wFilePath = str( gVal.STR_SystemInfo['EXT_FilePath'] ) + gVal.DEF_STR_FILE['Melt_ExcWordArc_path'] + gVal.DEF_STR_FILE['Melt_ExcProf']
+		wARR_ExcProf = []
+		if CLS_File.sReadFile( wFilePath, outLine=wARR_ExcProf )!=True :
+			wRes['Reason'] = "解凍ファイルが見つかりません: path=" + wFilePath
+			CLS_OSIF.sErr( wRes )
+			return False
+		
 		if inWordOnly==False :
 			#    禁止ユーザ
 			wFilePath = str( gVal.STR_SystemInfo['EXT_FilePath'] ) + gVal.DEF_STR_FILE['Melt_ExcWordArc_path'] + gVal.DEF_STR_FILE['Melt_ExcUser']
@@ -280,6 +288,10 @@ class CLS_Setup():
 		#############################
 		# 除外ユーザ名、文字、プロファイルの設定
 		wSubRes = gVal.OBJ_DB_IF.SetExeWord( wARR_ExcWord )
+		if wSubRes['Result']!=True :
+			return False
+		
+		wSubRes = gVal.OBJ_DB_IF.SetExeProf( wARR_ExcProf )
 		if wSubRes['Result']!=True :
 			return False
 		
@@ -522,6 +534,7 @@ class CLS_Setup():
 		self.__create_TBL_LOG_DATA( inDBobj )
 		self.__create_TBL_TRAFFIC_DATA( inDBobj )
 		self.__create_TBL_EXC_WORD( inDBobj )
+		self.__create_TBL_EXC_PROF( inDBobj )
 		self.__create_TBL_EXC_USER( inDBobj )
 		self.__create_TBL_CAUTION_TWEET( inDBobj )
 		self.__create_TBL_SEARCH_WORD( inDBobj )
@@ -543,6 +556,8 @@ class CLS_Setup():
 		wQy = "drop table if exists tbl_traffic_data ;"
 		inOBJ_DB.RunQuery( wQy )
 		wQy = "drop table if exists tbl_exc_word ;"
+		inOBJ_DB.RunQuery( wQy )
+		wQy = "drop table if exists tbl_exc_prof ;"
 		inOBJ_DB.RunQuery( wQy )
 		wQy = "drop table if exists tbl_exc_user ;"
 		inOBJ_DB.RunQuery( wQy )
@@ -759,6 +774,28 @@ class CLS_Setup():
 # テーブル作成: TBL_EXC_WORD
 #####################################################
 	def __create_TBL_EXC_WORD( self, inOBJ_DB, inTBLname="tbl_exc_word" ):
+		#############################
+		# テーブルのドロップ
+		wQy = "drop table if exists " + inTBLname + ";"
+		inOBJ_DB.RunQuery( wQy )
+		
+		#############################
+		# テーブル枠の作成
+		wQy = "create table " + inTBLname + "("
+		wQy = wQy + "regdate     TIMESTAMP,"			# 登録日時
+		wQy = wQy + "word        TEXT  NOT NULL, "		# 禁止ワード
+		wQy = wQy + "report      BOOL  DEFAULT false,"	# 通報対象か True=対象
+		wQy = wQy + " PRIMARY KEY ( word ) ) ;"
+		
+		inOBJ_DB.RunQuery( wQy )
+		return
+
+
+
+#####################################################
+# テーブル作成: TBL_EXC_PROF
+#####################################################
+	def __create_TBL_EXC_PROF( self, inOBJ_DB, inTBLname="tbl_exc_prof" ):
 		#############################
 		# テーブルのドロップ
 		wQy = "drop table if exists " + inTBLname + ";"

@@ -1170,6 +1170,207 @@ class CLS_DB_IF() :
 
 
 #####################################################
+# 除外プロフ文字
+#####################################################
+	def GetExeProf(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "GetExeProf"
+		
+		#############################
+		# データベースから除外文字を取得
+		wQy = "select * from tbl_exc_prof "
+		wQy = wQy + ";"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQy )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "C", wRes )
+			return False
+		
+		#############################
+		# 辞書型に整形
+		wARR_DBData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
+		
+		wARR_ExeWord = {}
+		#############################
+		# 除外文字データを登録する
+		wKeylist = list( wARR_DBData.keys() )
+		for wIndex in wKeylist :
+			wKey = wARR_DBData[wIndex]['word']
+			wCell = {
+				"word"		: wKey,
+				"report"	: wARR_DBData[wIndex]['report']
+			}
+			wARR_ExeWord.update({ wKey : wCell })
+		
+		gVal.ARR_ExeProf = wARR_ExeWord
+		
+		#############################
+		# =正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def SetExeProf( self, inARRData ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "SetExeProf"
+		
+		#############################
+		# 時間を取得
+		wTD = CLS_TIME.sGet( wRes, "(2)" )
+		
+		#############################
+		# データベースから除外文字を取得
+		wQy = "select word from tbl_exc_prof "
+		wQy = wQy + ";"
+		
+		wResDB = self.OBJ_DB.RunQuery( wQy )
+		wResDB = self.OBJ_DB.GetQueryStat()
+		if wResDB['Result']!=True :
+			##失敗
+			wRes['Reason'] = "Run Query is failed(1): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+			gVal.OBJ_L.Log( "C", wRes )
+			return False
+		
+		### リスト型に整形
+		wARR_RateWord = []
+		self.OBJ_DB.ChgList( wResDB['Responce']['Data'], outList=wARR_RateWord )
+		
+		#############################
+		# 登録データを作成する
+		wARR_Word = {}
+		for wLine in inARRData :
+			
+			### 通報設定ありか
+			#      先頭が @@@ の場合
+			wReport = False
+			wIfind = wLine.find("@@@")
+			if wIfind==0 :
+				wLine = wLine.replace( "@@@", "" )
+				wReport = True
+			
+			### ダブり登録は除外
+			if wLine in wARR_Word :
+				continue
+			if wLine=="" or wLine==None :
+				continue
+			
+			### データ登録
+			wCell = {
+				"word"		: wLine,
+				"report"	: wReport
+			}
+			wARR_Word.update({ wLine : wCell })
+		
+		#############################
+		# データベースに登録する
+		wKeylist = list( wARR_Word.keys() )
+		for wKey in wKeylist :
+			#############################
+			# 登録済みの場合
+			#   通報情報を更新する
+			if wKey in wARR_RateWord :
+				wQy = "update tbl_exc_prof set "
+				wQy = wQy + "report = " + str(wARR_Word[wKey]['report']) + " "
+				wQy = wQy + " ;"
+			
+			#############################
+			# 登録なしの場合
+			#   新規登録する
+			else :
+				wQy = "insert into tbl_exc_prof values ("
+				wQy = wQy + "'" + str(wTD['TimeDate']) + "', "
+				wQy = wQy + "'" + wKey + "', "
+				wQy = wQy + str(wARR_Word[wKey]['report']) + " "
+				wQy = wQy + ") ;"
+			
+			#############################
+			# クエリの実行
+			wResDB = self.OBJ_DB.RunQuery( wQy )
+			wResDB = self.OBJ_DB.GetQueryStat()
+			if wResDB['Result']!=True :
+				##失敗
+				wRes['Reason'] = "Run Query is failed(2): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+				gVal.OBJ_L.Log( "C", wRes )
+				return False
+			
+			#############################
+			# 実行結果の表示
+			if wKey in wARR_RateWord :
+				### 更新
+				wStr = "除外文字 更新: "
+			else:
+				### 新規
+				wStr = "除外文字 追加: "
+			
+			### 通報有無
+			if wARR_Word[wKey]['report']==True :
+				wStr = wStr + " [〇有] "
+			else:
+				wStr = wStr + " [  無] "
+			
+			### 文字
+			wStr = wStr + wKey
+			
+			CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# データベースから削除
+		#   登録データにないデータをデータベースから抹消する
+		for wRateKey in wARR_RateWord :
+			#############################
+			# 登録データにある場合
+			#   スキップする
+			if wRateKey in wARR_Word :
+				continue
+			
+			# ※登録なし：削除確定
+			wQy = "delete from tbl_exc_prof "
+			wQy = wQy + "where word = '" + wRateKey + "' "
+			wQy = wQy + " ;"
+			
+			#############################
+			# クエリの実行
+			wResDB = self.OBJ_DB.RunQuery( wQy )
+			wResDB = self.OBJ_DB.GetQueryStat()
+			if wResDB['Result']!=True :
+				##失敗
+				wRes['Reason'] = "Run Query is failed(3): RunFunc=" + wResDB['RunFunc'] + " reason=" + wResDB['Reason'] + " query=" + wResDB['Query']
+				gVal.OBJ_L.Log( "C", wRes )
+				return False
+			
+			#############################
+			# 実行結果の表示
+			wStr = "除外文字 ×削除×: " + wRateKey
+			CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# グローバルを更新する
+		gVal.ARR_ExeProf = wARR_Word
+		gVal.ARR_ExeProfKeys = list( wARR_Word.keys() )
+		
+		#############################
+		# ログに記録する
+		gVal.OBJ_L.Log( "SR", wRes, "データ更新: exe prof" )
+		
+		#############################
+		# =正常
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
 # 禁止ユーザ
 #####################################################
 	def GetExeUser(self):
