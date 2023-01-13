@@ -709,14 +709,18 @@ class CLS_TwitterFollower():
 		# 以下は除外
 		# ・ユーザレベル F以外
 		# ・フォロー者ON
-		# ・フォロワーON
-		# ・過去にフォローしたこと、されたことがある
+###		# ・フォロワーON
+###		# ・過去にフォローしたこと、されたことがある
+		# ・過去にフォローしたことがある
 		if inForce==False :
+###			if wARR_DBData['level_tag']!="F" or \
+###			   wARR_DBData['myfollow']==True or \
+###			   str(wARR_DBData['myfollow_date'])!=gVal.DEF_TIMEDATE or \
+###			   wARR_DBData['follower']==True or \
+###			   str(wARR_DBData['follower_date'])!=gVal.DEF_TIMEDATE :
 			if wARR_DBData['level_tag']!="F" or \
 			   wARR_DBData['myfollow']==True or \
-			   str(wARR_DBData['myfollow_date'])!=gVal.DEF_TIMEDATE or \
-			   wARR_DBData['follower']==True or \
-			   str(wARR_DBData['follower_date'])!=gVal.DEF_TIMEDATE :
+			   str(wARR_DBData['myfollow_date'])!=gVal.DEF_TIMEDATE :
 				
 				wRes['Result'] = True
 				return wRes

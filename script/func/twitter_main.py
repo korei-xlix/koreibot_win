@@ -419,7 +419,10 @@ class CLS_TwitterMain():
 			wFLG_Force = False
 			#############################
 			# レベルDの修正→レベルAへ
-			if ( wARR_DBData['level_tag']=="D" or wARR_DBData['level_tag']=="C+" ) and \
+###			if ( wARR_DBData['level_tag']=="D" or wARR_DBData['level_tag']=="C+" ) and \
+###			   wFollowerData[wID]['myfollow']==True and \
+###			   gVal.OBJ_Tw_IF.CheckSubscribeListUser( wID )==True :
+			if ( wARR_DBData['level_tag']=="D" or wARR_DBData['level_tag']=="C+" or wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G+" ) and \
 			   wFollowerData[wID]['myfollow']==True and \
 			   gVal.OBJ_Tw_IF.CheckSubscribeListUser( wID )==True :
 				if gVal.OBJ_Tw_IF.CheckMutualListUser( wID )==False and \
@@ -1667,11 +1670,13 @@ class CLS_TwitterMain():
 					### 警告済はスキップ
 ###					if wID in gVal.ARR_CautionTweet :
 ###						continue
-					wFLG_Caution = False
-					for wCautionIndex in gVal.ARR_CautionTweet :
-						if gVal.ARR_CautionTweet[wCautionIndex]['id']==wID :
-							wFLG_Caution = True
-					if wFLG_Caution==True :
+###					wFLG_Caution = False
+###					for wCautionIndex in gVal.ARR_CautionTweet :
+###						if gVal.ARR_CautionTweet[wCautionIndex]['id']==wID :
+###							wFLG_Caution = True
+###					if wFLG_Caution==True :
+###						continue
+					if self.Check_Caution( wID )==True :
 						continue
 					
 					### 自分には警告しない
@@ -1724,11 +1729,13 @@ class CLS_TwitterMain():
 				### 警告済はスキップ
 ###				if wID in gVal.ARR_CautionTweet :
 ###					continue
-				wFLG_Caution = False
-				for wCautionIndex in gVal.ARR_CautionTweet :
-					if gVal.ARR_CautionTweet[wCautionIndex]['id']==wID :
-						wFLG_Caution = True
-				if wFLG_Caution==True :
+###				wFLG_Caution = False
+###				for wCautionIndex in gVal.ARR_CautionTweet :
+###					if gVal.ARR_CautionTweet[wCautionIndex]['id']==wID :
+###						wFLG_Caution = True
+###				if wFLG_Caution==True :
+###					continue
+				if self.Check_Caution( wID )==True :
 					continue
 				
 				### 自分には警告しない
@@ -1810,7 +1817,9 @@ class CLS_TwitterMain():
 				wID = str(wID)
 				
 				### 警告済はスキップ
-				if wID in gVal.ARR_CautionTweet :
+###				if wID in gVal.ARR_CautionTweet :
+###					continue
+				if self.Check_Caution( wID )==True :
 					continue
 				### 自分には警告しない
 				if str(gVal.STR_UserInfo['id'])==wID  :
@@ -1977,6 +1986,15 @@ class CLS_TwitterMain():
 		wRes['Result'] = True
 		return wRes
 
+	#####################################################
+	# 警告有無チェック
+	#####################################################
+	def Check_Caution( self, inID ):
+		for wCautionIndex in gVal.ARR_CautionTweet :
+			if gVal.ARR_CautionTweet[wCautionIndex]['id']==inID :
+				return True
+		return False
+
 
 
 #####################################################
@@ -2059,7 +2077,8 @@ class CLS_TwitterMain():
 				if wSubRes['Result']!=True :
 					wRes['Reason'] = "AutoRemove is failed"
 					gVal.OBJ_L.Log( "B", wRes )
-					return wRes
+###					return wRes
+					continue
 		
 		#############################
 		# ListFavo一覧のうち
@@ -2100,7 +2119,8 @@ class CLS_TwitterMain():
 				if wSubRes['Result']!=True :
 					wRes['Reason'] = "AutoRemove is failed"
 					gVal.OBJ_L.Log( "B", wRes )
-					return wRes
+###					return wRes
+					continue
 		
 		#############################
 		# 現時間を設定
