@@ -2109,12 +2109,6 @@ class CLS_TwitterAdmin():
 					# リストの取得
 					wGetListsRes = gVal.OBJ_Tw_IF.GetLists( gVal.ARR_CautionTweet[wListNum]['screen_name'] )
 					if wGetListsRes['Result']!=True :
-###						wRes['Reason'] = "Twitter API Error(31): " + wGetListsRes['Reason'] + " screen_name=" + gVal.ARR_CautionTweet[wListNum]['screen_name']
-###						gVal.OBJ_L.Log( "D", wRes )
-###						
-###						wStr = "●Twitterエラーのためスキップ: screen_name=" + gVal.ARR_CautionTweet[wListNum]['screen_name']
-###						CLS_OSIF.sPrn( wStr )
-###						continue
 						### エラーでリスト取得できなかったら正常処理できないので
 						### 警告は保持するため、処理を抜ける
 						wRes['Reason'] = "Twitter API Error(31): Critical Error: " + wGetListsRes['Reason'] + " screen_name=" + gVal.ARR_CautionTweet[wListNum]['screen_name']
@@ -2130,7 +2124,6 @@ class CLS_TwitterAdmin():
 						### 自分のリスト以外はスキップ
 						if wARR_Lists[wKey]['me']!=True :
 							continue
-###						if wARR_IndListID==wARR_Lists[wKey]['id'] :
 						if str(wARR_Lists[wKey]['id']) in wARR_IndListID :
 							wFLG_Caution = True		# 警告リストまだ登録中
 							break
@@ -2222,8 +2215,62 @@ class CLS_TwitterAdmin():
 			### トラヒック記録（フォロワー減少）
 			CLS_Traffic.sP( "d_follower" )
 			
-			### ユーザレベル変更
+			### ユーザレベル変更（いちお設定）
 			wUserLevel = "L"
+			wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
+		
+		#############################
+		# 追い出しモードOFF
+		else :
+			#############################
+			# DBからいいね情報を取得する(1個)
+			wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( gVal.ARR_CautionTweet[inListNum] )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "GetFavoDataOne is failed(2)"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			### DB未登録（ありえない）
+			if wSubRes['Responce']['Data']==None :
+				wRes['Reason'] = "GetFavoDataOne is no data"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if wSubRes['Responce']['FLG_New']==True :
+				#############################
+				# 新規情報の設定
+				wSubRes = self.OBJ_Parent.SetNewFavoData( gVal.ARR_CautionTweet[inListNum], wSubRes['Responce']['Data'] )
+				if wSubRes['Result']!=True :
+					###失敗
+					wRes['Reason'] = "SetNewFavoData is failed(2)"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+			
+			wARR_DBData = wSubRes['Responce']['Data']
+			
+			#############################
+			# 相互フォロー中 解除か
+			if wARR_DBData['myfollow']==True and wARR_DBData['follower']==True :
+				if wARR_DBData['send_cnt']>=gVal.DEF_STR_TLNUM['LEVEL_B_Cnt'] :
+					wUserLevel = "B+"
+				elif wARR_DBData['send_cnt']>=1 :
+					wUserLevel = "B"
+				else:
+					wUserLevel = "C+"
+			
+			#############################
+			# 片フォロワー 解除か
+			elif wARR_DBData['myfollow']==True and wARR_DBData['follower']==False :
+				wUserLevel = "D+"
+			
+			elif wARR_DBData['myfollow']==False and wARR_DBData['follower']==True :
+				wUserLevel = "E"
+			
+			#############################
+			# 関連なし
+			else :
+				wUserLevel = "F"
+			
+			### ユーザレベル変更
 			wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
 		
 		#############################
@@ -2235,7 +2282,6 @@ class CLS_TwitterAdmin():
 		
 		#############################
 		# ログに記録
-###		gVal.OBJ_L.Log( "T", wRes, "●警告ツイート削除: id=" + gVal.ARR_CautionTweet[inListNum]['tweet_id'] + " screen_name=" + gVal.ARR_CautionTweet[inListNum]['screen_name'] )
 		gVal.OBJ_L.Log( "RC", wRes, "〇警告解除: screen_name=" + gVal.ARR_CautionTweet[inListNum]['screen_name'], inID=wUserID )
 		
 		#############################
