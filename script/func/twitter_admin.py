@@ -3051,6 +3051,18 @@ class CLS_TwitterAdmin():
 		CLS_OSIF.sPrn( wStr )
 		
 		#############################
+		# 削除ツイート
+		wTimeRes = CLS_OSIF.sTimeAddHour( inTimedate=gVal.STR_Time['del_tweet'], inSec=gVal.DEF_STR_TLNUM['forAutoTweetDeleteCycleSec'] )
+		if wTimeRes['Result']!=True :
+			wRes['Reason'] = "sTimeAddHour is failed(del_tweet)"
+			gVal.OBJ_L.Log( "A", wTimeRes )
+			return wRes
+		
+		wStr = "削除ツイート    ：" + str(gVal.STR_Time['del_tweet'])
+		wStr = wStr + "  次回予定    ：" + str(wTimeRes['NextTD'])
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
 		# 自動削除
 		wTimeRes = CLS_OSIF.sTimeAddHour( inTimedate=gVal.STR_Time['auto_delete'], inSec=gVal.DEF_STR_TLNUM['forCheckAutoDeleteSec'] )
 		if wTimeRes['Result']!=True :
