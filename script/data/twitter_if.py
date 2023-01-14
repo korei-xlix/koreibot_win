@@ -3118,5 +3118,9 @@ class CLS_Twitter_IF() :
 			return False
 		return True
 
+	#####################################################
+	def GetMutualListUser(self):
+		return self.ARR_MutualListUserID
+
 
 

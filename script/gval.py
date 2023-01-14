@@ -233,9 +233,9 @@ class gVal() :
 		"forFavoDataDelHardSec"			: 34214400,		# いいね情報削除までの期間(残しデータ) 396日 (60x60x24)x396
 		"forFavoDataDelLevelFSec"		: 259200,		# いいね情報削除までの期間(レベルF)     3日 (60x60x24)x3
 		
-###		"forAutoTweetDeleteSec"			: 86400,		# 自動ツイート削除期間                  1日 (60x60x24)x1
 		"forAutoTweetDeleteCycleSec"	: 14400,		# 自動ツイート削除 実施期間           4時間 (60x60x4)
-		"forAutoTweetDeleteSec"			: 3600,			# 自動ツイート削除期間                1時間 (60x60)
+###		"forAutoTweetDeleteSec"			: 3600,			# 自動ツイート削除期間                1時間 (60x60)
+		"forAutoTweetDeleteSec"			: 86400,		# 自動ツイート削除期間                  1日 (60x60x24)x1
 		"forAutoTweetDeleteCount"		: 2,			# 自動ツイート削除範囲  n x 200
 		
 														# いいね送信

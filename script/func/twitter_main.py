@@ -2433,7 +2433,7 @@ class CLS_TwitterMain():
 
 
 #####################################################
-# 全ミュート解除
+# 全ミュート解除・ミュート忘れをミュート
 #####################################################
 	def AllMuteRemove(self):
 		#############################
@@ -2444,6 +2444,8 @@ class CLS_TwitterMain():
 		wRes['Func']  = "AllMuteRemove"
 		
 		wRes['Responce'] = False
+		
+		wARR_MuteID = []
 		#############################
 		# ミュート一覧 取得
 		wMuteRes = gVal.OBJ_Tw_IF.GetMuteList()
@@ -2452,31 +2454,94 @@ class CLS_TwitterMain():
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-		#############################
-		# ミュート解除ID一覧の作成
-		wARR_MuteRemoveID = []
 		if len(wMuteRes['Responce'])>=1 :
 			for wID in wMuteRes['Responce']:
 				wID = str( wID )
-				
-				###フォロー者は対象外
-				if gVal.OBJ_Tw_IF.CheckMyFollow( wID )==True :
-					continue
-				
-				wARR_MuteRemoveID.append( wID )
+				wARR_MuteID.append( wID )
 		
-		###対象者なし
-		if len( wARR_MuteRemoveID )==0 :
-			wRes['Result'] = True
-			return wRes
+		wARR_MutualFollow = gVal.OBJ_Tw_IF.GetMutualListUser()
+		#############################
+		# ミュートID一覧の作成（ミュート忘れ）
+		wARR_MuteAddID = []
+		for wMutualID in wARR_MutualFollow :
+			###フォロー者でミュートなければ対象
+			if wMutualID not in wARR_MuteID :
+				wARR_MuteAddID.append( wMutualID )
 		
 		#############################
+		# ミュート解除ID一覧の作成
+		wARR_MuteRemoveID = []
+###		if len(wMuteRes['Responce'])>=1 :
+###			for wID in wMuteRes['Responce']:
+###				wID = str( wID )
+###				
+###				###フォロー者は対象外
+###				if gVal.OBJ_Tw_IF.CheckMyFollow( wID )==True :
+###					continue
+###				
+###				wARR_MuteRemoveID.append( wID )
+		for wID in wARR_MuteID:
+			###フォロー者はミュート解除対象
+			if gVal.OBJ_Tw_IF.CheckMyFollow( wID )==False :
+				wARR_MuteRemoveID.append( wID )
+		
+		#############################
+		# ミュート実行
+		if len( wARR_MuteAddID )>=1 :
+			#############################
+			# ミュートしていく
+			wStr = "ミュート実行対象数: " + str(len( wARR_MuteAddID )) + '\n'
+			CLS_OSIF.sPrn( wStr )
+			
+			for wID in wARR_MuteAddID :
+				### DBからいいね情報を取得する(1個)
+				wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( inID=wID, inFLG_New=False )
+				if wDBRes['Result']!=True :
+					###失敗
+					wRes['Reason'] = "GetFavoDataOne is failed(2)"
+					gVal.OBJ_L.Log( "B", wRes )
+					continue
+				### DB未登録ならスキップ
+				if wDBRes['Responce']['Data']==None :
+					continue
+				wARR_DBData = wDBRes['Responce']['Data']
+				
+				###  実行中ユーザ情報の表示
+				wStr = "ミュート実行中: " + wARR_DBData['screen_name']
+				CLS_OSIF.sPrn( wStr )
+				
+				###  ミュート実行する
+				wRemoveRes = gVal.OBJ_Tw_IF.OBJ_Twitter.Mute( wID )
+				if wRemoveRes['Result']!=True :
+					wRes['Reason'] = "Twitter API Error(Mute): " + wRemoveRes['Reason']
+					gVal.OBJ_L.Log( "B", wRes )
+					
+					wStr = "●実行失敗"
+					CLS_OSIF.sPrn( wStr )
+					continue
+				else:
+					wStr = "〇実行成功"
+					CLS_OSIF.sPrn( wStr )
+				
+				### Twitter Wait
+				CLS_OSIF.sSleep( 5 )
+				
+				###  ミュート一覧にないID=ミュート解除してない 場合は待機スキップ
+				if wRemoveRes['Responce']==False :
+					continue
+		
+###		###対象者なし
+###		if len( wARR_MuteRemoveID )==0 :
+###			wRes['Result'] = True
+###			return wRes
+###		
+		#############################
 		# 解除実行
-		else:
+###		else:
+		if len( wARR_MuteRemoveID )>=1 :
 			#############################
 			# ミュート解除していく
 			wStr = "ミュート解除対象数: " + str(len( wARR_MuteRemoveID )) + '\n'
-###			wStr = wStr + "ミュート解除中......." + '\n'
 			CLS_OSIF.sPrn( wStr )
 			
 			for wID in wARR_MuteRemoveID :

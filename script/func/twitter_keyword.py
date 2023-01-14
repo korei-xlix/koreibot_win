@@ -7,6 +7,7 @@
 # ::Class    : Twitter監視 キーワード抽出
 #####################################################
 
+from ktime import CLS_TIME
 from osif import CLS_OSIF
 from traffic import CLS_Traffic
 from mydisp import CLS_MyDisp
@@ -1208,7 +1209,7 @@ class CLS_TwitterKeyword():
 					### 規定内 =許容外の日数なので除外
 					continue
 				
-				if wTweet['text'].find( gVal.STR_UserInfo['DelTag'] )==0 :
+				if wTweet['text'].find( gVal.STR_UserInfo['DelTag'] )>=0 :
 					wTweetRes = gVal.OBJ_Tw_IF.DelTweet( wID )
 					if wTweetRes['Result']!=True :
 						wRes['Reason'] = "Twitter API Error(2): " + wTweetRes['Reason'] + " id=" + str(wID)
