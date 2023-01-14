@@ -1275,8 +1275,18 @@ class CLS_TwitterMain():
 						return wRes
 			
 			#############################
-			# ミュート解除(できるだけ)（●フル自動監視）
+			# 削除ツイート
 			elif gVal.STR_UserInfo['AutoSeq']==15 :
+				wSubRes = self.OBJ_TwitterKeyword.DelTweet()
+				if wSubRes['Result']!=True :
+					###失敗
+					wRes['Reason'] = "DelTweet is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+			
+			#############################
+			# ミュート解除(できるだけ)（●フル自動監視）
+			elif gVal.STR_UserInfo['AutoSeq']==16 :
 				if wFLG_Short==False :
 					wSubRes = self.AllMuteRemove()
 					if wSubRes['Result']!=True :
@@ -1290,7 +1300,7 @@ class CLS_TwitterMain():
 			# あるいは 終了
 			else:
 				wSeq = None
-				if gVal.STR_UserInfo['AutoSeq']!=16 :
+				if gVal.STR_UserInfo['AutoSeq']!=17 :
 					wSeq = gVal.STR_UserInfo['AutoSeq']		###異常検出
 				
 				wSubRes = gVal.OBJ_DB_IF.SetAutoSeq( True )
@@ -1441,6 +1451,15 @@ class CLS_TwitterMain():
 #####################################################
 	def SetVipTag(self):
 		wRes = self.OBJ_TwitterAdmin.SetVipTag()
+		return wRes
+
+
+
+#####################################################
+# 削除タグ設定
+#####################################################
+	def SetDelTag(self):
+		wRes = self.OBJ_TwitterAdmin.SetDelTag()
 		return wRes
 
 

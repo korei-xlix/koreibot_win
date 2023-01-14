@@ -44,6 +44,8 @@ class gVal() :
 		
 		"TrendTag"		: "",			#トレンドタグ設定
 		"QuestionTag"	: "",			#質問タグ設定
+		"VipTag"		: "",			#VIPリツイート 対象タグ
+		"DelTag"		: "",			#削除ツイート  対象タグ
 		
 		"ListID"		: None,			#リスト通知 リストID
 		"ListName"		: None,			#リスト通知 リスト名
@@ -55,8 +57,6 @@ class gVal() :
 		"fListName"		: None,			#片フォロワーリスト リスト名
 		
 		"Traffic"		: False,		#Twitterにトラヒックを報告するか
-		
-		"VipTag"		: None,			#VIPリツイート 対象タグ
 		
 		"AutoSeq"		: 0,			#自動監視シーケンス
 		
@@ -79,6 +79,7 @@ class gVal() :
 		"send_favo"		: None,			# いいね情報送信
 		"auto_delete"	: None,			# 自動削除
 		"vip_ope"		: None,			# VIP監視
+		"del_tweet"		: None,			# 削除ツイート
 		"tl_follow"		: None,			# タイムラインフォロー
 		
 		"TimeDate"		: None			# システム時間
@@ -232,6 +233,11 @@ class gVal() :
 		"forFavoDataDelHardSec"			: 34214400,		# いいね情報削除までの期間(残しデータ) 396日 (60x60x24)x396
 		"forFavoDataDelLevelFSec"		: 259200,		# いいね情報削除までの期間(レベルF)     3日 (60x60x24)x3
 		
+###		"forAutoTweetDeleteSec"			: 86400,		# 自動ツイート削除期間                  1日 (60x60x24)x1
+		"forAutoTweetDeleteCycleSec"	: 14400,		# 自動ツイート削除 実施期間           4時間 (60x60x4)
+		"forAutoTweetDeleteSec"			: 3600,			# 自動ツイート削除期間                1時間 (60x60)
+		"forAutoTweetDeleteCount"		: 2,			# 自動ツイート削除範囲  n x 200
+		
 														# いいね送信
 		"favoSendsSec"		: 604800,					# いいね送信までの期間      7日 (60x60x24)x7
 		"favoSendsCnt"		: 3,						# いいね送信対象 いいね回数
@@ -287,7 +293,8 @@ class gVal() :
 		"Score_Retweet"		: 3,			# リツイート
 		"Score_Quoted"		: 5,			# 引用リツイート
 		"Score_Reply"		: 5,			# リプライ（他者）
-		"Score_Question"	: 7			# 質問 ←いいね
+		"Score_Question"	: 7,			# 質問 ←いいね
+		"Score_Delete"		: 9				# 削除 ←いいね
 	}
 
 #############################

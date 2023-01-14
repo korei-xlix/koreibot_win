@@ -602,6 +602,7 @@ class CLS_Setup():
 		wQy = wQy + "mfvstop      BOOL  DEFAULT false,"	# 相互いいね停止 true=有効
 		wQy = wQy + "mfvstop_date TIMESTAMP,"			# 相互いいね停止 開始日
 		wQy = wQy + "questiontag  TEXT  NOT NULL,"		# 質問タグ
+		wQy = wQy + "deltag       TEXT  NOT NULL,"		# 削除タグ
 		wQy = wQy + " PRIMARY KEY ( twitterid ) ) ;"
 		
 		inOBJ_DB.RunQuery( wQy )
@@ -658,6 +659,7 @@ class CLS_Setup():
 		wQy = wQy + "send_favo    TIMESTAMP,"			# いいね情報送信
 		wQy = wQy + "auto_delete  TIMESTAMP,"			# 自動削除
 		wQy = wQy + "vip_ope      TIMESTAMP,"			# VIP監視
+		wQy = wQy + "del_tweet    TIMESTAMP,"			# 削除ツイート
 		wQy = wQy + "tl_follow    TIMESTAMP,"			# タイムラインフォロー
 		wQy = wQy + " PRIMARY KEY ( twitterid ) ) ;"
 		

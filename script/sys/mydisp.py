@@ -440,6 +440,15 @@ class CLS_MyDisp():
 				wStr = wStr + inData['Sys_VipTag']
 			pRes['Responce'] = wStr
 		
+		###インプリ：削除タグ
+		elif "[@SYS-DELTAG@]"==inLine :
+			wStr = "    削除タグ          : "
+			if inData['Sys_DelTag']==None or inData['Sys_DelTag']=="" :
+				wStr = wStr + "(なし)"
+			else:
+				wStr = wStr + inData['Sys_DelTag']
+			pRes['Responce'] = wStr
+		
 		###インプリ：リスト通知
 		elif "[@SYS-LISTNAME@]"==inLine :
 			wStr = "    リスト通知        : "

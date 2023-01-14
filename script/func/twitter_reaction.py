@@ -132,27 +132,38 @@ class CLS_TwitterReaction():
 		#############################
 		# スコアの加算
 		
-		### 通常ツイート ←いいね　+1
-		if self.ARR_ReactionTweet[wTweetID]['type']=="normal" and \
-		   inActionType=="favo" :
-			self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Normal']
+		wFLG_Del = False
+		### 削除 ←いいね　+1
+		if gVal.STR_UserInfo['DelTag']!=gVal.DEF_NOTEXT :
+			if self.ARR_ReactionTweet[wTweetID]['text'].find( gVal.STR_UserInfo['DelTag'] )>=0 :
+				self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Delete']
+				wFLG_Del = True
 		
-		### リツイート　+5
-		elif self.ARR_ReactionTweet[wTweetID]['type']=="retweet" :
-			self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Retweet']
-		
-		### 引用リツイート　+5
-		elif self.ARR_ReactionTweet[wTweetID]['type']=="quoted" :
-			self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Quoted']
-		
-		### リプライ（他者）　+5
-		elif self.ARR_ReactionTweet[wTweetID]['type']=="other_reply" :
-			self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Reply']
-		
-		### 質問 ←いいね　+5
-		elif self.ARR_ReactionTweet[wTweetID]['type']=="question" and \
-		   inActionType=="favo" :
-			self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Question']
+		if wFLG_Del==False :
+###		### 通常ツイート ←いいね　+1
+###		if self.ARR_ReactionTweet[wTweetID]['type']=="normal" and \
+###		   inActionType=="favo" :
+			### 通常ツイート ←いいね　+1
+			elif self.ARR_ReactionTweet[wTweetID]['type']=="normal" and \
+			   inActionType=="favo" :
+				self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Normal']
+			
+			### リツイート　+5
+			elif self.ARR_ReactionTweet[wTweetID]['type']=="retweet" :
+				self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Retweet']
+			
+			### 引用リツイート　+5
+			elif self.ARR_ReactionTweet[wTweetID]['type']=="quoted" :
+				self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Quoted']
+			
+			### リプライ（他者）　+5
+			elif self.ARR_ReactionTweet[wTweetID]['type']=="other_reply" :
+				self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Reply']
+			
+			### 質問 ←いいね　+5
+			elif self.ARR_ReactionTweet[wTweetID]['type']=="question" and \
+			   inActionType=="favo" :
+				self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Question']
 		
 		#############################
 		# 正常

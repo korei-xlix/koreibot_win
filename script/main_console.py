@@ -337,6 +337,11 @@ class CLS_Main_Console() :
 			cls.OBJ_TwitterMain.SetVipTag()
 		
 		#############################
+		# 削除タグ設定
+		elif inCommand=="\\dc" :
+			cls.OBJ_TwitterMain.SetDelTag()
+		
+		#############################
 		# リスト通知設定
 		elif inCommand=="\\ic" :
 			cls.OBJ_TwitterMain.SetListName()

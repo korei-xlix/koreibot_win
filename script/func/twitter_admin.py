@@ -1628,6 +1628,74 @@ class CLS_TwitterAdmin():
 
 
 #####################################################
+# 削除タグ設定
+#####################################################
+	def SetDelTag(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "SetDelTag"
+		
+		#############################
+		# 入力画面表示
+		wStr = "削除タグの設定をおこないます。" + '\n'
+		wStr = wStr + "タグに設定する名前を入力してください。" + '\n'
+		wStr = wStr + '\n'
+		wStr = wStr + "  \\q=キャンセル  /  \\n=設定解除  /  other=設定値" + '\n'
+		wStr = wStr + "---------------------------------------" + '\n'
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# 入力
+		while True :
+			#############################
+			# 現在の設定の表示
+			wStr = "[現在の設定] "
+			wStr = wStr + "削除タグ名="
+			if gVal.STR_UserInfo['DelTag']!=gVal.DEF_NOTEXT :
+				wStr = wStr + gVal.STR_UserInfo['DelTag']
+			else:
+				wStr = wStr + "(設定解除)"
+			wStr = wStr + '\n'
+			CLS_OSIF.sPrn( wStr )
+			
+			wInputName = CLS_OSIF.sInp( "Tag Name ？=> " )
+			
+			if wInputName=="" :
+				CLS_OSIF.sPrn( "タグ名かコマンドが未入力です" + '\n' )
+				continue
+			
+			elif wInputName=="\\q" :
+				# 完了
+				wRes['Result'] = True
+				return wRes
+			
+			###ここまでで入力は完了した
+			break
+		
+		#############################
+		# 設定解除の場合
+		if wInputName=="\\n" :
+			wInputName = gVal.DEF_NOTEXT
+		
+		#############################
+		# DBに設定
+		wSubRes = gVal.OBJ_DB_IF.SetDelTag( inTagName=wInputName )
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "SetDelTag is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
 # リスト通知設定
 #####################################################
 	def SetListName(self):
@@ -3059,6 +3127,7 @@ class CLS_TwitterAdmin():
 ###			"Sys_fListName"		: gVal.STR_UserInfo['fListName']
 			"Sys_fListName"		: gVal.STR_UserInfo['fListName'],
 			"Sys_VipTag"		: gVal.STR_UserInfo['VipTag'],
+			"Sys_DelTag"		: gVal.STR_UserInfo['DelTag'],
 			
 			"Sys_MFvStop"		: gVal.STR_UserInfo['mfvstop'],
 			"Sys_MFvStop_Date"	: gVal.STR_UserInfo['mfvstop_date']

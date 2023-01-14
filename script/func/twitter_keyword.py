@@ -1142,4 +1142,93 @@ class CLS_TwitterKeyword():
 
 
 
+#####################################################
+# 削除ツイート
+#####################################################
+	def DelTweet(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterFollower"
+		wRes['Func']  = "DelTweet"
+		
+		#############################
+		# 削除ツイート設定か
+		if gVal.STR_UserInfo['DelTag']==gVal.DEF_NOTEXT :
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# 削除ツイートする日時か
+		wGetLag = CLS_OSIF.sTimeLag( str(gVal.STR_Time['del_tweet']), inThreshold=gVal.DEF_STR_TLNUM['forAutoTweetDeleteCycleSec'] )
+		if wGetLag['Result']!=True :
+			wRes['Reason'] = "sTimeLag failed(1)"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		if wGetLag['Beyond']==False :
+			###期間内
+			###  次へ
+			wStr = "●削除ツイート期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
+			CLS_OSIF.sPrn( wStr )
+			wRes['Result'] = True
+			return wRes
+		
+		wRes['Responce'] = False
+		#############################
+		# 取得開始の表示
+		wResDisp = CLS_MyDisp.sViewHeaderDisp( "削除ツイート実施中" )
+		
+		wCount = 200 * gVal.DEF_STR_TLNUM['forAutoTweetDeleteCount']
+		#############################
+		# 削除対象のツイートを消す
+		
+		wTweetRes = gVal.OBJ_Tw_IF.GetTL( inTLmode="user", inFLG_Rep=False, inFLG_Rts=False,
+			 inID=gVal.STR_UserInfo['id'], inCount=wCount )
+		if wTweetRes['Result']!=True :
+			wRes['Reason'] = "Twitter Error: GetTL"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		if len(wTweetRes['Responce'])>0 :
+			for wTweet in wTweetRes['Responce'] :
+				wID = str(wTweet['id'])
+				
+				###日時の変換をして、設定
+				wTime = CLS_TIME.sTTchg( wRes, "(1)", wTweet['created_at'] )
+				if wTime['Result']!=True :
+					continue
+				
+				wGetLag = CLS_OSIF.sTimeLag( str( wTime['TimeDate'] ), inThreshold=gVal.DEF_STR_TLNUM['forAutoTweetDeleteSec'] )
+				if wGetLag['Result']!=True :
+					wRes['Reason'] = "sTimeLag failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					continue
+				if wGetLag['Beyond']==False :
+					### 規定内 =許容外の日数なので除外
+					continue
+				
+				if wTweet['text'].find( gVal.STR_UserInfo['DelTag'] )==0 :
+					wTweetRes = gVal.OBJ_Tw_IF.DelTweet( wID )
+					if wTweetRes['Result']!=True :
+						wRes['Reason'] = "Twitter API Error(2): " + wTweetRes['Reason'] + " id=" + str(wID)
+						gVal.OBJ_L.Log( "B", wRes )
+					else:
+						wStr = "[DELETE] "
+						wStr = wStr + wTweet['text'] + '\n'
+						CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# 現時間を設定
+		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "del_tweet", gVal.STR_Time['TimeDate'] )
+		if wTimeRes['Result']!=True :
+			wRes['Reason'] = "SetTimeInfo is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		###	gVal.STR_Time['send_favo']
+		
+		wRes['Result'] = True
+		return wRes
+
+
 
