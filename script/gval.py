@@ -265,7 +265,8 @@ class gVal() :
 #		"sendListUsersCaution"		: False,			# リスト登録チェック時警告を送信するか  True=送信
 		"checkListUnfollower"		: True,				# リスト登録チェック時 フォロワーでないユーザへ警告を送信するか  True=送信
 #		"checkListUnfollower"		: False,			# リスト登録チェック時 フォロワーでないユーザへ警告を送信するか  True=送信
-		"forDeleteCautionTweetSec"	: 172800,			# 警告メッセージを削除する期間  2日 (60x60x24)x2
+###		"forDeleteCautionTweetSec"	: 172800,			# 警告メッセージを削除する期間        2日 (60x60x24)x2
+		"forDeleteCautionTweetSec"	: 100800,			# 警告メッセージを削除する期間     28時間 (60x60x28)
 		
 		"forTimelineFollowSec"			: 14400,		# タイムラインフォロー チェック期間 4時間  (60x60x4)
 ###		"TimelineFollowNum"				: 2,			#   フォローする最大人数

@@ -144,7 +144,7 @@ class CLS_TwitterReaction():
 ###		if self.ARR_ReactionTweet[wTweetID]['type']=="normal" and \
 ###		   inActionType=="favo" :
 			### 通常ツイート ←いいね　+1
-			elif self.ARR_ReactionTweet[wTweetID]['type']=="normal" and \
+			if self.ARR_ReactionTweet[wTweetID]['type']=="normal" and \
 			   inActionType=="favo" :
 				self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Normal']
 			
