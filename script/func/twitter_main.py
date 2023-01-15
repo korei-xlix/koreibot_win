@@ -2511,7 +2511,7 @@ class CLS_TwitterMain():
 				CLS_OSIF.sPrn( wStr )
 				
 				###  ミュート実行する
-				wRemoveRes = gVal.OBJ_Tw_IF.OBJ_Twitter.Mute( wID )
+				wRemoveRes = gVal.OBJ_Tw_IF.Mute( wID )
 				if wRemoveRes['Result']!=True :
 					wRes['Reason'] = "Twitter API Error(Mute): " + wRemoveRes['Reason']
 					gVal.OBJ_L.Log( "B", wRes )
