@@ -3001,8 +3001,8 @@ class CLS_DB_IF() :
 		wQy = wQy + "'" + gVal.DEF_TIMEDATE + "', "					# 被フォロー日時
 		
 		wQy = wQy + "'', "											# memo
-		wQy = wQy + "0,  "											# 連ファボカウント
-		wQy = wQy + "0  "											# 非絡み回数
+		wQy = wQy + "0  "											# 連ファボカウント
+###		wQy = wQy + "0  "											# 非絡み回数
 		wQy = wQy + ") ;"
 		
 		#############################
@@ -3645,8 +3645,8 @@ class CLS_DB_IF() :
 	#####################################################
 	# 連ファボカウント更新
 	#####################################################
-###	def UpdateFavoData_RenFavo( self, inID, inCnt ):
-	def UpdateFavoData_RenFavo( self, inID, inCnt, inBotCnt=None ):
+###	def UpdateFavoData_RenFavo( self, inID, inCnt, inBotCnt=None ):
+	def UpdateFavoData_RenFavo( self, inID, inCnt ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -3657,11 +3657,10 @@ class CLS_DB_IF() :
 		#############################
 		# 更新
 		wQy = "update tbl_favouser_data set "
-###		wQy = wQy + "renfavo_cnt = '" + str(inCnt) + "', "
 		wQy = wQy + "renfavo_cnt = " + str(inCnt) + ", "
-		if inBotCnt!=None :
-			wQy = wQy + "renbot_cnt = " + str(inBotCnt) + ", "
-		
+###		if inBotCnt!=None :
+###			wQy = wQy + "renbot_cnt = " + str(inBotCnt) + ", "
+###		
 		wQy = wQy + "upddate = '" + str( gVal.STR_Time['TimeDate'] ) + "' "
 		wQy = wQy + "where twitterid = '" + gVal.STR_UserInfo['Account'] + "'"
 		wQy = wQy + " and id = '" + str(inID) + "' ;"
@@ -3717,54 +3716,54 @@ class CLS_DB_IF() :
 		wRes['Result'] = True
 		return wRes
 
-	#####################################################
-	# いいね情報：非絡みユーザ一覧
-	#####################################################
+###	#####################################################
+###	# いいね情報：非絡みユーザ一覧
+###	#####################################################
 ###	def UpdateFavoData_UserBList( self ):
-	def UpdateFavoData_UserBList( self, inAutoOnly=False ):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_DB_IF"
-		wRes['Func']  = "UpdateFavoData_UserBList"
-		
-		#############################
-		# ユーザレベルを取得する
+###	def UpdateFavoData_UserBList( self, inAutoOnly=False ):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_DB_IF"
+###		wRes['Func']  = "UpdateFavoData_UserBList"
+###		
+###		#############################
+###		# ユーザレベルを取得する
 ###		wQy = "select id, screen_name, level_tag, myfollow, follower, send_cnt from tbl_favouser_data where "
-		wQy = "select id, screen_name, level_tag, myfollow, follower, send_cnt, renfavo_cnt, renbot_cnt from tbl_favouser_data where "
-		wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "'"
+###		wQy = "select id, screen_name, level_tag, myfollow, follower, send_cnt, renfavo_cnt, renbot_cnt from tbl_favouser_data where "
+###		wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "'"
 ###		wQy = wQy + " and level_tag = 'B-' "
 ###		wQy = wQy + ";"
-		wQy = wQy + " and ("
+###		wQy = wQy + " and ("
 ###		wQy = wQy + " level_tag = 'G' or "
 ###		wQy = wQy + " level_tag = 'G+' or "
 ###		wQy = wQy + " level_tag = 'H' or "
 ###		wQy = wQy + " level_tag = 'H+' "
-		wQy = wQy + " level_tag = 'G' or level_tag = 'H' "
-		if inAutoOnly==False :
-			wQy = wQy + " or level_tag = 'G+' or level_tag = 'H+' "
-		wQy = wQy + ") ;"
-		
-		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy )
-		if wResDB['Result']!=True :
-			wRes['Reason'] = "Run Query is failed"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		
-		#############################
-		# 辞書型に整形
-		wARR_DBData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
-		
-		#############################
-		# 添え字をIDに差し替える
-		wARR_RateFavoDate = gVal.OBJ_DB_IF.ChgDataID( wARR_DBData )
-		
-		wRes['Responce'] = wARR_RateFavoDate
-		#############################
-		# 正常
-		wRes['Result'] = True
-		return wRes
+###		wQy = wQy + " level_tag = 'G' or level_tag = 'H' "
+###		if inAutoOnly==False :
+###			wQy = wQy + " or level_tag = 'G+' or level_tag = 'H+' "
+###		wQy = wQy + ") ;"
+###		
+###		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy )
+###		if wResDB['Result']!=True :
+###			wRes['Reason'] = "Run Query is failed"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		
+###		#############################
+###		# 辞書型に整形
+###		wARR_DBData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
+###		
+###		#############################
+###		# 添え字をIDに差し替える
+###		wARR_RateFavoDate = gVal.OBJ_DB_IF.ChgDataID( wARR_DBData )
+###		
+###		wRes['Responce'] = wARR_RateFavoDate
+###		#############################
+###		# 正常
+###		wRes['Result'] = True
+###		return wRes
 
 	#####################################################
 	def UpdateFavoData_SendFavo( self, inARR_ID=[] ):
@@ -3914,7 +3913,8 @@ class CLS_DB_IF() :
 			# ユーザレベル除外
 ###			if wARR_RateFavoData['level_tag']!="D-" and wARR_RateFavoData['level_tag']!="E-" and wARR_RateFavoData['level_tag']!="H-" and wARR_RateFavoData['level_tag']!="L" and \
 ###			   wARR_RateFavoData['level_tag']!="Z" and wARR_RateFavoData['level_tag']!="Z-" :
-			if wARR_RateFavoData['level_tag']!="D-" and wARR_RateFavoData['level_tag']!="E-" and wARR_RateFavoData['level_tag']!="H-" :
+###			if wARR_RateFavoData['level_tag']!="D-" and wARR_RateFavoData['level_tag']!="E-" and wARR_RateFavoData['level_tag']!="H-" :
+			if wARR_RateFavoData['level_tag']!="D-" and wARR_RateFavoData['level_tag']!="E-" :
 				continue
 			
 			#############################
@@ -3935,7 +3935,8 @@ class CLS_DB_IF() :
 			if wARR_RateFavoData['level_tag']=="F" :
 				wThreshold = gVal.DEF_STR_TLNUM['forFavoDataDelLevelFSec']
 			
-			elif wARR_RateFavoData['level_tag']=="L" or wARR_RateFavoData['level_tag']=="Z" or wARR_RateFavoData['level_tag']=="Z-" :
+###			elif wARR_RateFavoData['level_tag']=="L" or wARR_RateFavoData['level_tag']=="Z" or wARR_RateFavoData['level_tag']=="Z-" :
+			elif wARR_RateFavoData['level_tag']=="L" or wARR_RateFavoData['level_tag']=="Z" :
 				wThreshold = gVal.DEF_STR_TLNUM['forFavoDataDelHardSec']
 			
 			else:

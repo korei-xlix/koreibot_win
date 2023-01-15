@@ -145,8 +145,11 @@ class CLS_TwitterFollower():
 			#############################
 			# 無反応レベルは除外する
 ###			if wARR_RateFavoDate[wID]['level_tag']=="D-" or wARR_RateFavoDate[wID]['level_tag']=="G" or wARR_RateFavoDate[wID]['level_tag']=="G-" :
-			if wARR_RateFavoDate[wID]['level_tag']=="D-" or wARR_RateFavoDate[wID]['level_tag']=="G" or wARR_RateFavoDate[wID]['level_tag']=="G+" or \
-			   wARR_RateFavoDate[wID]['level_tag']=="H"  or wARR_RateFavoDate[wID]['level_tag']=="H+" :
+###			if wARR_RateFavoDate[wID]['level_tag']=="D-" or wARR_RateFavoDate[wID]['level_tag']=="G" or wARR_RateFavoDate[wID]['level_tag']=="G+" or \
+###			   wARR_RateFavoDate[wID]['level_tag']=="H"  or wARR_RateFavoDate[wID]['level_tag']=="H+" :
+			if wARR_RateFavoDate[wID]['level_tag']=="C-" or wARR_RateFavoDate[wID]['level_tag']=="D" or wARR_RateFavoDate[wID]['level_tag']=="D+" or \
+			   wARR_RateFavoDate[wID]['level_tag']=="F"  or wARR_RateFavoDate[wID]['level_tag']=="E-" or wARR_RateFavoDate[wID]['level_tag']=="G"  or wARR_RateFavoDate[wID]['level_tag']=="G-" or \
+			   wARR_RateFavoDate[wID]['level_tag']=="L"  or wARR_RateFavoDate[wID]['level_tag']=="Z" :
 				continue
 			
 			#############################
@@ -408,22 +411,24 @@ class CLS_TwitterFollower():
 				
 				if wARR_DBData['follower']==True :
 					### フォロー者OFF・フォロワーON
-					if wARR_DBData['level_tag']=="G" :
-						wUserLevel = "H"
-					
-					elif wARR_DBData['level_tag']=="G+" :
-						wUserLevel = "H+"
-					
-					else:
-						wUserLevel = "D-"
+###					if wARR_DBData['level_tag']=="G" :
+###						wUserLevel = "H"
+###					
+###					elif wARR_DBData['level_tag']=="G+" :
+###						wUserLevel = "H+"
+###					
+###					else:
+###						wUserLevel = "D-"
+					wUserLevel = "D-"
 				
 				else:
 					### フォロー者OFF・フォロワーOFF
-					if wARR_DBData['level_tag']=="H" or wARR_DBData['level_tag']=="H+" :
-						wUserLevel = "H-"
-					
-					else:
-						wUserLevel = "E-"
+###					if wARR_DBData['level_tag']=="H" or wARR_DBData['level_tag']=="H+" :
+###						wUserLevel = "H-"
+###					
+###					else:
+###						wUserLevel = "E-"
+					wUserLevel = "E-"
 				
 				### ユーザレベル変更
 				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
@@ -495,7 +500,9 @@ class CLS_TwitterFollower():
 				
 				#############################
 				# 比較値の設定
-				if wARR_DBData['level_tag']=="F+" or wARR_DBData['level_tag']=="Z-" :
+###				if wARR_DBData['level_tag']=="F+" or wARR_DBData['level_tag']=="Z-" :
+###				if wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="Z-" :
+				if wARR_DBData['level_tag']=="G" :
 					### 既に追い出し済
 					wThreshold = gVal.DEF_STR_TLNUM['forAutoRemoveByeByeSec']
 				
@@ -556,10 +563,10 @@ class CLS_TwitterFollower():
 ###			#############################
 ###			# 追い出し判定された場合、
 ###			# 追い出し扱い(F+)に設定する
-			#############################
-			# 追い出し判定された場合、
-			# 追い出し設定する
-			if wFLG_Remove==True :
+###			#############################
+###			# 追い出し判定された場合、
+###			# 追い出し設定する
+###			if wFLG_Remove==True :
 ###				### ユーザレベル変更
 ###				wUserLevel = "F+"
 ###				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
@@ -570,25 +577,39 @@ class CLS_TwitterFollower():
 ###				### ユーザ記録
 ###				wStr = "●完全スルー期間外のため、以後無視"
 ###				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']), inID=wUserID )
+###				#############################
+###				# F+（Z-）の場合
+###				# Z-設定して、リスト解除する
+###				if wARR_DBData['level_tag']=="F+" or wARR_DBData['level_tag']=="Z-" :
+###					if wARR_DBData['level_tag']=="F+" :
+###				if wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="Z-" :
+###					if wARR_DBData['level_tag']=="G" :
+###						### ユーザレベル変更
+###						wUserLevel = "Z-"
+###						wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
+###					
+###					### リスト解除
+###					wTweetRes = gVal.OBJ_Tw_IF.FollowerList_Remove( inUser )
+###					if wTweetRes['Result']!=True :
+###						wRes['Reason'] = "FollowerList_Remove is failed"
+###						gVal.OBJ_L.Log( "B", wRes )
+###						return wRes
+###					### ユーザ記録
+###					wStr = "●無視期間経過のためリスト解除"
+###					gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']), inID=wUserID )
+###				
+			
+			#############################
+			# 追い出し判定された場合、
+			# 追い出し設定する
+			if wFLG_Remove==True :
 				#############################
-				# F+（Z-）の場合
-				# Z-設定して、リスト解除する
-				if wARR_DBData['level_tag']=="F+" or wARR_DBData['level_tag']=="Z-" :
-					if wARR_DBData['level_tag']=="F+" :
-						### ユーザレベル変更
-						wUserLevel = "Z-"
-						wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
+				# G の場合
+				# G-設定して、追い出す
+				if wARR_DBData['level_tag']=="G" :
+					wUserLevel = "G-"
+					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
 					
-#					### リスト解除
-#					wTweetRes = gVal.OBJ_Tw_IF.FollowerList_Remove( inUser )
-#					if wTweetRes['Result']!=True :
-#						wRes['Reason'] = "FollowerList_Remove is failed"
-#						gVal.OBJ_L.Log( "B", wRes )
-#						return wRes
-#					### ユーザ記録
-#					wStr = "●無視期間経過のためリスト解除"
-#					gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']), inID=wUserID )
-#					
 					### ブロック→ブロック解除で追い出す
 					wBlockRes = gVal.OBJ_Tw_IF.BlockRemove( wUserID )
 					if wBlockRes['Result']!=True :
@@ -602,11 +623,13 @@ class CLS_TwitterFollower():
 				#############################
 				# その他の場合、
 				#   送信回数が規定回数超えてれば、
-				#   追い出し扱い(F+)に設定する
+###				#   追い出し扱い(F+)に設定する
+				#   追い出し扱い(G)に設定する
 				else :
 					if gVal.DEF_STR_TLNUM['forAutoRemoveIgnoreCompletelyCnt']<=wARR_DBData['pfavo_cnt'] :
 						### ユーザレベル変更
-						wUserLevel = "F+"
+###						wUserLevel = "F+"
+						wUserLevel = "G"
 						wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
 						
 						### ユーザ記録

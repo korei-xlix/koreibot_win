@@ -209,11 +209,11 @@ class CLS_Main_Console() :
 		elif inCommand=="\\uc" :
 			cls.OBJ_TwitterMain.AdminCautionUser()
 		
-		#############################
-		# 非絡みユーザ一覧
-		elif inCommand=="\\ub" :
-			cls.OBJ_TwitterMain.UserBList()
-		
+###		#############################
+###		# 非絡みユーザ一覧
+###		elif inCommand=="\\ub" :
+###			cls.OBJ_TwitterMain.UserBList()
+###		
 	#####################################################
 		#############################
 		# ログの表示(異常ログ)

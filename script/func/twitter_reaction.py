@@ -129,42 +129,42 @@ class CLS_TwitterReaction():
 			}
 			self.ARR_ReactionUser.update({ wID : wCell })
 		
-		#############################
-		# スコアの加算
-		
-		wFLG_Del = False
-		### 削除 ←いいね　+1
-		if gVal.STR_UserInfo['DelTag']!=gVal.DEF_NOTEXT :
-			if self.ARR_ReactionTweet[wTweetID]['text'].find( gVal.STR_UserInfo['DelTag'] )>=0 :
-				self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Delete']
-				wFLG_Del = True
-		
-		if wFLG_Del==False :
-###		### 通常ツイート ←いいね　+1
-###		if self.ARR_ReactionTweet[wTweetID]['type']=="normal" and \
-###		   inActionType=="favo" :
-			### 通常ツイート ←いいね　+1
-			if self.ARR_ReactionTweet[wTweetID]['type']=="normal" and \
-			   inActionType=="favo" :
-				self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Normal']
-			
-			### リツイート　+5
-			elif self.ARR_ReactionTweet[wTweetID]['type']=="retweet" :
-				self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Retweet']
-			
-			### 引用リツイート　+5
-			elif self.ARR_ReactionTweet[wTweetID]['type']=="quoted" :
-				self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Quoted']
-			
-			### リプライ（他者）　+5
-			elif self.ARR_ReactionTweet[wTweetID]['type']=="other_reply" :
-				self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Reply']
-			
-			### 質問 ←いいね　+5
-			elif self.ARR_ReactionTweet[wTweetID]['type']=="question" and \
-			   inActionType=="favo" :
-				self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Question']
-		
+###		#############################
+###		# スコアの加算
+###		
+###		wFLG_Del = False
+###		### 削除 ←いいね　+1
+###		if gVal.STR_UserInfo['DelTag']!=gVal.DEF_NOTEXT :
+###			if self.ARR_ReactionTweet[wTweetID]['text'].find( gVal.STR_UserInfo['DelTag'] )>=0 :
+###				self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Delete']
+###				wFLG_Del = True
+###		
+###		if wFLG_Del==False :
+####		### 通常ツイート ←いいね　+1
+####		if self.ARR_ReactionTweet[wTweetID]['type']=="normal" and \
+####		   inActionType=="favo" :
+###			### 通常ツイート ←いいね　+1
+###			if self.ARR_ReactionTweet[wTweetID]['type']=="normal" and \
+###			   inActionType=="favo" :
+###				self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Normal']
+###			
+###			### リツイート　+5
+###			elif self.ARR_ReactionTweet[wTweetID]['type']=="retweet" :
+###				self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Retweet']
+###			
+###			### 引用リツイート　+5
+###			elif self.ARR_ReactionTweet[wTweetID]['type']=="quoted" :
+###				self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Quoted']
+###			
+###			### リプライ（他者）　+5
+###			elif self.ARR_ReactionTweet[wTweetID]['type']=="other_reply" :
+###				self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Reply']
+###			
+###			### 質問 ←いいね　+5
+###			elif self.ARR_ReactionTweet[wTweetID]['type']=="question" and \
+###			   inActionType=="favo" :
+###				self.ARR_ReactionUser[wID]['score'] += gVal.DEF_STR_REN_SCORE['Score_Question']
+###		
 		#############################
 		# 正常
 		wRes['Result'] = True
@@ -611,9 +611,11 @@ class CLS_TwitterReaction():
 		# 無反応のレベルタグ
 ###		if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="D-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or \
 ###		   wARR_DBData['level_tag']=="H-" or wARR_DBData['level_tag']=="L" or wARR_DBData['level_tag']=="Z" or wARR_DBData['level_tag']=="Z-" :
-		if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or \
-		   wARR_DBData['level_tag']=="H-" or wARR_DBData['level_tag']=="L" or wARR_DBData['level_tag']=="Z" or wARR_DBData['level_tag']=="Z-" or \
-           ( wARR_DBData['follower']==False and wARR_DBData['level_tag']=="D-" ) :
+###		if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or \
+###		   wARR_DBData['level_tag']=="H-" or wARR_DBData['level_tag']=="L" or wARR_DBData['level_tag']=="Z" or wARR_DBData['level_tag']=="Z-" or \
+###        ( wARR_DBData['follower']==False and wARR_DBData['level_tag']=="D-" ) :
+		if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="D-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or \
+		   wARR_DBData['level_tag']=="G-" or wARR_DBData['level_tag']=="L"  or wARR_DBData['level_tag']=="Z" :
 			
 			### 報告対象の表示と、ログに記録
 			gVal.OBJ_L.Log( "T", wRes, "●リアクション拒否(レベルタグ) ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wARR_DBData['level_tag'], inID=wUserID )
@@ -630,126 +632,124 @@ class CLS_TwitterReaction():
 			wRes['Result'] = True
 			return wRes
 		
-		#############################
-		# リムーブしたけど、まだフォロワーでアクションが継続した場合
-		#   アクションは受け入れる
-		elif wARR_DBData['level_tag']=="D-" :
-			
-			wFLG_Denial = False
-			if wARR_DBData['myfollow']==True :
-				### フォロー中
-				wFLG_Denial = True
-			
-			if gVal.STR_UserInfo['AutoRemove']==False :
-				### 自動リムーブOFF
-				wFLG_Denial = True
-			
-			if wARR_DBData['rfavo_n_cnt']<gVal.DEF_STR_TLNUM['forAutoRemoveReliefCnt'] :
-				### いいね規定以内
-				wFLG_Denial = True
-			
-			if wFLG_Denial==False :
-				#############################
-				# ユーザ情報の取得
-				wUserInfoRes = gVal.OBJ_Tw_IF.GetUserinfo( inID=wUserID )
-				if wUserInfoRes['Result']!=True :
-					wRes['Reason'] = "Twitter Error: @" + wARR_DBData['screen_name']
-					gVal.OBJ_L.Log( "B", wRes )
-					return wRes
-				
-				wUser = wUserInfoRes['Responce']
-				
-				#############################
-				# ユーザの状態チェック
-				# 以下は除外
-				# ・鍵垢
-				# ・公式垢
-				if wUser['protected']==True or \
-				   wUser['verified']==True :
-					wFLG_Denial = True
-			
-			# ※ここまでで拒否じゃなければ
-			#   救済確定
-			if wFLG_Denial==False :
-				#############################
-				# フォローする
-				wTweetRes = gVal.OBJ_Tw_IF.Follow( wUserID, inMute=True )
-				if wTweetRes['Result']!=True :
-					wRes['Reason'] = "Twitter API Error(Follow): " + wTweetRes['Reason'] + " screen_name=" + str(wARR_DBData['screen_name'])
-					gVal.OBJ_L.Log( "B", wRes )
-					return wRes
-				
-###				wRes['Responce'] = True		#自動フォロー実行
-				
-				### 相互フォローリストに追加
-				wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( wARR_DBData )
-				
-				### ユーザレベル変更
-				wUserLevel = "C"
-				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
-				
-				### トラヒック記録（フォロー者増加）
-				CLS_Traffic.sP( "p_myfollow" )
-				
-				### ユーザ記録
-				wStr = "〇自動フォロー（救済）"
-				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(wARR_DBData['screen_name']), inID=wUserID )
-				
-				#############################
-				# DBに反映
-				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Follower( wUserID, inFLG_MyFollow=True )
-				if wSubRes['Result']!=True :
-					###失敗
-					wRes['Reason'] = "UpdateFavoData_Follower is failed"
-					gVal.OBJ_L.Log( "B", wRes )
-					return wRes
-		
-		#############################
-		# レベルタグによるランダム実行
-		elif wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G+" or wARR_DBData['level_tag']=="H" or wARR_DBData['level_tag']=="H+" :
-			wRand = CLS_OSIF.sGetRand(100)
-			if wRand>=gVal.DEF_STR_TLNUM['forAutoFavoLevelRunRand'] :
-				### 乱数による拒否
-				
-				### いいね情報を更新する
-				if self.DEF_REACTION_TEST==False :
-					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Recive( inUser, inTweet, wARR_DBData, True )
-					if wSubRes['Result']!=True :
-						###失敗
-						wRes['Reason'] = "UpdateFavoData is failed"
-						gVal.OBJ_L.Log( "B", wRes )
-						return wRes
-				
-				### 報告対象の表示と、ログに記録
-				gVal.OBJ_L.Log( "T", wRes, "●リアクション拒否(ランダム) ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wARR_DBData['level_tag'], inID=wUserID )
-				
-				wRes['Result'] = True
-				return wRes
-			
-			#############################
-			# 期間を過ぎたツイートは除外
-			wGetLag = CLS_OSIF.sTimeLag( str( inTweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forAutoFavoTweet_B_Sec'] )
-			if wGetLag['Result']!=True :
-				wRes['Reason'] = "sTimeLag failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			if wGetLag['Beyond']==True :
-				### 規定外 =古いツイートなので除外
-				
-				### いいね情報を更新する
-				if self.DEF_REACTION_TEST==False :
-					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Recive( inUser, inTweet, wARR_DBData, True )
-					if wSubRes['Result']!=True :
-						###失敗
-						wRes['Reason'] = "UpdateFavoData is failed"
-						gVal.OBJ_L.Log( "B", wRes )
-						return wRes
-				
-				### 報告対象の表示と、ログに記録
-				gVal.OBJ_L.Log( "T", wRes, "●リアクション拒否(古いツイート) ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wARR_DBData['level_tag'], inID=wUserID )
-				
-				wRes['Result'] = True
-				return wRes
+###		#############################
+###		# リムーブしたけど、まだフォロワーでアクションが継続した場合
+###		#   アクションは受け入れる
+###		elif wARR_DBData['level_tag']=="D-" :
+###			
+###			wFLG_Denial = False
+###			if wARR_DBData['myfollow']==True :
+###				### フォロー中
+###				wFLG_Denial = True
+###			
+###			if gVal.STR_UserInfo['AutoRemove']==False :
+###				### 自動リムーブOFF
+###				wFLG_Denial = True
+###			
+###			if wARR_DBData['rfavo_n_cnt']<gVal.DEF_STR_TLNUM['forAutoRemoveReliefCnt'] :
+###				### いいね規定以内
+###				wFLG_Denial = True
+###			
+###			if wFLG_Denial==False :
+###				#############################
+###				# ユーザ情報の取得
+###				wUserInfoRes = gVal.OBJ_Tw_IF.GetUserinfo( inID=wUserID )
+###				if wUserInfoRes['Result']!=True :
+###					wRes['Reason'] = "Twitter Error: @" + wARR_DBData['screen_name']
+###					gVal.OBJ_L.Log( "B", wRes )
+###					return wRes
+###				
+###				wUser = wUserInfoRes['Responce']
+###				
+###				#############################
+###				# ユーザの状態チェック
+###				# 以下は除外
+###				# ・鍵垢
+###				# ・公式垢
+###				if wUser['protected']==True or \
+###				   wUser['verified']==True :
+###					wFLG_Denial = True
+###			
+###			# ※ここまでで拒否じゃなければ
+###			#   救済確定
+###			if wFLG_Denial==False :
+###				#############################
+###				# フォローする
+###				wTweetRes = gVal.OBJ_Tw_IF.Follow( wUserID, inMute=True )
+###				if wTweetRes['Result']!=True :
+###					wRes['Reason'] = "Twitter API Error(Follow): " + wTweetRes['Reason'] + " screen_name=" + str(wARR_DBData['screen_name'])
+###					gVal.OBJ_L.Log( "B", wRes )
+###					return wRes
+###				
+###				### 相互フォローリストに追加
+###				wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( wARR_DBData )
+###				
+###				### ユーザレベル変更
+###				wUserLevel = "C"
+###				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
+###				
+###				### トラヒック記録（フォロー者増加）
+###				CLS_Traffic.sP( "p_myfollow" )
+###				
+###				### ユーザ記録
+###				wStr = "〇自動フォロー（救済）"
+###				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(wARR_DBData['screen_name']), inID=wUserID )
+###				
+###				#############################
+###				# DBに反映
+###				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Follower( wUserID, inFLG_MyFollow=True )
+###				if wSubRes['Result']!=True :
+###					###失敗
+###					wRes['Reason'] = "UpdateFavoData_Follower is failed"
+###					gVal.OBJ_L.Log( "B", wRes )
+###					return wRes
+###		
+###		#############################
+###		# レベルタグによるランダム実行
+###		elif wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G+" or wARR_DBData['level_tag']=="H" or wARR_DBData['level_tag']=="H+" :
+###			wRand = CLS_OSIF.sGetRand(100)
+###			if wRand>=gVal.DEF_STR_TLNUM['forAutoFavoLevelRunRand'] :
+###				### 乱数による拒否
+###				
+###				### いいね情報を更新する
+###				if self.DEF_REACTION_TEST==False :
+###					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Recive( inUser, inTweet, wARR_DBData, True )
+###					if wSubRes['Result']!=True :
+###						###失敗
+###						wRes['Reason'] = "UpdateFavoData is failed"
+###						gVal.OBJ_L.Log( "B", wRes )
+###						return wRes
+###				
+###				### 報告対象の表示と、ログに記録
+###				gVal.OBJ_L.Log( "T", wRes, "●リアクション拒否(ランダム) ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wARR_DBData['level_tag'], inID=wUserID )
+###				
+###				wRes['Result'] = True
+###				return wRes
+###			
+###			#############################
+###			# 期間を過ぎたツイートは除外
+###			wGetLag = CLS_OSIF.sTimeLag( str( inTweet['created_at'] ), inThreshold=gVal.DEF_STR_TLNUM['forAutoFavoTweet_B_Sec'] )
+###			if wGetLag['Result']!=True :
+###				wRes['Reason'] = "sTimeLag failed"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			if wGetLag['Beyond']==True :
+###				### 規定外 =古いツイートなので除外
+###				
+###				### いいね情報を更新する
+###				if self.DEF_REACTION_TEST==False :
+###					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Recive( inUser, inTweet, wARR_DBData, True )
+###					if wSubRes['Result']!=True :
+###						###失敗
+###						wRes['Reason'] = "UpdateFavoData is failed"
+###						gVal.OBJ_L.Log( "B", wRes )
+###						return wRes
+###				
+###				### 報告対象の表示と、ログに記録
+###				gVal.OBJ_L.Log( "T", wRes, "●リアクション拒否(古いツイート) ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wARR_DBData['level_tag'], inID=wUserID )
+###				
+###				wRes['Result'] = True
+###				return wRes
 		
 		#############################
 		# ※リアクション受け入れ※
@@ -824,22 +824,29 @@ class CLS_TwitterReaction():
 		# 前提: フォロワー
 		wUserLevel = None
 		wCnt = wARR_DBData['rfavo_n_cnt'] + 1
-		if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or wARR_DBData['level_tag']=="F+" :
-			if gVal.OBJ_Tw_IF.CheckMyFollow( wUserID )==True and \
-			   gVal.OBJ_Tw_IF.CheckFollower( wUserID )==True :
-				wUserLevel = "C+"
+###		if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or wARR_DBData['level_tag']=="F+" :
+###		if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or wARR_DBData['level_tag']=="G" :
+###			if gVal.OBJ_Tw_IF.CheckMyFollow( wUserID )==True and \
+###			   gVal.OBJ_Tw_IF.CheckFollower( wUserID )==True :
+###				wUserLevel = "C+"
+###			
+###			elif gVal.OBJ_Tw_IF.CheckMyFollow( wUserID )==False and \
+###			   gVal.OBJ_Tw_IF.CheckFollower( wUserID )==True :
+###				wUserLevel = "E"
+###			
+###			if wUserLevel!=None :
+###				### ユーザレベル変更
+###				if self.DEF_REACTION_TEST==False :
+###					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
+###				
+###				### 報告対象の表示と、ログに記録
+###				gVal.OBJ_L.Log( "RR", wRes, "〇リアクションにより昇格 ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wUserLevel, inID=wUserID )
+		if wARR_DBData['level_tag']=="G" :
+			wUserLevel = "E"
+			wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
 			
-			elif gVal.OBJ_Tw_IF.CheckMyFollow( wUserID )==False and \
-			   gVal.OBJ_Tw_IF.CheckFollower( wUserID )==True :
-				wUserLevel = "E"
-			
-			if wUserLevel!=None :
-				### ユーザレベル変更
-				if self.DEF_REACTION_TEST==False :
-					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
-				
-				### 報告対象の表示と、ログに記録
-				gVal.OBJ_L.Log( "RR", wRes, "〇リアクションにより昇格 ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wUserLevel, inID=wUserID )
+			### 報告対象の表示と、ログに記録
+			gVal.OBJ_L.Log( "RR", wRes, "〇リアクションにより昇格 ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wUserLevel, inID=wUserID )
 		
 		#############################
 		# 相互レベルCへ昇格
@@ -1122,312 +1129,312 @@ class CLS_TwitterReaction():
 #####################################################
 # リアクション結果表示
 #####################################################
-	def ReactionResult(self):
-		#############################
-		# 応答形式の取得
-		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
-		wRes = CLS_OSIF.sGet_Resp()
-		wRes['Class'] = "CLS_TwitterReaction"
-		wRes['Func']  = "ReactionResult"
-		
-		#############################
-		# メンション情報 表示
-		wStr = "------------------------------" + '\n'
-		wStr = wStr + "メンション結果" + '\n'
-		wStr = wStr + "------------------------------" + '\n'
-		CLS_OSIF.sPrn( wStr )
-		
-		wStr = ""
-		wKeylist = list( self.ARR_ReactionTweet.keys() )
-		wFLG_Mention = False
-		for wID in wKeylist :
-			if self.ARR_ReactionTweet[wID]['type']!="mention" :
-				continue
-			
-			### メンションユーザ名
-			wUserName = self.__getReactionUser( inUserID )
-			if wUserName==None :
-				### ありえない
-				wUserName = "(?none?)"
-			
-			wStr = wStr + self.ARR_Mentions[wID]['text'] + '\n'
-			wStr = wStr + "  user: " + wUserName['screen_name'] + '\n' + '\n'
-			wFLG_Mention = True
-		
-		if wFLG_Mention==False :
-			### 情報なしの場合
-			wStr = "(情報なし)" + '\n'
-		
-		CLS_OSIF.sPrn( wStr )
-		
-		#############################
-###		# 非絡みユーザ一覧の取得（自動設定のみ）
-###		wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserBList( inAutoOnly=True )
-		# 非絡みユーザ一覧の取得
-		wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserBList()
-		if wSubRes['Result']!=True :
-			###失敗
-			wRes['Reason'] = "UpdateFavoData_UserLevel is failed"
-			gVal.OBJ_L.Log( "B", wRes )
-			return wRes
-		wARR_RateUserB = wSubRes['Responce']
-		
-		#############################
-		# 自動非絡みでリアクションがなかったら、
-		#   解除する
-		wKeylist = list( wARR_RateUserB.keys() )
-		for wID in wKeylist :
-			wID = str(wID)
-			
-			### リアクションがなければ
-			###  0 を設定しておく
-			if wID not in self.ARR_ReactionUser :
-				wCell = {
-					"id"			: wID,
-					"screen_name"	: wARR_RateUserB[wID]['screen_name'],
-					"score"			: 0
-				}
-				self.ARR_ReactionUser.update({ wID : wCell })
-		
-		#############################
-		# 結果表示
-		wStr = "------------------------------" + '\n'
-		wStr = wStr + "リアクション結果" + '\n'
-		wStr = wStr + "------------------------------" + '\n'
-		wStr = wStr + "  新規受信数: " + str( self.VAL_ReactionCnt ) + " .件" + '\n'
-		CLS_OSIF.sPrn( wStr )
-		
-		if len(self.ARR_ReactionUser)==0 :
-			### リアクションがなければ、ここで終わり
-			wStr = "(情報なし)" + '\n'
-			CLS_OSIF.sPrn( wStr )
-			
-			wRes['Result'] = True
-			return wRes
-		
-		#############################
-		# ヘッダ
-		wStr =        "SCORE CNT   BOT   LV   USER" + '\n'
-		wStr = wStr + "-------------------------------" + '\n'
-		CLS_OSIF.sPrn( wStr )
-		
-		#############################
-		# 非絡みユーザのユーザレベル変更
-		wKeylist = list( self.ARR_ReactionUser.keys() )
-		for wID in wKeylist :
-			#############################
-			# DBからいいね情報を取得する(1個)
-			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( self.ARR_ReactionUser[wID], inFLG_New=False )
-			if wDBRes['Result']!=True :
-				###失敗
-				wRes['Reason'] = "GetFavoDataOne is failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				continue
-			### DB未登録ならスキップ
-			if wDBRes['Responce']['Data']==None :
-				continue
-			wARR_DBData = wDBRes['Responce']['Data']
-			
-			#############################
-			# 最後のいいねからの期間
-			wFLG_RateRec = False
-			wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData['rfavo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['forRenFavoSec'] )
-			if wGetLag['Result']!=True :
-				wRes['Reason'] = "sTimeLag failed(1)"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			if wGetLag['Beyond']==True :
-				### 規定外 =古くなった
-				wFLG_RateRec = True
-			
-			#############################
-			# スコアを処理する
-			if self.ARR_ReactionUser[wID]['score']==0 :
-				###  0点
-				if wARR_DBData['renfavo_cnt']>=1 and \
-				   wFLG_RateRec==False :
-					### カウンタ減らす
-					if wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G+" or \
-					   wARR_DBData['level_tag']=="H" or wARR_DBData['level_tag']=="H+" or wARR_DBData['level_tag']=="H-" :
-						wCnt = wARR_DBData['renfavo_cnt'] - 1
-					else:
-						wCnt = 0
-				else:
-					### 最後のいいねから古かったら解除
-					wCnt = 0
-			
-			elif self.ARR_ReactionUser[wID]['score']>=gVal.DEF_STR_REN_SCORE['NoFollowScore'] :
-				### 規定以上
-				if wFLG_RateRec==False :
-					if wARR_DBData['renfavo_cnt']==0 :
-						### 初回なら強制ON
-						wCnt = gVal.DEF_STR_TLNUM['renFavoForceCnt']
-					else:
-						### カウンタ増やす
-						wCnt = wARR_DBData['renfavo_cnt'] + 1
-				else:
-					### 最後のいいねから古かったら解除
-					wCnt = 0
-			
-			else:
-				### 1点以上、規定未満
-				if wFLG_RateRec==False :
-					### カウンタ増やす
-					wCnt = wARR_DBData['renfavo_cnt'] + 1
-				else:
-					### 最後のいいねから古かったら解除
-					wCnt = 0
-			
-			#############################
-			# 登録ユーザはスルー
-			if gVal.OBJ_Tw_IF.CheckSubscribeListUser( wID )!=False :
-				continue
-			
-			wUserLevel = None
-			wBotCnt = None
-			if wCnt>=gVal.DEF_STR_TLNUM['renFavoOnCnt'] :
-				#############################
-				# 相互フォロー中か
-				if wARR_DBData['level_tag']=="B" or wARR_DBData['level_tag']=="B+" or \
-				   wARR_DBData['level_tag']=="C" or wARR_DBData['level_tag']=="C+" :
-					
-					wBotCnt = wARR_DBData['renbot_cnt'] + 1
-					if wBotCnt<gVal.DEF_STR_TLNUM['renFavoBotCnt'] :
-						wUserLevel = "G"
-					else:
-						wUserLevel = "G+"
-						### 報告対象の表示と、ログに記録
-						gVal.OBJ_L.Log( "RR", wRes, "●bot判定固定 ユーザ: screen_name=" + wARR_DBData['screen_name'] + " level=" + wUserLevel, inID=wID )
-				
-				#############################
-				# 片フォロワーか
-				elif wARR_DBData['level_tag']=="E" :
-					
-					wBotCnt = wARR_DBData['renbot_cnt'] + 1
-					if wBotCnt<gVal.DEF_STR_TLNUM['renFavoBotCnt'] :
-						wUserLevel = "H"
-					else:
-						wUserLevel = "H+"
-						### 報告対象の表示と、ログに記録
-						gVal.OBJ_L.Log( "RR", wRes, "●bot判定固定 ユーザ: screen_name=" + wARR_DBData['screen_name'] + " level=" + wUserLevel, inID=wID )
-				
-				#############################
-				# 固定化
-				elif wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="H" :
-					if wCnt>=gVal.DEF_STR_TLNUM['renFavoForceBotCnt'] :
-						if wARR_DBData['level_tag']=="G" :
-							wUserLevel = "G+"
-						else:
-							wUserLevel = "H+"
-						
-						### 報告対象の表示と、ログに記録
-						gVal.OBJ_L.Log( "RR", wRes, "●bot判定固定 ユーザ: screen_name=" + wARR_DBData['screen_name'] + " level=" + wUserLevel, inID=wID )
-			
-			elif wCnt==0 :
-				#############################
-				# 相互フォロー中 解除か
-				if wARR_DBData['level_tag']=="G" :
-					if wARR_DBData['send_cnt']>=gVal.DEF_STR_TLNUM['LEVEL_B_Cnt'] :
-						wUserLevel = "B+"
-					elif wARR_DBData['send_cnt']>=1 :
-						wUserLevel = "B"
-					else:
-						wUserLevel = "C+"
-				
-				#############################
-				# 片フォロワー 解除か
-				elif wARR_DBData['level_tag']=="H" :
-					
-					wUserLevel = "E"
-				
-				#############################
-				# 強制解除か
-				elif wARR_DBData['level_tag']=="G+" or wARR_DBData['level_tag']=="H+" :
-					#############################
-					# 最後のいいねからの期間
-					wFLG_RateRec = False
-					wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData['rfavo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['forRenFavoForceSec'] )
-					if wGetLag['Result']!=True :
-						wRes['Reason'] = "sTimeLag failed(2)"
-						gVal.OBJ_L.Log( "B", wRes )
-						return wRes
-					if wGetLag['Beyond']==True :
-						### 規定外 =古くなった
-						if wARR_DBData['level_tag']=="G+" :
-							if wARR_DBData['send_cnt']>=gVal.DEF_STR_TLNUM['LEVEL_B_Cnt'] :
-								wUserLevel = "B+"
-							elif wARR_DBData['send_cnt']>=1 :
-								wUserLevel = "B"
-							else:
-								wUserLevel = "C+"
-						
-						elif wARR_DBData['level_tag']=="H+" :
-							
-							wUserLevel = "E"
-			
-			#############################
-			# ユーザの表示
-				### スコア
-			wListData = str(self.ARR_ReactionUser[wID]['score'])
-			wSpace = self.DEF_REACTION_SCORE_LEN - len( str(self.ARR_ReactionUser[wID]['score']) )
-			wStr = wListData + " " * wSpace + "  :  "
-			
-				### 連ファボカウント
-			wListData = str(wCnt)
-			wSpace = self.DEF_REACTION_SCORE_LEN - len( str(wCnt) )
-			wStr = wStr + wListData + " " * wSpace + ":  "
-			
-				### bot判定カウント
-			if wBotCnt==None :
-				wListData = "0"
-			else:
-				wListData = str(wBotCnt)
-			wSpace = self.DEF_REACTION_SCORE_LEN - len( str(wListData) )
-			wStr = wStr + wListData + " " * wSpace + ":  "
-			
-				### 今のレベル
-			if wUserLevel==None :
-				wListData = str(wARR_DBData['level_tag'])
-			else:
-				wListData = wUserLevel
-			wSpace = self.DEF_REACTION_SCORE_LEN - len( wListData )
-			wStr = wStr + wListData + " " * wSpace + ":  "
-			
-				### ユーザ名
-			wStr = wStr + self.ARR_ReactionUser[wID]['screen_name']
-			CLS_OSIF.sPrn( wStr )
-			
-			#############################
-			# テストモードなら以下はスキップ
-			if self.DEF_REACTION_TEST==True :
-				continue
-			
-			#############################
-			# 連ファボカウント更新
-			if wARR_DBData['renfavo_cnt']!=wCnt :
-				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_RenFavo( wID, wCnt, wBotCnt )
-				if wSubRes['Result']!=True :
-					###失敗
-					wRes['Reason'] = "UpdateFavoData_RenFavo is failed"
-					gVal.OBJ_L.Log( "B", wRes )
-					return wRes
-			
-			#############################
-			# ユーザレベルの変更の実行
-			if wUserLevel!=None :
-				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
-				if wSubRes['Result']!=True :
-					###失敗
-					wRes['Reason'] = "UpdateFavoData_UserLevel is failed"
-					gVal.OBJ_L.Log( "B", wRes )
-					return wRes
-		
-		#############################
-		# 正常
-		wRes['Result'] = True
-		return wRes
-
-
+###	def ReactionResult(self):
+###		#############################
+###		# 応答形式の取得
+###		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+###		wRes = CLS_OSIF.sGet_Resp()
+###		wRes['Class'] = "CLS_TwitterReaction"
+###		wRes['Func']  = "ReactionResult"
+###		
+###		#############################
+###		# メンション情報 表示
+###		wStr = "------------------------------" + '\n'
+###		wStr = wStr + "メンション結果" + '\n'
+###		wStr = wStr + "------------------------------" + '\n'
+###		CLS_OSIF.sPrn( wStr )
+###		
+###		wStr = ""
+###		wKeylist = list( self.ARR_ReactionTweet.keys() )
+###		wFLG_Mention = False
+###		for wID in wKeylist :
+###			if self.ARR_ReactionTweet[wID]['type']!="mention" :
+###				continue
+###			
+###			### メンションユーザ名
+###			wUserName = self.__getReactionUser( inUserID )
+###			if wUserName==None :
+###				### ありえない
+###				wUserName = "(?none?)"
+###			
+###			wStr = wStr + self.ARR_Mentions[wID]['text'] + '\n'
+###			wStr = wStr + "  user: " + wUserName['screen_name'] + '\n' + '\n'
+###			wFLG_Mention = True
+###		
+###		if wFLG_Mention==False :
+###			### 情報なしの場合
+###			wStr = "(情報なし)" + '\n'
+###		
+###		CLS_OSIF.sPrn( wStr )
+###		
+###		#############################
+######		# 非絡みユーザ一覧の取得（自動設定のみ）
+######		wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserBList( inAutoOnly=True )
+###		# 非絡みユーザ一覧の取得
+###		wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserBList()
+###		if wSubRes['Result']!=True :
+###			###失敗
+###			wRes['Reason'] = "UpdateFavoData_UserLevel is failed"
+###			gVal.OBJ_L.Log( "B", wRes )
+###			return wRes
+###		wARR_RateUserB = wSubRes['Responce']
+###		
+###		#############################
+###		# 自動非絡みでリアクションがなかったら、
+###		#   解除する
+###		wKeylist = list( wARR_RateUserB.keys() )
+###		for wID in wKeylist :
+###			wID = str(wID)
+###			
+###			### リアクションがなければ
+###			###  0 を設定しておく
+###			if wID not in self.ARR_ReactionUser :
+###				wCell = {
+###					"id"			: wID,
+###					"screen_name"	: wARR_RateUserB[wID]['screen_name'],
+###					"score"			: 0
+###				}
+###				self.ARR_ReactionUser.update({ wID : wCell })
+###		
+###		#############################
+###		# 結果表示
+###		wStr = "------------------------------" + '\n'
+###		wStr = wStr + "リアクション結果" + '\n'
+###		wStr = wStr + "------------------------------" + '\n'
+###		wStr = wStr + "  新規受信数: " + str( self.VAL_ReactionCnt ) + " .件" + '\n'
+###		CLS_OSIF.sPrn( wStr )
+###		
+###		if len(self.ARR_ReactionUser)==0 :
+###			### リアクションがなければ、ここで終わり
+###			wStr = "(情報なし)" + '\n'
+###			CLS_OSIF.sPrn( wStr )
+###			
+###			wRes['Result'] = True
+###			return wRes
+###		
+###		#############################
+###		# ヘッダ
+###		wStr =        "SCORE CNT   BOT   LV   USER" + '\n'
+###		wStr = wStr + "-------------------------------" + '\n'
+###		CLS_OSIF.sPrn( wStr )
+###		
+###		#############################
+###		# 非絡みユーザのユーザレベル変更
+###		wKeylist = list( self.ARR_ReactionUser.keys() )
+###		for wID in wKeylist :
+###			#############################
+###			# DBからいいね情報を取得する(1個)
+###			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( self.ARR_ReactionUser[wID], inFLG_New=False )
+###			if wDBRes['Result']!=True :
+###				###失敗
+###				wRes['Reason'] = "GetFavoDataOne is failed"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				continue
+###			### DB未登録ならスキップ
+###			if wDBRes['Responce']['Data']==None :
+###				continue
+###			wARR_DBData = wDBRes['Responce']['Data']
+###			
+###			#############################
+###			# 最後のいいねからの期間
+###			wFLG_RateRec = False
+###			wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData['rfavo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['forRenFavoSec'] )
+###			if wGetLag['Result']!=True :
+###				wRes['Reason'] = "sTimeLag failed(1)"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			if wGetLag['Beyond']==True :
+###				### 規定外 =古くなった
+###				wFLG_RateRec = True
+###			
+######			#############################
+######			# スコアを処理する
+###			if self.ARR_ReactionUser[wID]['score']==0 :
+###				###  0点
+###				if wARR_DBData['renfavo_cnt']>=1 and \
+###				   wFLG_RateRec==False :
+###					### カウンタ減らす
+###					if wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G+" or \
+###					   wARR_DBData['level_tag']=="H" or wARR_DBData['level_tag']=="H+" or wARR_DBData['level_tag']=="H-" :
+###						wCnt = wARR_DBData['renfavo_cnt'] - 1
+###					else:
+###						wCnt = 0
+###				else:
+###					### 最後のいいねから古かったら解除
+###					wCnt = 0
+###			
+###			elif self.ARR_ReactionUser[wID]['score']>=gVal.DEF_STR_REN_SCORE['NoFollowScore'] :
+###				### 規定以上
+###				if wFLG_RateRec==False :
+###					if wARR_DBData['renfavo_cnt']==0 :
+###						### 初回なら強制ON
+###						wCnt = gVal.DEF_STR_TLNUM['renFavoForceCnt']
+###					else:
+###						### カウンタ増やす
+###						wCnt = wARR_DBData['renfavo_cnt'] + 1
+###				else:
+###					### 最後のいいねから古かったら解除
+###					wCnt = 0
+###			
+###			else:
+###				### 1点以上、規定未満
+###				if wFLG_RateRec==False :
+###					### カウンタ増やす
+###					wCnt = wARR_DBData['renfavo_cnt'] + 1
+###				else:
+###					### 最後のいいねから古かったら解除
+###					wCnt = 0
+###			
+###			#############################
+###			# 登録ユーザはスルー
+###			if gVal.OBJ_Tw_IF.CheckSubscribeListUser( wID )!=False :
+###				continue
+###			
+###			wUserLevel = None
+###			wBotCnt = None
+###			if wCnt>=gVal.DEF_STR_TLNUM['renFavoOnCnt'] :
+###				#############################
+###				# 相互フォロー中か
+###				if wARR_DBData['level_tag']=="B" or wARR_DBData['level_tag']=="B+" or \
+###				   wARR_DBData['level_tag']=="C" or wARR_DBData['level_tag']=="C+" :
+###					
+###					wBotCnt = wARR_DBData['renbot_cnt'] + 1
+###					if wBotCnt<gVal.DEF_STR_TLNUM['renFavoBotCnt'] :
+###						wUserLevel = "G"
+###					else:
+###						wUserLevel = "G+"
+###						### 報告対象の表示と、ログに記録
+###						gVal.OBJ_L.Log( "RR", wRes, "●bot判定固定 ユーザ: screen_name=" + wARR_DBData['screen_name'] + " level=" + wUserLevel, inID=wID )
+###				
+###				#############################
+###				# 片フォロワーか
+###				elif wARR_DBData['level_tag']=="E" :
+###					
+###					wBotCnt = wARR_DBData['renbot_cnt'] + 1
+###					if wBotCnt<gVal.DEF_STR_TLNUM['renFavoBotCnt'] :
+###						wUserLevel = "H"
+###					else:
+###						wUserLevel = "H+"
+###						### 報告対象の表示と、ログに記録
+###						gVal.OBJ_L.Log( "RR", wRes, "●bot判定固定 ユーザ: screen_name=" + wARR_DBData['screen_name'] + " level=" + wUserLevel, inID=wID )
+###				
+######				#############################
+######				# 固定化
+######				elif wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="H" :
+###					if wCnt>=gVal.DEF_STR_TLNUM['renFavoForceBotCnt'] :
+###						if wARR_DBData['level_tag']=="G" :
+###							wUserLevel = "G+"
+###						else:
+###							wUserLevel = "H+"
+###						
+###						### 報告対象の表示と、ログに記録
+###						gVal.OBJ_L.Log( "RR", wRes, "●bot判定固定 ユーザ: screen_name=" + wARR_DBData['screen_name'] + " level=" + wUserLevel, inID=wID )
+###			
+###			elif wCnt==0 :
+###				#############################
+###				# 相互フォロー中 解除か
+###				if wARR_DBData['level_tag']=="G" :
+###					if wARR_DBData['send_cnt']>=gVal.DEF_STR_TLNUM['LEVEL_B_Cnt'] :
+###						wUserLevel = "B+"
+###					elif wARR_DBData['send_cnt']>=1 :
+###						wUserLevel = "B"
+###					else:
+###						wUserLevel = "C+"
+###				
+###				#############################
+###				# 片フォロワー 解除か
+###				elif wARR_DBData['level_tag']=="H" :
+###					
+###					wUserLevel = "E"
+###				
+###				#############################
+###				# 強制解除か
+###				elif wARR_DBData['level_tag']=="G+" or wARR_DBData['level_tag']=="H+" :
+###					#############################
+###					# 最後のいいねからの期間
+###					wFLG_RateRec = False
+###					wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData['rfavo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['forRenFavoForceSec'] )
+###					if wGetLag['Result']!=True :
+###						wRes['Reason'] = "sTimeLag failed(2)"
+###						gVal.OBJ_L.Log( "B", wRes )
+###						return wRes
+###					if wGetLag['Beyond']==True :
+###						### 規定外 =古くなった
+###						if wARR_DBData['level_tag']=="G+" :
+###							if wARR_DBData['send_cnt']>=gVal.DEF_STR_TLNUM['LEVEL_B_Cnt'] :
+###								wUserLevel = "B+"
+###							elif wARR_DBData['send_cnt']>=1 :
+###								wUserLevel = "B"
+###							else:
+###								wUserLevel = "C+"
+###						
+###						elif wARR_DBData['level_tag']=="H+" :
+###							
+###							wUserLevel = "E"
+###			
+###			#############################
+###			# ユーザの表示
+###				### スコア
+###			wListData = str(self.ARR_ReactionUser[wID]['score'])
+###			wSpace = self.DEF_REACTION_SCORE_LEN - len( str(self.ARR_ReactionUser[wID]['score']) )
+###			wStr = wListData + " " * wSpace + "  :  "
+###			
+###				### 連ファボカウント
+###			wListData = str(wCnt)
+###			wSpace = self.DEF_REACTION_SCORE_LEN - len( str(wCnt) )
+###			wStr = wStr + wListData + " " * wSpace + ":  "
+###			
+###				### bot判定カウント
+###			if wBotCnt==None :
+###				wListData = "0"
+###			else:
+###				wListData = str(wBotCnt)
+###			wSpace = self.DEF_REACTION_SCORE_LEN - len( str(wListData) )
+###			wStr = wStr + wListData + " " * wSpace + ":  "
+###			
+###				### 今のレベル
+###			if wUserLevel==None :
+###				wListData = str(wARR_DBData['level_tag'])
+###			else:
+###				wListData = wUserLevel
+###			wSpace = self.DEF_REACTION_SCORE_LEN - len( wListData )
+###			wStr = wStr + wListData + " " * wSpace + ":  "
+###			
+###				### ユーザ名
+###			wStr = wStr + self.ARR_ReactionUser[wID]['screen_name']
+###			CLS_OSIF.sPrn( wStr )
+###			
+###			#############################
+###			# テストモードなら以下はスキップ
+###			if self.DEF_REACTION_TEST==True :
+###				continue
+###			
+###			#############################
+###			# 連ファボカウント更新
+###			if wARR_DBData['renfavo_cnt']!=wCnt :
+###				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_RenFavo( wID, wCnt, wBotCnt )
+###				if wSubRes['Result']!=True :
+###					###失敗
+###					wRes['Reason'] = "UpdateFavoData_RenFavo is failed"
+###					gVal.OBJ_L.Log( "B", wRes )
+###					return wRes
+###			
+###			#############################
+###			# ユーザレベルの変更の実行
+###			if wUserLevel!=None :
+###				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel )
+###				if wSubRes['Result']!=True :
+###					###失敗
+###					wRes['Reason'] = "UpdateFavoData_UserLevel is failed"
+###					gVal.OBJ_L.Log( "B", wRes )
+###					return wRes
+###		
+###		#############################
+###		# 正常
+###		wRes['Result'] = True
+###		return wRes
+###
+###
 
 #####################################################
 # VIPリアクション監視チェック

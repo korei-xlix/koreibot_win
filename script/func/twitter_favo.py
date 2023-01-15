@@ -518,9 +518,12 @@ class CLS_TwitterFavo():
 			
 			#############################
 			# ユーザレベル除外
+###			if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="D-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or \
+###			   wARR_DBData['level_tag']=="F+" or wARR_DBData['level_tag']=="H-" or \
+###			   wARR_DBData['level_tag']=="L" or wARR_DBData['level_tag']=="Z" or wARR_DBData['level_tag']=="Z-" :
 			if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="D-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or \
-			   wARR_DBData['level_tag']=="F+" or wARR_DBData['level_tag']=="H-" or \
-			   wARR_DBData['level_tag']=="L" or wARR_DBData['level_tag']=="Z" or wARR_DBData['level_tag']=="Z-" :
+			   wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G-" or \
+			   wARR_DBData['level_tag']=="L" or wARR_DBData['level_tag']=="Z" :
 				
 				wStr = "▲レベルタグ除外: level=" + wARR_DBData['level_tag'] + " user=" + wARR_FollowData[wUserID]['screen_name']
 				CLS_OSIF.sPrn( wStr )
@@ -528,30 +531,34 @@ class CLS_TwitterFavo():
 				wResult['no_cnt'] += 1
 				continue
 			
+###			#############################
+###			# 非絡みユーザ除外
+###			if wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G+" or wARR_DBData['level_tag']=="H" or wARR_DBData['level_tag']=="H+" :
+###				### いいね実行からの期間チェック
+###				wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData['pfavo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['forFollowerFavoNonFollowerSec'] )
+###				if wGetLag['Result']!=True :
+###					wRes['Reason'] = "sTimeLag failed"
+###					gVal.OBJ_L.Log( "B", wRes )
+###					continue
+###				#############################
+###				# いいね実行から期間内
+###				if wGetLag['Beyond']==False :
+###					wStr = "▲非絡みユーザ除外(期間内): level=" + wARR_DBData['level_tag'] + " user=" + wARR_FollowData[wUserID]['screen_name']
+###					CLS_OSIF.sPrn( wStr )
+###					###
+###					wResult['no_cnt'] += 1
+###					continue
+###				
 			#############################
-			# 非絡みユーザ除外
-			if wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G+" or wARR_DBData['level_tag']=="H" or wARR_DBData['level_tag']=="H+" :
-				### いいね実行からの期間チェック
-				wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData['pfavo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['forFollowerFavoNonFollowerSec'] )
-				if wGetLag['Result']!=True :
-					wRes['Reason'] = "sTimeLag failed"
-					gVal.OBJ_L.Log( "B", wRes )
-					continue
-				#############################
-				# いいね実行から期間内
-				if wGetLag['Beyond']==False :
-					wStr = "▲非絡みユーザ除外(期間内): level=" + wARR_DBData['level_tag'] + " user=" + wARR_FollowData[wUserID]['screen_name']
-					CLS_OSIF.sPrn( wStr )
-					###
-					wResult['no_cnt'] += 1
-					continue
-				
+			# Bot判定ユーザ除外
+			if wARR_DBData['renfavo_cnt']>gVal.DEF_STR_TLNUM['renFavoOneRangeCnt'] :
 				#############################
 				# ランダム除外
 				wRand = CLS_OSIF.sGetRand(100)
-				if wRand>=gVal.DEF_STR_TLNUM['forFollowerFavoNonFollowerCnt'] :
+###				if wRand>=gVal.DEF_STR_TLNUM['forFollowerFavoNonFollowerCnt'] :
+				if wRand>=gVal.DEF_STR_TLNUM['forRenFavoReiineRand'] :
 					### 乱数による拒否
-					wStr = "▲非絡みユーザ除外(ランダム): level=" + wARR_DBData['level_tag'] + " user=" + wARR_FollowData[wUserID]['screen_name']
+					wStr = "▲Bot判定ユーザ除外除外(ランダム): level=" + wARR_DBData['level_tag'] + " user=" + wARR_FollowData[wUserID]['screen_name']
 					CLS_OSIF.sPrn( wStr )
 					###
 					wResult['no_cnt'] += 1
@@ -1153,8 +1160,10 @@ class CLS_TwitterFavo():
 				# レベルタグによる除外
 ###				if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="D-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or \
 ###				   wARR_DBData['level_tag']=="F+" or wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G-" :
+###				if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="D-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or \
+###				   wARR_DBData['level_tag']=="H-" or wARR_DBData['level_tag']=="L" or wARR_DBData['level_tag']=="Z" or wARR_DBData['level_tag']=="Z-" :
 				if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="D-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or \
-				   wARR_DBData['level_tag']=="H-" or wARR_DBData['level_tag']=="L" or wARR_DBData['level_tag']=="Z" or wARR_DBData['level_tag']=="Z-" :
+				   wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G-" or wARR_DBData['level_tag']=="L" or wARR_DBData['level_tag']=="Z" :
 					
 					wStr = "レベルタグ除外: level=" + wARR_DBData['level_tag'] + " user=" + wFavoUser['screen_name']
 					wSTR_Tweet['reason'] = wStr
