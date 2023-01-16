@@ -1538,7 +1538,7 @@ class CLS_TwitterReaction():
 			
 			if wCnt>gVal.DEF_STR_TLNUM['renFavoBotCnt'] :
 				### 報告対象の表示と、ログに記録
-				gVal.OBJ_L.Log( "RR", wRes, "●bot判定 ユーザ: screen_name=" + wARR_DBData['screen_name'] + " level=" + wUserLevel, inID=wID )
+				gVal.OBJ_L.Log( "RR", wRes, "●bot判定 ユーザ: screen_name=" + wARR_DBData['screen_name'] + " level=" + wARR_DBData['level_tag'], inID=wID )
 			
 			#############################
 			# 連ファボカウント更新
