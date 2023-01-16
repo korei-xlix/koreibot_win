@@ -551,7 +551,7 @@ class CLS_TwitterFavo():
 ###				
 			#############################
 			# Bot判定ユーザ除外
-			if wARR_DBData['renfavo_cnt']>gVal.DEF_STR_TLNUM['renFavoOneRangeCnt'] :
+			if wARR_DBData['renfavo_cnt']>gVal.DEF_STR_TLNUM['renFavoBotCnt'] :
 				#############################
 				# ランダム除外
 				wRand = CLS_OSIF.sGetRand(100)

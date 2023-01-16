@@ -125,9 +125,15 @@ class CLS_TwitterReaction():
 			wCell = {
 				"id"			: wID,
 				"screen_name"	: inUser['screen_name'],
-				"score"			: 0
+###				"score"			: 0
+				"hit_total"		: 0,			# 1タイムライン中のリアクション数
+				"hit_new"		: 0				# 1タイムライン中の新しいリアクション数
 			}
 			self.ARR_ReactionUser.update({ wID : wCell })
+		
+		#############################
+		# リアクション数の加算
+		self.ARR_ReactionUser[wID]['hit_total'] += 1
 		
 ###		#############################
 ###		# スコアの加算
@@ -170,47 +176,63 @@ class CLS_TwitterReaction():
 		wRes['Result'] = True
 		return wRes
 
+###	#####################################################
+###	def __getReactionTweet( self, inTweetID ):
+###		
+###		wTweetID = str(inTweetID)
+###		#############################
+###		# リアクションツイート情報の枠
+###		if wTweetID not in self.ARR_ReactionTweet :
+###			return None
+###		
+###		return self.ARR_ReactionTweet[wTweetID]
+###
+###	#####################################################
+###	def __getReactionUser( self, inUserID ):
+###		
+###		wUserID = str(inUserID)
+###		#############################
+###		# リアクションユーザ情報の枠
+###		if wUserID not in self.ARR_ReactionUser :
+###			return None
+###		
+###		return self.ARR_ReactionUser[wUserID]
+###
 	#####################################################
-	def __getReactionTweet( self, inTweetID ):
-		
-		wTweetID = str(inTweetID)
-		#############################
-		# リアクションツイート情報の枠
-		if wTweetID not in self.ARR_ReactionTweet :
-			return None
-		
-		return self.ARR_ReactionTweet[wTweetID]
-
-	#####################################################
-	def __getReactionUser( self, inUserID ):
-		
-		wUserID = str(inUserID)
-		#############################
-		# リアクションユーザ情報の枠
-		if wUserID not in self.ARR_ReactionUser :
-			return None
-		
-		return self.ARR_ReactionUser[wUserID]
-
-	#####################################################
+	# 受け入れリアクションの設定
 	def __setReaction( self, inTweetID, inUserID,inActionType=None ):
 		
+		### アクションタイプのチェック
 		if inActionType==None :
+			# ありえない
 			return True
+		
+		### リアクションツイート情報の枠
+		if wTweetID not in self.ARR_ReactionTweet :
+			# ありえない
+			return False
 		
 		wTweetID = str(inTweetID)
 		wUserID  = str(inUserID)
 		#############################
-		# リアクションツイート情報の枠
-		if wTweetID not in self.ARR_ReactionTweet :
-			return False
+		# 新リアクション数の加算
+		if self.ARR_ReactionTweet[wTweetID]['type']=="normal" :
+			self.ARR_ReactionUser[wUserID]['hit_new'] += 1
 		
-		# ユーザセット済みか
-		if wUserID in self.ARR_ReactionTweet[wTweetID]['users'] :
-			return False
+		elif self.ARR_ReactionTweet[wTweetID]['type']=="other_reply" or \
+		     self.ARR_ReactionTweet[wTweetID]['type']=="question" :
+			
+			self.ARR_ReactionUser[wUserID]['hit_new'] += 5
+		
+		else:
+			self.ARR_ReactionUser[wUserID]['hit_new'] += 2
 		
 		#############################
-		# ユーザIDセット
+		# リアクションツイートへのユーザIDセット
+		if wUserID in self.ARR_ReactionTweet[wTweetID]['users'] :
+			# ユーザセット済み
+			return False
+		
 		self.ARR_ReactionTweet[wTweetID]['users'].append( wUserID )
 		return True
 
@@ -1435,6 +1457,104 @@ class CLS_TwitterReaction():
 ###		return wRes
 ###
 ###
+
+
+
+#####################################################
+# 連ファボ測定
+#####################################################
+	def CheckRenFavo(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterReaction"
+		wRes['Func']  = "CheckRenFavo"
+		
+		#############################
+		# 取得開始の表示
+		wResDisp = CLS_MyDisp.sViewHeaderDisp( "連ファボ測定中" )
+		
+		#############################
+		# リアクションユーザ
+		wKeylist = list( self.ARR_ReactionUser.keys() )
+		for wID in wKeylist :
+			wID = str(wID)
+			
+			#############################
+			# 連ファボ判定
+			if self.ARR_ReactionUser[wID]['hit_new']<gVal.DEF_STR_TLNUM['renFavoUpCnt'] :
+				continue
+			
+			#############################
+			# DBからいいね情報を取得する(1個)
+			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( self.ARR_ReactionUser[wID], inFLG_New=False )
+			if wDBRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "GetFavoDataOne is failed(1)"
+				gVal.OBJ_L.Log( "B", wRes )
+				continue
+			### DB未登録ならスキップ
+			if wDBRes['Responce']['Data']==None :
+				continue
+			wARR_DBData = wDBRes['Responce']['Data']
+			
+			#############################
+			# カウントアップ
+			wCnt = wARR_DBData['renfavo_cnt'] + 1
+			
+			#############################
+			# 連ファボカウント更新
+			if wARR_DBData['renfavo_cnt']!=wCnt :
+				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_RenFavo( wID, wCnt )
+				if wSubRes['Result']!=True :
+					###失敗
+					wRes['Reason'] = "UpdateFavoData_RenFavo is failed(1)"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+		
+		#############################
+		# 連ファボのリセット
+		
+		#############################
+		# 連ファボ一覧の取得
+		wDBRes = gVal.OBJ_DB_IF.GetFavoData_RenFavoList()
+		if wDBRes['Result']!=True :
+			###失敗
+			wRes['Reason'] = "GetFavoData_RenFavoList is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		wKeylist = wDBRes['Responce']
+		for wID in wKeylist :
+			wID = str(wID)
+			
+			#############################
+			# 最後のいいねからの期間
+			wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData['rfavo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['forRenFavoResetSec'] )
+			if wGetLag['Result']!=True :
+				wRes['Reason'] = "sTimeLag failed(2)"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if wGetLag['Beyond']==False :
+				### 規定内 =新しい
+				continue
+			
+			#############################
+			# 連ファボカウントのリセット
+			wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_RenFavo( wID, 0 )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "UpdateFavoData_RenFavo is failed(2)"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+		
+		#############################
+		# 正常
+		wRes['Result'] = True
+		return wRes
+
+
 
 #####################################################
 # VIPリアクション監視チェック

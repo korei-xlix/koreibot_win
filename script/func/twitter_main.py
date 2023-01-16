@@ -1470,6 +1470,10 @@ class CLS_TwitterMain():
 ###		self.OBJ_TwitterReaction.ReactionResult()
 ###		
 		#############################
+		# 連ファボ測定
+		self.OBJ_TwitterReaction.CheckRenFavo()
+		
+		#############################
 		# スケジュール表示
 		wSubRes = self.OBJ_TwitterAdmin.View_Schedule()
 		if wSubRes['Result']!=True :

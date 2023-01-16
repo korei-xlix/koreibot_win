@@ -250,7 +250,9 @@ class gVal() :
 ###		"renFavoBotCnt"			: 10,					#   bot判定固定回数
 ###		"renFavoForceBotCnt"	: 30,					#   強制bot判定固定回数
 ###		"forRenFavoForceSec"	: 2073600,				#   非絡み設定強制解除日数                24日 (60x60x24)x24
-		"renFavoOneRangeCnt"	: 5,					#   連ファボ判定個数(1タイムライン中のいいね数)  超えたらBot判定
+		"forRenFavoResetSec"	: 57600,				#   連ファボリセット時間                  16時間 (60x60x16)
+		"renFavoUpCnt"			: 5,					#   連ファボ判定計上数(1タイムライン中の新規いいね数)  超えたら1カウント
+		"renFavoBotCnt"			: 5,					#   連ファボ判定個数(1タイムライン中のいいね数)        超えたらBot判定
 		"forRenFavoReiineRand"	: 10,					#   Bot判定ユーザに対するいいね返信率 パーセンテージ (1-100)   10％で実施
 		
 														# ユーザ管理
