@@ -126,6 +126,7 @@ class CLS_TwitterReaction():
 				"id"			: wID,
 				"screen_name"	: inUser['screen_name'],
 ###				"score"			: 0
+				"flg_some"		: False,		# 同一リアクション検出
 				"hit_total"		: 0,			# 1タイムライン中のリアクション数
 				"hit_new"		: 0				# 1タイムライン中の新しいリアクション数
 			}
@@ -198,6 +199,20 @@ class CLS_TwitterReaction():
 ###		
 ###		return self.ARR_ReactionUser[wUserID]
 ###
+
+	#####################################################
+	# 同一リアクション検出設定
+	def __setSomeReaction( self, inUserID ):
+		
+		wUserID  = str(inUserID)
+		### リアクションユーザ情報の枠
+		if wUserID not in self.ARR_ReactionUser :
+			# ありえない
+			return False
+		
+		self.ARR_ReactionUser[wUserID]['flg_some'] = True
+		return True
+
 	#####################################################
 	# 受け入れリアクションの設定
 	def __setReaction( self, inTweetID, inUserID,inActionType=None ):
@@ -207,13 +222,22 @@ class CLS_TwitterReaction():
 			# ありえない
 			return True
 		
+		wTweetID = str(inTweetID)
+		wUserID  = str(inUserID)
 		### リアクションツイート情報の枠
 		if wTweetID not in self.ARR_ReactionTweet :
 			# ありえない
 			return False
 		
-		wTweetID = str(inTweetID)
-		wUserID  = str(inUserID)
+		### リアクションユーザ情報の枠
+		if wUserID not in self.ARR_ReactionUser :
+			# ありえない
+			return False
+		
+		###同一リアクション検出
+		if self.ARR_ReactionUser[wUserID]['flg_some']==True :
+			return False
+		
 		#############################
 		# 新リアクション数の加算
 		if self.ARR_ReactionTweet[wTweetID]['type']=="normal" :
@@ -590,6 +614,15 @@ class CLS_TwitterReaction():
 			wRes['Result'] = True
 			return wRes
 		
+			#############################
+			# 同一リアクション検出設定
+			self.__setSomeReaction( inUserID=wUserID )
+		
+		else:
+			#############################
+			# リアクション情報設定
+			self.__setReaction( inTweetID=wTweetID, inUserID=wUserID, inActionType=inAction )
+		
 		#############################
 		# 前のリアクションより最新なら新アクション
 		wSubRes = CLS_OSIF.sCmpTime( inTweet['created_at'], inDstTD=wARR_DBData['rfavo_date'] )
@@ -795,10 +828,10 @@ class CLS_TwitterReaction():
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 		
-		#############################
-		# リアクション情報設定
-		self.__setReaction( inTweetID=wTweetID, inUserID=wUserID, inActionType=inAction )
-		
+###		#############################
+###		# リアクション情報設定
+###		self.__setReaction( inTweetID=wTweetID, inUserID=wUserID, inActionType=inAction )
+###		
 		#############################
 		# トラヒックの記録
 		if self.DEF_REACTION_TEST==False :
@@ -1502,6 +1535,10 @@ class CLS_TwitterReaction():
 			#############################
 			# カウントアップ
 			wCnt = wARR_DBData['renfavo_cnt'] + 1
+			
+			if wCnt>gVal.DEF_STR_TLNUM['renFavoBotCnt'] :
+				### 報告対象の表示と、ログに記録
+				gVal.OBJ_L.Log( "RR", wRes, "●bot判定 ユーザ: screen_name=" + wARR_DBData['screen_name'] + " level=" + wUserLevel, inID=wID )
 			
 			#############################
 			# 連ファボカウント更新

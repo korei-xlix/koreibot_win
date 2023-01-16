@@ -440,7 +440,8 @@ class CLS_Mylog():
 			CLS_OSIF.sPrn( wStr )
 			return True
 		
-		if inShortMode==True :
+###		if inShortMode==True :
+		if inShortMode==True and  wViewMode!="F" :
 			wOutLen = gVal.DEF_STR_TLNUM['logShortLen']
 		
 		#############################
