@@ -490,7 +490,7 @@ class CLS_TwitterFollower():
 				if wARR_DBData['level_tag']=="G" :
 					### 既に追い出し済
 ###					wThreshold = gVal.DEF_STR_TLNUM['forAutoRemoveByeByeSec']
-					if wARR_DBData['rfavo_cnt'])<gVal.DEF_STR_TLNUM['forAutoRemoveByeBye_ShortCnt'] :
+					if wARR_DBData['rfavo_cnt']<gVal.DEF_STR_TLNUM['forAutoRemoveByeBye_ShortCnt'] :
 						### いいねが少ない場合、短期
 						wThreshold = gVal.DEF_STR_TLNUM['forAutoRemoveByeBye_ShortSec']
 					
