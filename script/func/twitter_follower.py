@@ -521,6 +521,21 @@ class CLS_TwitterFollower():
 					wRes['Reason'] = "Twitter API Error(BlockRemove): " + wBlockRes['Reason'] + " screen_name=" +inUser['screen_name']
 					gVal.OBJ_L.Log( "B", wRes )
 					return wRes
+				
+				### DBへ反映
+				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Follower( wUserID, False, False )
+				if wSubRes['Result']!=True :
+					###失敗
+					wRes['Reason'] = "UpdateFavoData_Follower is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				
+				wStr = "●DBがないため追い出し"
+				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']), inID=wUserID )
+				
+				### 正常終了
+				wRes['Result'] = True
+				return wRes
 			
 			#############################
 			# 追い出し判定された場合、
@@ -539,6 +554,15 @@ class CLS_TwitterFollower():
 						wRes['Reason'] = "Twitter API Error(BlockRemove): " + wBlockRes['Reason'] + " screen_name=" +inUser['screen_name']
 						gVal.OBJ_L.Log( "B", wRes )
 						return wRes
+					
+					### DBへ反映
+					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Follower( wUserID, False, False )
+					if wSubRes['Result']!=True :
+						###失敗
+						wRes['Reason'] = "UpdateFavoData_Follower is failed"
+						gVal.OBJ_L.Log( "B", wRes )
+						return wRes
+					
 					### ユーザ記録
 					wStr = "●無視期間経過のため追い出し"
 					gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']), inID=wUserID )
