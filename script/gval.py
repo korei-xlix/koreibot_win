@@ -220,12 +220,15 @@ class gVal() :
 		"forOverListFavoCount"		: 1,				#   外部いいね数(1ユーザ)
 		"forCheckAutoDeleteSec"		: 172800,			#   自動削除チェック期間 2日 (60x60x24)x2
 ###		"forAutoRemoveIgnoreCompletelySec"	: 1209600,	#   完全スルーのため追い出し期間   14日  (60x60x24)x14
-		"forAutoRemoveIgnoreCompletelySec"	: 777600,	#   完全スルーのため追い出し期間    9日  (60x60x24)x9
+###		"forAutoRemoveIgnoreCompletelySec"	: 777600,	#   完全スルーのため追い出し期間    9日  (60x60x24)x9
+		"forAutoRemoveIgnoreCompletelySec"	: 604800,	#   完全スルーのため追い出し期間    7日  (60x60x24)x7
 ###		"forAutoRemoveByeByeSec"			: 5356800,	#   完全追い出し期間               62日  (60x60x24)x62
 ###		"forAutoRemoveByeByeSec"			: 3628800,	#   完全追い出し期間               42日  (60x60x24)x42
 ###		"forAutoRemoveByeByeSec"			: 2419200,	#   完全追い出し期間               28日  (60x60x24)x28
-		"forAutoRemoveByeByeSec"			: 1555200,	#   完全追い出し期間               18日  (60x60x24)x18
-		"forAutoRemoveByeBye_ShortSec"		: 432000,	#   完全追い出し期間(短期)          5日  (60x60x24)x5
+###		"forAutoRemoveByeByeSec"			: 1555200,	#   完全追い出し期間               18日  (60x60x24)x18
+		"forAutoRemoveByeByeSec"			: 1209600,	#   完全追い出し期間               14日  (60x60x24)x14
+###		"forAutoRemoveByeBye_ShortSec"		: 432000,	#   完全追い出し期間(短期)          5日  (60x60x24)x5
+		"forAutoRemoveByeBye_ShortSec"		: 259200,	#   完全追い出し期間(短期)          3日  (60x60x24)x3
 		"forAutoRemoveByeBye_ShortCnt"		: 5,		#   完全追い出し期間(短期)になるいいね受信回数(以下で短期)
 		"forAutoRemoveIgnoreCompletelyCnt"	: 4,		#   いいねがない場合の無条件追い出しまでのいいね実施回数
 		"forAutoRemoveReliefCnt"			: 3,		#   自動リムーブから救済される 今週いいね回数
