@@ -675,21 +675,15 @@ class CLS_TwitterFollower():
 		#############################
 		# いいね情報のチェック
 		# 以下は除外
-		# ・ユーザレベル F以外
+		# ・ユーザレベル E, F以外
 		# ・フォロー者ON
-###		# ・フォロワーON
-###		# ・過去にフォローしたこと、されたことがある
-		# ・過去にフォローしたことがある
+###		# ・過去にフォローしたことがある
 		if inForce==False :
 ###			if wARR_DBData['level_tag']!="F" or \
 ###			   wARR_DBData['myfollow']==True or \
-###			   str(wARR_DBData['myfollow_date'])!=gVal.DEF_TIMEDATE or \
-###			   wARR_DBData['follower']==True or \
-###			   str(wARR_DBData['follower_date'])!=gVal.DEF_TIMEDATE :
-			if wARR_DBData['level_tag']!="F" or \
-			   wARR_DBData['myfollow']==True or \
-			   str(wARR_DBData['myfollow_date'])!=gVal.DEF_TIMEDATE :
-				
+###			   str(wARR_DBData['myfollow_date'])!=gVal.DEF_TIMEDATE :
+			if wARR_DBData['myfollow']==True or \
+			   ( wARR_DBData['level_tag']!="F" and wARR_DBData['level_tag']!="E" ):
 				wRes['Result'] = True
 				return wRes
 		
