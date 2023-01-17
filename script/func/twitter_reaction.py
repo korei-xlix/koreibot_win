@@ -669,6 +669,8 @@ class CLS_TwitterReaction():
 ###		if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or \
 ###		   wARR_DBData['level_tag']=="H-" or wARR_DBData['level_tag']=="L" or wARR_DBData['level_tag']=="Z" or wARR_DBData['level_tag']=="Z-" or \
 ###        ( wARR_DBData['follower']==False and wARR_DBData['level_tag']=="D-" ) :
+###		if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="D-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or \
+###		   wARR_DBData['level_tag']=="G-" or wARR_DBData['level_tag']=="L"  or wARR_DBData['level_tag']=="Z" :
 		if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="D-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or \
 		   wARR_DBData['level_tag']=="G-" or wARR_DBData['level_tag']=="L"  or wARR_DBData['level_tag']=="Z" :
 			
@@ -879,23 +881,6 @@ class CLS_TwitterReaction():
 		# 前提: フォロワー
 		wUserLevel = None
 		wCnt = wARR_DBData['rfavo_n_cnt'] + 1
-###		if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or wARR_DBData['level_tag']=="F+" :
-###		if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" or wARR_DBData['level_tag']=="G" :
-###			if gVal.OBJ_Tw_IF.CheckMyFollow( wUserID )==True and \
-###			   gVal.OBJ_Tw_IF.CheckFollower( wUserID )==True :
-###				wUserLevel = "C+"
-###			
-###			elif gVal.OBJ_Tw_IF.CheckMyFollow( wUserID )==False and \
-###			   gVal.OBJ_Tw_IF.CheckFollower( wUserID )==True :
-###				wUserLevel = "E"
-###			
-###			if wUserLevel!=None :
-###				### ユーザレベル変更
-###				if self.DEF_REACTION_TEST==False :
-###					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
-###				
-###				### 報告対象の表示と、ログに記録
-###				gVal.OBJ_L.Log( "RR", wRes, "〇リアクションにより昇格 ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wUserLevel, inID=wUserID )
 		if wARR_DBData['level_tag']=="G" :
 			wUserLevel = "E"
 			wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
@@ -1507,6 +1492,13 @@ class CLS_TwitterReaction():
 		#############################
 		# 取得開始の表示
 		wResDisp = CLS_MyDisp.sViewHeaderDisp( "連ファボ測定中" )
+
+
+###		wStr =        "SCORE CNT   BOT   LV   USER" + '\n'
+###		wStr = wStr + "-------------------------------" + '\n'
+###		CLS_OSIF.sPrn( wStr )
+
+
 		
 		#############################
 		# リアクションユーザ

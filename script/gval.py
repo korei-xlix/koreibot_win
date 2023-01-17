@@ -212,8 +212,6 @@ class gVal() :
 		
 		"forRemFavoSec"				: 172800,			# いいね解除までの期間 2日 (60x60x24)x2
 		
-###		"forListFavoAutoRemoveSec"			: 604800,	#   リストいいね 自動リムーブまでの期間   7日  (60x60x24)x7
-###		"forListFavoAutoRemoveSec_Short"	: 57600,	#   リストいいね 自動リムーブまでの期間(短期)   16時間  (60x60x16)
 		"forListFavoAutoRemoveSec"			: 345600,	#   リストいいね 自動リムーブまでの期間   4日  (60x60x24)x4
 		"forListFavoAutoRemoveSec_Short"	: 43200,	#   リストいいね 自動リムーブまでの期間(短期)   12時間  (60x60x12)
 		"forCheckAutoRemoveSec"		: 14400,			#   自動リムーブチェック期間 4時間  (60x60x4)
@@ -225,6 +223,8 @@ class gVal() :
 ###		"forAutoRemoveByeByeSec"			: 5356800,	#   完全追い出し期間               62日  (60x60x24)x62
 ###		"forAutoRemoveByeByeSec"			: 3628800,	#   完全追い出し期間               42日  (60x60x24)x42
 		"forAutoRemoveByeByeSec"			: 2419200,	#   完全追い出し期間               28日  (60x60x24)x28
+		"forAutoRemoveByeBye_ShortSec"		: 2419200,	#   完全追い出し期間(短期)          7日  (60x60x24)x7
+		"forAutoRemoveByeBye_ShortCnt"		: 5,		#   完全追い出し期間(短期)になるいいね受信回数(以下で短期)
 		"forAutoRemoveIgnoreCompletelyCnt"	: 4,		#   いいねがない場合の無条件追い出しまでのいいね実施回数
 		"forAutoRemoveReliefCnt"			: 3,		#   自動リムーブから救済される 今週いいね回数
 		
