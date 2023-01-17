@@ -2538,6 +2538,54 @@ class CLS_TwitterAdmin():
 
 
 #####################################################
+# 被ブロックユーザ一覧
+#####################################################
+	def BlockList(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterFavo"
+		wRes['Func']  = "UserBList"
+		
+		#############################
+		# 取得開始の表示
+		wResDisp = CLS_MyDisp.sViewHeaderDisp( "被ブロックユーザ一覧" )
+		
+		#############################
+		# 被ブロックユーザ一覧の取得
+		wDBRes = gVal.OBJ_DB_IF.GetFavoData_BlockList()
+		if wDBRes['Result']!=True :
+			wRes['Reason'] = "GetFavoData_BlockList is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		wARR_BlockList = wDBRes['Responce']
+		
+		wKeylist = list( wARR_BlockList.keys() )
+		wStr = ""
+		if len(wKeylist)==0 :
+			wStr = "(非絡みユーザなし)" + '\n'
+		
+		#############################
+		# 被ブロックユーザ一覧の作成
+		else:
+			wStr = "--------------------" + '\n'
+			
+			for wID in wKeylist :
+				wID = str(wID)
+				
+				wStr = wStr + wARR_BlockList[wID]['screen_name'] + '\n'
+		
+		#############################
+		# 表示
+		CLS_OSIF.sPrn( wStr )
+		
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
 # 非絡みユーザ一覧
 #####################################################
 ###	def UserBList(self):

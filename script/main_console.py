@@ -214,6 +214,11 @@ class CLS_Main_Console() :
 ###		elif inCommand=="\\ub" :
 ###			cls.OBJ_TwitterMain.UserBList()
 ###		
+		#############################
+		# 被ブロックユーザ一覧
+		elif inCommand=="\\lb" :
+			cls.OBJ_TwitterMain.BlockList()
+		
 	#####################################################
 		#############################
 		# ログの表示(異常ログ)

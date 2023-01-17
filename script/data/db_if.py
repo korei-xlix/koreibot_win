@@ -3804,6 +3804,44 @@ class CLS_DB_IF() :
 ###		return wRes
 
 	#####################################################
+	# いいね情報：被ブロックユーザ一覧
+	#####################################################
+	def GetFavoData_BlockList( self ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_DB_IF"
+		wRes['Func']  = "GetFavoData_BlockList"
+		
+		#############################
+		# ユーザレベルを取得する
+		wQy = "select id, screen_name from tbl_favouser_data where "
+		wQy = wQy + "twitterid = '" + gVal.STR_UserInfo['Account'] + "'"
+		wQy = wQy + " and level_tag = 'Z' "
+		wQy = wQy + ";"
+		
+		wResDB = gVal.OBJ_DB_IF.RunQuery( wQy )
+		if wResDB['Result']!=True :
+			wRes['Reason'] = "Run Query is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 辞書型に整形
+		wARR_DBData = gVal.OBJ_DB_IF.ChgDict( wResDB['Responce'] )
+		
+		#############################
+		# 添え字をIDに差し替える
+		wARR_RateFavoDate = gVal.OBJ_DB_IF.ChgDataID( wARR_DBData )
+		
+		wRes['Responce'] = wARR_RateFavoDate
+		#############################
+		# 正常
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
 	def UpdateFavoData_SendFavo( self, inARR_ID=[] ):
 		#############################
 		# 応答形式の取得
