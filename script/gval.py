@@ -233,6 +233,7 @@ class gVal() :
 		"forAutoRemoveIgnoreCompletelyCnt"	: 4,		#   いいねがない場合の無条件追い出しまでのいいね実施回数
 		"forAutoRemoveReliefCnt"			: 3,		#   自動リムーブから救済される 今週いいね回数
 ###		"forAutoRemoveReliefSec"			: 86400,	#   レベルG-が引き揚げられる いいね期間    1日  (60x60x24)
+		"forReFollowerPastRfavoCnt"			: 4,		#   レベルG-の再フォローを許容する、過去のいいね受信数
 		
 		"forAutoUserRemoveSec"			: 2592000,		# ユーザ削除までの期間                 30日 (60x60x24)x30
 		"forFavoDataDelSec"				: 7776000,		# いいね情報削除までの期間             90日 (60x60x24)x90

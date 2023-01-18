@@ -667,6 +667,11 @@ class CLS_TwitterMain():
 						wStr = wStr + "（ユーザレベルA）"
 						wFLG_RemDetect = False
 					
+					elif wARR_DBData['level_tag']=="G-" or wUserLevel=="G-" :
+						if wARR_DBData['rfavo_cnt']<gVal.DEF_STR_TLNUM['forReFollowerPastRfavoCnt'] :
+							wStr = wStr + "（ユーザレベルG-でリアクション少ない）"
+							wFLG_RemDetect = True
+					
 ###					elif wFollowerData[wID]['myfollow']==False and \
 ###					   wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel!="A" and \
 ###					   ( wUserInfoRes['Responce']['statuses_count']==0 or \
