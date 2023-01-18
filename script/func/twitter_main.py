@@ -680,7 +680,7 @@ class CLS_TwitterMain():
 							wStr = wStr + "（ツイートなし）"
 							wFLG_RemDetect = True
 						
-						elif wUserInfoRes['Responce']['protected']==True ) :
+						elif wUserInfoRes['Responce']['protected']==True :
 							###対象
 							wStr = wStr + "（鍵垢アカウント）"
 							wFLG_RemDetect = True
