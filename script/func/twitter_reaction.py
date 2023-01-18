@@ -684,32 +684,32 @@ class CLS_TwitterReaction():
 			wRes['Result'] = True
 			return wRes
 		
-		### 追い出しユーザの受け入れ
-		elif wARR_DBData['level_tag']=="G-" :
-			#############################
-			# 最後のいいね受信から期間を過ぎた場合は除外
-			wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData['rfavo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['forAutoRemoveReliefSec'] )
-			if wGetLag['Result']!=True :
-				wRes['Reason'] = "sTimeLag failed"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
-			if wGetLag['Beyond']==True :
-				### 規定外 =古いツイートなので除外
-				
-				### 報告対象の表示と、ログに記録
-				gVal.OBJ_L.Log( "T", wRes, "●リアクション拒否(レベルタグ) ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wARR_DBData['level_tag'], inID=wUserID )
-				
-				### いいね情報を更新する
-				if self.DEF_REACTION_TEST==False :
-					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Recive( inUser, inTweet, wARR_DBData, True )
-					if wSubRes['Result']!=True :
-						###失敗
-						wRes['Reason'] = "UpdateFavoData is failed"
-						gVal.OBJ_L.Log( "B", wRes )
-						return wRes
-				
-				wRes['Result'] = True
-				return wRes
+###		### 追い出しユーザの受け入れ
+###		elif wARR_DBData['level_tag']=="G-" :
+###			#############################
+###			# 最後のいいね受信から期間を過ぎた場合は除外
+###			wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData['rfavo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['forAutoRemoveReliefSec'] )
+###			if wGetLag['Result']!=True :
+###				wRes['Reason'] = "sTimeLag failed"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			if wGetLag['Beyond']==True :
+###				### 規定外 =古いツイートなので除外
+###				
+###				### 報告対象の表示と、ログに記録
+###				gVal.OBJ_L.Log( "T", wRes, "●リアクション拒否(レベルタグ) ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wARR_DBData['level_tag'], inID=wUserID )
+###				
+###				### いいね情報を更新する
+###				if self.DEF_REACTION_TEST==False :
+###					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Recive( inUser, inTweet, wARR_DBData, True )
+###					if wSubRes['Result']!=True :
+###						###失敗
+###						wRes['Reason'] = "UpdateFavoData is failed"
+###						gVal.OBJ_L.Log( "B", wRes )
+###						return wRes
+###				
+###				wRes['Result'] = True
+###				return wRes
 		
 ###		#############################
 ###		# リムーブしたけど、まだフォロワーでアクションが継続した場合
@@ -903,13 +903,20 @@ class CLS_TwitterReaction():
 		# 前提: フォロワー
 		wUserLevel = None
 		wCnt = wARR_DBData['rfavo_n_cnt'] + 1
-###		if wARR_DBData['level_tag']=="G" :
-		if wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G-" :
+		if wARR_DBData['level_tag']=="G" :
+###		if wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G-" :
 			wUserLevel = "E"
 			wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
 			
 			### 報告対象の表示と、ログに記録
 			gVal.OBJ_L.Log( "RR", wRes, "〇リアクションにより昇格 ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wUserLevel, inID=wUserID )
+		
+		#############################
+		# レベルG-
+		elif wARR_DBData['level_tag']=="G-" :
+			
+			### 報告対象の表示と、ログに記録
+			gVal.OBJ_L.Log( "RR", wRes, "〇追い出しユーザからのリアクション ユーザ: screen_name=" + inUser['screen_name'] + " level=G-", inID=wUserID )
 		
 		#############################
 		# 相互レベルCへ昇格
@@ -981,7 +988,8 @@ class CLS_TwitterReaction():
 		#############################
 		# 自分のツイートの場合
 		# おかえしを返す
-		if str(gVal.STR_UserInfo['id'])==wUserID :
+###		if str(gVal.STR_UserInfo['id'])==wUserID :
+		if str(gVal.STR_UserInfo['id'])==wUserID and inData['level_tag']!="G-" :
 			#############################
 			# 期間外のTweetで 新規ユーザに対しては
 			# リアクションを返さない(仕様)
