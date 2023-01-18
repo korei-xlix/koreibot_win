@@ -1560,6 +1560,19 @@ class CLS_TwitterReaction():
 			wID = str(wID)
 			
 			#############################
+			# DBからいいね情報を取得する(1個)
+			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wID, inFLG_New=False )
+			if wDBRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "GetFavoDataOne is failed(2)"
+				gVal.OBJ_L.Log( "B", wRes )
+				continue
+			### DB未登録ならスキップ
+			if wDBRes['Responce']['Data']==None :
+				continue
+			wARR_DBData = wDBRes['Responce']['Data']
+			
+			#############################
 			# 最後のいいねからの期間
 			wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData['rfavo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['forRenFavoResetSec'] )
 			if wGetLag['Result']!=True :
