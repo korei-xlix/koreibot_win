@@ -862,7 +862,8 @@ class CLS_TwitterKeyword():
 				
 				#############################
 				# 自動フォロー
-				wSubRes = self.OBJ_Parent.OBJ_TwitterFollower.AutoFollow( wTweet['user'] )
+###				wSubRes = self.OBJ_Parent.OBJ_TwitterFollower.AutoFollow( wTweet['user'] )
+				wSubRes = self.OBJ_Parent.OBJ_TwitterFollower.AutoFollow( wTweet['user']['id'] )
 				if wSubRes['Result']!=True :
 					wRes['Reason'] = "AutoFollow is failed"
 					gVal.OBJ_L.Log( "B", wRes )

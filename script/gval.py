@@ -283,6 +283,8 @@ class gVal() :
 		"TimelineFollowTweetLine"		: 200,			#   ツイート取得ライン数
 		"TimelineFollowTweetLine_Skip"	: 40,			#   ツイート取得ライン 先頭スキップ数
 		"TimelineFollowFavoCheckNum"	: 32,			#   いいね、リツイート、引用リツイートのチェック回数(Limit)
+		"forAutoReFollowCnt"			: 10,			# 1回の自動監視で実施する自動再フォロー実行数(最大12)
+		"forAutoReFollowFollowCnt"		: 3,			# 1回の再フォロー処理で自動フォローするユーザ数
 		
 		"forMultiFavoStopReleaseSec"	: 172800,		# 相互いいね停止期間(自動解除)  2日 (60x60x24)x2
 		
@@ -442,5 +444,6 @@ class gVal() :
 	ARR_SearchData = {}										# 検索データ
 	ARR_CautionTweet = {}									# 警告ツイート
 
+	VAL_AutoReFollowCnt = 0
 
 

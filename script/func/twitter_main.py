@@ -296,6 +296,7 @@ class CLS_TwitterMain():
 		
 		wRes['Responce'] = False
 		
+		gVal.VAL_AutoReFollowCnt = 0
 		#############################
 		# リスト登録ユーザ取得
 		wSubRes = gVal.OBJ_Tw_IF.GetFollowListUser()
@@ -751,7 +752,8 @@ class CLS_TwitterMain():
 						#   フォロー者=OFF → ON・フォロワーOFF → ON
 						elif wARR_DBData['level_tag']=="F" :
 							### 自動フォロー
-							wSubRes = self.OBJ_TwitterFollower.AutoFollow( wFollowerData[wID], wFLG_Force )
+###							wSubRes = self.OBJ_TwitterFollower.AutoFollow( wFollowerData[wID], wFLG_Force )
+							wSubRes = self.OBJ_TwitterFollower.AutoFollow( wFollowerData[wID]['id'], wFLG_Force )
 							if wSubRes['Result']!=True :
 								wRes['Reason'] = "AutoFollow is failed"
 								gVal.OBJ_L.Log( "B", wRes )
@@ -810,70 +812,6 @@ class CLS_TwitterMain():
 							### ユーザ記録
 							gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'], inID=wID )
 						
-###						elif wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel!="A" and wUserLevel!="A+" and \
-###						     wARR_DBData['level_tag']!="B" and wARR_DBData['level_tag']!="B+" and wUserLevel!="B" and wUserLevel!="B+" and \
-###						     wARR_DBData['level_tag']!="C" and wARR_DBData['level_tag']!="C+" and wUserLevel!="C" and wUserLevel!="C+" :
-###							
-###							wUserLevel2 = None
-###							if wFollowerData[wID]['myfollow']==True :
-###								### フォローされて相互フォローになった
-###								if wARR_DBData['level_tag']=="C-" or wARR_DBData['level_tag']=="D" or wARR_DBData['level_tag']=="D+" :
-###									wUserLevel2 = "C+"
-###									### 相互フォローリストに追加
-###									wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( wFollowerData[wID] )
-###									
-###								elif wARR_DBData['level_tag']=="D-" :
-###									wUserLevel2 = "G"
-###									### 相互フォローリストに追加
-###									wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( wFollowerData[wID] )
-###								wUserLevel2 = "C+"
-###								### 相互フォローリストに追加
-###								wTwitterRes = gVal.OBJ_Tw_IF.MutualList_AddUser( wFollowerData[wID] )
-###							
-###							else:
-###								### フォロワー
-###								###   新規の場合、もしくはリセットの場合  自動フォロー
-###								if wARR_DBData['level_tag']=="F" :
-###									
-###									### 自動フォロー
-###									wSubRes = self.OBJ_TwitterFollower.AutoFollow( wFollowerData[wID], wFLG_Force )
-###									if wSubRes['Result']!=True :
-###										wRes['Reason'] = "AutoFollow is failed"
-###										gVal.OBJ_L.Log( "B", wRes )
-###										continue
-###									
-###									if wSubRes['Responce']==True :
-###										### 自動フォロー成功 フォロー者ON・フォローON
-###										### リストは相互フォローリストのまま
-###										wUserLevel2 = "C+"
-###									else:
-###										### 自動フォロー失敗 フォロー者OFF・フォローON
-###										wUserLevel2 = "E"
-###										### 片フォロワーリストに追加
-###										wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_AddUser( wFollowerData[wID] )
-###								
-###								elif wARR_DBData['level_tag']=="E+" or wARR_DBData['level_tag']=="E-" :
-###									wUserLevel2 = "E"
-###									### 片フォロワーリストに追加
-###									wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_AddUser( wFollowerData[wID] )
-###								
-###								elif wARR_DBData['level_tag']=="F+" or wARR_DBData['level_tag']=="E-" or wARR_DBData['level_tag']=="H-" or \
-###								     wARR_DBData['level_tag']=="L" or wARR_DBData['level_tag']=="Z" or wARR_DBData['level_tag']=="Z-" :
-###									wUserLevel2 = "H"
-###									### 片フォロワーリストに追加
-###									wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_AddUser( wFollowerData[wID] )
-###							
-###							if wUserLevel2!=None :
-###								### ユーザレベル変更
-###								wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel2 )
-###						
-###						### トラヒック記録（フォロワー獲得）
-###						CLS_Traffic.sP( "p_follower" )
-###						
-###						### ユーザ記録
-###						gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'], inID=wID )
-###				
-###				else:
 				elif wARR_DBData['follower']==True and wFollowerData[wID]['follower']==False :
 				#############################
 				# 〇被リムーブ検出
@@ -892,11 +830,6 @@ class CLS_TwitterMain():
 								### 自動リムーブしてない（フォロー者ON・フォロワーOFF）
 								
 								### ユーザレベル変更
-###								if wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G+" or wUserLevel=="G" or wUserLevel=="G+" :
-###									wUserLevel2 = "H"
-###								
-###								else:
-###									wUserLevel2 = "C-"
 								wUserLevel2 = "C-"
 								
 								wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel2 )
@@ -912,23 +845,11 @@ class CLS_TwitterMain():
 							wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_Remove( wFollowerData[wID] )
 							
 							### ユーザレベル変更
-###							if wARR_DBData['level_tag']=="F+" :
 							if wARR_DBData['level_tag']=="G" :
 								### 完全スルーユーザからのリムーブは追い出し扱い
-###								wUserLevel2 = "Z-"
-###								wStr = "●リムーブされた(追い出し扱い)"
 								wUserLevel2 = "G-"
 								wStr = "●スルーユーザからのリムーブ"
 							else:
-###								wUserLevel2 = None
-###								wStr = "●リムーブされた"
-###								if wARR_DBData['level_tag']=="H" or wARR_DBData['level_tag']=="H+" or wUserLevel=="H" or wUserLevel=="H+" or \
-###								   wARR_DBData['level_tag']=="F+" or wARR_DBData['level_tag']=="Z-" or wUserLevel=="F+" or wUserLevel=="Z-" :
-###									wUserLevel2 = "H-"
-###								
-###								else:
-###									wUserLevel2 = "E-"
-###								wUserLevel2 = "E-"
 								if wARR_DBData['level_tag']!="G-" :
 									wUserLevel2 = "E-"
 								wStr = "●リムーブされた"
@@ -940,6 +861,13 @@ class CLS_TwitterMain():
 								wStr = wStr + ": " + wFollowerData[wID]['screen_name']
 								wStr = wStr + ": level=" + wUserLevel2 + ": send=" + str(wARR_DBData['pfavo_cnt']) + " recv=" + str(wARR_DBData['rfavo_cnt'])
 								gVal.OBJ_L.Log( "R", wRes, wStr, inID=wID )
+						
+						#############################
+						# 代わりにフォロー一覧から再フォロー
+						wSubRes = self.OBJ_TwitterFollower.AutoReFollow( wID )
+						if wSubRes['Result']!=True :
+							wRes['Reason'] = "AutoReFollow is failed"
+							gVal.OBJ_L.Log( "B", wRes )
 					
 					### トラヒック記録（フォロワー減少）
 					CLS_Traffic.sP( "d_follower" )
@@ -1060,20 +988,11 @@ class CLS_TwitterMain():
 				wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_Remove( wARR_RateFavoDate[wUserID] )
 				
 				### ユーザレベル変更
-###				if wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G+" or \
-###				   wARR_DBData['level_tag']=="H" or wARR_DBData['level_tag']=="H+" or wARR_DBData['level_tag']=="H-" :
-###				if wARR_RateFavoDate[wUserID]['level_tag']=="G" or wARR_RateFavoDate[wUserID]['level_tag']=="G+" or \
-###				   wARR_RateFavoDate[wUserID]['level_tag']=="H" or wARR_RateFavoDate[wUserID]['level_tag']=="H+" or wARR_RateFavoDate[wUserID]['level_tag']=="H-" :
-###					wUserLevel = "H-"
-###				
-###				else:
-###					wUserLevel = "E-"
 				wUserLevel = "E-"
 				
 				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
 				
 				### 通信記録
-###				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wARR_RateFavoDate[wUserID]['screen_name'], inID=wUserID )
 				wStr = wStr + ": " + wARR_RateFavoDate[wUserID]['screen_name']
 				wStr = wStr + ": level=" + wUserLevel + ": send=" + str(wARR_RateFavoDate[wUserID]['pfavo_cnt']) + " recv=" + str(wARR_RateFavoDate[wUserID]['rfavo_cnt'])
 				gVal.OBJ_L.Log( "R", wRes, wStr, inID=wID )
@@ -1093,39 +1012,32 @@ class CLS_TwitterMain():
 				
 				wUserLevel = None
 				### ユーザレベル変更
-###				if wARR_RateFavoDate[wUserID]['level_tag']=="F+" :
 				if wARR_RateFavoDate[wUserID]['level_tag']=="G" :
 					### 完全スルーユーザからのリムーブは追い出し扱い
-###					wUserLevel = "Z-"
-###					wStr = "●リムーブされた(追い出し扱い)"
 					wUserLevel = "G-"
 					wStr = "●スルーユーザからのリムーブ"
 				else:
-###					wUserLevel = "E-"
 					if wARR_RateFavoDate[wUserID]['level_tag']!="G-" :
 						wUserLevel = "E-"
 					wStr = "●リムーブされた"
-###					if wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G+" or \
-###					   wARR_DBData['level_tag']=="H" or wARR_DBData['level_tag']=="H+" or wARR_DBData['level_tag']=="H-" :
-###					if wARR_RateFavoDate[wUserID]['level_tag']=="G" or wARR_RateFavoDate[wUserID]['level_tag']=="G+" or \
-###					   wARR_RateFavoDate[wUserID]['level_tag']=="H" or wARR_RateFavoDate[wUserID]['level_tag']=="H+" or wARR_RateFavoDate[wUserID]['level_tag']=="H-" :
-###						wUserLevel = "H-"
-###					
-###					else:
-###						wUserLevel = "E-"
 				
-###				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
 				if wUserLevel!=None :
 					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
 				
 				### 通信記録（フォロー者OFF・フォロワーから、フォロー者・フォロワーOFFへ）
-###				gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wARR_RateFavoDate[wUserID]['screen_name'], inID=wUserID )
 				wStr = wStr + ": " + wARR_RateFavoDate[wUserID]['screen_name']
 				wStr = wStr + ": level=" + wUserLevel + ": send=" + str(wARR_RateFavoDate[wUserID]['pfavo_cnt']) + " recv=" + str(wARR_RateFavoDate[wUserID]['rfavo_cnt'])
 				gVal.OBJ_L.Log( "R", wRes, wStr, inID=wID )
 				
 				### トラヒック記録
 				CLS_Traffic.sP( "d_follower" )
+				
+				#############################
+				# 代わりにフォロー一覧から再フォロー
+				wSubRes = self.OBJ_TwitterFollower.AutoReFollow( wUserID )
+				if wSubRes['Result']!=True :
+					wRes['Reason'] = "AutoReFollow is failed"
+					gVal.OBJ_L.Log( "B", wRes )
 			
 			#############################
 			# 変更ありの場合

@@ -566,6 +566,14 @@ class CLS_TwitterFollower():
 					### ユーザ記録
 					wStr = "●無視期間経過のため追い出し"
 					gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']), inID=wUserID )
+					
+					#############################
+					# 代わりにフォロー一覧から再フォロー
+					wSubRes = self.AutoReFollow( wUserID )
+					if wSubRes['Result']!=True :
+						wRes['Reason'] = "AutoReFollow is failed"
+						gVal.OBJ_L.Log( "B", wRes )
+						return wRes
 				
 				#############################
 				# その他の場合、
@@ -589,9 +597,76 @@ class CLS_TwitterFollower():
 
 
 #####################################################
+# 自動再フォロー
+#####################################################
+	def AutoReFollow( self, inUserID ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterFollower"
+		wRes['Func']  = "AutoReFollow"
+		
+		wUserID = str(inUserID)
+		
+		#############################
+		# 自動リムーブが無効ならここで終わる
+		if gVal.STR_UserInfo['AutoRemove']==False :
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# 再フォロー数を超えているか
+		if gVal.VAL_AutoReFollowCnt>=gVal.DEF_STR_TLNUM['forAutoReFollowCnt'] :
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# フォロー一覧の取得
+		wFollowRes = gVal.OBJ_Tw_IF.GetFollowIDList( inID=wUserID )
+		if wFollowRes['Result']!=True :
+			wRes['Reason'] = "GetFollowIDList is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		wARR_FollowID = wFollowRes['Responce']
+		
+		gVal.VAL_AutoReFollowCnt += 1
+		
+		wFollowNum = 0
+		#############################
+		# フォロー
+###		wKeylist = list(wARR_FollowID)
+		for wID in wARR_FollowID :
+			wID = str(wID)
+			
+			#############################
+			# フォロー人数が超えたか
+			if wFollowNum>=gVal.DEF_STR_TLNUM['forAutoReFollowFollowCnt'] :
+				break
+			
+			#############################
+			# 自動フォロー
+			wSubRes = self.AutoFollow( inID=wID )
+			if wSubRes['Result']!=True :
+				wRes['Reason'] = "AutoFollow is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				continue
+			
+			wFollowNum += 1
+		
+		#############################
+		# 正常終了
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
 # 自動フォロー
 #####################################################
-	def AutoFollow( self, inUser, inForce=False ):
+###	def AutoFollow( self, inUser, inForce=False ):
+	def AutoFollow( self, inUserID, inForce=False ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -601,7 +676,8 @@ class CLS_TwitterFollower():
 		
 		wRes['Responce'] = False	#自動フォロー実行有無
 		
-		wUserID = str(inUser['id'])
+###		wUserID = str(inUser['id'])
+		wUserID = str(inUserID)
 		
 		#############################
 		# 自動リムーブが無効ならここで終わる
@@ -613,7 +689,8 @@ class CLS_TwitterFollower():
 		# ユーザ情報の取得
 		wUserInfoRes = gVal.OBJ_Tw_IF.GetUserinfo( inID=wUserID )
 		if wUserInfoRes['Result']!=True :
-			wRes['Reason'] = "Twitter Error: @" + inUser['screen_name']
+###			wRes['Reason'] = "Twitter Error: @" + inUser['screen_name']
+			wRes['Reason'] = "GetUserinfo is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
@@ -702,7 +779,8 @@ class CLS_TwitterFollower():
 		# フォローする
 		wTweetRes = gVal.OBJ_Tw_IF.Follow( wUserID, inMute=True )
 		if wTweetRes['Result']!=True :
-			wRes['Reason'] = "Twitter API Error(Follow): " + wTweetRes['Reason'] + " screen_name=" + str(inUser['screen_name'])
+###			wRes['Reason'] = "Twitter API Error(Follow): " + wTweetRes['Reason'] + " screen_name=" + str(inUser['screen_name'])
+			wRes['Reason'] = "Twitter API Error(Follow): " + wTweetRes['Reason'] + " screen_name=" + str(wUser['screen_name'])
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
@@ -720,7 +798,8 @@ class CLS_TwitterFollower():
 		
 		### ユーザ記録
 		wStr = "〇自動フォロー"
-		gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']), inID=wUserID )
+###		gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']), inID=wUserID )
+		gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(wUser['screen_name']), inID=wUserID )
 		
 		#############################
 		# DBに反映
@@ -937,7 +1016,8 @@ class CLS_TwitterFollower():
 				break
 			
 			### 自動フォロー
-			wSubRes = self.OBJ_Parent.OBJ_TwitterFollower.AutoFollow( self.ARR_AgentUsers[wID] )
+###			wSubRes = self.OBJ_Parent.OBJ_TwitterFollower.AutoFollow( self.ARR_AgentUsers[wID] )
+			wSubRes = self.OBJ_Parent.OBJ_TwitterFollower.AutoFollow( self.ARR_AgentUsers[wID]['id'] )
 			if wSubRes['Result']!=True :
 				wRes['Reason'] = "AutoFollow is failed"
 				gVal.OBJ_L.Log( "B", wRes )

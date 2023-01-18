@@ -1032,7 +1032,8 @@ class CLS_TwitterReaction():
 		# 自動フォローする
 		if gVal.OBJ_Tw_IF.CheckMyFollow( wUserID )==False :
 			if self.DEF_REACTION_TEST==False :
-				wSubRes = self.OBJ_Parent.OBJ_TwitterFollower.AutoFollow( inUser )
+###				wSubRes = self.OBJ_Parent.OBJ_TwitterFollower.AutoFollow( inUser )
+				wSubRes = self.OBJ_Parent.OBJ_TwitterFollower.AutoFollow( inUser['id'] )
 				if wSubRes['Result']!=True :
 					###失敗
 					wRes['Reason'] = "AutoFollow is failed"
