@@ -766,7 +766,7 @@ class CLS_TwitterFollower():
 		
 		#############################
 		# 禁止プロフ文字チェック
-		wWordRes = self.OBJ_Parent.CheckExtProf( inUser, wUser['description'] )
+		wWordRes = self.OBJ_Parent.CheckExtProf( wUser, wUser['description'] )
 		if wWordRes['Result']!=True :
 			wRes['Reason'] = "CheckExtProf failed(description)"
 			gVal.OBJ_L.Log( "B", wRes )
