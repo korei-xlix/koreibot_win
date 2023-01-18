@@ -1586,13 +1586,17 @@ class CLS_TwitterReaction():
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
-		wKeylist = wDBRes['Responce']
+		wARR_RenFavo = wDBRes['Responce']
+		
+###		wKeylist = wDBRes['Responce']
+		wKeylist = list(wARR_RenFavo)
 		for wID in wKeylist :
 			wID = str(wID)
 			
 			#############################
 			# DBからいいね情報を取得する(1個)
-			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wID, inFLG_New=False )
+###			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wID, inFLG_New=False )
+			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wARR_RenFavo[wID], inFLG_New=False )
 			if wDBRes['Result']!=True :
 				###失敗
 				wRes['Reason'] = "GetFavoDataOne is failed(2)"
