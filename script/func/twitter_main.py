@@ -662,15 +662,28 @@ class CLS_TwitterMain():
 						continue
 					
 					wFLG_RemDetect = False
+					wStr = "●追い出し"
 					if wARR_DBData['level_tag']=="A" or wARR_DBData['level_tag']=="A+" or wUserLevel=="A" or wUserLevel=="A+" :
+						wStr = wStr + "（ユーザレベルA）"
 						wFLG_RemDetect = False
 					
+###					elif wFollowerData[wID]['myfollow']==False and \
+###					   wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel!="A" and \
+###					   ( wUserInfoRes['Responce']['statuses_count']==0 or \
+###					     wUserInfoRes['Responce']['protected']==True ) :
+###							wFLG_RemDetect = True
 					elif wFollowerData[wID]['myfollow']==False and \
-					   wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel!="A" and \
-					   ( wUserInfoRes['Responce']['statuses_count']==0 or \
-					     wUserInfoRes['Responce']['protected']==True ) :
-						###対象
-						wFLG_RemDetect = True
+					   wARR_DBData['level_tag']!="A" and wARR_DBData['level_tag']!="A+" and wUserLevel!="A" :
+						
+						if wUserInfoRes['Responce']['statuses_count']==0 :
+							###対象
+							wStr = wStr + "（ツイートなし）"
+							wFLG_RemDetect = True
+						
+						elif wUserInfoRes['Responce']['protected']==True ) :
+							###対象
+							wStr = wStr + "（鍵垢アカウント）"
+							wFLG_RemDetect = True
 					
 					else:
 						###最終ツイート日時が規定日を超えているか
@@ -693,6 +706,7 @@ class CLS_TwitterMain():
 							continue
 						if wGetLag['Beyond']==True :
 							### 規定外 =許容外の日数なので対象
+							wStr = wStr + "（最終ツイートが古すぎる）"
 							wFLG_RemDetect = True
 					
 					if wFLG_RemDetect==True :
@@ -713,7 +727,7 @@ class CLS_TwitterMain():
 						CLS_Traffic.sP( "d_follower" )
 						
 						### ユーザ記録
-						wStr = "●追い出し"
+###						wStr = "●追い出し"
 						gVal.OBJ_L.Log( "R", wRes, wStr + ": " + wFollowerData[wID]['screen_name'], inID=wID )
 					
 					else:
@@ -960,6 +974,10 @@ class CLS_TwitterMain():
 					if wARR_RateFavoDate[wUserID]['myfollow']==True :
 						wFollower = True
 						CLS_Traffic.sP( "follower" )
+					
+					### ブロック検知の送信
+					self.SendBeenBlock( wARR_RateFavoDate[wUserID] )
+			
 			else:
 				### Gは被ブロック済み
 				wBlockBy  = True
@@ -2420,6 +2438,9 @@ class CLS_TwitterMain():
 			wStr = "●被ブロック検知"
 ###			gVal.OBJ_L.Log( "R", wRes, wStr + ": " + inData['screen_name'] )
 			gVal.OBJ_L.Log( "R", wRes, wStr + ": " + inData['screen_name'], inID=wID )
+			
+			### ブロック検知の送信
+			self.SendBeenBlock( inData )
 		
 		### 公式垢の場合
 		elif gVal.OBJ_Tw_IF.CheckSubscribeListUser( wID )==True :
@@ -2479,6 +2500,49 @@ class CLS_TwitterMain():
 			return wRes
 		
 		wRes['Responce'] = wSubRes['Responce']
+		#############################
+		# 正常終了
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# 被ブロックのお知らせ
+#####################################################
+	def SendBeenBlock( self, inUser ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "SendBeenBlock"
+		
+		wTweet = ""
+		#############################
+		# ツイートの作成
+		wTweet = "[自動] ブロックを検知しました" + '\n'
+		wTweet = wTweet + "[Auto] block detected" + '\n'
+		wTweet = wTweet + "user name: " + str(inUser['screen_name']) + '\n'
+		wTweet = wTweet + gVal.STR_UserInfo['DelTag'] + '\n'
+		
+		#############################
+		# 送信
+		wTweetRes = gVal.OBJ_Tw_IF.Tweet( wTweet )
+		if wTweetRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error: " + wTweetRes['Reason']
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 送信完了
+		wStr = "ブロック検知通知を送信しました。" + '\n'
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# ログに記録
+		gVal.OBJ_L.Log( "T", wRes, "いいね情報送信(Twitter)" )
+		
 		#############################
 		# 正常終了
 		wRes['Result'] = True
