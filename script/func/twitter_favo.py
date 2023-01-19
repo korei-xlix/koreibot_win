@@ -19,6 +19,7 @@ class CLS_TwitterFavo():
 	
 	ARR_FavoUserID     = []
 	ARR_OverFavoUserID = []
+	ARR_RandUserID     = []
 	
 
 										###自動いいね 処理モード
@@ -400,6 +401,7 @@ class CLS_TwitterFavo():
 		
 		self.ARR_FavoUserID = []
 		self.ARR_OverFavoUserID = []
+		self.ARR_RandUserID = []
 		#############################
 		# フォロワー支援いいね
 		# ・相互フォローリストかつ相互フォロー
@@ -551,7 +553,24 @@ class CLS_TwitterFavo():
 ###				
 			#############################
 			# Bot判定ユーザ除外
-			if wARR_DBData['renfavo_cnt']>gVal.DEF_STR_TLNUM['renFavoBotCnt'] :
+###			if wARR_DBData['renfavo_cnt']>gVal.DEF_STR_TLNUM['renFavoBotCnt'] :
+			if wARR_DBData['renfavo_cnt']>gVal.DEF_STR_TLNUM['renFavoBotNoactionCnt'] :
+				wStr = "▲Bot判定ユーザ除外除外(無条件無視): level=" + wARR_DBData['level_tag'] + " user=" + wARR_FollowData[wUserID]['screen_name']
+				CLS_OSIF.sPrn( wStr )
+				###
+				wResult['no_cnt'] += 1
+				continue
+			
+			#############################
+			# 既に除外済み
+			elif wUserID in self.ARR_RandUserID :
+				wStr = "▲Bot判定ユーザ除外除外(ランダム選出済): level=" + wARR_DBData['level_tag'] + " user=" + wARR_FollowData[wUserID]['screen_name']
+				CLS_OSIF.sPrn( wStr )
+				###
+				wResult['no_cnt'] += 1
+				continue
+			
+			elif wARR_DBData['renfavo_cnt']>gVal.DEF_STR_TLNUM['renFavoBotCnt'] :
 				#############################
 				# ランダム除外
 				wRand = CLS_OSIF.sGetRand(100)
@@ -562,6 +581,7 @@ class CLS_TwitterFavo():
 					CLS_OSIF.sPrn( wStr )
 					###
 					wResult['no_cnt'] += 1
+					self.ARR_RandUserID.append( wUserID )
 					continue
 			
 			#############################
@@ -1338,7 +1358,15 @@ class CLS_TwitterFavo():
 			# いいねする
 			wSubRes = gVal.OBJ_Tw_IF.Favo( wARR_Tweet[wFavoID] )
 			if wSubRes['Result']!=True :
-				wRes['Reason'] = "Twitter API Error(Favo): user=" + wFavoUser['screen_name'] + " id=" + str(wFavoID)
+###				wRes['Reason'] = "Twitter API Error(Favo): user=" + wFavoUser['screen_name'] + " id=" + str(wFavoID)
+				wResText = "Twitter API Error(Favo):"
+				wResText = wResText + " id=" + str(wFavoID)
+				wResText = wResText + " kind=" + str(wARR_Tweet[wFavoID]['kind'])
+				wResText = wResText + " user=" + str(wARR_Tweet[wFavoID]['user']['screen_name'])
+				if wARR_Tweet[wFavoID]['src_user']['screen_name']!=None :
+					wResText = wResText + " src_user=" + str(wARR_Tweet[wFavoID]['src_user']['screen_name'])
+				
+				wRes['Reason'] = wResText
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
 			

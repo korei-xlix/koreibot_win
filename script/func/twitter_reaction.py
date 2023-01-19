@@ -22,6 +22,8 @@ class CLS_TwitterReaction():
 	ARR_ReactionTweet = {}		# リアクションツイート情報
 	ARR_ReactionUser  = {}		# リアクションユーザ情報
 
+	ARR_RandUserID = []
+
 	DEF_REACTION_ACTION_TYPE = {# アクションタイプ
 		"favo"		: "いいね",				# いいね	
 		"retweet"	: "リツイート",			# リツイート
@@ -240,8 +242,16 @@ class CLS_TwitterReaction():
 		
 		#############################
 		# 新リアクション数の加算
-		if self.ARR_ReactionTweet[wTweetID]['type']=="normal" :
-			self.ARR_ReactionUser[wUserID]['hit_new'] += 1
+###		if self.ARR_ReactionTweet[wTweetID]['type']=="normal" :
+###			self.ARR_ReactionUser[wUserID]['hit_new'] += 1
+		if self.ARR_ReactionTweet[wTweetID]['text'].find( gVal.STR_UserInfo['DelTag'] )>=0 :
+		     self.ARR_ReactionUser[wUserID]['hit_new'] += 5
+		
+		elif self.ARR_ReactionTweet[wTweetID]['text'].find( gVal.STR_UserInfo['QuestionTag'] )>=0 :
+		     self.ARR_ReactionUser[wUserID]['hit_new'] += 8
+		
+		elif self.ARR_ReactionTweet[wTweetID]['type']=="normal" :
+		     self.ARR_ReactionUser[wUserID]['hit_new'] += 1
 		
 		elif self.ARR_ReactionTweet[wTweetID]['type']=="other_reply" or \
 		     self.ARR_ReactionTweet[wTweetID]['type']=="question" :
@@ -282,6 +292,7 @@ class CLS_TwitterReaction():
 		wRes['Class'] = "CLS_TwitterReaction"
 		wRes['Func']  = "ReactionCheck"
 		
+		self.ARR_RandUserID = []
 		#############################
 		# 取得可能時間か？
 		wGetLag = CLS_OSIF.sTimeLag( str( gVal.STR_Time['reaction'] ), inThreshold=gVal.DEF_STR_TLNUM['forReactionSec'] )
@@ -683,6 +694,66 @@ class CLS_TwitterReaction():
 			
 			wRes['Result'] = True
 			return wRes
+		
+		#############################
+		# Bot判定ユーザ除外
+		if wARR_DBData['renfavo_cnt']>gVal.DEF_STR_TLNUM['renFavoBotNoactionCnt'] :
+			### 報告対象の表示と、ログに記録
+			gVal.OBJ_L.Log( "T", wRes, "●リアクション拒否(Bot判定ユーザ) ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wARR_DBData['level_tag'], inID=wUserID )
+			
+			### いいね情報を更新する
+			if self.DEF_REACTION_TEST==False :
+				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Recive( inUser, inTweet, wARR_DBData, True )
+				if wSubRes['Result']!=True :
+					###失敗
+					wRes['Reason'] = "UpdateFavoData is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+			
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# 既に除外済み
+		elif wUserID in self.ARR_RandUserID :
+			### 報告対象の表示と、ログに記録
+			gVal.OBJ_L.Log( "T", wRes, "●リアクション拒否(ランダム選出済) ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wARR_DBData['level_tag'], inID=wUserID )
+			
+			### いいね情報を更新する
+			if self.DEF_REACTION_TEST==False :
+				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Recive( inUser, inTweet, wARR_DBData, True )
+				if wSubRes['Result']!=True :
+					###失敗
+					wRes['Reason'] = "UpdateFavoData is failed"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+			
+			wRes['Result'] = True
+			return wRes
+		
+		elif wARR_DBData['renfavo_cnt']>gVal.DEF_STR_TLNUM['renFavoBotCnt'] :
+			#############################
+			# ランダム除外
+			wRand = CLS_OSIF.sGetRand(100)
+			if wRand>=gVal.DEF_STR_TLNUM['forRenFavoReiineRand'] :
+				### 乱数による拒否
+				
+				### 報告対象の表示と、ログに記録
+				gVal.OBJ_L.Log( "T", wRes, "●リアクション拒否(ランダム) ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wARR_DBData['level_tag'], inID=wUserID )
+				
+				### いいね情報を更新する
+				if self.DEF_REACTION_TEST==False :
+					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Recive( inUser, inTweet, wARR_DBData, True )
+					if wSubRes['Result']!=True :
+						###失敗
+						wRes['Reason'] = "UpdateFavoData is failed"
+						gVal.OBJ_L.Log( "B", wRes )
+						return wRes
+				
+				self.ARR_RandUserID.append( wUserID )
+				
+				wRes['Result'] = True
+				return wRes
 		
 ###		### 追い出しユーザの受け入れ
 ###		elif wARR_DBData['level_tag']=="G-" :
@@ -1562,7 +1633,13 @@ class CLS_TwitterReaction():
 			
 			if wCnt>gVal.DEF_STR_TLNUM['renFavoBotCnt'] :
 				### 報告対象の表示と、ログに記録
-				gVal.OBJ_L.Log( "RR", wRes, "●bot判定 ユーザ: screen_name=" + wARR_DBData['screen_name'] + " level=" + wARR_DBData['level_tag'], inID=wID )
+###				gVal.OBJ_L.Log( "RR", wRes, "●bot判定 ユーザ: screen_name=" + wARR_DBData['screen_name'] + " level=" + wARR_DBData['level_tag'], inID=wID )
+				wStr = "●bot判定 ユーザ:"
+				wStr = wStr + " screen_name=" + str( wARR_DBData['screen_name'] )
+				wStr = wStr + " level=" + wARR_DBData['level_tag']
+				wStr = wStr + " renfavo_cnt=" + str( wCnt )
+				wStr = wStr + " hit=" + str( self.ARR_ReactionUser[wID]['hit_new'] )
+				gVal.OBJ_L.Log( "RR", wRes, wStr, inID=wID )
 			
 			#############################
 			# 連ファボカウント更新

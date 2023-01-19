@@ -2574,7 +2574,7 @@ class CLS_TwitterAdmin():
 			for wID in wKeylist :
 				wID = str(wID)
 				
-				wStr = wStr + wARR_BlockList[wID]['screen_name'] + '\n'
+				wStr = wStr + wARR_BlockList[wID]['screen_name'] + "  " + '\n'
 		
 		#############################
 		# 表示

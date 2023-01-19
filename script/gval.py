@@ -219,17 +219,12 @@ class gVal() :
 ###		"forOverListFavoCount"		: 2,				#   外部いいね数(1ユーザ)
 		"forOverListFavoCount"		: 1,				#   外部いいね数(1ユーザ)
 		"forCheckAutoDeleteSec"		: 172800,			#   自動削除チェック期間 2日 (60x60x24)x2
-###		"forAutoRemoveIgnoreCompletelySec"	: 1209600,	#   完全スルーのため追い出し期間   14日  (60x60x24)x14
-###		"forAutoRemoveIgnoreCompletelySec"	: 777600,	#   完全スルーのため追い出し期間    9日  (60x60x24)x9
-		"forAutoRemoveIgnoreCompletelySec"	: 604800,	#   完全スルーのため追い出し期間    7日  (60x60x24)x7
-###		"forAutoRemoveByeByeSec"			: 5356800,	#   完全追い出し期間               62日  (60x60x24)x62
-###		"forAutoRemoveByeByeSec"			: 3628800,	#   完全追い出し期間               42日  (60x60x24)x42
-###		"forAutoRemoveByeByeSec"			: 2419200,	#   完全追い出し期間               28日  (60x60x24)x28
-###		"forAutoRemoveByeByeSec"			: 1555200,	#   完全追い出し期間               18日  (60x60x24)x18
-		"forAutoRemoveByeByeSec"			: 1209600,	#   完全追い出し期間               14日  (60x60x24)x14
-###		"forAutoRemoveByeBye_ShortSec"		: 432000,	#   完全追い出し期間(短期)          5日  (60x60x24)x5
-		"forAutoRemoveByeBye_ShortSec"		: 259200,	#   完全追い出し期間(短期)          3日  (60x60x24)x3
+		
+		"forAutoRemoveByeBye_ShortSec"		: 172800,	#   完全追い出し期間(短期)          2日  (60x60x24)x2
 		"forAutoRemoveByeBye_ShortCnt"		: 5,		#   完全追い出し期間(短期)になるいいね受信回数(以下で短期)
+		"forAutoRemoveByeByeSec"			: 432000,	#   完全追い出し期間                5日  (60x60x24)x5
+		"forAutoRemoveIgnoreCompletelySec"	: 432000,	#   完全スルーのため追い出し期間    5日  (60x60x24)x5
+		
 		"forAutoRemoveIgnoreCompletelyCnt"	: 4,		#   いいねがない場合の無条件追い出しまでのいいね実施回数
 		"forAutoRemoveReliefCnt"			: 3,		#   自動リムーブから救済される 今週いいね回数
 ###		"forAutoRemoveReliefSec"			: 86400,	#   レベルG-が引き揚げられる いいね期間    1日  (60x60x24)
@@ -251,16 +246,11 @@ class gVal() :
 		"LEVEL_B_Cnt"		: 5,						# レベルB昇格までのトロフィー獲得回数
 		
 														# 連ファボ制御
-###		"renFavoOnCnt"			: 5,					#   連ファボ判別回数(通常)
-###		"renFavoForceCnt"		: 8,					#   連ファボ判別回数(強制)  renFavoOnCntより高く設定すること
-###		"forRenFavoSec"			: 115200,				#   非絡み自動解除日数                    32時間  (60x60x32)
-###		"renFavoBotCnt"			: 10,					#   bot判定固定回数
-###		"renFavoForceBotCnt"	: 30,					#   強制bot判定固定回数
-###		"forRenFavoForceSec"	: 2073600,				#   非絡み設定強制解除日数                24日 (60x60x24)x24
 		"forRenFavoResetSec"	: 57600,				#   連ファボリセット時間                  16時間 (60x60x16)
 		"renFavoUpCnt"			: 5,					#   連ファボ判定計上数(1タイムライン中の新規いいね数)  超えたら1カウント
-		"renFavoBotCnt"			: 5,					#   連ファボ判定個数(1タイムライン中のいいね数)        超えたらBot判定
+		"renFavoBotCnt"			: 3,					#   連ファボ判定個数(1タイムライン中のいいね数)        超えたらBot判定
 		"forRenFavoReiineRand"	: 10,					#   Bot判定ユーザに対するいいね返信率 パーセンテージ (1-100)   10％で実施
+		"renFavoBotNoactionCnt"	: 10,					#   連ファボ無反応カウント数                           超えたらBot判定+リアクション拒否
 		
 														# ユーザ管理
 		"forGetUserSec"			: 600,					#   ユーザ取得間隔  10分  60x10

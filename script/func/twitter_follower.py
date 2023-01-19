@@ -647,7 +647,7 @@ class CLS_TwitterFollower():
 			
 			#############################
 			# 自動フォロー
-			wSubRes = self.AutoFollow( inID=wID )
+			wSubRes = self.AutoFollow( inUserID=wID )
 			if wSubRes['Result']!=True :
 				wRes['Reason'] = "AutoFollow is failed"
 				gVal.OBJ_L.Log( "B", wRes )
@@ -665,7 +665,6 @@ class CLS_TwitterFollower():
 #####################################################
 # 自動フォロー
 #####################################################
-###	def AutoFollow( self, inUser, inForce=False ):
 	def AutoFollow( self, inUserID, inForce=False ):
 		#############################
 		# 応答形式の取得
@@ -676,9 +675,7 @@ class CLS_TwitterFollower():
 		
 		wRes['Responce'] = False	#自動フォロー実行有無
 		
-###		wUserID = str(inUser['id'])
 		wUserID = str(inUserID)
-		
 		#############################
 		# 自動リムーブが無効ならここで終わる
 		if gVal.STR_UserInfo['AutoRemove']==False :
@@ -689,13 +686,11 @@ class CLS_TwitterFollower():
 		# ユーザ情報の取得
 		wUserInfoRes = gVal.OBJ_Tw_IF.GetUserinfo( inID=wUserID )
 		if wUserInfoRes['Result']!=True :
-###			wRes['Reason'] = "Twitter Error: @" + inUser['screen_name']
 			wRes['Reason'] = "GetUserinfo is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
 		wUser = wUserInfoRes['Responce']
-		
 		#############################
 		# ユーザの状態チェック
 		# 以下は除外
@@ -754,11 +749,7 @@ class CLS_TwitterFollower():
 		# 以下は除外
 		# ・ユーザレベル E, F以外
 		# ・フォロー者ON
-###		# ・過去にフォローしたことがある
 		if inForce==False :
-###			if wARR_DBData['level_tag']!="F" or \
-###			   wARR_DBData['myfollow']==True or \
-###			   str(wARR_DBData['myfollow_date'])!=gVal.DEF_TIMEDATE :
 			if wARR_DBData['myfollow']==True or \
 			   ( wARR_DBData['level_tag']!="F" and wARR_DBData['level_tag']!="E" ):
 				wRes['Result'] = True
@@ -779,7 +770,6 @@ class CLS_TwitterFollower():
 		# フォローする
 		wTweetRes = gVal.OBJ_Tw_IF.Follow( wUserID, inMute=True )
 		if wTweetRes['Result']!=True :
-###			wRes['Reason'] = "Twitter API Error(Follow): " + wTweetRes['Reason'] + " screen_name=" + str(inUser['screen_name'])
 			wRes['Reason'] = "Twitter API Error(Follow): " + wTweetRes['Reason'] + " screen_name=" + str(wUser['screen_name'])
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
@@ -798,7 +788,6 @@ class CLS_TwitterFollower():
 		
 		### ユーザ記録
 		wStr = "〇自動フォロー"
-###		gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']), inID=wUserID )
 		gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(wUser['screen_name']), inID=wUserID )
 		
 		#############################
