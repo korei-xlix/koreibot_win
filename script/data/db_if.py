@@ -1010,6 +1010,7 @@ class CLS_DB_IF() :
 			wARR_ExeWord.update({ wKey : wCell })
 		
 		gVal.ARR_ExeWord = wARR_ExeWord
+		gVal.ARR_ExeWordKeys = list( wARR_ExeWord.keys() )
 		
 		#############################
 		# =正常
@@ -1211,6 +1212,7 @@ class CLS_DB_IF() :
 			wARR_ExeWord.update({ wKey : wCell })
 		
 		gVal.ARR_ExeProf = wARR_ExeWord
+		gVal.ARR_ExeProfKeys = list( wARR_ExeWord.keys() )
 		
 		#############################
 		# =正常
@@ -1463,7 +1465,8 @@ class CLS_DB_IF() :
 		#############################
 		# 添え字をIDに差し替える
 		wARR_RateWord = gVal.OBJ_DB_IF.ChgDataID( wARR_DBData )
-		wARR_RateWordID = list( wARR_RateWord )
+###		wARR_RateWordID = list( wARR_RateWord )
+		wARR_RateWordID = list( wARR_RateWord,keys() )
 		
 		wResult = {
 			"insert"	: 0,

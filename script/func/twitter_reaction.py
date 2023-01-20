@@ -245,7 +245,7 @@ class CLS_TwitterReaction():
 ###		if self.ARR_ReactionTweet[wTweetID]['type']=="normal" :
 ###			self.ARR_ReactionUser[wUserID]['hit_new'] += 1
 		if self.ARR_ReactionTweet[wTweetID]['text'].find( gVal.STR_UserInfo['DelTag'] )>=0 :
-		     self.ARR_ReactionUser[wUserID]['hit_new'] += 5
+		     self.ARR_ReactionUser[wUserID]['hit_new'] += 0
 		
 		elif self.ARR_ReactionTweet[wTweetID]['text'].find( gVal.STR_UserInfo['QuestionTag'] )>=0 :
 		     self.ARR_ReactionUser[wUserID]['hit_new'] += 8
@@ -1595,13 +1595,6 @@ class CLS_TwitterReaction():
 		#############################
 		# 取得開始の表示
 		wResDisp = CLS_MyDisp.sViewHeaderDisp( "連ファボ測定中" )
-
-
-###		wStr =        "SCORE CNT   BOT   LV   USER" + '\n'
-###		wStr = wStr + "-------------------------------" + '\n'
-###		CLS_OSIF.sPrn( wStr )
-
-
 		
 		#############################
 		# リアクションユーザ
@@ -1631,16 +1624,16 @@ class CLS_TwitterReaction():
 			# カウントアップ
 			wCnt = wARR_DBData['renfavo_cnt'] + 1
 			
-			if wCnt>gVal.DEF_STR_TLNUM['renFavoBotCnt'] :
-				### 報告対象の表示と、ログに記録
+###			if wCnt>gVal.DEF_STR_TLNUM['renFavoBotCnt'] :
+###				### 報告対象の表示と、ログに記録
 ###				gVal.OBJ_L.Log( "RR", wRes, "●bot判定 ユーザ: screen_name=" + wARR_DBData['screen_name'] + " level=" + wARR_DBData['level_tag'], inID=wID )
-				wStr = "●bot判定 ユーザ:"
-				wStr = wStr + " screen_name=" + str( wARR_DBData['screen_name'] )
-				wStr = wStr + " level=" + wARR_DBData['level_tag']
-				wStr = wStr + " renfavo_cnt=" + str( wCnt )
-				wStr = wStr + " hit=" + str( self.ARR_ReactionUser[wID]['hit_new'] )
-				gVal.OBJ_L.Log( "RR", wRes, wStr, inID=wID )
-			
+###				wStr = "●bot判定 ユーザ:"
+###				wStr = wStr + " screen_name=" + str( wARR_DBData['screen_name'] )
+###				wStr = wStr + " level=" + wARR_DBData['level_tag']
+###				wStr = wStr + " renfavo_cnt=" + str( wCnt )
+###				wStr = wStr + " hit=" + str( self.ARR_ReactionUser[wID]['hit_new'] )
+###				gVal.OBJ_L.Log( "RR", wRes, wStr, inID=wID )
+###			
 			#############################
 			# 連ファボカウント更新
 			if wARR_DBData['renfavo_cnt']!=wCnt :
@@ -1665,14 +1658,13 @@ class CLS_TwitterReaction():
 		
 		wARR_RenFavo = wDBRes['Responce']
 		
-###		wKeylist = wDBRes['Responce']
-		wKeylist = list(wARR_RenFavo)
+###		wKeylist = list(wARR_RenFavo)
+		wKeylist = list( wARR_RenFavo.keys() )
 		for wID in wKeylist :
 			wID = str(wID)
 			
 			#############################
 			# DBからいいね情報を取得する(1個)
-###			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wID, inFLG_New=False )
 			wDBRes = gVal.OBJ_DB_IF.GetFavoDataOne( wARR_RenFavo[wID], inFLG_New=False )
 			if wDBRes['Result']!=True :
 				###失敗
@@ -1691,18 +1683,45 @@ class CLS_TwitterReaction():
 				wRes['Reason'] = "sTimeLag failed(2)"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
-			if wGetLag['Beyond']==False :
-				### 規定内 =新しい
-				continue
+###			if wGetLag['Beyond']==False :
+###				### 規定内 =新しい
+###				continue
+###			
+###			#############################
+###			# 連ファボカウントのリセット
+###			wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_RenFavo( wID, 0 )
+###			if wSubRes['Result']!=True :
+###				###失敗
+###				wRes['Reason'] = "UpdateFavoData_RenFavo is failed(2)"
+###				gVal.OBJ_L.Log( "B", wRes )
+###				return wRes
+###			
+			if wGetLag['Beyond']==True :
+				### 規定外 =古い
+				
+				#############################
+				# 連ファボカウントのリセット
+				wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_RenFavo( wID, 0 )
+				if wSubRes['Result']!=True :
+					###失敗
+					wRes['Reason'] = "UpdateFavoData_RenFavo is failed(2)"
+					gVal.OBJ_L.Log( "B", wRes )
+					return wRes
+				
+				wStr = "〇bot解除 " + str( wARR_DBData['screen_name'])
+				wStr = wStr + " level=" + wARR_DBData['level_tag']
+				wStr = wStr + " rdate=" + str( wARR_DBData['rfavo_date'] )
+				wStr = wStr + " rcnt=" + str( wARR_DBData['rfavo_cnt'] )
+				CLS_OSIF.sPrn( wStr )
 			
-			#############################
-			# 連ファボカウントのリセット
-			wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_RenFavo( wID, 0 )
-			if wSubRes['Result']!=True :
-				###失敗
-				wRes['Reason'] = "UpdateFavoData_RenFavo is failed(2)"
-				gVal.OBJ_L.Log( "B", wRes )
-				return wRes
+			else:
+				if wARR_DBData['renfavo_cnt']>gVal.DEF_STR_TLNUM['renFavoBotCnt'] :
+					wStr = "●bot判定 " + str( wARR_DBData['screen_name'])
+					wStr = wStr + " level=" + wARR_DBData['level_tag']
+					wStr = wStr + " rdate=" + str( wARR_DBData['rfavo_date'] )
+					wStr = wStr + " rcnt=" + str( wARR_DBData['rfavo_cnt'] )
+					wStr = wStr + " renfavo_cnt=" + str( wARR_DBData['renfavo_cnt'] )
+					CLS_OSIF.sPrn( wStr )
 		
 		#############################
 		# 正常

@@ -794,19 +794,17 @@ class CLS_TwitterKeyword():
 					wFLG_ZanCountSkip = True
 					continue
 				
-				### discriptionチェック
-###				wWordRes = self.OBJ_Parent.CheckExtWord( wTweet['user'], wTweet['user']['description'] )
-				wWordRes = self.OBJ_Parent.CheckExtProf( wTweet['user'], wTweet['user']['description'] )
-				if wWordRes['Result']!=True :
-###					wRes['Reason'] = "CheckExtWord failed(description)"
-					wRes['Reason'] = "CheckExtProf failed(description)"
-					gVal.OBJ_L.Log( "B", wRes )
-					return wRes
-				if wWordRes['Responce']==False :
-					### 除外
-					wFLG_ZanCountSkip = True
-					continue
-				
+###				### discriptionチェック
+###				wWordRes = self.OBJ_Parent.CheckExtProf( wTweet['user'], wTweet['user']['description'] )
+###				if wWordRes['Result']!=True :
+###					wRes['Reason'] = "CheckExtProf failed(description)"
+###					gVal.OBJ_L.Log( "B", wRes )
+###					return wRes
+###				if wWordRes['Responce']==False :
+###					### 除外
+###					wFLG_ZanCountSkip = True
+###					continue
+###				
 				### ツイートチェック
 				wWordRes = self.OBJ_Parent.CheckExtWord( wTweet['user'], wTweet['text'] )
 				if wWordRes['Result']!=True :
