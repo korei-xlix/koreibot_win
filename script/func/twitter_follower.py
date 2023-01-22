@@ -497,6 +497,11 @@ class CLS_TwitterFollower():
 					else:
 						wThreshold = gVal.DEF_STR_TLNUM['forAutoRemoveByeByeSec']
 				
+				elif wARR_DBData['level_tag']=="G-" :
+					### 既に追い出し済みなので処理終わる
+					wRes['Result'] = True
+					return wRes
+				
 				else :
 					### その他は、追い出し初回
 					wThreshold = gVal.DEF_STR_TLNUM['forAutoRemoveIgnoreCompletelySec']
@@ -548,24 +553,31 @@ class CLS_TwitterFollower():
 					wUserLevel = "G-"
 					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
 					
-					### ブロック→ブロック解除で追い出す
-					wBlockRes = gVal.OBJ_Tw_IF.BlockRemove( wUserID )
-					if wBlockRes['Result']!=True :
-						wRes['Reason'] = "Twitter API Error(BlockRemove): " + wBlockRes['Reason'] + " screen_name=" +inUser['screen_name']
-						gVal.OBJ_L.Log( "B", wRes )
-						return wRes
+###					### ブロック→ブロック解除で追い出す
+###					wBlockRes = gVal.OBJ_Tw_IF.BlockRemove( wUserID )
+###					if wBlockRes['Result']!=True :
+###						wRes['Reason'] = "Twitter API Error(BlockRemove): " + wBlockRes['Reason'] + " screen_name=" +inUser['screen_name']
+###						gVal.OBJ_L.Log( "B", wRes )
+###						return wRes
+###					
+###					### DBへ反映
+###					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Follower( wUserID, False, False )
+###					if wSubRes['Result']!=True :
+###						###失敗
+###						wRes['Reason'] = "UpdateFavoData_Follower is failed"
+###						gVal.OBJ_L.Log( "B", wRes )
+###						return wRes
+###					
 					
-					### DBへ反映
-					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Follower( wUserID, False, False )
-					if wSubRes['Result']!=True :
-						###失敗
-						wRes['Reason'] = "UpdateFavoData_Follower is failed"
-						gVal.OBJ_L.Log( "B", wRes )
-						return wRes
+					### リスト解除
+					wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_Remove( inUser )
 					
 					### ユーザ記録
 					wStr = "●無視期間経過のため追い出し"
 					gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']), inID=wUserID )
+					
+					### 監視OFFの送信
+					self.OBJ_Parent.SendUserOpeInd( inUser, inFLG_Ope=False )
 					
 					#############################
 					# 代わりにフォロー一覧から再フォロー
@@ -620,6 +632,11 @@ class CLS_TwitterFollower():
 		if gVal.VAL_AutoReFollowCnt>=gVal.DEF_STR_TLNUM['forAutoReFollowCnt'] :
 			wRes['Result'] = True
 			return wRes
+		
+		#############################
+		# 再選出の表示
+		wStr = "フォロー者の再選出..."
+		CLS_OSIF.sPrn( wStr )
 		
 		#############################
 		# フォロー一覧の取得

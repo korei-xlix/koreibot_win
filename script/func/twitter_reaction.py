@@ -974,21 +974,28 @@ class CLS_TwitterReaction():
 		# 前提: フォロワー
 		wUserLevel = None
 		wCnt = wARR_DBData['rfavo_n_cnt'] + 1
-		if wARR_DBData['level_tag']=="G" :
-###		if wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G-" :
+###		if wARR_DBData['level_tag']=="G" :
+		if wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G-" :
 			wUserLevel = "E"
 			wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
 			
 			### 報告対象の表示と、ログに記録
 			gVal.OBJ_L.Log( "RR", wRes, "〇リアクションにより昇格 ユーザ: screen_name=" + inUser['screen_name'] + " level=" + wUserLevel, inID=wUserID )
-		
-		#############################
-		# レベルG-
-		elif wARR_DBData['level_tag']=="G-" :
 			
-			### 報告対象の表示と、ログに記録
-			gVal.OBJ_L.Log( "RR", wRes, "〇追い出しユーザからのリアクション ユーザ: screen_name=" + inUser['screen_name'] + " level=G-", inID=wUserID )
+			### 片フォロワーリストに追加
+			if gVal.OBJ_Tw_IF.CheckFollowListUser( wUserID )==False :
+				wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_AddUser( inUser )
+			
+			### 監視ONの送信
+			self.OBJ_Parent.SendUserOpeInd( inUser, inFLG_Ope=True )
 		
+###		#############################
+###		# レベルG-
+###		elif wARR_DBData['level_tag']=="G-" :
+###			
+###			### 報告対象の表示と、ログに記録
+###			gVal.OBJ_L.Log( "RR", wRes, "〇追い出しユーザからのリアクション ユーザ: screen_name=" + inUser['screen_name'] + " level=G-", inID=wUserID )
+###		
 		#############################
 		# 相互レベルCへ昇格
 		# ・トロフィー資格者

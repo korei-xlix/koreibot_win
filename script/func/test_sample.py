@@ -167,7 +167,11 @@ class CLS_Test():
 #		wSubRes = self.OBJ_Parent.OBJ_TwitterReaction.ReactionResult()
 
 
-		wSubRes = self.OBJ_Parent.OBJ_TwitterAdmin.RemoveCautionUser( inFLR_Recheck=True )
+#		wSubRes = self.OBJ_Parent.OBJ_TwitterAdmin.RemoveCautionUser( inFLR_Recheck=True )
+
+		wSubRes = gVal.OBJ_Tw_IF.GetTweetLookup( "1616592525489508353" )
+		print( str(wSubRes) )
+
 
 
 		#############################

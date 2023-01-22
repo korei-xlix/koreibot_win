@@ -388,12 +388,8 @@ class CLS_TwitterMain():
 							wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, "E" )
 						else:
 							### リスト解除（元フォロー者or相互フォロー）
-###							wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, "Z-" )
 							wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, "C-" )
 					
-###					if gVal.OBJ_Tw_IF.CheckMutualListUser( wID )==False and \
-###					   gVal.OBJ_Tw_IF.CheckFollowListUser( wID )==True and \
-###					   wFollowerData[wID]['follower']==False :
 					if gVal.OBJ_Tw_IF.CheckFollowListUser( wID )==True and \
 					   wFollowerData[wID]['follower']==False :
 						### 片フォローリストなのにフォロワーではない
@@ -409,25 +405,18 @@ class CLS_TwitterMain():
 							wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, "D" )
 						else:
 							### リスト解除（元フォロワー）
-###							wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, "Z-" )
 							wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, "E-" )
 				
-###				elif wARR_DBData['level_tag']=="F+" or wARR_DBData['level_tag']=="H" or wARR_DBData['level_tag']=="H+" :
 				elif wARR_DBData['level_tag']=="G" :
 					if gVal.OBJ_Tw_IF.CheckFollowListUser( wID )==False and \
 					   wFollowerData[wID]['myfollow']==False and \
 					   wFollowerData[wID]['follower']==True :
-###						### レベルF+（放置予備ユーザ）、レベルG.G+,H,H+（被絡みユーザ）
-###						###   はレベルZ-へ
 						### レベルG（放置予備ユーザ）はレベルG-へ
-###						wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, "Z-" )
 						wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, "G-" )
 				
-###				elif wARR_DBData['level_tag']=="Z-" or wARR_DBData['level_tag']=="E-" :
 				elif wARR_DBData['level_tag']=="G-" or wARR_DBData['level_tag']=="E-" :
 					if gVal.OBJ_Tw_IF.CheckMutualListUser( wID )==True or \
 					   gVal.OBJ_Tw_IF.CheckFollowListUser( wID )==True :
-###						### レベルZ-（放置確定ユーザ）、レベルE（被リムーブ）時
 						### レベルG-（放置確定ユーザ）、レベルE（被リムーブ）時
 						###   でリスト解除してなければリスト解除
 						wTwitterRes = gVal.OBJ_Tw_IF.FollowerList_Remove( wFollowerData[wID] )
@@ -435,10 +424,6 @@ class CLS_TwitterMain():
 			wFLG_Force = False
 			#############################
 			# レベルDの修正→レベルAへ
-###			if ( wARR_DBData['level_tag']=="D" or wARR_DBData['level_tag']=="C+" ) and \
-###			   wFollowerData[wID]['myfollow']==True and \
-###			   gVal.OBJ_Tw_IF.CheckSubscribeListUser( wID )==True :
-###			if ( wARR_DBData['level_tag']=="D" or wARR_DBData['level_tag']=="C+" or wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G+" ) and \
 			if ( wARR_DBData['level_tag']=="D" or wARR_DBData['level_tag']=="C+" ) and \
 			   wFollowerData[wID]['myfollow']==True and \
 			   gVal.OBJ_Tw_IF.CheckSubscribeListUser( wID )==True :
@@ -1046,10 +1031,14 @@ class CLS_TwitterMain():
 				
 				if wUserLevel!=None :
 					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
-				
+					
 				### 通信記録（フォロー者OFF・フォロワーから、フォロー者・フォロワーOFFへ）
 				wStr = wStr + ": " + wARR_RateFavoDate[wUserID]['screen_name']
-				wStr = wStr + ": level=" + wUserLevel + ": send=" + str(wARR_RateFavoDate[wUserID]['pfavo_cnt']) + " recv=" + str(wARR_RateFavoDate[wUserID]['rfavo_cnt'])
+###				wStr = wStr + ": level=" + wUserLevel + ": send=" + str(wARR_RateFavoDate[wUserID]['pfavo_cnt']) + " recv=" + str(wARR_RateFavoDate[wUserID]['rfavo_cnt'])
+				if wUserLevel!=None :
+					wStr = wStr + ": level=" + str(wUserLevel)
+				wStr = wStr + " send=" + str(wARR_RateFavoDate[wUserID]['pfavo_cnt'])
+				wStr = wStr + " recv=" + str(wARR_RateFavoDate[wUserID]['rfavo_cnt'])
 				gVal.OBJ_L.Log( "R", wRes, wStr, inID=wID )
 				
 				### トラヒック記録
@@ -2546,7 +2535,60 @@ class CLS_TwitterMain():
 		
 		#############################
 		# ログに記録
-		gVal.OBJ_L.Log( "T", wRes, "いいね情報送信(Twitter)" )
+		gVal.OBJ_L.Log( "T", wRes, "ブロック検知通知送信(Twitter)" )
+		
+		#############################
+		# 正常終了
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# 監視状態のお知らせ
+#####################################################
+	def SendUserOpeInd( self, inUser, inFLG_Ope ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "SendBeenBlock"
+		
+		wOpe   = "OFF"
+		wTweet = ""
+		#############################
+		# ツイートの作成
+		
+		### 監視OFFの場合
+		if inFLG_Ope==False :
+			wTweet = "[自動] フォロー一覧からフォロー者を選出" + '\n'
+		
+		### 監視ONの場合
+		else:
+			wOpe   = "ON"
+			wTweet = "[自動] ひさびさにアクションを受け取りました" + '\n'
+			wTweet = wTweet + "[Automatic] Received an action for a long time" + '\n'
+		
+		wTweet = wTweet + "user name: " + str(inUser['screen_name']) + '\n'
+		wTweet = wTweet + gVal.STR_UserInfo['DelTag'] + '\n'
+		
+		#############################
+		# 送信
+		wTweetRes = gVal.OBJ_Tw_IF.Tweet( wTweet )
+		if wTweetRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error: " + wTweetRes['Reason']
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 送信完了
+		wStr = "監視状態を送信しました。[" + wOpe + "]" + '\n'
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# ログに記録
+		gVal.OBJ_L.Log( "T", wRes, "監視状態送信(Twitter) [" + wOpe + "]" )
 		
 		#############################
 		# 正常終了
