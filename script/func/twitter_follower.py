@@ -498,9 +498,7 @@ class CLS_TwitterFollower():
 						wThreshold = gVal.DEF_STR_TLNUM['forAutoRemoveByeByeSec']
 				
 				elif wARR_DBData['level_tag']=="G-" :
-					### 既に追い出し済みなので処理終わる
-					wRes['Result'] = True
-					return wRes
+					wThreshold = gVal.DEF_STR_TLNUM['forAutoRemoveReleaseSec']
 				
 				else :
 					### その他は、追い出し初回
@@ -586,6 +584,29 @@ class CLS_TwitterFollower():
 						wRes['Reason'] = "AutoReFollow is failed"
 						gVal.OBJ_L.Log( "B", wRes )
 						return wRes
+				
+				#############################
+				# G- の場合
+				# さよなら
+				elif wARR_DBData['level_tag']=="G-" :
+					### ブロック→ブロック解除で追い出す
+					wBlockRes = gVal.OBJ_Tw_IF.BlockRemove( wUserID )
+					if wBlockRes['Result']!=True :
+						wRes['Reason'] = "Twitter API Error(BlockRemove): " + wBlockRes['Reason'] + " screen_name=" +inUser['screen_name']
+						gVal.OBJ_L.Log( "B", wRes )
+						return wRes
+					
+					### DBへ反映
+					wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_Follower( wUserID, False, False )
+					if wSubRes['Result']!=True :
+						###失敗
+						wRes['Reason'] = "UpdateFavoData_Follower is failed"
+						gVal.OBJ_L.Log( "B", wRes )
+						return wRes
+					
+					### ユーザ記録
+					wStr = "●追い出し(さよなら)"
+					gVal.OBJ_L.Log( "R", wRes, wStr + ": " + str(inUser['screen_name']), inID=wUserID )
 				
 				#############################
 				# その他の場合、

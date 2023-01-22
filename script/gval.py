@@ -223,6 +223,7 @@ class gVal() :
 		"forAutoRemoveByeBye_ShortSec"		: 172800,	#   完全追い出し期間(短期)          2日  (60x60x24)x2
 		"forAutoRemoveByeBye_ShortCnt"		: 5,		#   完全追い出し期間(短期)になるいいね受信回数(以下で短期)
 		"forAutoRemoveByeByeSec"			: 432000,	#   完全追い出し期間                5日  (60x60x24)x5
+		"forAutoRemoveReleaseSec"			: 86400,	#   完全追い出し期間(さよなら)      1日  (60x60x24)
 		"forAutoRemoveIgnoreCompletelySec"	: 432000,	#   完全スルーのため追い出し期間    5日  (60x60x24)x5
 		
 		"forAutoRemoveIgnoreCompletelyCnt"	: 4,		#   いいねがない場合の無条件追い出しまでのいいね実施回数
