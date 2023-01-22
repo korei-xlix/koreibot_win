@@ -2567,8 +2567,8 @@ class CLS_TwitterMain():
 		### 監視ONの場合
 		else:
 			wOpe   = "ON"
-			wTweet = "[自動] ひさびさにアクションを受け取りました" + '\n'
-			wTweet = wTweet + "[Automatic] Received an action for a long time" + '\n'
+			wTweet = "[自動] リアクション再開" + '\n'
+			wTweet = wTweet + "[Automatic] Resume reaction" + '\n'
 		
 		wTweet = wTweet + "user name: " + str(inUser['screen_name']) + '\n'
 		wTweet = wTweet + gVal.STR_UserInfo['DelTag'] + '\n'
