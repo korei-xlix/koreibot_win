@@ -1003,6 +1003,11 @@ class CLS_TwitterFavo():
 				wSTR_Tweet['created_at'] = str(wTweet['quoted_status']['created_at'])
 				wSTR_Tweet['retweet_id'] = str(wTweet['quoted_status']['id'])
 				
+				### リツイ元に置き換え
+				wTweetID = str(wTweet['quoted_status']['id'])
+				wSTR_Tweet['id'] = wTweetID
+				wSTR_Tweet['created_at'] = str(wTweet['quoted_status']['created_at'])
+				
 				wSTR_Tweet['user']['id']   = str( wTweet['quoted_status']['user']['id'] )
 				wSTR_Tweet['user']['name'] = wTweet['quoted_status']['user']['name'].replace( "'", "''" )
 				wSTR_Tweet['user']['screen_name'] = wTweet['quoted_status']['user']['screen_name']
