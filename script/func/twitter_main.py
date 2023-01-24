@@ -835,16 +835,29 @@ class CLS_TwitterMain():
 							if wSubRes['Responce']==False :
 								### 自動リムーブしてない（フォロー者ON・フォロワーOFF）
 								
-								### ユーザレベル変更
-								wUserLevel2 = "C-"
-								
+###								### ユーザレベル変更
+###								wUserLevel2 = "C-"
+###								
 								wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel2 )
 								
 								### ユーザ記録
-								wStr = "●リムーブされた"
-								wStr = wStr + ": " + wFollowerData[wID]['screen_name']
-								wStr = wStr + ": level=" + wUserLevel2 + ": send=" + str(wARR_DBData['pfavo_cnt']) + " recv=" + str(wARR_DBData['rfavo_cnt'])
-								gVal.OBJ_L.Log( "R", wRes, wStr, inID=wID )
+								wStr = "●リムーブされた(フォロー者ON)"
+###								wStr = wStr + ": " + wFollowerData[wID]['screen_name']
+###								wStr = wStr + ": level=" + wUserLevel2 + ": send=" + str(wARR_DBData['pfavo_cnt']) + " recv=" + str(wARR_DBData['rfavo_cnt'])
+###								gVal.OBJ_L.Log( "R", wRes, wStr, inID=wID )
+###							
+							else:
+								wStr = "●リムーブされた(相互リムーブ)"
+							
+							### ユーザレベル変更
+							wUserLevel2 = "C-"
+							
+							wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wID, wUserLevel2 )
+							
+							### ユーザ記録
+							wStr = wStr + ": " + wFollowerData[wID]['screen_name']
+							wStr = wStr + ": level=" + wUserLevel2 + ": send=" + str(wARR_DBData['pfavo_cnt']) + " recv=" + str(wARR_DBData['rfavo_cnt'])
+							gVal.OBJ_L.Log( "R", wRes, wStr, inID=wID )
 						
 						else:
 							### リストリムーブ
