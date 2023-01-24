@@ -423,9 +423,11 @@ class CLS_TwitterMain():
 			
 			wFLG_Force = False
 			#############################
-			# レベルDの修正→レベルAへ
-			if ( wARR_DBData['level_tag']=="D" or wARR_DBData['level_tag']=="C+" ) and \
-			   wFollowerData[wID]['myfollow']==True and \
+			# 公式化  →レベルAへ
+###			if ( wARR_DBData['level_tag']=="D" or wARR_DBData['level_tag']=="C+" ) and \
+###			   wFollowerData[wID]['myfollow']==True and \
+###			   gVal.OBJ_Tw_IF.CheckSubscribeListUser( wID )==True :
+			if wFollowerData[wID]['myfollow']==True and \
 			   gVal.OBJ_Tw_IF.CheckSubscribeListUser( wID )==True :
 				if gVal.OBJ_Tw_IF.CheckMutualListUser( wID )==False and \
 				   gVal.OBJ_Tw_IF.CheckFollowListUser( wID )==False :

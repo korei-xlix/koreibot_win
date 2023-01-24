@@ -553,13 +553,30 @@ class CLS_TwitterFavo():
 ###				
 			#############################
 			# Bot判定ユーザ除外
+			#   長期間だけど定期的にいいねはする
 ###			if wARR_DBData['renfavo_cnt']>gVal.DEF_STR_TLNUM['renFavoBotCnt'] :
 			if wARR_DBData['renfavo_cnt']>gVal.DEF_STR_TLNUM['renFavoBotNoactionCnt'] :
-				wStr = "▲Bot判定ユーザ除外除外(無条件無視): level=" + wARR_DBData['level_tag'] + " user=" + wARR_FollowData[wUserID]['screen_name']
-				CLS_OSIF.sPrn( wStr )
-				###
-				wResult['no_cnt'] += 1
-				continue
+				if wARR_DBData['level_tag']=="A+" or wARR_DBData['level_tag']=="A" :
+					### 公式botの場合は、拒否
+					wStr = "▲Bot判定ユーザ除外除外(無条件無視): level=" + wARR_DBData['level_tag'] + " user=" + wARR_FollowData[wUserID]['screen_name']
+					CLS_OSIF.sPrn( wStr )
+					###
+					wResult['no_cnt'] += 1
+					continue
+				else:
+					### フォロワーbotの場合、長期間ごとにいいねする
+					wGetLag = CLS_OSIF.sTimeLag( str( wARR_DBData['pfavo_date'] ), inThreshold=gVal.DEF_STR_TLNUM['forRenFavoBotFavoSec'] )
+					if wGetLag['Result']!=True :
+						wRes['Reason'] = "sTimeLag failed"
+						gVal.OBJ_L.Log( "B", wRes )
+						return wRes
+					if wGetLag['Beyond']==False :
+						### 期間内 =除外
+						wStr = "▲Bot判定ユーザ除外除外(無条件無視): level=" + wARR_DBData['level_tag'] + " user=" + wARR_FollowData[wUserID]['screen_name']
+						CLS_OSIF.sPrn( wStr )
+						###
+						wResult['no_cnt'] += 1
+						continue
 			
 			#############################
 			# 既に除外済み
@@ -965,6 +982,11 @@ class CLS_TwitterFavo():
 				wSTR_Tweet['created_at'] = str(wTweet['retweeted_status']['created_at'])
 				wSTR_Tweet['retweet_id'] = str(wTweet['retweeted_status']['id'])
 				
+				### リツイ元に置き換え
+				wTweetID = str(wTweet['retweeted_status']['id'])
+				wSTR_Tweet['id'] = wTweetID
+				wSTR_Tweet['created_at'] = str(wTweet['retweeted_status']['created_at'])
+				
 				wSTR_Tweet['user']['id']   = str( wTweet['retweeted_status']['user']['id'] )
 				wSTR_Tweet['user']['name'] = wTweet['retweeted_status']['user']['name'].replace( "'", "''" )
 				wSTR_Tweet['user']['screen_name'] = wTweet['retweeted_status']['user']['screen_name']
@@ -1369,7 +1391,11 @@ class CLS_TwitterFavo():
 				return wRes
 			
 			if wSubRes['Responce']['Run']==True :
-				wStr = "自動いいね 実施: user=" + wARR_Tweet[wFavoID]['user']['screen_name'] + " id=" + str(wFavoID)
+###				wStr = "自動いいね 実施: user=" + wARR_Tweet[wFavoID]['user']['screen_name'] + " id=" + str(wFavoID)
+				wStr = "自動いいね 実施:"
+				wStr = wStr + " user=" + wARR_Tweet[wFavoID]['user']['screen_name']
+				wStr = wStr + " kind=" + wARR_Tweet[wFavoID]['kind']
+				wStr = wStr + " id=" + str(wFavoID)
 				if wARR_Tweet[wFavoID]['kind']=="retweet" or wARR_Tweet[wFavoID]['kind']=="quoted" :
 					wStr = wStr + " src_user=" + wARR_Tweet[wFavoID]['src_user']['screen_name']
 				
