@@ -427,7 +427,10 @@ class CLS_TwitterMain():
 ###			if ( wARR_DBData['level_tag']=="D" or wARR_DBData['level_tag']=="C+" ) and \
 ###			   wFollowerData[wID]['myfollow']==True and \
 ###			   gVal.OBJ_Tw_IF.CheckSubscribeListUser( wID )==True :
-			if wFollowerData[wID]['myfollow']==True and \
+###			if wFollowerData[wID]['myfollow']==True and \
+###			   gVal.OBJ_Tw_IF.CheckSubscribeListUser( wID )==True :
+			if wARR_DBData['level_tag']!="F"  and \
+			   wFollowerData[wID]['myfollow']==True and \
 			   gVal.OBJ_Tw_IF.CheckSubscribeListUser( wID )==True :
 				if gVal.OBJ_Tw_IF.CheckMutualListUser( wID )==False and \
 				   gVal.OBJ_Tw_IF.CheckFollowListUser( wID )==False :
