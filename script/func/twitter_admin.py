@@ -3096,6 +3096,18 @@ class CLS_TwitterAdmin():
 		CLS_OSIF.sPrn( wStr )
 		
 		#############################
+		# 自動キーワードいいね
+		wTimeRes = CLS_OSIF.sTimeAddHour( inTimedate=gVal.STR_Time['keywordsrch'], inSec=gVal.DEF_STR_TLNUM['forAutoKeywordSearchFavoSec'] )
+		if wTimeRes['Result']!=True :
+			wRes['Reason'] = "sTimeAddHour is failed(keywordsrch)"
+			gVal.OBJ_L.Log( "A", wTimeRes )
+			return wRes
+		
+		wStr = "自動キーワード  ：" + str(gVal.STR_Time['keywordsrch'])
+		wStr = wStr + "  次回予定    ：" + str(wTimeRes['NextTD'])
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
 		# システム時刻
 		wStr = "システム時刻    ：" + str(gVal.STR_Time['TimeDate']) + '\n'
 		CLS_OSIF.sPrn( wStr )

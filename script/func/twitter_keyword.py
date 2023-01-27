@@ -506,6 +506,50 @@ class CLS_TwitterKeyword():
 #####################################################
 # 検索実行
 #####################################################
+	def Auto_RunKeywordSearchFavo(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterKeyword"
+		wRes['Func']  = "Auto_RunKeywordSearchFavo"
+		
+		#############################
+		# 取得可能時間か？
+		wGetLag = CLS_OSIF.sTimeLag( str( gVal.STR_Time['keywordsrch'] ), inThreshold=gVal.DEF_STR_TLNUM['forAutoKeywordSearchFavoSec'] )
+		if wGetLag['Result']!=True :
+			wRes['Reason'] = "sTimeLag failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		if wGetLag['Beyond']==False :
+			### 規定以内は除外
+			wStr = "●自動キーワードいいね期間外 処理スキップ: 次回処理日時= " + str(wGetLag['RateTime']) + '\n'
+			CLS_OSIF.sPrn( wStr )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# キーワードいいね実行
+		wSubRes = self.RunKeywordSearchFavo()
+		if wSubRes['Result']!=True :
+			wRes['Reason'] = "RunKeywordSearchFavo is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 現時間を設定
+		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "keywordsrch", gVal.STR_Time['TimeDate'] )
+		if wTimeRes['Result']!=True :
+			wRes['Reason'] = "SetTimeInfo is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		###	gVal.STR_Time['mffavo']
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
+		return wRes
+
 	def RunKeywordSearchFavo(self):
 		#############################
 		# 応答形式の取得

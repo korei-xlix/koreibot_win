@@ -81,6 +81,8 @@ class gVal() :
 		"vip_ope"		: None,			# VIP監視
 		"del_tweet"		: None,			# 削除ツイート
 		"tl_follow"		: None,			# タイムラインフォロー
+		"keywordsrch"	: None,			# キーワードいいね
+		"send_ren"		: None,			# 連ファボ送信
 		
 		"TimeDate"		: None			# システム時間
 	}
@@ -176,6 +178,9 @@ class gVal() :
 		
 														# リストいいね
 		"forListFavoSec"				: 86400,		#   リストいいねまでの期間   1日  60x60x24
+		
+														# 自動キーワードいいね
+		"forAutoKeywordSearchFavoSec"	: 86400,		#   キーワードいいねまでの期間   1日  60x60x24
 		
 														# フォロワー支援いいね
 		"forFollowerFavoSec"				: 14400,	#   フォロワー支援いいねまでの期間   4時間  60x60x4

@@ -1303,9 +1303,11 @@ class CLS_TwitterMain():
 			# 検索ワード実行（●フル自動監視）
 			elif gVal.STR_UserInfo['AutoSeq']==12 :
 				if wFLG_Short==False :
-					wSubRes = self.OBJ_TwitterKeyword.RunKeywordSearchFavo()
+###					wSubRes = self.OBJ_TwitterKeyword.RunKeywordSearchFavo()
+					wSubRes = self.OBJ_TwitterKeyword.Auto_RunKeywordSearchFavo()
 					if wSubRes['Result']!=True :
-						wRes['Reason'] = "RunKeywordSearchFavo"
+###						wRes['Reason'] = "RunKeywordSearchFavo"
+						wRes['Reason'] = "Auto_RunKeywordSearchFavo is failed"
 						gVal.OBJ_L.Log( "B", wRes )
 						return wRes
 			

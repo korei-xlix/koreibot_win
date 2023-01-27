@@ -1680,7 +1680,7 @@ class CLS_TwitterReaction():
 		
 		wARR_RenFavo = wDBRes['Responce']
 		
-###		wKeylist = list(wARR_RenFavo)
+		wBotNum = 0
 		wKeylist = list( wARR_RenFavo.keys() )
 		for wID in wKeylist :
 			wID = str(wID)
@@ -1705,19 +1705,7 @@ class CLS_TwitterReaction():
 				wRes['Reason'] = "sTimeLag failed(2)"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
-###			if wGetLag['Beyond']==False :
-###				### 規定内 =新しい
-###				continue
-###			
-###			#############################
-###			# 連ファボカウントのリセット
-###			wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_RenFavo( wID, 0 )
-###			if wSubRes['Result']!=True :
-###				###失敗
-###				wRes['Reason'] = "UpdateFavoData_RenFavo is failed(2)"
-###				gVal.OBJ_L.Log( "B", wRes )
-###				return wRes
-###			
+			
 			if wGetLag['Beyond']==True :
 				### 規定外 =古い
 				
@@ -1744,6 +1732,83 @@ class CLS_TwitterReaction():
 					wStr = wStr + " rcnt=" + str( wARR_DBData['rfavo_cnt'] )
 					wStr = wStr + " renfavo_cnt=" + str( wARR_DBData['renfavo_cnt'] )
 					CLS_OSIF.sPrn( wStr )
+					wBotNum += 1
+		
+		#############################
+		# 結果送信
+		self.__sendRenFavoTweet( jnCnt=wBotNum )
+		
+		#############################
+		# 正常
+		wRes['Result'] = True
+		return wRes
+
+
+	#####################################################
+	# 連ファボ測定結果送信
+	#####################################################
+	def __sendRenFavoTweet( self, jnCnt=0 ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterReaction"
+		wRes['Func']  = "__sendRenFavoTweet"
+		
+		#############################
+		# bot判定者がいるか
+		if jnCnt==0 :
+			### いない場合は処理しない
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# 今日は連ファボ送信したか
+		wARR_DateNow = str( gVal.STR_Time['TimeDate'] )
+		wARR_DateNow = wARR_DateNow.split(" ")
+		wARR_DateNow = wARR_DateNow[0]
+		
+		wARR_DateRen = str( gVal.STR_Time['send_ren'] )
+		wARR_DateRen = wARR_DateRen.split(" ")
+		wARR_DateRen = wARR_DateRen[0]
+		
+		if wARR_DateNow==wARR_DateRen :
+			### 送信済
+			wRes['Result'] = True
+			return wRes
+		
+		wTweet = ""
+		#############################
+		# ツイートの作成
+		wTweet = "[自動] bot判定数=" + str(jnCnt) + '\n'
+		wTweet = wTweet + "[Automatic] Number of bot decisions=" + str(jnCnt) + '\n'
+		wTweet = wTweet + gVal.STR_UserInfo['DelTag'] + '\n'
+		
+		#############################
+		# 送信
+		wTweetRes = gVal.OBJ_Tw_IF.Tweet( wTweet )
+		if wTweetRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error: " + wTweetRes['Reason']
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 送信完了
+		wStr = "Bot判定数を送信しました。" + '\n'
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# ログに記録
+		gVal.OBJ_L.Log( "T", wRes, "Bot判定数送信(Twitter)" )
+		
+		#############################
+		# 現時間を設定
+		wTimeRes = gVal.OBJ_DB_IF.SetTimeInfo( gVal.STR_UserInfo['Account'], "send_ren", gVal.STR_Time['TimeDate'] )
+		if wTimeRes['Result']!=True :
+			wRes['Reason'] = "SetTimeInfo is failed"
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		###	gVal.STR_Time['mffavo']
 		
 		#############################
 		# 正常
