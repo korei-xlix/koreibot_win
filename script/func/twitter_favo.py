@@ -1019,7 +1019,8 @@ class CLS_TwitterFavo():
 				wSTR_Tweet['src_user']['description'] = wTweet['user']['description']
 			
 			### リプライ
-			elif wSTR_Tweet['text'].find("@")>=0 :
+###			elif wSTR_Tweet['text'].find("@")>=0 :
+			elif wSTR_Tweet['text'].find("@")>=0 or wTweet['in_reply_to_status_id']==None :
 				wSTR_Tweet['kind'] = "reply"
 				wSTR_Tweet['created_at'] = str(wTweet['created_at'])
 				

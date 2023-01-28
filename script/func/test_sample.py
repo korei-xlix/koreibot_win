@@ -169,7 +169,8 @@ class CLS_Test():
 
 #		wSubRes = self.OBJ_Parent.OBJ_TwitterAdmin.RemoveCautionUser( inFLR_Recheck=True )
 
-		wSubRes = gVal.OBJ_Tw_IF.GetTweetLookup( "1616592525489508353" )
+###		wSubRes = gVal.OBJ_Tw_IF.GetTweetLookup( "1616592525489508353" )
+		wSubRes = gVal.OBJ_Tw_IF.GetFollowIDList( "1429385181899542530" )
 		print( str(wSubRes) )
 
 

@@ -654,11 +654,11 @@ class CLS_TwitterFollower():
 			wRes['Result'] = True
 			return wRes
 		
-		#############################
-		# 再選出の表示
-		wStr = "フォロー者の再選出..."
-		CLS_OSIF.sPrn( wStr )
-		
+###		#############################
+###		# 再選出の表示
+###		wStr = "フォロー者の再選出..."
+###		CLS_OSIF.sPrn( wStr )
+###		
 		#############################
 		# フォロー一覧の取得
 		wFollowRes = gVal.OBJ_Tw_IF.GetFollowIDList( inID=wUserID )
@@ -670,6 +670,19 @@ class CLS_TwitterFollower():
 		wARR_FollowID = wFollowRes['Responce']
 		
 		gVal.VAL_AutoReFollowCnt += 1
+		
+		wLen = len( wARR_FollowID )
+		#############################
+		# 再選出の表示
+		if wLen==0 :
+			wStr = "フォロー者の再選出...: 候補0件のためスキップ"
+			CLS_OSIF.sPrn( wStr )
+			
+			wRes['Result'] = True
+			return wRes
+		
+		wStr = "フォロー者の再選出...: " + str(wLen) + " 件"
+		CLS_OSIF.sPrn( wStr )
 		
 		wFollowNum = 0
 		#############################
@@ -683,6 +696,7 @@ class CLS_TwitterFollower():
 			if wFollowNum>=gVal.DEF_STR_TLNUM['forAutoReFollowFollowCnt'] :
 				break
 			
+			CLS_OSIF.sPrn( wID )
 			#############################
 			# 自動フォロー
 			wSubRes = self.AutoFollow( inUserID=wID )
@@ -962,7 +976,8 @@ class CLS_TwitterFollower():
 				wSTR_Tweet['kind'] = "quoted"
 			
 			### リプライ
-			elif wSTR_Tweet['text'].find("@")>=0 :
+###			elif wSTR_Tweet['text'].find("@")>=0 :
+			elif wSTR_Tweet['text'].find("@")>=0 or wSTR_Tweet['in_reply_to_status_id']==None :
 				wSTR_Tweet['kind'] = "reply"
 			
 			### 通常ツイート
