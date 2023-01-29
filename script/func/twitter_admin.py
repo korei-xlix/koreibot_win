@@ -894,7 +894,7 @@ class CLS_TwitterAdmin():
 			### フォロー監視 有効/無効
 			if gVal.ARR_NotReactionUser[wI]['vip']==False :
 				wStr = wStr + "[－]"
-			else
+			else:
 				if gVal.ARR_NotReactionUser[wI]['follow']==True :
 					wStr = wStr + "[〇]"
 				else:
