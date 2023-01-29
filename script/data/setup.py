@@ -312,7 +312,8 @@ class CLS_Setup():
 				
 				wARR_Line = wLine.split(",")
 				### 要素数が少ないのは除外
-				if len(wARR_Line)!=3 :
+###				if len(wARR_Line)!=3 :
+				if len(wARR_Line)!=4 :
 					continue
 				
 				wVip = False
@@ -328,8 +329,13 @@ class CLS_Setup():
 					### 通報なしの場合、VIP有効
 					wVip = True
 					wOpe = True if wARR_Line[1]=="***" else False
+				
+				### フォロー監視あり
+				wFollow = True if wARR_Line[2]=="***" else False
+				
 				### ユーザ名
-				wUser = wARR_Line[2]
+###				wUser = wARR_Line[2]
+				wUser = wARR_Line[3]
 				
 				### Twitterからユーザ情報を取得する
 				wUserInfoRes = gVal.OBJ_Tw_IF.GetUserinfo( inScreenName=wUser )
@@ -346,6 +352,7 @@ class CLS_Setup():
 					"report"		: wReport,
 					"vip"			: wVip,
 					"ope"			: wOpe,
+					"follow"		: wFollow,
 					"rel_date"		: str( gVal.DEF_TIMEDATE ),
 					"memo"			: ""
 				}
@@ -836,6 +843,7 @@ class CLS_Setup():
 		wQy = wQy + "report      BOOL  DEFAULT false,"	# 通報対象 True=対象
 		wQy = wQy + "vip         BOOL  DEFAULT false,"	# VIP扱い  True=VIP
 		wQy = wQy + "ope         BOOL  DEFAULT false,"	# リアクション監視  True=監視ON
+		wQy = wQy + "follow      BOOL  DEFAULT false,"	# フォロー監視(Mainフォローしてるか)  True=監視ON
 		wQy = wQy + "rel_date    TIMESTAMP,"			# 禁止解除日時 (noneは自動解除しない)
 		wQy = wQy + "memo        TEXT, "				# 自由記載(メモ)
 		wQy = wQy + " PRIMARY KEY ( id ) ) ;"

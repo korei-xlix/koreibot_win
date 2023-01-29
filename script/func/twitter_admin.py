@@ -891,6 +891,16 @@ class CLS_TwitterAdmin():
 				wStr = wStr + "[    ]"
 			wStr = wStr + "   "
 			
+			### フォロー監視 有効/無効
+			if gVal.ARR_NotReactionUser[wI]['vip']==False :
+				wStr = wStr + "[－]"
+			else
+				if gVal.ARR_NotReactionUser[wI]['follow']==True :
+					wStr = wStr + "[〇]"
+				else:
+					wStr = wStr + "[  ]"
+			wStr = wStr + "  "
+			
 			### ユーザ名
 			wListData = gVal.ARR_NotReactionUser[wI]['screen_name']
 			wStr = wStr + wListData + '\n'
@@ -1046,7 +1056,28 @@ class CLS_TwitterAdmin():
 				wRes['Reason'] = "UpdateExeUser is failed"
 				gVal.OBJ_L.Log( "B", wRes )
 				return wRes
-###			CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+			wRes['Result'] = True
+			return wRes
+		
+		#############################
+		# f: フォロー監視 有効/無効
+		elif wCom=="f" :
+			wFLG_Update = False
+			if gVal.ARR_NotReactionUser[wGetIndex]['vip']==False :
+				CLS_OSIF.sPrn( "VIP OFFのためVIP監視設定できません" )
+				CLS_OSIF.sInp( "リターンキーを押すと戻ります。[RT]" )
+				wRes['Result'] = True
+				return wRes
+			
+			if gVal.ARR_NotReactionUser[wGetIndex]['follow']==False :
+				wFLG_Update = True
+			
+			wSubRes = gVal.OBJ_DB_IF.UpdateExeUser( wGetIndex, inFollow=wFLG_Update )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "UpdateExeUser is failed"
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
 			wRes['Result'] = True
 			return wRes
 		

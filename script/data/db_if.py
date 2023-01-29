@@ -1419,6 +1419,7 @@ class CLS_DB_IF() :
 				"report"		: wARR_DBData[wID]['report'],
 				"vip"			: wARR_DBData[wID]['vip'],
 				"ope"			: wARR_DBData[wID]['ope'],
+				"follow"		: wARR_DBData[wID]['follow'],
 				"rel_date"		: wARR_DBData[wID]['rel_date'],
 				"memo"			: wARR_DBData[wID]['memo']
 			}
@@ -1487,6 +1488,7 @@ class CLS_DB_IF() :
 				wQy = wQy + "report = " + str(inARRData[wID]['report']) + ", "
 				wQy = wQy + "vip = " + str(inARRData[wID]['vip']) + ", "
 				wQy = wQy + "ope = " + str(inARRData[wID]['ope']) + ", "
+				wQy = wQy + "follow = " + str(inARRData[wID]['follow']) + ", "
 				wQy = wQy + "rel_date = '" + str(inARRData[wID]['rel_date']) + "', "
 				wQy = wQy + "memo = '" + str(inARRData[wID]['memo']) + "' "
 				wQy = wQy + "where id = '" + str(inARRData[wID]['id']) + "' "
@@ -1505,6 +1507,7 @@ class CLS_DB_IF() :
 				wQy = wQy + str(inARRData[wID]['report']) + ", "
 				wQy = wQy + str(inARRData[wID]['vip']) + ", "
 				wQy = wQy + str(inARRData[wID]['ope']) + ", "
+				wQy = wQy + str(inARRData[wID]['follow']) + ", "
 				wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"
 				wQy = wQy + "'' "
 				wQy = wQy + ") ;"
@@ -1626,6 +1629,7 @@ class CLS_DB_IF() :
 		wQy = wQy + "False, "
 		wQy = wQy + "False, "
 		wQy = wQy + "False, "
+		wQy = wQy + "False, "
 		wQy = wQy + "'" + str( gVal.DEF_TIMEDATE ) + "',"
 		wQy = wQy + "'' "
 		wQy = wQy + ") ;"
@@ -1660,6 +1664,7 @@ class CLS_DB_IF() :
 			"report"		: False,
 			"vip"			: False,
 			"ope"			: False,
+			"follow"		: False,
 			"rel_date"		: str( gVal.DEF_TIMEDATE ),
 			"memo"			: ""
 		}
@@ -1677,7 +1682,8 @@ class CLS_DB_IF() :
 		return wRes
 
 	#####################################################
-	def UpdateExeUser( self, inID, inReport=None, inVIP=None, inOpe=None, inRelDate=None, inMemo=None ):
+###	def UpdateExeUser( self, inID, inReport=None, inVIP=None, inOpe=None, inRelDate=None, inMemo=None ):
+	def UpdateExeUser( self, inID, inReport=None, inVIP=None, inOpe=None, inFollow=None, inRelDate=None, inMemo=None ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -1706,6 +1712,7 @@ class CLS_DB_IF() :
 			"report"		: gVal.ARR_NotReactionUser[wUserID]['report'],
 			"vip"			: gVal.ARR_NotReactionUser[wUserID]['vip'],
 			"ope"			: gVal.ARR_NotReactionUser[wUserID]['ope'],
+			"follow"		: gVal.ARR_NotReactionUser[wUserID]['follow'],
 			"rel_date"		: gVal.ARR_NotReactionUser[wUserID]['rel_date'],
 			"memo"			: gVal.ARR_NotReactionUser[wUserID]['memo']
 		}
@@ -1718,6 +1725,8 @@ class CLS_DB_IF() :
 			wSTR_Value['vip'] = inVIP
 		if inOpe!=None :
 			wSTR_Value['ope'] = inOpe
+		if inFollow!=None :
+			wSTR_Value['follow'] = inFollow
 		
 		if inRelDate!=None :
 			wSTR_Value['rel_date'] = inRelDate
@@ -1733,6 +1742,7 @@ class CLS_DB_IF() :
 		wQy = wQy + "report = " + str( wSTR_Value['report'] ) + ", "
 		wQy = wQy + "vip = " + str( wSTR_Value['vip'] ) + ", "
 		wQy = wQy + "ope = " + str( wSTR_Value['ope'] ) + ", "
+		wQy = wQy + "follow = " + str( wSTR_Value['follow'] ) + ", "
 		wQy = wQy + "rel_date = '" + str( wSTR_Value['rel_date'] ) + "', "
 		wQy = wQy + "memo = '" + str( wSTR_Value['memo'] ) + "' "
 		wQy = wQy + "where id = '" + wUserID + "' "
@@ -1753,6 +1763,7 @@ class CLS_DB_IF() :
 		gVal.ARR_NotReactionUser[wUserID]['report'] = wSTR_Value['report']
 		gVal.ARR_NotReactionUser[wUserID]['vip']    = wSTR_Value['vip']
 		gVal.ARR_NotReactionUser[wUserID]['ope']    = wSTR_Value['ope']
+		gVal.ARR_NotReactionUser[wUserID]['follow'] = wSTR_Value['follow']
 		gVal.ARR_NotReactionUser[wUserID]['rel_date'] = wSTR_Value['rel_date']
 		gVal.ARR_NotReactionUser[wUserID]['memo']     = wSTR_Value['memo']
 		
