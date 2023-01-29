@@ -1365,11 +1365,23 @@ class CLS_TwitterMain():
 						return wRes
 			
 			#############################
+			# VIPフォロー監視（●フル自動監視）
+			elif gVal.STR_UserInfo['AutoSeq']==17 :
+				if wFLG_Short==False :
+					wSubRes = self.CheckVipFollow()
+					if wSubRes['Result']!=True :
+						###失敗
+						wRes['Reason'] = "CheckVipFollow is failed"
+						gVal.OBJ_L.Log( "B", wRes )
+						return wRes
+			
+			#############################
 			# 指定外のため、リセット
 			# あるいは 終了
 			else:
 				wSeq = None
-				if gVal.STR_UserInfo['AutoSeq']!=17 :
+###				if gVal.STR_UserInfo['AutoSeq']!=17 :
+				if gVal.STR_UserInfo['AutoSeq']!=18 :
 					wSeq = gVal.STR_UserInfo['AutoSeq']		###異常検出
 				
 				wSubRes = gVal.OBJ_DB_IF.SetAutoSeq( True )
@@ -1491,6 +1503,15 @@ class CLS_TwitterMain():
 ###		return wRes
 ###
 ###
+
+
+
+#####################################################
+# VIPフォロー監視
+#####################################################
+	def ManualCheckVipFollow(self):
+		wRes = self.CheckVipFollow()
+		return wRes
 
 
 
@@ -2814,6 +2835,138 @@ class CLS_TwitterMain():
 			wStr = wStr + wListData + '\n'
 		
 		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# VIPフォロー監視
+#####################################################
+	def CheckVipFollow(self):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "CheckVipFollow"
+		
+		#############################
+		# 取得開始の表示
+		CLS_MyDisp.sViewHeaderDisp( "VIPフォロー監視", False )
+		
+		#############################
+		# VIPかつFollow監視を抽出
+		wKeylist = list( gVal.ARR_NotReactionUser.keys() )
+		for wID in wKeylist :
+			wID = str(wID)
+			
+			if gVal.ARR_NotReactionUser[wID]['follow']==False :
+				continue
+			
+			wSubRes = self.__checkVipFollow( gVal.ARR_NotReactionUser[wID] )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "__checkVipFollow is failed: user=" + gVal.ARR_NotReactionUser[wID]['screen_name']
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+		
+		#############################
+		# 完了
+		wRes['Result'] = True
+		return wRes
+
+	#####################################################
+	def __checkVipFollow( self, inUser ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_TwitterMain"
+		wRes['Func']  = "CheckVipFollow"
+		
+		#############################
+		# 監視ユーザの表示
+		wStr = "VIP監視ユーザ: " + str(inUser['screen_name']) + '\n'
+		CLS_OSIF.sPrn( wStr )
+		
+		#############################
+		# フォロー一覧の取得
+		wFollowRes = gVal.OBJ_Tw_IF.GetFollowIDList( inID=inUser['id'] )
+		if wFollowRes['Result']!=True :
+			wRes['Reason'] = "GetFollowIDList is failed: user=" + str(inUser['screen_name'])
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		wARR_FollowID = wFollowRes['Responce']
+		if len(wARR_FollowID)==0 :
+			wStr = "(フォロー者なし)"
+			CLS_OSIF.sPrn( wStr )
+			wRes['Result'] = True
+			return wRes
+		
+		###ウェイト初期化
+		self.Wait_Init( inZanNum=len( wARR_FollowID ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
+		
+		#############################
+		# フォロー者
+		for wID in wARR_FollowID :
+			###ウェイトカウントダウン
+			if self.Wait_Next()==False :
+				break	###ウェイト中止
+			
+			wID = str(wID)
+			
+			#############################
+			# 禁止ユーザは除外
+			if wID in gVal.ARR_NotReactionUser :
+				continue
+			
+			#############################
+			# ユーザ情報の取得
+			wUserInfoRes = gVal.OBJ_Tw_IF.GetUserinfo( inID=wID )
+			if wUserInfoRes['Result']!=True :
+				wRes['Reason'] = "GetUserinfo is failed: user=" + str(inUser['screen_name'])
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			
+			wUser = wUserInfoRes['Responce']
+			
+			wARR_DBData = None
+			#############################
+			# DBからユーザ情報を取得する(1個)
+			wSubRes = gVal.OBJ_DB_IF.GetFavoDataOne( wUser, inFLG_New=False )
+			if wSubRes['Result']!=True :
+				###失敗
+				wRes['Reason'] = "GetFavoDataOne is failed: user=" + str(wUser['screen_name'])
+				gVal.OBJ_L.Log( "B", wRes )
+				return wRes
+			if wSubRes['Responce']['Data']==None :
+				### DBにユーザが存在しない
+				wStr = "●未フォロー者: user=" + str(wUser['screen_name'])
+				CLS_OSIF.sPrn( wStr )
+				continue
+			
+			wARR_DBData = wSubRes['Responce']['Data']
+			
+			if wARR_DBData['follower']==True :
+				### VIPフォロー者 かつ メインフォロワー
+				wStr = "〇フォロー者  : user=" + str(wUser['screen_name']) + " level=" + str(wARR_DBData['level_tag'])
+				CLS_OSIF.sPrn( wStr )
+			
+			else:
+				if wARR_DBData['level_tag']=="A" or wARR_DBData['level_tag']=="A+" :
+					### 監視外（公式垢）
+					wStr = "〇監視外  : user=" + str(wUser['screen_name']) + " level=" + str(wARR_DBData['level_tag'])
+					CLS_OSIF.sPrn( wStr )
+				
+				else:
+					### VIPフォロー者 かつ メインフォロワーではない
+					wStr = "●未フォロー者: user=" + str(wUser['screen_name']) + " level=" + str(wARR_DBData['level_tag'])
+					CLS_OSIF.sPrn( wStr )
 		
 		#############################
 		# 完了

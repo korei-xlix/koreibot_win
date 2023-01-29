@@ -215,6 +215,11 @@ class CLS_Main_Console() :
 ###			cls.OBJ_TwitterMain.UserBList()
 ###		
 		#############################
+		# VIPフォロー監視
+		elif inCommand=="\\vc" :
+			cls.OBJ_TwitterMain.ManualCheckVipFollow()
+		
+		#############################
 		# 被ブロックユーザ一覧
 		elif inCommand=="\\lb" :
 			cls.OBJ_TwitterMain.BlockList()
