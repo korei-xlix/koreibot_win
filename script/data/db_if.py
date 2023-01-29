@@ -1467,7 +1467,7 @@ class CLS_DB_IF() :
 		# 添え字をIDに差し替える
 		wARR_RateWord = gVal.OBJ_DB_IF.ChgDataID( wARR_DBData )
 ###		wARR_RateWordID = list( wARR_RateWord )
-		wARR_RateWordID = list( wARR_RateWord,keys() )
+		wARR_RateWordID = list( wARR_RateWord.keys() )
 		
 		wResult = {
 			"insert"	: 0,
