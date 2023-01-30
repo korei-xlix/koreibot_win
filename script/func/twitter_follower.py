@@ -684,18 +684,28 @@ class CLS_TwitterFollower():
 		wStr = "フォロー者の再選出...: " + str(wLen) + " 件"
 		CLS_OSIF.sPrn( wStr )
 		
+		###ウェイト初期化
+		self.OBJ_Parent.Wait_Init( inZanNum=len( wARR_FollowID ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
+		
 		wFollowNum = 0
 		#############################
 		# フォロー
 ###		wKeylist = list(wARR_FollowID)
 		for wID in wARR_FollowID :
+			###ウェイトカウントダウン
+			if self.OBJ_Parent.Wait_Next()==False :
+				break	###ウェイト中止
+			
 			wID = str(wID)
 			
 			#############################
 			# フォロー人数が超えたか
 			if wFollowNum>=gVal.DEF_STR_TLNUM['forAutoReFollowFollowCnt'] :
+				wStr = "人数上限のため再選出終了"
+				CLS_OSIF.sPrn( wStr )
 				break
 			
+			### 進捗用にID表示
 			CLS_OSIF.sPrn( wID )
 			#############################
 			# 自動フォロー
@@ -705,7 +715,10 @@ class CLS_TwitterFollower():
 				gVal.OBJ_L.Log( "B", wRes )
 				continue
 			
-			wFollowNum += 1
+###			wFollowNum += 1
+			if wSubRes['Responce']==True :
+				### 自動フォロー実行 +カウントアップ
+				wFollowNum += 1
 		
 		#############################
 		# 正常終了
