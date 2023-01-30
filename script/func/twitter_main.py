@@ -2894,16 +2894,20 @@ class CLS_TwitterMain():
 		CLS_OSIF.sPrn( wStr )
 		
 		#############################
-		# フォロー一覧の取得
-		wFollowRes = gVal.OBJ_Tw_IF.GetFollowIDList( inID=inUser['id'] )
+###		# フォロー一覧の取得
+		# フォロワー一覧の取得
+###		wFollowRes = gVal.OBJ_Tw_IF.GetFollowIDList( inID=inUser['id'] )
+		wFollowRes = gVal.OBJ_Tw_IF.GetFollowerIDList( inID=inUser['id'] )
 		if wFollowRes['Result']!=True :
-			wRes['Reason'] = "GetFollowIDList is failed: user=" + str(inUser['screen_name'])
+###			wRes['Reason'] = "GetFollowIDList is failed: user=" + str(inUser['screen_name'])
+			wRes['Reason'] = "GetFollowerIDList is failed: user=" + str(inUser['screen_name'])
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
 		wARR_FollowID = wFollowRes['Responce']
 		if len(wARR_FollowID)==0 :
-			wStr = "(フォロー者なし)"
+###			wStr = "(フォロー者なし)"
+			wStr = "(フォロワーなし)"
 			CLS_OSIF.sPrn( wStr )
 			wRes['Result'] = True
 			return wRes
@@ -2912,7 +2916,8 @@ class CLS_TwitterMain():
 		self.Wait_Init( inZanNum=len( wARR_FollowID ), inWaitSec=gVal.DEF_STR_TLNUM['defLongWaitSec'] )
 		
 		#############################
-		# フォロー者
+###		# フォロー者
+		# フォロワー
 		for wID in wARR_FollowID :
 			###ウェイトカウントダウン
 			if self.Wait_Next()==False :

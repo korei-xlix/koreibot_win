@@ -974,8 +974,9 @@ class CLS_TwitterReaction():
 		# 前提: フォロワー
 		wUserLevel = None
 		wCnt = wARR_DBData['rfavo_n_cnt'] + 1
-		if wARR_DBData['level_tag']=="G" :
+###		if wARR_DBData['level_tag']=="G" :
 ###		if wARR_DBData['level_tag']=="G" or wARR_DBData['level_tag']=="G-" :
+		if wARR_DBData['level_tag']=="G" or self.ARR_ReactionTweet[wTweetID]['type']=='normal' :
 			wUserLevel = "E"
 			wSubRes = gVal.OBJ_DB_IF.UpdateFavoData_UserLevel( wUserID, wUserLevel )
 			
@@ -991,7 +992,8 @@ class CLS_TwitterReaction():
 		
 		#############################
 		# レベルG-
-		elif wARR_DBData['level_tag']=="G-" :
+###		elif wARR_DBData['level_tag']=="G-" :
+		elif wARR_DBData['level_tag']=="G-" or self.ARR_ReactionTweet[wTweetID]['type']=='normal' :
 			
 			### 既にリムーブされていたらスルー
 			if wARR_DBData['follower']==False :
@@ -1733,21 +1735,26 @@ class CLS_TwitterReaction():
 					wStr = wStr + " renfavo_cnt=" + str( wARR_DBData['renfavo_cnt'] )
 					CLS_OSIF.sPrn( wStr )
 					wBotNum += 1
+					
+					#############################
+					# 結果送信
+###					self.__sendRenFavoTweet( jnCnt=wBotNum )
+					self.__sendRenFavoTweet( jnScreenName=str( wARR_DBData['screen_name']), jnCnt=str( wARR_DBData['renfavo_cnt'] ) )
 		
-		#############################
-		# 結果送信
-		self.__sendRenFavoTweet( jnCnt=wBotNum )
-		
+###		#############################
+###		# 結果送信
+###		self.__sendRenFavoTweet( jnCnt=wBotNum )
+###		
 		#############################
 		# 正常
 		wRes['Result'] = True
 		return wRes
 
-
 	#####################################################
 	# 連ファボ測定結果送信
 	#####################################################
-	def __sendRenFavoTweet( self, jnCnt=0 ):
+###	def __sendRenFavoTweet( self, jnCnt=0 ):
+	def __sendRenFavoTweet( self, jnScreenName, jnCnt=0 ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
@@ -1780,8 +1787,12 @@ class CLS_TwitterReaction():
 		wTweet = ""
 		#############################
 		# ツイートの作成
-		wTweet = "[自動] bot判定数=" + str(jnCnt) + '\n'
-		wTweet = wTweet + "[Automatic] Number of bot decisions=" + str(jnCnt) + '\n'
+###		wTweet = "[自動] bot判定数=" + str(jnCnt) + '\n'
+###		wTweet = wTweet + "[Automatic] Number of bot decisions=" + str(jnCnt) + '\n'
+		wTweet = "[自動] 連続いいね受信" + '\n'
+		wTweet = wTweet + "[Automatic] Receiving consecutive likes" + '\n'
+		wTweet = wTweet + "user name: " + str(jnScreenName) + '\n'
+		wTweet = wTweet + "point: " + str(jnCnt) + '\n'
 		wTweet = wTweet + gVal.STR_UserInfo['DelTag'] + '\n'
 		
 		#############################

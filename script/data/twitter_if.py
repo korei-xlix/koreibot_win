@@ -2092,17 +2092,51 @@ class CLS_Twitter_IF() :
 #####################################################
 # フォロー者ID一覧 取得
 #####################################################
-	def GetFollowIDList( self, inID ):
+###	def GetFollowIDList( self, inID ):
+	def GetMyFollowIDList( self, inID ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
 		wRes = CLS_OSIF.sGet_Resp()
 		wRes['Class'] = "CLS_Twitter_IF"
-		wRes['Func']  = "GetFollowIDList"
+###		wRes['Func']  = "GetFollowIDList"
+		wRes['Func']  = "GetMyFollowIDList"
 
 		#############################
 		# フォロー者ID一覧 取得
-		wTwitterRes = self.OBJ_Twitter.GetFollowIDList( inID )
+###		wTwitterRes = self.OBJ_Twitter.GetFollowIDList( inID )
+		wTwitterRes = self.OBJ_Twitter.GetMyFollowIDList( inID )
+		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
+		
+		#############################
+		# 結果チェック
+		if wTwitterRes['Result']!=True :
+			wRes['Reason'] = "Twitter API Error: " + wTwitterRes['Reason']
+			gVal.OBJ_L.Log( "B", wRes )
+			return wRes
+		
+		#############################
+		# 完了
+		wRes['Responce'] = wTwitterRes['Responce']
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# フォロワーID一覧 取得
+#####################################################
+	def GetFollowerIDList( self, inID ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = CLS_OSIF.sGet_Resp()
+		wRes['Class'] = "CLS_Twitter_IF"
+		wRes['Func']  = "GetFollowerIDList"
+
+		#############################
+		# フォロワーID一覧 取得
+		wTwitterRes = self.OBJ_Twitter.GetFollowerIDList( inID )
 		CLS_Traffic.sP( "run_api", wTwitterRes['RunAPI'] )
 		
 		#############################

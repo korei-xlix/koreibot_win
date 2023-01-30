@@ -149,6 +149,7 @@ class CLS_Twitter_Use():
 		self.__set_API( "friends_list",		12 )	# GET: 15m/15
 		self.__set_API( "friends_show",		12 )	# GET: 15m/15
 		self.__set_API( "friends_ids",		12 )	# GET: 15m/15
+		self.__set_API( "followers_ids",	12 )	# GET: 15m/15
 		self.__set_API( "followers_list",	12 )	# GET: 15m/15
 		self.__set_API( "favorites_list",	60 )	# GET: 15m/75
 		self.__set_API( "lists_list",		12 )	# GET: 15m/15
@@ -1848,12 +1849,14 @@ class CLS_Twitter_Use():
 #####################################################
 # 他フォロー一覧読み込み処理
 #####################################################
-	def GetFollowIDList( self, inID ):
+###	def GetFollowIDList( self, inID ):
+	def GetMyFollowIDList( self, inID ):
 		#############################
 		# 応答形式の取得
 		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
 		wRes = self.__Get_Resp()
-		wRes['Func'] = "GetFollowIDList"
+###		wRes['Func'] = "GetFollowIDList"
+		wRes['Func'] = "GetMyFollowIDList"
 		
 		#############################
 		# Twitter状態のチェック
@@ -1888,6 +1891,113 @@ class CLS_Twitter_Use():
 				#############################
 				# APIカウント
 				self.__set_APIcount( "friends_ids" )
+				
+				wRes['RunAPI'] += 1	#実行
+				wTweetRes = self.Twitter_use.get( wAPI, params=wParams )
+				wUsers = json.loads( wTweetRes.text )
+				
+				###要素チェック
+				if 'next_cursor_str' not in wUsers :
+					break
+				if 'ids' not in wUsers :
+					break
+				
+				###情報抜き出し
+				if len(wUsers['ids'])>0 :
+					for wLine in wUsers['ids'] :
+						wARR_TL.append( wLine )
+				
+				#############################
+				# API規制チェック
+				if self.__get_APIrect( "friends_ids" )!=True :
+					break
+				###ページング処理
+				if wParams['cursor']==wUsers['next_cursor_str'] :
+					break
+				if wUsers['next_cursor_str']=="0" :
+					break
+				wParams['cursor'] = wUsers['next_cursor_str']
+				
+				#############################
+				# 遅延
+				time.sleep( self.DEF_VAL_SLEEP )
+			
+		except ValueError as err :
+			wRes['Reason'] = "Twitter error: " + str( err )
+			return wRes
+		
+		#############################
+		# 結果
+		wRes['StatusCode'] = wTweetRes.status_code
+		if wTweetRes.status_code != 200 :
+			wCHR_StatusCode = str(wTweetRes.status_code)
+			if wCHR_StatusCode in self.STR_TWITTER_STATUS_CODE :
+				###定義コードがあるなら文字出力する
+				wCHR_StatusCode = self.STR_TWITTER_STATUS_CODE[wCHR_StatusCode]
+			else :
+				wCHR_StatusCode = "unknown code"
+			
+			###直前エラーならデコードする
+			if 'errors' in wUsers :
+				wCHR_StatusCode = wCHR_StatusCode + ": Error Code=" + str(wUsers['errors'][0]['code']) + ":" + str(wUsers['errors'][0]['message'])
+			
+			wRes['Reason'] = "Twitter responce failed: Status Code=" + str(wTweetRes.status_code) + ":" + wCHR_StatusCode
+			return wRes
+		
+		#############################
+		# TLを取得
+		wRes['Responce'] = wARR_TL
+		
+		#############################
+		# 正常
+		wRes['Result'] = True
+		return wRes
+
+
+
+#####################################################
+# 他フォロワー一覧読み込み処理
+#####################################################
+	def GetFollowerIDList( self, inID ):
+		#############################
+		# 応答形式の取得
+		#   "Result" : False, "Class" : None, "Func" : None, "Reason" : None, "Responce" : None
+		wRes = self.__Get_Resp()
+		wRes['Func'] = "GetFollowerIDList"
+		
+		#############################
+		# Twitter状態のチェック
+		wResIni = self.GetTwStatus()
+		if wResIni['Init']!=True :
+			wRes['Reason'] = "Twitter connect error: " + wResIni['Reason']
+			return wRes
+		
+		#############################
+		# APIの指定
+		wAPI = "https://api.twitter.com/1.1/friends/ids.json"
+		
+		#############################
+		# API規制チェック
+		if self.__get_APIrect( "followers_ids" )!=True :
+			wRes['Reason'] = "Twitter規制中(アプリ内)"
+			return wRes
+		
+		#############################
+		# パラメータの生成
+		wParams = {
+			"user_id"		: inID,
+			"count"			: self.VAL_TwitNum,
+			"cursor"		: "-1"
+		}
+		
+		#############################
+		# タイムライン読み込み
+		wARR_TL = []
+		try:
+			while True :
+				#############################
+				# APIカウント
+				self.__set_APIcount( "followers_ids" )
 				
 				wRes['RunAPI'] += 1	#実行
 				wTweetRes = self.Twitter_use.get( wAPI, params=wParams )

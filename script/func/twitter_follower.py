@@ -661,9 +661,11 @@ class CLS_TwitterFollower():
 ###		
 		#############################
 		# フォロー一覧の取得
-		wFollowRes = gVal.OBJ_Tw_IF.GetFollowIDList( inID=wUserID )
+###		wFollowRes = gVal.OBJ_Tw_IF.GetFollowIDList( inID=wUserID )
+		wFollowRes = gVal.OBJ_Tw_IF.GetMyFollowIDList( inID=wUserID )
 		if wFollowRes['Result']!=True :
-			wRes['Reason'] = "GetFollowIDList is failed"
+###			wRes['Reason'] = "GetFollowIDList is failed"
+			wRes['Reason'] = "GetMyFollowIDList is failed"
 			gVal.OBJ_L.Log( "B", wRes )
 			return wRes
 		
