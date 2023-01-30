@@ -992,7 +992,8 @@ class CLS_TwitterFollower():
 			
 			### リプライ
 ###			elif wSTR_Tweet['text'].find("@")>=0 :
-			elif wSTR_Tweet['text'].find("@")>=0 or wTweet['in_reply_to_status_id']==None :
+###			elif wSTR_Tweet['text'].find("@")>=0 or wTweet['in_reply_to_status_id']==None :
+			elif wSTR_Tweet['text'].find("@")>=0 or wTweet['in_reply_to_status_id']!=None :
 				wSTR_Tweet['kind'] = "reply"
 			
 			### 通常ツイート

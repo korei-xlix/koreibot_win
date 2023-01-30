@@ -98,7 +98,8 @@ class CLS_TwitterReaction():
 				wType = "retweet"		# リツイート
 			elif "quoted_status" in inTweet :
 				wType = "quoted"		# 引用リツイート
-			elif inTweet['text'].find("@")>=0 :
+###			elif inTweet['text'].find("@")>=0 :
+			elif inTweet['text'].find("@")>=0 or inTweet['in_reply_to_status_id']!=None :
 				wType = "other_reply"	# リプライ(他ユーザ)
 				wIndex = inTweet['text'].find(" ")
 				if wIndex>=0 :
