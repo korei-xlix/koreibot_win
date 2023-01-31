@@ -1974,7 +1974,7 @@ class CLS_Twitter_Use():
 		
 		#############################
 		# APIの指定
-		wAPI = "https://api.twitter.com/1.1/friends/ids.json"
+		wAPI = "https://api.twitter.com/1.1/followers/ids.json"
 		
 		#############################
 		# API規制チェック
