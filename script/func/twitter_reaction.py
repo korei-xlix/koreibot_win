@@ -95,9 +95,19 @@ class CLS_TwitterReaction():
 			#############################
 			# ツイートタイプの検出
 			if "retweeted_status" in inTweet :
-				wType = "retweet"		# リツイート
+###				wType = "retweet"		# リツイート
+				if inTweet['text'].find("@")>=0 or inTweet['in_reply_to_status_id']!=None :
+					wType = "reply_retweet"	# リプライのリツイート
+				else:
+					wType = "retweet"		# リツイート
+			
 			elif "quoted_status" in inTweet :
-				wType = "quoted"		# 引用リツイート
+###				wType = "quoted"		# 引用リツイート
+				if inTweet['text'].find("@")>=0 or inTweet['in_reply_to_status_id']!=None :
+					wType = "reply_quoted"	# リプライの引用リツイート
+				else:
+					wType = "quoted"		# 引用リツイート
+			
 ###			elif inTweet['text'].find("@")>=0 :
 			elif inTweet['text'].find("@")>=0 or inTweet['in_reply_to_status_id']!=None :
 				wType = "other_reply"	# リプライ(他ユーザ)
@@ -254,7 +264,11 @@ class CLS_TwitterReaction():
 		elif self.ARR_ReactionTweet[wTweetID]['type']=="normal" :
 		     self.ARR_ReactionUser[wUserID]['hit_new'] += 1
 		
-		elif self.ARR_ReactionTweet[wTweetID]['type']=="other_reply" or \
+###		elif self.ARR_ReactionTweet[wTweetID]['type']=="other_reply" or \
+###		     self.ARR_ReactionTweet[wTweetID]['type']=="question" :
+		elif self.ARR_ReactionTweet[wTweetID]['type']=="reply_retweet" or \
+		     self.ARR_ReactionTweet[wTweetID]['type']=="reply_quoted" or \
+		     self.ARR_ReactionTweet[wTweetID]['type']=="other_reply" or \
 		     self.ARR_ReactionTweet[wTweetID]['type']=="question" :
 			
 			self.ARR_ReactionUser[wUserID]['hit_new'] += 5

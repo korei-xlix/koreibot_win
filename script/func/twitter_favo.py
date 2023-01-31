@@ -978,7 +978,12 @@ class CLS_TwitterFavo():
 			
 			### リツイート
 			if "retweeted_status" in wTweet :
-				wSTR_Tweet['kind'] = "retweet"
+###				wSTR_Tweet['kind'] = "retweet"
+				if wSTR_Tweet['text'].find("@")>=0 or wTweet['in_reply_to_status_id']!=None :
+					wSTR_Tweet['kind'] = "reply"
+				else:
+					wSTR_Tweet['kind'] = "retweet"
+				
 				wSTR_Tweet['created_at'] = str(wTweet['retweeted_status']['created_at'])
 				wSTR_Tweet['retweet_id'] = str(wTweet['retweeted_status']['id'])
 				
@@ -999,7 +1004,12 @@ class CLS_TwitterFavo():
 			
 			### 引用リツイート
 			elif "quoted_status" in wTweet :
-				wSTR_Tweet['kind'] = "quoted"
+###				wSTR_Tweet['kind'] = "quoted"
+				if wSTR_Tweet['text'].find("@")>=0 or wTweet['in_reply_to_status_id']!=None :
+					wSTR_Tweet['kind'] = "reply"
+				else:
+					wSTR_Tweet['kind'] = "quoted"
+				
 				wSTR_Tweet['created_at'] = str(wTweet['quoted_status']['created_at'])
 				wSTR_Tweet['retweet_id'] = str(wTweet['quoted_status']['id'])
 				
